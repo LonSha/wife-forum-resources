@@ -1,0 +1,533 @@
+{
+  "errors": [],
+  "states": 35,
+  "minPsnr": 42.56777792613653,
+  "maxPsnr": 42.6362896324845,
+  "rows": [
+    {
+      "state": "normal_blink1",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.613613781976994
+    },
+    {
+      "state": "normal_blink2",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.62292344543609
+    },
+    {
+      "state": "normal_blink3",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.63198448243284
+    },
+    {
+      "state": "normal_blink4",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.6362896324845
+    },
+    {
+      "state": "normal_talk1",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.57957526108584
+    },
+    {
+      "state": "normal_talk2",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.57972265847924
+    },
+    {
+      "state": "normal_talk3",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.57980069441871
+    },
+    {
+      "state": "smile_blink1",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.62047808129532
+    },
+    {
+      "state": "smile_blink2",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.61099344604099
+    },
+    {
+      "state": "smile_blink3",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.60534862771851
+    },
+    {
+      "state": "smile_blink4",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.602463489974774
+    },
+    {
+      "state": "smile_talk1",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.57178470348781
+    },
+    {
+      "state": "smile_talk2",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.57192212618223
+    },
+    {
+      "state": "smile_talk3",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.57212605174274
+    },
+    {
+      "state": "angry_blink1",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.61195293024464
+    },
+    {
+      "state": "angry_blink2",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.6218238007437
+    },
+    {
+      "state": "angry_blink3",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.6308930265656
+    },
+    {
+      "state": "angry_blink4",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.635230509001225
+    },
+    {
+      "state": "angry_talk1",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.577213144423744
+    },
+    {
+      "state": "angry_talk2",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.57730994629707
+    },
+    {
+      "state": "angry_talk3",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.57745430768398
+    },
+    {
+      "state": "sad_blink1",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.61069780402306
+    },
+    {
+      "state": "sad_blink2",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.56777792613653
+    },
+    {
+      "state": "sad_blink3",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.61060408885237
+    },
+    {
+      "state": "sad_blink4",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.6158354234844
+    },
+    {
+      "state": "sad_talk1",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.56850579186995
+    },
+    {
+      "state": "sad_talk2",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.56854903316893
+    },
+    {
+      "state": "sad_talk3",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.568604720158916
+    },
+    {
+      "state": "blush_blink1",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.61174158692373
+    },
+    {
+      "state": "blush_blink2",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.62121333943777
+    },
+    {
+      "state": "blush_blink3",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.6303084614452
+    },
+    {
+      "state": "blush_blink4",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.634641504757866
+    },
+    {
+      "state": "blush_talk1",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.578014678237906
+    },
+    {
+      "state": "blush_talk2",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.578162022674526
+    },
+    {
+      "state": "blush_talk3",
+      "alphaRange": [
+        255,
+        255
+      ],
+      "diffBox": [
+        12,
+        8,
+        704,
+        2664
+      ],
+      "alphaDiffBox": null,
+      "rgbPsnr": 42.578240030576595
+    }
+  ]
+}
