@@ -1,12 +1,5 @@
 {
-  "errors": [
-    "angry_talk1: patch alpha 211..255",
-    "angry_talk1: alpha differs after composite",
-    "angry_talk2: patch alpha 211..255",
-    "angry_talk2: alpha differs after composite",
-    "angry_talk3: patch alpha 211..255",
-    "angry_talk3: alpha differs after composite"
-  ],
+  "errors": [],
   "states": 35,
   "minPsnr": 40.38455360713634,
   "maxPsnr": 40.4509704572995,
@@ -293,12 +286,7 @@
         705,
         2000
       ],
-      "alphaDiffBox": [
-        382,
-        283,
-        458,
-        295
-      ],
+      "alphaDiffBox": null,
       "rgbPsnr": 40.44818614919815
     },
     {
@@ -313,12 +301,7 @@
         705,
         2000
       ],
-      "alphaDiffBox": [
-        382,
-        283,
-        458,
-        295
-      ],
+      "alphaDiffBox": null,
       "rgbPsnr": 40.44855046600816
     },
     {
@@ -333,12 +316,7 @@
         705,
         2000
       ],
-      "alphaDiffBox": [
-        382,
-        283,
-        458,
-        295
-      ],
+      "alphaDiffBox": null,
       "rgbPsnr": 40.44898274300476
     },
     {
