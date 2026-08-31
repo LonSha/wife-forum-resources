@@ -6,11 +6,12 @@
   ],
   "character": "天王寺綯",
   "format": "base-q100 + lossless rectangular patches",
+  "rbFix": "bgra-channel-swap-v1",
   "expressions": {
     "normal": {
       "base": "normal_base.webp",
-      "baseBytes": 298076,
-      "baseSha256": "16c43c243b86114405abba371a4f531e1508ccc95c157e909b2356566c4eeae1",
+      "baseBytes": 304488,
+      "baseSha256": "3ded0cb793b906046aef7681097f3dc52e448a5d27caa163f571a22bc341a0b9",
       "blinkBox": [
         243,
         271,
@@ -36,8 +37,8 @@
             265,
             79
           ],
-          "bytes": 21204,
-          "sha256": "5dbda3648820c98b689d2314ab91aed90cef8f7a059f61830109518c81fa4f0b",
+          "bytes": 21302,
+          "sha256": "f356d38f565e9560d3832b765d368e80e01597f3e5b05400cad1208fdb7db2c0",
           "sourceDiffBox": [
             246,
             274,
@@ -57,8 +58,8 @@
             265,
             79
           ],
-          "bytes": 20824,
-          "sha256": "b6d8a2ad9fc69c349c9dff7284736ecfecc8a7b2da451c02d43cd9c820ce23a5",
+          "bytes": 20924,
+          "sha256": "889aba413618c84324aabf4ab4e985c14d6d4f238f9f90945b41f3ccdff8dd3f",
           "sourceDiffBox": [
             253,
             274,
@@ -78,8 +79,8 @@
             265,
             79
           ],
-          "bytes": 20824,
-          "sha256": "b6d8a2ad9fc69c349c9dff7284736ecfecc8a7b2da451c02d43cd9c820ce23a5",
+          "bytes": 20924,
+          "sha256": "889aba413618c84324aabf4ab4e985c14d6d4f238f9f90945b41f3ccdff8dd3f",
           "sourceDiffBox": [
             253,
             274,
@@ -99,8 +100,8 @@
             265,
             79
           ],
-          "bytes": 20848,
-          "sha256": "cd8453f69e3f70d85d08f0e5820e34520d2e41b2d3c3a00f85d88342f605dccb",
+          "bytes": 20934,
+          "sha256": "627a90e2870649841dcc3f173703a4041afa86eb1404699ecbc48d08b6cceebc",
           "sourceDiffBox": [
             253,
             274,
@@ -122,8 +123,8 @@
             37,
             29
           ],
-          "bytes": 542,
-          "sha256": "ee81b2636743de759e933583611f5cf138e94f069d17ec8b138cf1b4f5def6ca",
+          "bytes": 600,
+          "sha256": "f3b84023dfd59ce52de1151d89413fb3ad5509b50127e852cf63e60038ff8109",
           "sourceDiffBox": [
             362,
             413,
@@ -143,8 +144,8 @@
             37,
             29
           ],
-          "bytes": 750,
-          "sha256": "e81239da6dabb8453a1aa2bbbf85ace7345024c88a45bd75a91c88dbb591929c",
+          "bytes": 774,
+          "sha256": "848a8773a6773f22e5a1825674a68d1df8caf0773e1573847efd9873cce047bf",
           "sourceDiffBox": [
             362,
             412,
@@ -164,8 +165,8 @@
             37,
             29
           ],
-          "bytes": 940,
-          "sha256": "009482ff7f86b8ea5768445a0cdd414956b297f580ab619847ca2386c920ab32",
+          "bytes": 982,
+          "sha256": "2ef82ecf5e73af5b6b3358b5eacdc4152fa4419654bf383464e7d7448cc60512",
           "sourceDiffBox": [
             362,
             410,
@@ -177,8 +178,8 @@
     },
     "smile": {
       "base": "smile_base.webp",
-      "baseBytes": 298290,
-      "baseSha256": "faf7d912cd55a8bc484ab8321c87d5a819c5ed200b717ddfd4bd91253bfceb02",
+      "baseBytes": 304638,
+      "baseSha256": "4500822d791def765decbf51f1e680a172ccfb36036b8e3e4bc104a92fb31f1e",
       "blinkBox": [
         243,
         271,
@@ -204,8 +205,8 @@
             265,
             79
           ],
-          "bytes": 21144,
-          "sha256": "dcec8e1988fdd1a49ad3bc819efc22b4f1b6e17a2b4583057023bb9b192713fa",
+          "bytes": 21284,
+          "sha256": "4be3f2c6d832510b943e07136fc29b64f477f2a0930f3e7a4d61e610b03a4eb3",
           "sourceDiffBox": [
             246,
             274,
@@ -225,8 +226,8 @@
             265,
             79
           ],
-          "bytes": 20746,
-          "sha256": "612900c3d87616fb386b58fd08619da59f3192ebc8b912e3e81934ff16603ed5",
+          "bytes": 21024,
+          "sha256": "78467293864c1073412a2fe2470a00d83f6a18a38a8faa349f3a5d1269e03ea7",
           "sourceDiffBox": [
             253,
             274,
@@ -246,8 +247,8 @@
             265,
             79
           ],
-          "bytes": 20746,
-          "sha256": "612900c3d87616fb386b58fd08619da59f3192ebc8b912e3e81934ff16603ed5",
+          "bytes": 21024,
+          "sha256": "78467293864c1073412a2fe2470a00d83f6a18a38a8faa349f3a5d1269e03ea7",
           "sourceDiffBox": [
             253,
             274,
@@ -267,8 +268,8 @@
             265,
             79
           ],
-          "bytes": 20768,
-          "sha256": "854034e99ae05353624bb02879bded17d2bd6bc52d8ec3087f03a8ffd67927a8",
+          "bytes": 20926,
+          "sha256": "5464393e5fb12e0b70179e13f360bf7482956040d9ad2486d43c0289305da027",
           "sourceDiffBox": [
             253,
             274,
@@ -290,8 +291,8 @@
             40,
             38
           ],
-          "bytes": 796,
-          "sha256": "ce175762e93fbf56a0d99bb64668d1a8e9e35c730690ba2f0d2d1ee798681ef1",
+          "bytes": 868,
+          "sha256": "a144225ab7bb941e0a38c9cb91b6dd13b46fdb4fbc80b9570fc1dda4307722cb",
           "sourceDiffBox": [
             361,
             409,
@@ -311,8 +312,8 @@
             40,
             38
           ],
-          "bytes": 1018,
-          "sha256": "51cbc2a9b266b448b8133508f8a6d5de00be4e94af37988103248027e277862a",
+          "bytes": 1046,
+          "sha256": "cf8ca8eb1fa64493ff08764e201329b1e951a3d925b18e5643d5bdf0ee8e7bb3",
           "sourceDiffBox": [
             361,
             408,
@@ -332,8 +333,8 @@
             40,
             38
           ],
-          "bytes": 1338,
-          "sha256": "37a2e45f3913668ef712f284ac52862207c54f34f7a3b7fbb4f940539ce0b50d",
+          "bytes": 1388,
+          "sha256": "34370bed12160b78704af4d8a8209d2e127356efe0a6f4c624aef78334d6e235",
           "sourceDiffBox": [
             361,
             406,
@@ -345,8 +346,8 @@
     },
     "angry": {
       "base": "angry_base.webp",
-      "baseBytes": 298002,
-      "baseSha256": "d6e716d8b3f51fa63a86a92dbd4554029f01db02cd9976f30fc5e1abe44baa4f",
+      "baseBytes": 304294,
+      "baseSha256": "c4f3ebd73dee3e56d6cd75cde917a2db2b68f26f658bca428378894e83297aee",
       "blinkBox": [
         243,
         271,
@@ -372,8 +373,8 @@
             265,
             79
           ],
-          "bytes": 21166,
-          "sha256": "a0ed662909141684c558e5be00e47e039c3266ea82686aa77b2986f147c57e44",
+          "bytes": 21296,
+          "sha256": "73d200921e7b77d6587f2d04ff584454cf766041cb8d0dd86659a5540197f150",
           "sourceDiffBox": [
             246,
             274,
@@ -393,8 +394,8 @@
             265,
             79
           ],
-          "bytes": 20790,
-          "sha256": "3139177511387b45448cbd5abcb818d9a6660eb62a339b4f2c993c847f6042c5",
+          "bytes": 21000,
+          "sha256": "7338aca45d004c3ac93a6dec255d3e55a17864fd8ab1bbadfda22c819a722cbf",
           "sourceDiffBox": [
             253,
             274,
@@ -414,8 +415,8 @@
             265,
             79
           ],
-          "bytes": 20790,
-          "sha256": "3139177511387b45448cbd5abcb818d9a6660eb62a339b4f2c993c847f6042c5",
+          "bytes": 21000,
+          "sha256": "7338aca45d004c3ac93a6dec255d3e55a17864fd8ab1bbadfda22c819a722cbf",
           "sourceDiffBox": [
             253,
             274,
@@ -435,8 +436,8 @@
             265,
             79
           ],
-          "bytes": 20840,
-          "sha256": "bc0979a4e49673aefcbc1ce1ec0fb119fc147133edaa774685afd7b18b8858f7",
+          "bytes": 20974,
+          "sha256": "b300df9b83156c47fb35f4b996198a1beb7643c1a226462be5e77e6b0e769200",
           "sourceDiffBox": [
             253,
             274,
@@ -458,8 +459,8 @@
             33,
             29
           ],
-          "bytes": 966,
-          "sha256": "ab3116b39f7595d0b5ebc5b7e9ea23e11c4f9f8f8b977f971f8d224e87599aab",
+          "bytes": 992,
+          "sha256": "ced74e54cf0191a7600b2ed8ba3b25b63349bd90415707f09d8308d19cc14cb9",
           "sourceDiffBox": [
             365,
             410,
@@ -479,8 +480,8 @@
             33,
             29
           ],
-          "bytes": 966,
-          "sha256": "ab3116b39f7595d0b5ebc5b7e9ea23e11c4f9f8f8b977f971f8d224e87599aab",
+          "bytes": 992,
+          "sha256": "ced74e54cf0191a7600b2ed8ba3b25b63349bd90415707f09d8308d19cc14cb9",
           "sourceDiffBox": [
             365,
             410,
@@ -500,8 +501,8 @@
             33,
             29
           ],
-          "bytes": 966,
-          "sha256": "ab3116b39f7595d0b5ebc5b7e9ea23e11c4f9f8f8b977f971f8d224e87599aab",
+          "bytes": 992,
+          "sha256": "ced74e54cf0191a7600b2ed8ba3b25b63349bd90415707f09d8308d19cc14cb9",
           "sourceDiffBox": [
             365,
             410,
@@ -513,8 +514,8 @@
     },
     "sad": {
       "base": "sad_base.webp",
-      "baseBytes": 297792,
-      "baseSha256": "b1d78592d7de0c403e91e94de27f96010aada14eb8d3e5e31e7ced1935dc72f3",
+      "baseBytes": 304196,
+      "baseSha256": "81ad2a4ef771ea5b15567056334fe50733df8839e3a681a5101ce3b0d741ce09",
       "blinkBox": [
         243,
         271,
@@ -540,8 +541,8 @@
             265,
             79
           ],
-          "bytes": 21180,
-          "sha256": "111cc0ebce66623e80306425f8b600995fc85e40576d6ae1f73b425bd3055ad1",
+          "bytes": 21366,
+          "sha256": "caf282ac1257817bc90677779d12fcba9d6e6b4f9d5ced8f04dfb1724473c030",
           "sourceDiffBox": [
             246,
             274,
@@ -561,8 +562,8 @@
             265,
             79
           ],
-          "bytes": 20780,
-          "sha256": "bfa24697d6cdbc46320b4d59470bc5a4e512c32453787035a8e8785b89271367",
+          "bytes": 21034,
+          "sha256": "40aeecfd09c21f2d6f21d8b9ad2452b290f3b0150ca189a1f75a0381c46a8116",
           "sourceDiffBox": [
             253,
             274,
@@ -582,8 +583,8 @@
             265,
             79
           ],
-          "bytes": 20780,
-          "sha256": "bfa24697d6cdbc46320b4d59470bc5a4e512c32453787035a8e8785b89271367",
+          "bytes": 21034,
+          "sha256": "40aeecfd09c21f2d6f21d8b9ad2452b290f3b0150ca189a1f75a0381c46a8116",
           "sourceDiffBox": [
             253,
             274,
@@ -603,8 +604,8 @@
             265,
             79
           ],
-          "bytes": 20876,
-          "sha256": "9eb347ce57693a6cfe921d966aa7e6cf32d035a2d49cf2ad07bbfc24bc5c5c4c",
+          "bytes": 21008,
+          "sha256": "98e724a40d7a3ae87405c531c1ea6c9956ff94893b91655184c407b143812139",
           "sourceDiffBox": [
             253,
             274,
@@ -626,8 +627,8 @@
             28,
             28
           ],
-          "bytes": 388,
-          "sha256": "136eb2fccff373b228ee7a09dd685833591521643ba865477994977cb29fffcb",
+          "bytes": 408,
+          "sha256": "07183eb494d95861683a68bc732c2087aa2adfcf7352f9714f73c51e1f55ac05",
           "sourceDiffBox": [
             367,
             415,
@@ -647,8 +648,8 @@
             28,
             28
           ],
-          "bytes": 526,
-          "sha256": "f45ba6e8b5747eddc922d4a4eb70b57f16865ff130ef6ed73a7ad33d32607537",
+          "bytes": 558,
+          "sha256": "3a86fb07251d66939bfea78c80c3990a10511650d9cbe515638a4f0128fe5d3a",
           "sourceDiffBox": [
             367,
             413,
@@ -668,8 +669,8 @@
             28,
             28
           ],
-          "bytes": 816,
-          "sha256": "c17b6fe5f130c219603fb94749eebde75ec2070f41cc4dcd43f6bd092ba1e873",
+          "bytes": 834,
+          "sha256": "adf9671088773ffa36e038e39d0bbf93a41ff6056f2ec1438cf450fd6ea12173",
           "sourceDiffBox": [
             367,
             412,
@@ -681,8 +682,8 @@
     },
     "blush": {
       "base": "blush_base.webp",
-      "baseBytes": 298134,
-      "baseSha256": "8eb8860ff9dd93e2199e51e8ce295ca987749a3ca90d593b33e4528f95c1382f",
+      "baseBytes": 304486,
+      "baseSha256": "de8c5f0d41f46fce2aaca3756d3cecbefefb0f8b47d7c4909cdd423fd20bc58d",
       "blinkBox": [
         243,
         271,
@@ -708,8 +709,8 @@
             265,
             79
           ],
-          "bytes": 21176,
-          "sha256": "c3cfc618d8a34a924ecd10946271a9e671e45d57da103c7d33e7a10390786b66",
+          "bytes": 21282,
+          "sha256": "0c543391396dd7eaf4fb0f192db657baf4c24a85b795bddf13216d30b72b9257",
           "sourceDiffBox": [
             246,
             274,
@@ -729,8 +730,8 @@
             265,
             79
           ],
-          "bytes": 20804,
-          "sha256": "79fc34aeb29ef5ef1eba1f55b1bf1e45d2dccb769d12b1448c7691a2b1af3b27",
+          "bytes": 20990,
+          "sha256": "ba06262a280c4cc16a52a5865ec801ca2280e88d24d401117aa8a4825a08fe26",
           "sourceDiffBox": [
             253,
             274,
@@ -750,8 +751,8 @@
             265,
             79
           ],
-          "bytes": 20804,
-          "sha256": "79fc34aeb29ef5ef1eba1f55b1bf1e45d2dccb769d12b1448c7691a2b1af3b27",
+          "bytes": 20990,
+          "sha256": "ba06262a280c4cc16a52a5865ec801ca2280e88d24d401117aa8a4825a08fe26",
           "sourceDiffBox": [
             253,
             274,
@@ -771,8 +772,8 @@
             265,
             79
           ],
-          "bytes": 20850,
-          "sha256": "814771382647e4831b5fb1bc9e9eadbe118f0fb5c5623653c0676b2df760fbfa",
+          "bytes": 20930,
+          "sha256": "32aba3068ccb64620aac08fbae7c4371f65f90b74caacb51f0c1045593ac5db8",
           "sourceDiffBox": [
             253,
             274,
@@ -794,8 +795,8 @@
             37,
             29
           ],
-          "bytes": 542,
-          "sha256": "bef02f0abdfd16bf6d5ed2dcc531ebe8183484e5e6f7811b7cb5b71b8bcfb6e1",
+          "bytes": 600,
+          "sha256": "f3b84023dfd59ce52de1151d89413fb3ad5509b50127e852cf63e60038ff8109",
           "sourceDiffBox": [
             362,
             413,
@@ -815,8 +816,8 @@
             37,
             29
           ],
-          "bytes": 748,
-          "sha256": "37792c54ef77fb53a77b9ca11599fcd051c0660362ba86da7c47ab371285ce82",
+          "bytes": 774,
+          "sha256": "848a8773a6773f22e5a1825674a68d1df8caf0773e1573847efd9873cce047bf",
           "sourceDiffBox": [
             362,
             412,
@@ -836,8 +837,8 @@
             37,
             29
           ],
-          "bytes": 936,
-          "sha256": "d97e5855012d1e8996aea2ebac25ceb8d5e91f15690db840fc94b0bab3ba4c8b",
+          "bytes": 982,
+          "sha256": "2ef82ecf5e73af5b6b3358b5eacdc4152fa4419654bf383464e7d7448cc60512",
           "sourceDiffBox": [
             362,
             410,
@@ -849,6 +850,6 @@
     }
   },
   "errors": [],
-  "totalBytes": 1920472,
+  "totalBytes": 1956138,
   "fileCount": 40
 }
