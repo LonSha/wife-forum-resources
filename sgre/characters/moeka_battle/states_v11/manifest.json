@@ -1,855 +1,603 @@
 {
-  "version": 1,
-  "canvas": [
-    712,
-    2573
+  "format": "sgre-emote-precomposed-v1",
+  "character": "桐生萌郁b_ライダースーツ",
+  "canvas": {
+    "worldBBox": [
+      -626,
+      -503,
+      779,
+      4574
+    ],
+    "width": 1405,
+    "height": 5077
+  },
+  "blinkSequence": [
+    "base",
+    "blink1",
+    "blink2",
+    "blink3",
+    "blink4",
+    "blink3",
+    "blink2",
+    "blink1",
+    "base"
   ],
-  "character": "桐生萌郁",
-  "format": "base-q100 + lossless rectangular patches",
-  "rbFix": "bgra-channel-swap-v1",
+  "talkLevels": [
+    "base",
+    "talk1",
+    "talk2",
+    "talk3"
+  ],
   "expressions": {
     "normal": {
-      "base": "normal_base.webp",
-      "baseBytes": 219442,
-      "baseSha256": "d2d424126412045684a63302cae923a09bb1cc705d36d5e07d3ab06af50b76b1",
-      "blinkBox": [
-        205,
-        222,
-        427,
-        271
-      ],
-      "talkBox": [
-        298,
-        325,
-        336,
-        352
-      ],
-      "blink": {
+      "variables": {},
+      "files": {
+        "base": {
+          "file": "normal_base.webp",
+          "bytes": 219442,
+          "sha256": "d2d424126412045684a63302cae923a09bb1cc705d36d5e07d3ab06af50b76b1",
+          "sourcePng": "normal_base.png",
+          "variables": {},
+          "drawCount": 65,
+          "nonNullBezierPatches": 0,
+          "buildSeconds": 14.921
+        },
         "blink1": {
           "file": "normal_blink1.webp",
-          "box": [
-            205,
-            222,
-            427,
-            271
-          ],
-          "size": [
-            222,
-            49
-          ],
-          "bytes": 11836,
-          "sha256": "0795eeb926790b3168a8dc0157eb7a3836ea726465217259e32d3f218e160fd9",
-          "sourceDiffBox": [
-            226,
-            225,
-            411,
-            265
-          ]
+          "bytes": 219514,
+          "sha256": "263250db4a3d89c5dbe8d0b2537986bba6391de6f5d473f7dd0c5654f439d49f",
+          "sourcePng": "normal_blink1.png",
+          "variables": {
+            "face_eye_open": 4
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 2,
+          "buildSeconds": 15.253
         },
         "blink2": {
           "file": "normal_blink2.webp",
-          "box": [
-            205,
-            222,
-            427,
-            271
-          ],
-          "size": [
-            222,
-            49
-          ],
-          "bytes": 12424,
-          "sha256": "45d5008566f9d934bac11f8d113f115d446aa443c54895af4719aa0c34c94a68",
-          "sourceDiffBox": [
-            208,
-            225,
-            424,
-            265
-          ]
+          "bytes": 219700,
+          "sha256": "26e6fbea7257772ec76bdfd6c198ce9622f75db3602bb97e0131361f3e23d8c0",
+          "sourcePng": "normal_blink2.png",
+          "variables": {
+            "face_eye_open": 5
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 0,
+          "buildSeconds": 15.892
         },
         "blink3": {
           "file": "normal_blink3.webp",
-          "box": [
-            205,
-            222,
-            427,
-            271
-          ],
-          "size": [
-            222,
-            49
-          ],
-          "bytes": 12224,
-          "sha256": "6cf7d6862baa29bc4319d2b1d8775fd18fb026d07fc8c9c7ed60d4411bb10cb3",
-          "sourceDiffBox": [
-            222,
-            225,
-            411,
-            268
-          ]
+          "bytes": 219590,
+          "sha256": "8a07cd8c5af71a8e91e17ecda9c976222e69fdd47b026d3d705776082fa41530",
+          "sourcePng": "normal_blink3.png",
+          "variables": {
+            "face_eye_open": 9
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 2,
+          "buildSeconds": 15.209
         },
         "blink4": {
           "file": "normal_blink4.webp",
-          "box": [
-            205,
-            222,
-            427,
-            271
-          ],
-          "size": [
-            222,
-            49
-          ],
-          "bytes": 11930,
-          "sha256": "f14864eb5189a376c36412fec3ee9dcc9006e9528edd374f487c7dc86a756622",
-          "sourceDiffBox": [
-            227,
-            225,
-            411,
-            265
-          ]
-        }
-      },
-      "talk": {
+          "bytes": 219490,
+          "sha256": "614a1fc9999c67ea0d0abf5a307508610504351bf49a4254711c09a97797f8cb",
+          "sourcePng": "normal_blink4.png",
+          "variables": {
+            "face_eye_open": 10
+          },
+          "drawCount": 63,
+          "nonNullBezierPatches": 0,
+          "buildSeconds": 14.754
+        },
         "talk1": {
           "file": "normal_talk1.webp",
-          "box": [
-            298,
-            325,
-            336,
-            352
-          ],
-          "size": [
-            38,
-            27
-          ],
-          "bytes": 558,
-          "sha256": "9bbf091fd57bac1f4564e24a4c091dd15b32233fdfa3ea8b8316982bd166d1d1",
-          "sourceDiffBox": [
-            301,
-            331,
-            333,
-            340
-          ]
+          "bytes": 219556,
+          "sha256": "3e82424f814897a4675a415ac7dc744930f117a247041fa0d83abd1092e60a34",
+          "sourcePng": "normal_talk1.png",
+          "variables": {
+            "face_talk": 1
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 1,
+          "buildSeconds": 15.447
         },
         "talk2": {
           "file": "normal_talk2.webp",
-          "box": [
-            298,
-            325,
-            336,
-            352
-          ],
-          "size": [
-            38,
-            27
-          ],
-          "bytes": 780,
-          "sha256": "11079644e4c4d5c991087874d1680bfe9b8c6f1adf7c95edca7ff81df77aecab",
-          "sourceDiffBox": [
-            302,
-            329,
-            333,
-            344
-          ]
+          "bytes": 219578,
+          "sha256": "9fa20d1836a1ac2fb4c4bc1cbb19d773d2b4f6dfc6396f14a4c279452e103519",
+          "sourcePng": "normal_talk2.png",
+          "variables": {
+            "face_talk": 3
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 1,
+          "buildSeconds": 15.556
         },
         "talk3": {
           "file": "normal_talk3.webp",
-          "box": [
-            298,
-            325,
-            336,
-            352
-          ],
-          "size": [
-            38,
-            27
-          ],
-          "bytes": 910,
-          "sha256": "9b7c9e2534d083ec112038fd783be9faae2bc60f9aeb60123eaf9cb5d47e159d",
-          "sourceDiffBox": [
-            303,
-            328,
-            332,
-            349
-          ]
+          "bytes": 219698,
+          "sha256": "981728029d623b929d712c75f6850214c88946b467244f4562b893c29269c7d2",
+          "sourcePng": "normal_talk3.png",
+          "variables": {
+            "face_talk": 5
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 0,
+          "buildSeconds": 15.235
         }
       }
     },
     "smile": {
-      "base": "smile_base.webp",
-      "baseBytes": 219708,
-      "baseSha256": "7b92cfb0cb6692f6fc39bd6ac1e03ed442c876301d37ed16c5091167b91a0345",
-      "blinkBox": [
-        205,
-        222,
-        427,
-        271
-      ],
-      "talkBox": [
-        297,
-        322,
-        337,
-        352
-      ],
-      "blink": {
+      "variables": {
+        "face_eyebrow": 40,
+        "face_mouth": 30
+      },
+      "files": {
+        "base": {
+          "file": "smile_base.webp",
+          "bytes": 219708,
+          "sha256": "7b92cfb0cb6692f6fc39bd6ac1e03ed442c876301d37ed16c5091167b91a0345",
+          "sourcePng": "smile_base.png",
+          "variables": {
+            "face_eyebrow": 40,
+            "face_mouth": 30
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 0,
+          "buildSeconds": 14.919
+        },
         "blink1": {
           "file": "smile_blink1.webp",
-          "box": [
-            205,
-            222,
-            427,
-            271
-          ],
-          "size": [
-            222,
-            49
-          ],
-          "bytes": 11888,
-          "sha256": "1f1ae2b646441bd12e07e6444702aa5cb27b5392276f957be5dd31a1132b31d4",
-          "sourceDiffBox": [
-            226,
-            225,
-            411,
-            265
-          ]
+          "bytes": 219892,
+          "sha256": "a6f5ad255c17087a32ddf86fdd936ce01d89c403b86d28f8ec1bf075d925c11a",
+          "sourcePng": "smile_blink1.png",
+          "variables": {
+            "face_eyebrow": 40,
+            "face_mouth": 30,
+            "face_eye_open": 4
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 2,
+          "buildSeconds": 15.188
         },
         "blink2": {
           "file": "smile_blink2.webp",
-          "box": [
-            205,
-            222,
-            427,
-            271
-          ],
-          "size": [
-            222,
-            49
-          ],
-          "bytes": 12486,
-          "sha256": "9b277b2e5c44ece81071aa1a4cc13d2ab5b4c82c4fc3d64daf717f4006fd9f61",
-          "sourceDiffBox": [
-            208,
-            225,
-            424,
-            265
-          ]
+          "bytes": 220094,
+          "sha256": "82786d2971097e9cb6ac76ff469a8813e9d03de439847f5845022bae8943cf2a",
+          "sourcePng": "smile_blink2.png",
+          "variables": {
+            "face_eyebrow": 40,
+            "face_mouth": 30,
+            "face_eye_open": 5
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 0,
+          "buildSeconds": 15.432
         },
         "blink3": {
           "file": "smile_blink3.webp",
-          "box": [
-            205,
-            222,
-            427,
-            271
-          ],
-          "size": [
-            222,
-            49
-          ],
-          "bytes": 12284,
-          "sha256": "9df9235022e67b338070eb2b4cec9c7c77527849efc8cad4daf286958e19b3ae",
-          "sourceDiffBox": [
-            222,
-            225,
-            411,
-            268
-          ]
+          "bytes": 220032,
+          "sha256": "d3ef60b8220c12cbca251eccfe91d104529a916f84c4bcfdc5c7187045fccc40",
+          "sourcePng": "smile_blink3.png",
+          "variables": {
+            "face_eyebrow": 40,
+            "face_mouth": 30,
+            "face_eye_open": 9
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 2,
+          "buildSeconds": 14.808
         },
         "blink4": {
           "file": "smile_blink4.webp",
-          "box": [
-            205,
-            222,
-            427,
-            271
-          ],
-          "size": [
-            222,
-            49
-          ],
-          "bytes": 11930,
-          "sha256": "1b8f24df4da4ff673fd7aba7a59c977e3701aba26be5bc8af8dbf446f80fa4f3",
-          "sourceDiffBox": [
-            227,
-            225,
-            411,
-            265
-          ]
-        }
-      },
-      "talk": {
+          "bytes": 219774,
+          "sha256": "527cd2ddcba4c390156ca14bdec112086bee8a2d95c17090e58924848b1bcb5d",
+          "sourcePng": "smile_blink4.png",
+          "variables": {
+            "face_eyebrow": 40,
+            "face_mouth": 30,
+            "face_eye_open": 10
+          },
+          "drawCount": 63,
+          "nonNullBezierPatches": 0,
+          "buildSeconds": 14.936
+        },
         "talk1": {
           "file": "smile_talk1.webp",
-          "box": [
-            297,
-            322,
-            337,
-            352
-          ],
-          "size": [
-            40,
-            30
-          ],
-          "bytes": 1136,
-          "sha256": "2c2ee9ce1cde197a774a9a23840565a42bfdb627d55a4d80281b0015c8f9231c",
-          "sourceDiffBox": [
-            300,
-            325,
-            334,
-            349
-          ]
+          "bytes": 219968,
+          "sha256": "a277d3c57f2ecd7c62ee34b3b6ded2d8585b2304a6fd76bde64ddd5644f6fae5",
+          "sourcePng": "smile_talk1.png",
+          "variables": {
+            "face_eyebrow": 40,
+            "face_mouth": 30,
+            "face_talk": 1
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 0,
+          "buildSeconds": 14.606
         },
         "talk2": {
           "file": "smile_talk2.webp",
-          "box": [
-            297,
-            322,
-            337,
-            352
-          ],
-          "size": [
-            40,
-            30
-          ],
-          "bytes": 1136,
-          "sha256": "2c2ee9ce1cde197a774a9a23840565a42bfdb627d55a4d80281b0015c8f9231c",
-          "sourceDiffBox": [
-            300,
-            325,
-            334,
-            349
-          ]
+          "bytes": 219968,
+          "sha256": "a277d3c57f2ecd7c62ee34b3b6ded2d8585b2304a6fd76bde64ddd5644f6fae5",
+          "sourcePng": "smile_talk2.png",
+          "variables": {
+            "face_eyebrow": 40,
+            "face_mouth": 30,
+            "face_talk": 3
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 0,
+          "buildSeconds": 15.612
         },
         "talk3": {
           "file": "smile_talk3.webp",
-          "box": [
-            297,
-            322,
-            337,
-            352
-          ],
-          "size": [
-            40,
-            30
-          ],
-          "bytes": 1136,
-          "sha256": "2c2ee9ce1cde197a774a9a23840565a42bfdb627d55a4d80281b0015c8f9231c",
-          "sourceDiffBox": [
-            300,
-            325,
-            334,
-            349
-          ]
+          "bytes": 219968,
+          "sha256": "a277d3c57f2ecd7c62ee34b3b6ded2d8585b2304a6fd76bde64ddd5644f6fae5",
+          "sourcePng": "smile_talk3.png",
+          "variables": {
+            "face_eyebrow": 40,
+            "face_mouth": 30,
+            "face_talk": 5
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 0,
+          "buildSeconds": 18.209
         }
       }
     },
     "angry": {
-      "base": "angry_base.webp",
-      "baseBytes": 219684,
-      "baseSha256": "d1ea34137baa9619b8c24856dff669699cd62b6107ffed141f05c64e97cbb29c",
-      "blinkBox": [
-        205,
-        222,
-        427,
-        271
-      ],
-      "talkBox": [
-        300,
-        323,
-        335,
-        351
-      ],
-      "blink": {
+      "variables": {
+        "face_eyebrow": 20,
+        "face_mouth": 10
+      },
+      "files": {
+        "base": {
+          "file": "angry_base.webp",
+          "bytes": 219684,
+          "sha256": "d1ea34137baa9619b8c24856dff669699cd62b6107ffed141f05c64e97cbb29c",
+          "sourcePng": "angry_base.png",
+          "variables": {
+            "face_eyebrow": 20,
+            "face_mouth": 10
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 0,
+          "buildSeconds": 15.497
+        },
         "blink1": {
           "file": "angry_blink1.webp",
-          "box": [
-            205,
-            222,
-            427,
-            271
-          ],
-          "size": [
-            222,
-            49
-          ],
-          "bytes": 12146,
-          "sha256": "dfe42b14dc35d994faae5438fe8f15e64a58807a0f203fa8973fca6223f97757",
-          "sourceDiffBox": [
-            226,
-            225,
-            411,
-            265
-          ]
+          "bytes": 219686,
+          "sha256": "bac18539e9279671b0069c3a967e963dbfe09bcfd05f6b47d2b3dc0a53cb306b",
+          "sourcePng": "angry_blink1.png",
+          "variables": {
+            "face_eyebrow": 20,
+            "face_mouth": 10,
+            "face_eye_open": 4
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 2,
+          "buildSeconds": 14.689
         },
         "blink2": {
           "file": "angry_blink2.webp",
-          "box": [
-            205,
-            222,
-            427,
-            271
-          ],
-          "size": [
-            222,
-            49
-          ],
-          "bytes": 12840,
-          "sha256": "89945baf3edc0fad2eab996a2aba526b345b2a1780f28537b68ca4ffe9e35643",
-          "sourceDiffBox": [
-            208,
-            225,
-            424,
-            265
-          ]
+          "bytes": 219934,
+          "sha256": "4af943a9224dc733e6a7c2131bc5230f31ac7aff2fb1f94f62f84e7daed1bc1a",
+          "sourcePng": "angry_blink2.png",
+          "variables": {
+            "face_eyebrow": 20,
+            "face_mouth": 10,
+            "face_eye_open": 5
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 0,
+          "buildSeconds": 14.556
         },
         "blink3": {
           "file": "angry_blink3.webp",
-          "box": [
-            205,
-            222,
-            427,
-            271
-          ],
-          "size": [
-            222,
-            49
-          ],
-          "bytes": 12594,
-          "sha256": "4105268b7b8d8ddcbe2f781c3b8dfe580fd7a2d947811ea823fd19b46667a22b",
-          "sourceDiffBox": [
-            222,
-            225,
-            411,
-            268
-          ]
+          "bytes": 219958,
+          "sha256": "022108490457993f1dcdadf6a02b5c4e018c686ee3c31d610489b2a27f3dedee",
+          "sourcePng": "angry_blink3.png",
+          "variables": {
+            "face_eyebrow": 20,
+            "face_mouth": 10,
+            "face_eye_open": 9
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 2,
+          "buildSeconds": 14.587
         },
         "blink4": {
           "file": "angry_blink4.webp",
-          "box": [
-            205,
-            222,
-            427,
-            271
-          ],
-          "size": [
-            222,
-            49
-          ],
-          "bytes": 12270,
-          "sha256": "f62b867df22e01b867d13b6f4eee51a559c315c9162ffd0c98547a802e6f8a59",
-          "sourceDiffBox": [
-            227,
-            225,
-            411,
-            265
-          ]
-        }
-      },
-      "talk": {
+          "bytes": 219804,
+          "sha256": "aa7424248fd97feda1331d16cd9ae4a01abe529d8b19d68ceaeb4749aa117f20",
+          "sourcePng": "angry_blink4.png",
+          "variables": {
+            "face_eyebrow": 20,
+            "face_mouth": 10,
+            "face_eye_open": 10
+          },
+          "drawCount": 63,
+          "nonNullBezierPatches": 0,
+          "buildSeconds": 14.674
+        },
         "talk1": {
           "file": "angry_talk1.webp",
-          "box": [
-            300,
-            323,
-            335,
-            351
-          ],
-          "size": [
-            35,
-            28
-          ],
-          "bytes": 602,
-          "sha256": "d98a03799f7b76ca4fef4803d603cb0a5573b61e1212a4da2b7096f2d663b5cd",
-          "sourceDiffBox": [
-            303,
-            330,
-            332,
-            341
-          ]
+          "bytes": 219696,
+          "sha256": "ad45a9b4b16b310725c40edba6c68140a527e1f0d113c8432289dbd0c0b0cfd6",
+          "sourcePng": "angry_talk1.png",
+          "variables": {
+            "face_eyebrow": 20,
+            "face_mouth": 10,
+            "face_talk": 1
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 1,
+          "buildSeconds": 15.075
         },
         "talk2": {
           "file": "angry_talk2.webp",
-          "box": [
-            300,
-            323,
-            335,
-            351
-          ],
-          "size": [
-            35,
-            28
-          ],
-          "bytes": 908,
-          "sha256": "aaf0c504e4894dfc4be5c3e46a3c5e717935bddf8ce6c1d7c932486e76c2ab62",
-          "sourceDiffBox": [
-            303,
-            329,
-            332,
-            343
-          ]
+          "bytes": 219796,
+          "sha256": "5ce3a787941bcea47220340e65d7236a2e483920f1adce1abe7f52768f79440c",
+          "sourcePng": "angry_talk2.png",
+          "variables": {
+            "face_eyebrow": 20,
+            "face_mouth": 10,
+            "face_talk": 3
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 1,
+          "buildSeconds": 15.779
         },
         "talk3": {
           "file": "angry_talk3.webp",
-          "box": [
-            300,
-            323,
-            335,
-            351
-          ],
-          "size": [
-            35,
-            28
-          ],
-          "bytes": 962,
-          "sha256": "f76098a9cb798e142fdffd32296f515806106867b582d62dd19d8f2275ed60f4",
-          "sourceDiffBox": [
-            303,
-            326,
-            331,
-            348
-          ]
+          "bytes": 219888,
+          "sha256": "f1d304f9302604f8cd5ee6366e799dfc7808c2295658efdb2fdddcdb87cdb84b",
+          "sourcePng": "angry_talk3.png",
+          "variables": {
+            "face_eyebrow": 20,
+            "face_mouth": 10,
+            "face_talk": 5
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 0,
+          "buildSeconds": 15.22
         }
       }
     },
     "sad": {
-      "base": "sad_base.webp",
-      "baseBytes": 219678,
-      "baseSha256": "ed52cf0f110e8de6b4c668753e014da5a0c7e3b544517c3708f8186a6bf35760",
-      "blinkBox": [
-        205,
-        222,
-        427,
-        271
-      ],
-      "talkBox": [
-        300,
-        327,
-        334,
-        350
-      ],
-      "blink": {
+      "variables": {
+        "face_eyebrow": 30,
+        "face_mouth": 20
+      },
+      "files": {
+        "base": {
+          "file": "sad_base.webp",
+          "bytes": 219678,
+          "sha256": "ed52cf0f110e8de6b4c668753e014da5a0c7e3b544517c3708f8186a6bf35760",
+          "sourcePng": "sad_base.png",
+          "variables": {
+            "face_eyebrow": 30,
+            "face_mouth": 20
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 0,
+          "buildSeconds": 15.279
+        },
         "blink1": {
           "file": "sad_blink1.webp",
-          "box": [
-            205,
-            222,
-            427,
-            271
-          ],
-          "size": [
-            222,
-            49
-          ],
-          "bytes": 11866,
-          "sha256": "46a740bf431e94b358a130be9241246a684ffc6d4ebfc1bf2712273cd940aa14",
-          "sourceDiffBox": [
-            226,
-            225,
-            411,
-            265
-          ]
+          "bytes": 219696,
+          "sha256": "6aa9da77b6fed01740f7bef85ac9978c40866c9e4baa86c4007aed99e5ac622b",
+          "sourcePng": "sad_blink1.png",
+          "variables": {
+            "face_eyebrow": 30,
+            "face_mouth": 20,
+            "face_eye_open": 4
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 2,
+          "buildSeconds": 16.416
         },
         "blink2": {
           "file": "sad_blink2.webp",
-          "box": [
-            205,
-            222,
-            427,
-            271
-          ],
-          "size": [
-            222,
-            49
-          ],
-          "bytes": 12564,
-          "sha256": "e561a55b102e1a3a6dadbf99c5fdc2edfd40412dc74ec9e751f9b12df4bcad92",
-          "sourceDiffBox": [
-            208,
-            225,
-            424,
-            265
-          ]
+          "bytes": 220096,
+          "sha256": "4c3c0025c7f037bcd5b0a72b5d3f701b1519edd708c89e082492cb927b970788",
+          "sourcePng": "sad_blink2.png",
+          "variables": {
+            "face_eyebrow": 30,
+            "face_mouth": 20,
+            "face_eye_open": 5
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 0,
+          "buildSeconds": 15.319
         },
         "blink3": {
           "file": "sad_blink3.webp",
-          "box": [
-            205,
-            222,
-            427,
-            271
-          ],
-          "size": [
-            222,
-            49
-          ],
-          "bytes": 12326,
-          "sha256": "e6f2a0bdf0807dcb822234b9aed8632aa7fd6935a454c759aefc571ea7b479ac",
-          "sourceDiffBox": [
-            222,
-            225,
-            411,
-            268
-          ]
+          "bytes": 219964,
+          "sha256": "ffaf8782131ba2e6a7de77acb67c8064d9866acfcd5935d8c83e6f1d810a8b6e",
+          "sourcePng": "sad_blink3.png",
+          "variables": {
+            "face_eyebrow": 30,
+            "face_mouth": 20,
+            "face_eye_open": 9
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 2,
+          "buildSeconds": 14.777
         },
         "blink4": {
           "file": "sad_blink4.webp",
-          "box": [
-            205,
-            222,
-            427,
-            271
-          ],
-          "size": [
-            222,
-            49
-          ],
-          "bytes": 11986,
-          "sha256": "364d31838af1218ab972326dea8c342bbd9a1aea9b59ad1ae4b5cf5d683ef8a4",
-          "sourceDiffBox": [
-            227,
-            225,
-            411,
-            265
-          ]
-        }
-      },
-      "talk": {
+          "bytes": 219712,
+          "sha256": "8dd00bd5769070ec83d60137767dc48acef369657c4f2b67c4d10a0034e05f25",
+          "sourcePng": "sad_blink4.png",
+          "variables": {
+            "face_eyebrow": 30,
+            "face_mouth": 20,
+            "face_eye_open": 10
+          },
+          "drawCount": 63,
+          "nonNullBezierPatches": 0,
+          "buildSeconds": 15.081
+        },
         "talk1": {
           "file": "sad_talk1.webp",
-          "box": [
-            300,
-            327,
-            334,
-            350
-          ],
-          "size": [
-            34,
-            23
-          ],
-          "bytes": 596,
-          "sha256": "8346f064168979fe12204c8a3f688064810a00f4e77ed7bbad1b8ee7e41d55d1",
-          "sourceDiffBox": [
-            303,
-            332,
-            331,
-            343
-          ]
+          "bytes": 219690,
+          "sha256": "7856e7733ee673a24238263a123c22df2c5850879af3785fce00b50d36839a91",
+          "sourcePng": "sad_talk1.png",
+          "variables": {
+            "face_eyebrow": 30,
+            "face_mouth": 20,
+            "face_talk": 1
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 1,
+          "buildSeconds": 14.114
         },
         "talk2": {
           "file": "sad_talk2.webp",
-          "box": [
-            300,
-            327,
-            334,
-            350
-          ],
-          "size": [
-            34,
-            23
-          ],
-          "bytes": 680,
-          "sha256": "01b65a4407cbc7e84e177fd5847a95fb4e92602ce49d7d8de8be610da40bee69",
-          "sourceDiffBox": [
-            303,
-            331,
-            331,
-            346
-          ]
+          "bytes": 219802,
+          "sha256": "17a30c120349370186a006cde722f395aa13944b87cd03c74ea7fedacdcee048",
+          "sourcePng": "sad_talk2.png",
+          "variables": {
+            "face_eyebrow": 30,
+            "face_mouth": 20,
+            "face_talk": 3
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 1,
+          "buildSeconds": 13.282
         },
         "talk3": {
           "file": "sad_talk3.webp",
-          "box": [
-            300,
-            327,
-            334,
-            350
-          ],
-          "size": [
-            34,
-            23
-          ],
-          "bytes": 788,
-          "sha256": "5be1b8c520f360a9a86b81d29d719b2f3a6c065dcae155d36d38d694bee143eb",
-          "sourceDiffBox": [
-            303,
-            330,
-            331,
-            347
-          ]
+          "bytes": 219794,
+          "sha256": "dc3ab095bfd4ab060afc1ed1b7f343df93e298d456aa0d94e34e30a9b531fcf8",
+          "sourcePng": "sad_talk3.png",
+          "variables": {
+            "face_eyebrow": 30,
+            "face_mouth": 20,
+            "face_talk": 5
+          },
+          "drawCount": 65,
+          "nonNullBezierPatches": 0,
+          "buildSeconds": 14.661
         }
       }
     },
     "blush": {
-      "base": "blush_base.webp",
-      "baseBytes": 219662,
-      "baseSha256": "d0dcf4f243a0043c1bd49724e015c9c056a46761e131b447f05631b691ef1f6a",
-      "blinkBox": [
-        205,
-        222,
-        427,
-        272
-      ],
-      "talkBox": [
-        298,
-        325,
-        336,
-        352
-      ],
-      "blink": {
+      "variables": {
+        "face_cheek": 1
+      },
+      "files": {
+        "base": {
+          "file": "blush_base.webp",
+          "bytes": 219666,
+          "sha256": "a8b97297dbd8bbd2549f3873301d8d7aef34f68aec47ca9687c90205747bf471",
+          "sourcePng": "blush_base.png",
+          "variables": {
+            "face_cheek": 1
+          },
+          "drawCount": 66,
+          "nonNullBezierPatches": 0,
+          "buildSeconds": 13.088
+        },
         "blink1": {
           "file": "blush_blink1.webp",
-          "box": [
-            205,
-            222,
-            427,
-            272
-          ],
-          "size": [
-            222,
-            50
-          ],
-          "bytes": 12242,
-          "sha256": "f9d3dc62cf1fbdff6f6b4e64cb78415f79660dabd002f9d94f4b8f5adf7b5aab",
-          "sourceDiffBox": [
-            226,
-            225,
-            411,
-            265
-          ]
+          "bytes": 219688,
+          "sha256": "ff35f6e89033481e221700941d6a980cd346123d6f855d085d594bf87cd65b4a",
+          "sourcePng": "blush_blink1.png",
+          "variables": {
+            "face_cheek": 1,
+            "face_eye_open": 4
+          },
+          "drawCount": 66,
+          "nonNullBezierPatches": 2,
+          "buildSeconds": 13.414
         },
         "blink2": {
           "file": "blush_blink2.webp",
-          "box": [
-            205,
-            222,
-            427,
-            272
-          ],
-          "size": [
-            222,
-            50
-          ],
-          "bytes": 12858,
-          "sha256": "68ab7408269fbd50c7bd220b297bff24937f841049b589aa257133443aaca1e5",
-          "sourceDiffBox": [
-            208,
-            225,
-            424,
-            265
-          ]
+          "bytes": 219882,
+          "sha256": "d76f90e1be3c4f3c05d4128adec8ddf8551fd45590e5bb01a4272bc10f7d54f9",
+          "sourcePng": "blush_blink2.png",
+          "variables": {
+            "face_cheek": 1,
+            "face_eye_open": 5
+          },
+          "drawCount": 66,
+          "nonNullBezierPatches": 0,
+          "buildSeconds": 14.476
         },
         "blink3": {
           "file": "blush_blink3.webp",
-          "box": [
-            205,
-            222,
-            427,
-            272
-          ],
-          "size": [
-            222,
-            50
-          ],
-          "bytes": 12586,
-          "sha256": "1ecf05047cb6902ce023477fe2e7166aad7d2efe5a630ebaded2334e5eefca43",
-          "sourceDiffBox": [
-            222,
-            225,
-            411,
-            269
-          ]
+          "bytes": 219772,
+          "sha256": "6ebbe7af3fdb0977ba66b338645d9e22560e7c2dcaab32bf53de428d56250268",
+          "sourcePng": "blush_blink3.png",
+          "variables": {
+            "face_cheek": 1,
+            "face_eye_open": 9
+          },
+          "drawCount": 66,
+          "nonNullBezierPatches": 2,
+          "buildSeconds": 13.224
         },
         "blink4": {
           "file": "blush_blink4.webp",
-          "box": [
-            205,
-            222,
-            427,
-            272
-          ],
-          "size": [
-            222,
-            50
-          ],
-          "bytes": 12330,
-          "sha256": "657839940ca2125eade423d9c259b9466c04d45f0814eb568624e99b1a11b8bb",
-          "sourceDiffBox": [
-            227,
-            225,
-            411,
-            265
-          ]
-        }
-      },
-      "talk": {
+          "bytes": 219638,
+          "sha256": "e350f60d574ee9d768e75bdc8f688ba1b42d70ba976b460916786b5ae2e340d3",
+          "sourcePng": "blush_blink4.png",
+          "variables": {
+            "face_cheek": 1,
+            "face_eye_open": 10
+          },
+          "drawCount": 64,
+          "nonNullBezierPatches": 0,
+          "buildSeconds": 13.616
+        },
         "talk1": {
           "file": "blush_talk1.webp",
-          "box": [
-            298,
-            325,
-            336,
-            352
-          ],
-          "size": [
-            38,
-            27
-          ],
-          "bytes": 558,
-          "sha256": "c37d9c86e815ca0e0443527cfbf10fa13f494ab63cd83bfcbf329e424392e6c0",
-          "sourceDiffBox": [
-            301,
-            331,
-            333,
-            340
-          ]
+          "bytes": 219704,
+          "sha256": "4ba93a72019e8aa46176e08ef91487175f0e3091f0d986913d6f641accc9a809",
+          "sourcePng": "blush_talk1.png",
+          "variables": {
+            "face_cheek": 1,
+            "face_talk": 1
+          },
+          "drawCount": 66,
+          "nonNullBezierPatches": 1,
+          "buildSeconds": 13.002
         },
         "talk2": {
           "file": "blush_talk2.webp",
-          "box": [
-            298,
-            325,
-            336,
-            352
-          ],
-          "size": [
-            38,
-            27
-          ],
-          "bytes": 780,
-          "sha256": "11079644e4c4d5c991087874d1680bfe9b8c6f1adf7c95edca7ff81df77aecab",
-          "sourceDiffBox": [
-            302,
-            329,
-            333,
-            344
-          ]
+          "bytes": 219820,
+          "sha256": "c79dece7f2a8b7b5b96d4f864677dfa6202cd5b043629799a6146c3e41c76afa",
+          "sourcePng": "blush_talk2.png",
+          "variables": {
+            "face_cheek": 1,
+            "face_talk": 3
+          },
+          "drawCount": 66,
+          "nonNullBezierPatches": 1,
+          "buildSeconds": 13.012
         },
         "talk3": {
           "file": "blush_talk3.webp",
-          "box": [
-            298,
-            325,
-            336,
-            352
-          ],
-          "size": [
-            38,
-            27
-          ],
-          "bytes": 910,
-          "sha256": "9b7c9e2534d083ec112038fd783be9faae2bc60f9aeb60123eaf9cb5d47e159d",
-          "sourceDiffBox": [
-            303,
-            328,
-            332,
-            349
-          ]
+          "bytes": 219858,
+          "sha256": "ed555dc9155507e308bb1804cfdf55441703f174549ff5d28424fc897b339be3",
+          "sourcePng": "blush_talk3.png",
+          "variables": {
+            "face_cheek": 1,
+            "face_talk": 5
+          },
+          "drawCount": 66,
+          "nonNullBezierPatches": 0,
+          "buildSeconds": 13.28
         }
       }
     }
   },
-  "errors": [],
-  "totalBytes": 1356224,
-  "fileCount": 40
+  "totalPng": 40,
+  "totalBytes": 8790878,
+  "totalRenderSeconds": 592.12,
+  "rbSwap": "R<->B applied (matches 16dff4f convention)"
 }
