@@ -1,68 +1,68 @@
 {
   "errors": [],
   "states": 35,
-  "minPsnr": 42.282437354157324,
-  "maxPsnr": 42.358984747256386,
+  "minPsnr": 43.27985206427071,
+  "maxPsnr": 43.514409577322084,
   "rows": [
     {
       "state": "normal_blink1",
       "alphaRange": [
-        255,
+        249,
         255
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.30743839963128
+      "rgbPsnr": 43.489742864902
     },
     {
       "state": "normal_blink2",
       "alphaRange": [
-        255,
+        249,
         255
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.316077557199876
+      "rgbPsnr": 43.51416246685286
     },
     {
       "state": "normal_blink3",
       "alphaRange": [
-        255,
+        249,
         255
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.316077557199876
+      "rgbPsnr": 43.51416246685286
     },
     {
       "state": "normal_blink4",
       "alphaRange": [
-        255,
+        249,
         255
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.31596043490182
+      "rgbPsnr": 43.514409577322084
     },
     {
       "state": "normal_talk1",
@@ -72,12 +72,12 @@
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.30806361512505
+      "rgbPsnr": 43.44625201715037
     },
     {
       "state": "normal_talk2",
@@ -87,12 +87,12 @@
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.30812502507255
+      "rgbPsnr": 43.44633182736639
     },
     {
       "state": "normal_talk3",
@@ -102,72 +102,72 @@
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.30824357828308
+      "rgbPsnr": 43.44648505002017
     },
     {
       "state": "smile_blink1",
       "alphaRange": [
-        255,
+        249,
         255
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.296558836462154
+      "rgbPsnr": 43.28358035873664
     },
     {
       "state": "smile_blink2",
       "alphaRange": [
-        255,
+        249,
         255
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.30500078759257
+      "rgbPsnr": 43.30715452820803
     },
     {
       "state": "smile_blink3",
       "alphaRange": [
-        255,
+        249,
         255
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.30500078759257
+      "rgbPsnr": 43.30715452820803
     },
     {
       "state": "smile_blink4",
       "alphaRange": [
-        255,
+        249,
         255
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.30489183930648
+      "rgbPsnr": 43.3074112173953
     },
     {
       "state": "smile_talk1",
@@ -177,12 +177,12 @@
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.3587508381521
+      "rgbPsnr": 43.280895072522085
     },
     {
       "state": "smile_talk2",
@@ -192,12 +192,12 @@
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.357905348526884
+      "rgbPsnr": 43.27985206427071
     },
     {
       "state": "smile_talk3",
@@ -207,72 +207,72 @@
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.358984747256386
+      "rgbPsnr": 43.281170346881794
     },
     {
       "state": "angry_blink1",
       "alphaRange": [
-        255,
+        249,
         255
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.30921609948446
+      "rgbPsnr": 43.481573319902935
     },
     {
       "state": "angry_blink2",
       "alphaRange": [
-        255,
+        249,
         255
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.31756192828804
+      "rgbPsnr": 43.50539005671298
     },
     {
       "state": "angry_blink3",
       "alphaRange": [
-        255,
+        249,
         255
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.31756192828804
+      "rgbPsnr": 43.50539005671298
     },
     {
       "state": "angry_blink4",
       "alphaRange": [
-        255,
+        249,
         255
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.31745628458141
+      "rgbPsnr": 43.50566695515492
     },
     {
       "state": "angry_talk1",
@@ -282,12 +282,12 @@
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.31456080467824
+      "rgbPsnr": 43.44457250171111
     },
     {
       "state": "angry_talk2",
@@ -297,12 +297,12 @@
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.31466604908115
+      "rgbPsnr": 43.44471371643857
     },
     {
       "state": "angry_talk3",
@@ -312,72 +312,72 @@
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.31471373879089
+      "rgbPsnr": 43.44477643260873
     },
     {
       "state": "sad_blink1",
       "alphaRange": [
-        255,
+        249,
         255
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.282437354157324
+      "rgbPsnr": 43.486854700031294
     },
     {
       "state": "sad_blink2",
       "alphaRange": [
-        255,
+        249,
         255
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.2908443503641
+      "rgbPsnr": 43.511382359399036
     },
     {
       "state": "sad_blink3",
       "alphaRange": [
-        255,
+        249,
         255
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.2908443503641
+      "rgbPsnr": 43.511382359399036
     },
     {
       "state": "sad_blink4",
       "alphaRange": [
-        255,
+        249,
         255
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.29075603597462
+      "rgbPsnr": 43.51164924182683
     },
     {
       "state": "sad_talk1",
@@ -387,12 +387,12 @@
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.28598776349475
+      "rgbPsnr": 43.444647161493435
     },
     {
       "state": "sad_talk2",
@@ -402,12 +402,12 @@
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.28611649626714
+      "rgbPsnr": 43.44481696394878
     },
     {
       "state": "sad_talk3",
@@ -417,72 +417,72 @@
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.28619622101415
+      "rgbPsnr": 43.44491936059805
     },
     {
       "state": "blush_blink1",
       "alphaRange": [
-        255,
+        249,
         255
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.30252748166439
+      "rgbPsnr": 43.48949413651659
     },
     {
       "state": "blush_blink2",
       "alphaRange": [
-        255,
+        249,
         255
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.3109028447365
+      "rgbPsnr": 43.514035448872306
     },
     {
       "state": "blush_blink3",
       "alphaRange": [
-        255,
+        249,
         255
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.3109028447365
+      "rgbPsnr": 43.514035448872306
     },
     {
       "state": "blush_blink4",
       "alphaRange": [
-        255,
+        249,
         255
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.31080163468916
+      "rgbPsnr": 43.514328506197344
     },
     {
       "state": "blush_talk1",
@@ -492,12 +492,12 @@
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.30304341662195
+      "rgbPsnr": 43.450317374311005
     },
     {
       "state": "blush_talk2",
@@ -507,12 +507,12 @@
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.30310475562354
+      "rgbPsnr": 43.45039725927168
     },
     {
       "state": "blush_talk3",
@@ -522,12 +522,12 @@
       ],
       "diffBox": [
         32,
-        0,
+        55,
         648,
         1584
       ],
       "alphaDiffBox": null,
-      "rgbPsnr": 42.30322317186864
+      "rgbPsnr": 43.45055062542692
     }
   ]
 }
