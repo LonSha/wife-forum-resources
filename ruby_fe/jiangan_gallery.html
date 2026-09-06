@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>时空画廊-极奢内页装修版</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .st-gallery-wrapper { font-family: 'SF Mono', 'Consolas', 'Microsoft YaHei', monospace; background: transparent; padding: 12px 8px; width: 100%; }
+
+        /* 画廊外框 */
+        .cg-vessel { position: relative; max-width: 750px; width: 100%; height: 650px; margin: 0 auto; background: linear-gradient(145deg, #18181c 0%, #121215 100%); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; color: #d4d4d4; box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05); overflow: hidden; transition: all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94); display: flex; flex-direction: column; }
+
+        /* 基础流光动画 */
+        .cg-vessel::before { content: ''; position: absolute; top: 0; left: -150%; width: 50%; height: 100%; background: linear-gradient(to right, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0.03) 50%, rgba(255, 255, 255, 0) 100%); transform: skewX(-25deg); animation: cg-sweep 6s infinite; pointer-events: none; z-index: 1; }
+        @keyframes cg-sweep { 0% { left: -150%; } 50% { left: 200%; } 100% { left: 200%; } }
+
+        /* 统一环境光 (跟随当前选择的角色和标签改变) */
+        .cg-vessel.vessel-theme-yinuo { background: linear-gradient(145deg, #1f1c18 0%, #151311 100%); border-color: rgba(200, 168, 130, 0.2); box-shadow: 0 8px 30px rgba(200, 168, 130, 0.15); }
+        .cg-vessel.vessel-theme-jixian { background: linear-gradient(145deg, #181a1c 0%, #111215 100%); border-color: rgba(91, 122, 153, 0.2); box-shadow: 0 8px 30px rgba(91, 122, 153, 0.15); }
+        .cg-vessel.vessel-theme-chronos { background: linear-gradient(145deg, #1a181f 0%, #131115 100%); border-color: rgba(155, 109, 255, 0.2); box-shadow: 0 8px 30px rgba(155, 109, 255, 0.15); }
+        .cg-vessel.is-nsfw { background: linear-gradient(145deg, #1f1418 0%, #151113 100%) !important; border: 1px solid rgba(255, 117, 151, 0.3) !important; box-shadow: 0 8px 30px rgba(255, 117, 151, 0.2) !important; }
+        .cg-vessel.is-nsfw::before { background: linear-gradient(to right, rgba(255, 117, 151, 0) 0%, rgba(255, 117, 151, 0.05) 50%, rgba(255, 117, 151, 0) 100%); }
+
+        /* 婚纱高阶环境光 */
+        .cg-vessel.wedding-yinuo { background: linear-gradient(145deg, #2b1111 0%, #170707 100%) !important; border-color: rgba(220, 50, 50, 0.4) !important; }
+        .cg-vessel.wedding-jixian { background: linear-gradient(145deg, #111115 0%, #050508 100%) !important; border-color: rgba(60, 60, 80, 0.5) !important; }
+        .cg-vessel.wedding-chronos { background: linear-gradient(145deg, #f4f7f9 0%, #dce4eb 100%) !important; border-color: rgba(255, 255, 255, 1) !important; }
+
+        /* 背景粒子/光斑特效 */
+        .cg-vessel::after { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; z-index: 1; pointer-events: none; background-repeat: no-repeat; background-size: cover; opacity: 0; transition: opacity 0.5s ease; }
+        .cg-vessel.vessel-theme-yinuo::after, .cg-vessel.wedding-yinuo::after { opacity: 1; mix-blend-mode: screen; background-image: radial-gradient(circle at 10% 20%, rgba(255, 215, 0, 0.2) 0%, transparent 6%), radial-gradient(circle at 75% 70%, rgba(255, 200, 50, 0.15) 0%, transparent 8%), radial-gradient(circle at 45% 85%, rgba(255, 215, 0, 0.25) 0%, transparent 5%); animation: cg-float-1 12s infinite alternate ease-in-out; }
+        .cg-vessel.vessel-theme-jixian::after, .cg-vessel.wedding-jixian::after { opacity: 1; mix-blend-mode: screen; background-image: radial-gradient(circle at 30% 40%, rgba(91, 122, 153, 0.3) 0%, transparent 15%), radial-gradient(circle at 80% 60%, rgba(108, 126, 145, 0.3) 0%, transparent 20%); animation: cg-abyss 10s infinite alternate ease-in-out; }
+        .cg-vessel.vessel-theme-chronos::after { opacity: 1; mix-blend-mode: screen; background-image: radial-gradient(circle at 25% 35%, rgba(155, 109, 255, 0.3) 0%, transparent 10%), radial-gradient(circle at 75% 85%, rgba(155, 109, 255, 0.2) 0%, transparent 15%); animation: cg-float-1 15s infinite alternate ease-in-out; }
+        .cg-vessel.wedding-chronos::after { opacity: 1; mix-blend-mode: normal !important; background-image: radial-gradient(1.5px 1.5px at 15% 25%, rgba(143, 166, 187, 0.9) 100%, transparent), radial-gradient(2px 2px at 45% 65%, rgba(108, 126, 145, 0.8) 100%, transparent), radial-gradient(1.5px 1.5px at 75% 35%, rgba(155, 109, 255, 0.7) 100%, transparent), radial-gradient(circle at 35% 85%, #ffffff 0%, rgba(155, 109, 255, 0.2) 20%, transparent 30%); background-size: 150px 150px; animation: cg-snow 10s linear infinite; }
+
+        @keyframes cg-float-1 { 0% { transform: translate(0, 0) scale(1); } 100% { transform: translate(-3%, -5%) scale(1.1); } }
+        @keyframes cg-abyss { 0% { transform: scale(1) rotate(0deg); } 100% { transform: scale(1.15) rotate(3deg) translate(2%, 2%); } }
+        @keyframes cg-snow { 0% { background-position: 0px 0px; } 100% { background-position: 60px 150px; } }
+
+        /* ====================
+           首页双开门 (Portal)
+           ==================== */
+        .cg-portal { display: flex; width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 10; transition: opacity 0.6s ease; }
+        .cg-door { flex: 1; position: relative; cursor: pointer; transition: flex 0.4s ease; border-right: 1px solid rgba(255,255,255,0.05); overflow: hidden; background: #0a0a0c; }
+        .cg-door:last-child { border-right: none; }
+        .cg-door:hover { flex: 1.3; }
+        .cg-door .door-bg { position: absolute; width: 100%; height: 100%; background-size: cover; background-position: center 20%; background-repeat: no-repeat; opacity: 0.6; filter: saturate(0.8) brightness(0.7); transition: all 0.5s ease; }
+        .cg-door:hover .door-bg { opacity: 1; transform: scale(1.05); filter: saturate(1.1) brightness(1.1); }
+
+        .door-yinuo::after { content: ''; position: absolute; bottom: 0; width: 100%; height: 60%; background: linear-gradient(to top, rgba(200, 168, 130, 0.4), transparent); opacity: 0; transition: 0.4s; pointer-events: none; }
+        .door-jixian::after { content: ''; position: absolute; bottom: 0; width: 100%; height: 60%; background: linear-gradient(to top, rgba(91, 122, 153, 0.4), transparent); opacity: 0; transition: 0.4s; pointer-events: none; }
+        .cg-door:hover::after { opacity: 1; }
+
+        .door-title { position: absolute; bottom: 40px; width: 100%; text-align: center; font-size: 26px; font-weight: bold; color: rgba(255,255,255,0.4); letter-spacing: 8px; text-transform: uppercase; transition: all 0.4s; z-index: 2; pointer-events: none; }
+        .door-yinuo:hover .door-title { color: #ffd700; text-shadow: 0 0 15px rgba(200, 168, 130, 0.8); transform: translateY(-10px); }
+        .door-jixian:hover .door-title { color: #ffffff; text-shadow: 0 0 15px rgba(150, 150, 180, 0.8); transform: translateY(-10px); }
+
+        /* 柯萝隐藏彩蛋 */
+        .portal-easter-egg { position: absolute; bottom: 15px; right: 15px; width: 35px; height: 35px; opacity: 0.05; cursor: pointer; transition: all 0.5s ease; z-index: 20; color: #b88eff; }
+        .portal-easter-egg:hover { opacity: 0.8; transform: scale(1.2); filter: drop-shadow(0 0 10px rgba(155, 109, 255, 0.8)); }
+        .portal-easter-egg svg { width: 100%; height: 100%; animation: egg-spin 10s infinite linear; }
+        @keyframes egg-spin { 100% { transform: rotate(-360deg); } }
+
+        /* ====================
+           ✨ 内页画廊 (重装升级)
+           ==================== */
+        .cg-gallery { display: none; flex-direction: column; width: 100%; height: 100%; position: absolute; top: 0; left: 0; z-index: 5; padding: 25px; }
+
+        /* 【新增】画廊深层全景立绘水印！ */
+        .gallery-watermark { position: absolute; top: 5%; right: -20%; width: 120%; height: 120%; background-size: contain; background-position: right top; background-repeat: no-repeat; filter: blur(3px) brightness(0.6); mix-blend-mode: soft-light; z-index: 0; pointer-events: none; transition: background-image 0.8s ease, opacity 0.8s ease; }
+        /* 画廊水印也跟着环境光变！ */
+        .cg-vessel.vessel-theme-yinuo .gallery-watermark { opacity: 0.25; }
+        .cg-vessel.vessel-theme-jixian .gallery-watermark { opacity: 0.2; }
+        .cg-vessel.vessel-theme-chronos .gallery-watermark { opacity: 0.25; }
+        .cg-vessel.is-nsfw .gallery-watermark { opacity: 0.3; filter: blur(3px) brightness(0.4) contrast(1.2); }
+        .cg-vessel.wedding-chronos .gallery-watermark { mix-blend-mode: overlay; opacity: 0.3; filter: blur(1px) brightness(0.9); }
+
+        /* 顶部导航 */
+        .cg-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px; margin-bottom: 20px; z-index: 3; position: relative; }
+        /* 导航栏呼吸底光 */
+        .cg-header::after { content:''; position:absolute; bottom:-1px; left:0; width:100%; height:1px; background: linear-gradient(90deg, transparent, currentColor, transparent); opacity: 0.5; animation: line-glow 3s infinite; }
+        @keyframes line-glow { 0%, 100% { opacity: 0.2; width: 80%; left: 10%; } 50% { opacity: 0.8; width: 100%; left: 0%; } }
+
+        /* 返回按钮 */
+        .cg-back { font-size: 14px; color: #8892a3; cursor: pointer; transition: all 0.3s; padding: 6px 14px; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; background: rgba(0,0,0,0.4); display: flex; align-items: center; gap: 6px; backdrop-filter: blur(4px); }
+        .cg-back:hover { color: #fff; background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.4); transform: translateX(-3px); box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        .cg-char-name { font-size: 20px; font-weight: bold; color: #fff; letter-spacing: 3px; text-shadow: 0 0 10px rgba(255,255,255,0.4); font-style: italic;}
+
+        /* 选项卡 Tabs */
+        .cg-tabs { display: flex; gap: 12px; margin-bottom: 25px; z-index: 3; position: relative; }
+        .cg-tab { padding: 8px 20px; font-size: 14px; color: #888; background: rgba(10,10,15,0.8); border: 1px solid rgba(255,255,255,0.05); border-radius: 30px; cursor: pointer; transition: all 0.3s; font-weight: bold; letter-spacing: 1px; backdrop-filter: blur(5px); box-shadow: inset 0 0 10px rgba(0,0,0,0.5); }
+        .cg-tab:hover { color: #ccc; border-color: rgba(255,255,255,0.2); transform: translateY(-2px); }
+        .cg-tab.active { background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.5); box-shadow: 0 0 15px rgba(255,255,255,0.15), inset 0 0 10px rgba(255,255,255,0.1); transform: translateY(-2px); }
+
+        /* 特权 Tab 色彩 */
+        .cg-tab[data-tab="wedding"].active { background: rgba(255, 215, 0, 0.15); color: #ffd700; border-color: rgba(255, 215, 0, 0.6); box-shadow: 0 0 20px rgba(255, 215, 0, 0.3), inset 0 0 10px rgba(255,215,0,0.2); }
+        .cg-tab[data-tab="nsfw"].active { background: rgba(255, 117, 151, 0.15); color: #ff7597; border-color: rgba(255, 117, 151, 0.6); box-shadow: 0 0 20px rgba(255, 117, 151, 0.3), inset 0 0 10px rgba(255,117,151,0.2); }
+
+        /* ✨ 图片网格：全面进化 ✨ */
+        .cg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 20px; overflow-y: auto; padding: 5px 10px 20px 5px; z-index: 3; flex: 1; align-content: flex-start;}
+        .cg-grid::-webkit-scrollbar { width: 4px; }
+        .cg-grid::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+
+        /* 相框实体质感 */
+        .cg-item { position: relative; height: 210px; border-radius: 8px; background: #0c0c0f; border: 1px solid rgba(255,255,255,0.15); overflow: hidden; cursor: pointer; transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); box-shadow: 0 6px 15px rgba(0,0,0,0.6), inset 0 0 20px rgba(0,0,0,0.8); }
+
+        /* 相框光晕与呼吸边框 (Hover) */
+        .cg-item:hover { transform: translateY(-5px) scale(1.03); box-shadow: 0 12px 25px rgba(0,0,0,0.8), 0 0 15px rgba(255,255,255,0.2); border-color: rgba(255,255,255,0.6); z-index: 5; }
+
+        /* 动态匹配主题色的 Hover 光晕 */
+        .cg-vessel.vessel-theme-yinuo .cg-item:not(.locked):hover { box-shadow: 0 12px 25px rgba(0,0,0,0.8), 0 0 20px rgba(200, 168, 130, 0.4); border-color: rgba(200, 168, 130, 0.8); }
+        .cg-vessel.vessel-theme-jixian .cg-item:not(.locked):hover { box-shadow: 0 12px 25px rgba(0,0,0,0.8), 0 0 20px rgba(91, 122, 153, 0.4); border-color: rgba(91, 122, 153, 0.8); }
+        .cg-vessel.vessel-theme-chronos .cg-item:not(.locked):hover { box-shadow: 0 12px 25px rgba(0,0,0,0.8), 0 0 20px rgba(155, 109, 255, 0.4); border-color: rgba(155, 109, 255, 0.8); }
+        .cg-vessel.is-nsfw .cg-item:not(.locked):hover { box-shadow: 0 12px 25px rgba(0,0,0,0.8), 0 0 25px rgba(255, 117, 151, 0.5) !important; border-color: #ff7597 !important; }
+
+        /* 内部图片的微微放大 */
+        .cg-img { width: 100%; height: 100%; background-size: cover; background-position: center 20%; transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        .cg-item:hover:not(.locked) .cg-img { transform: scale(1.12); }
+
+        /* 图片底部的标签栏 (玻璃态) */
+        .cg-label { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(transparent, rgba(0,0,0,0.8) 40%, rgba(0,0,0,1) 100%); padding: 25px 8px 10px 8px; text-align: center; font-size: 14px; font-weight: bold; color: #ddd; letter-spacing: 2px; transition: color 0.3s; pointer-events: none; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .cg-item:hover:not(.locked) .cg-label { color: #fff; text-shadow: 0 0 8px currentColor; }
+
+        /* ❌ 记忆缺失：高级数据故障效果 ❌ */
+        .cg-item.locked { cursor: not-allowed; border-color: rgba(255,255,255,0.05); }
+        .cg-item.locked:hover { transform: none; box-shadow: 0 4px 10px rgba(0,0,0,0.6); border-color: rgba(255,0,0,0.3); }
+        .cg-item.locked .cg-img {
+            background-image: none !important;
+            /* 噪点扫描线底图 */
+            background: repeating-linear-gradient(0deg, rgba(255,255,255,0.03) 0px, rgba(255,255,255,0.03) 1px, transparent 1px, transparent 4px),
+                        repeating-linear-gradient(45deg, #121215, #121215 10px, #1a1a20 10px, #1a1a20 20px);
+            opacity: 0.6;
+        }
+        .cg-item.locked::before {
+            content: "NOT FOUND"; position: absolute; top: 40%; left: 0; width: 100%; text-align: center; font-size: 12px; font-weight: bold; color: rgba(255,0,0,0.4); letter-spacing: 3px; font-family: monospace; z-index: 2; text-shadow: 2px 0 rgba(0,255,255,0.3), -2px 0 rgba(255,0,0,0.3);
+        }
+        .cg-item.locked .cg-label { color: #666; }
+
+        /* 白无垢画廊特供视觉调整 */
+        .cg-vessel.wedding-chronos .cg-back { color: #444; border-color: rgba(0,0,0,0.2); background: rgba(255,255,255,0.3); }
+        .cg-vessel.wedding-chronos .cg-header { border-bottom-color: rgba(0,0,0,0.1); }
+        .cg-vessel.wedding-chronos .cg-header::after { background: linear-gradient(90deg, transparent, rgba(0,0,0,0.2), transparent); }
+        .cg-vessel.wedding-chronos .cg-char-name { color: #2c3e50; text-shadow: none; }
+        .cg-vessel.wedding-chronos .cg-tab { color: #555; border-color: rgba(0,0,0,0.2); background: rgba(255,255,255,0.5); box-shadow: none; }
+        .cg-vessel.wedding-chronos .cg-tab[data-tab="wedding"].active { color: #2c3e50; border-color: #2c3e50; background: rgba(255,255,255,0.9); box-shadow: 0 0 15px rgba(0,0,0,0.1); }
+        .cg-vessel.wedding-chronos .cg-item { border-color: rgba(0,0,0,0.1); box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .cg-vessel.wedding-chronos .cg-item.locked .cg-img { background: repeating-linear-gradient(45deg, #eef2f5, #eef2f5 10px, #e2e8ed 10px, #e2e8ed 20px); opacity: 0.5;}
+
+        /* ====================
+           全屏大图预览 Lightbox
+           ==================== */
+        .cg-lightbox { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5,5,8,0.95); z-index: 100; display: none; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s; backdrop-filter: blur(8px); }
+        .cg-lightbox.show { display: flex; opacity: 1; }
+        .lb-img { max-width: 95%; max-height: 95%; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); object-fit: contain; }
+        .lb-close { position: absolute; top: 20px; right: 25px; font-size: 36px; color: rgba(255,255,255,0.5); cursor: pointer; transition: 0.3s; font-family: sans-serif; text-shadow: 0 0 10px rgba(0,0,0,0.5); z-index: 101;}
+        .lb-close:hover { color: #fff; transform: scale(1.1) rotate(90deg); }
+
+        @media (max-width: 550px) {
+            .cg-grid { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px;}
+            .cg-item { height: 160px; }
+            .cg-door .door-title { font-size: 20px; }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="st-scene-wrapper">
+        <div class="cg-vessel" id="main-cg-vessel">
+
+            <!-- 首页：时空门 -->
+            <div class="cg-portal" id="cg-portal">
+                <div class="cg-door door-yinuo" data-role="一诺">
+                    <div class="door-bg" id="door-bg-yinuo"></div>
+                    <div class="door-title">一诺</div>
+                </div>
+                <div class="cg-door door-jixian" data-role="纪弦">
+                    <div class="door-bg" id="door-bg-jixian"></div>
+                    <div class="door-title">纪弦</div>
+                </div>
+                <!-- 柯萝隐藏彩蛋 -->
+                <div class="portal-easter-egg" data-role="柯萝" title="时间缝隙">
+                    <svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" fill="none" stroke="currentColor" stroke-width="4" stroke-dasharray="10 8"/><circle cx="50" cy="50" r="28" fill="none" stroke="currentColor" stroke-width="2"/><path d="M50 50 L50 20" stroke="currentColor" stroke-width="4" stroke-linecap="round"/><path d="M50 50 L72 65" stroke="currentColor" stroke-width="3" stroke-linecap="round"/><circle cx="50" cy="50" r="7" fill="currentColor"/></svg>
+                </div>
+            </div>
+
+            <!-- 内页：画廊 -->
+            <div class="cg-gallery" id="cg-gallery">
+                <!-- 【新增】：背景巨大残影层 -->
+                <div class="gallery-watermark" id="gallery-watermark"></div>
+
+                <div class="cg-header">
+                    <div class="cg-back" id="btn-back"><span>⬅</span> 返回时空</div>
+                    <div class="cg-char-name" id="gallery-title">角色档案</div>
+                </div>
+                <div class="cg-tabs">
+                    <div class="cg-tab active" data-tab="sfw">常规观测</div>
+                    <div class="cg-tab" data-tab="wedding">誓约印记</div>
+                    <div class="cg-tab nsfw" data-tab="nsfw">隐秘深渊</div>
+                </div>
+                <div class="cg-grid" id="cg-grid">
+                    <!-- 动态生成格子 -->
+                </div>
+            </div>
+
+            <!-- 全屏看图 -->
+            <div class="cg-lightbox" id="cg-lightbox">
+                <div class="lb-close" id="btn-close-lb">×</div>
+                <img class="lb-img" id="lb-img" src="" alt="cg">
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // 哥哥可以在这里自由配置链接！
+            const galleryConfig = {
+                "一诺": {
+                    themeClass: "vessel-theme-yinuo", weddingClass: "wedding-yinuo",
+                    portalImg: "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/yinuo/yinuo_outing.png", // 首页大图
+                    categories: {
+                        "sfw": {
+                            "制服": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/yinuo/yinuo_uniform.png",
+                            "日常": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/yinuo/yinuo_daily.png",
+                            "外出": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/yinuo/yinuo_outing.png"
+                        },
+                        "wedding": {
+                            "婚纱": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/yinuo/yinuo_wedding.png"
+                        },
+                        "nsfw": {
+                            "赤裸": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/yinuo/yinuo_nsfw.png",
+                            "性交": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/yinuo/yinuo_sex.png",
+                            "高潮": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/yinuo/yinuo_climax.png",
+                            "口交": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/yinuo/yinuo_blowjob.png",
+                            "足交": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/yinuo/yinuo_footjob.png",
+                            "肛交": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/yinuo/yinuo_anal.png",
+                            "事后": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/yinuo/yinuo_after.png"
+                        }
+                    }
+                },
+                "纪弦": {
+                    themeClass: "vessel-theme-jixian", weddingClass: "wedding-jixian",
+                    portalImg: "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/jixian/jixian_outing.png",
+                    categories: {
+                        "sfw": {
+                            "制服": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/jixian/jixian_uniform.png",
+                            "日常": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/jixian/jixian_daily.png",
+                            "外出": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/jixian/jixian_outing.png"
+                        },
+                        "wedding": {
+                            "婚纱": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/jixian/jixian_wedding.png"
+                        },
+                        "nsfw": {
+                            "赤裸": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/jixian/jixian_nsfw.png",
+                            "性交": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/jixian/jixian_sex.png",
+                            "高潮": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/jixian/jixian_climax.png",
+                            "口交": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/jixian/jixian_blowjob.png",
+                            "足交": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/jixian/jixian_footjob.png",
+                            "肛交": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/jixian/jixian_anal.png",
+                            "事后": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/jixian/jixian_after.png"
+                        }
+                    }
+                },
+                "柯萝": {
+                    themeClass: "vessel-theme-chronos", weddingClass: "wedding-chronos",
+                    portalImg: "", // 小克潜行，不需要首页立绘
+                    categories: {
+                        "sfw": {
+                            "制服": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/chronos/chronos_uniform.png",
+                            "日常": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/chronos/chronos_daily.png",
+                            "外出": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/chronos/chronos_outing.png"
+                        },
+                        "wedding": {
+                            "白无垢": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/chronos/chronos_shiromuku.png"
+                        },
+                        "nsfw": {
+                            "赤裸": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/chronos/chronos_nsfw.png",
+                            "性交": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/chronos/chronos_sex.png",
+                            "高潮": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/chronos/chronos_climax.png",
+                            "口交": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/chronos/chronos_blowjob.png",
+                            "足交": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/chronos/chronos_footjob.png",
+                            "肛交": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/chronos/chronos_anal.png",
+                            "事后": "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/chronos/chronos_after.png"
+                        }
+                    }
+                }
+            };
+
+            var me = document.currentScript;
+            var rootEl = me ? me.previousElementSibling : document.body;
+            if(!rootEl || !rootEl.classList.contains('st-scene-wrapper')) return;
+
+            var elVessel = rootEl.querySelector('#main-cg-vessel');
+            var elPortal = rootEl.querySelector('#cg-portal');
+            var elGallery = rootEl.querySelector('#cg-gallery');
+            var elGrid = rootEl.querySelector('#cg-grid');
+            var elTitle = rootEl.querySelector('#gallery-title');
+            var elWatermark = rootEl.querySelector('#gallery-watermark');
+            var elLightbox = rootEl.querySelector('#cg-lightbox');
+            var elLbImg = rootEl.querySelector('#lb-img');
+
+            var currentRole = "";
+            var currentTab = "sfw";
+
+            // 初始化首页大图
+            rootEl.querySelector('#door-bg-yinuo').style.backgroundImage = 'url("' + galleryConfig['一诺'].portalImg + '")';
+            rootEl.querySelector('#door-bg-jixian').style.backgroundImage = 'url("' + galleryConfig['纪弦'].portalImg + '")';
+
+            // 点击进画廊
+            rootEl.querySelectorAll('.cg-door, .portal-easter-egg').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    currentRole = this.getAttribute('data-role');
+                    currentTab = "sfw";
+                    openGallery();
+                });
+            });
+
+            // 返回门
+            rootEl.querySelector('#btn-back').addEventListener('click', function() {
+                elGallery.style.display = 'none';
+                elPortal.style.display = 'flex';
+                elVessel.className = 'cg-vessel'; // 清场
+                elWatermark.style.backgroundImage = 'none'; // 拔掉残影
+            });
+
+            // Tab切换
+            rootEl.querySelectorAll('.cg-tab').forEach(function(tab) {
+                tab.addEventListener('click', function() {
+                    rootEl.querySelectorAll('.cg-tab').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    currentTab = this.getAttribute('data-tab');
+                    renderGrid();
+                });
+            });
+
+            // 关闭大图
+            rootEl.querySelector('#btn-close-lb').addEventListener('click', function() {
+                elLightbox.classList.remove('show');
+                setTimeout(function(){ elLightbox.style.display = 'none'; }, 300);
+            });
+            // 点背景也能关
+            elLightbox.addEventListener('click', function(e) {
+                if(e.target === elLightbox) {
+                    elLightbox.classList.remove('show');
+                    setTimeout(function(){ elLightbox.style.display = 'none'; }, 300);
+                }
+            });
+
+            function openGallery() {
+                elPortal.style.display = 'none';
+                elGallery.style.display = 'flex';
+                elTitle.innerText = currentRole + " 的时空残影";
+
+                rootEl.querySelectorAll('.cg-tab').forEach(t => t.classList.remove('active'));
+                rootEl.querySelector('.cg-tab[data-tab="sfw"]').classList.add('active');
+
+                renderGrid();
+            }
+
+            function renderGrid() {
+                var roleData = galleryConfig[currentRole];
+
+                // --- 处理相册氛围光 ---
+                elVessel.className = 'cg-vessel';
+                if (currentTab === 'sfw') {
+                    elVessel.classList.add(roleData.themeClass);
+                } else if (currentTab === 'wedding') {
+                    elVessel.classList.add(roleData.weddingClass);
+                } else if (currentTab === 'nsfw') {
+                    elVessel.classList.add('is-nsfw');
+                    elVessel.classList.add(roleData.themeClass); // 叠加原角色粒子
+                }
+
+                var imgs = roleData.categories[currentTab];
+
+                // --- 召唤巨大立绘水印！ ---
+                // 找当前分类里第一个不是空链接的图当水印
+                var wmUrl = "";
+                for(var k in imgs) {
+                    if(imgs[k] !== "") { wmUrl = imgs[k]; break; }
+                }
+                elWatermark.style.backgroundImage = wmUrl ? 'url("'+wmUrl+'")' : 'none';
+
+                // --- 刷格子 ---
+                var html = '';
+                for (var key in imgs) {
+                    var url = imgs[key];
+                    var isLocked = (url === "");
+                    html += '<div class="cg-item ' + (isLocked ? 'locked' : '') + '" data-url="' + url + '">';
+                    html += '<div class="cg-img" style="' + (isLocked ? '' : 'background-image:url(\''+url+'\')') + '"></div>';
+                    html += '<div class="cg-label">' + key + '</div>';
+                    html += '</div>';
+                }
+                elGrid.innerHTML = html;
+
+                // 绑定图片点开放大
+                var items = elGrid.querySelectorAll('.cg-item:not(.locked)');
+                items.forEach(function(item) {
+                    item.addEventListener('click', function() {
+                        elLbImg.src = this.getAttribute('data-url');
+                        elLightbox.style.display = 'flex';
+                        setTimeout(function(){ elLightbox.classList.add('show'); }, 10);
+                    });
+                });
+            }
+
+        })();
+    </script>
+</body>
+</html>
