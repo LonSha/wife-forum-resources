@@ -1,0 +1,1703 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>CHARACTER ARCHIVE · 沈漾 / 沈澪</title>
+<style>
+:root{
+  --bg0:#f8f6fb;
+  --bg1:#fff8fb;
+  --ink:#625c76;
+  --muted:#918ba5;
+  --accent:#db80ab;
+  --accent2:#80b8e8;
+  --gold:#d8bb75;
+  --line:rgba(255,255,255,.72);
+  --glass:rgba(255,255,255,.50);
+  --glass-deep:rgba(255,255,255,.66);
+  --shadow:0 24px 64px rgba(74,65,100,.16);
+  --stage-shadow:0 30px 80px rgba(65,58,92,.15),inset 0 1px 0 rgba(255,255,255,.85);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;background:#f7f4fa}
+body{
+  min-height:100vh;
+  color:var(--ink);
+  font-family:"PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+  background:
+    radial-gradient(circle at 14% 10%,rgba(255,182,218,.34),transparent 29%),
+    radial-gradient(circle at 86% 7%,rgba(159,204,255,.34),transparent 30%),
+    linear-gradient(150deg,var(--bg1),var(--bg0) 48%,#eef7ff);
+  overflow-x:hidden;
+  transition:background .75s ease,color .55s ease;
+}
+button{font:inherit}
+button,img{-webkit-tap-highlight-color:transparent}
+button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.app{position:relative;min-height:100vh;isolation:isolate}
+.view{display:none}.view.active{display:block}
+
+/* =========================================================
+   AMBIENT WORLD — restrained game-style atmospheric layers
+   ========================================================= */
+.world-ambient{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none}
+.ambient-orb{position:absolute;border-radius:50%;filter:blur(46px);opacity:.22;animation:orbFloat 16s ease-in-out infinite alternate}
+.ambient-orb.a{width:280px;height:280px;left:-80px;top:14%;background:#f0a5c8}
+.ambient-orb.b{width:320px;height:320px;right:-110px;top:5%;background:#9fc8f5;animation-delay:-5s}
+.ambient-orb.c{width:260px;height:260px;left:45%;bottom:-120px;background:#cbb7ff;animation-delay:-9s}
+@keyframes orbFloat{to{transform:translate3d(18px,-24px,0) scale(1.08)}}
+.noise{position:fixed;inset:0;z-index:-1;pointer-events:none;opacity:.12;background-image:radial-gradient(circle at 20% 20%,rgba(50,40,70,.45) 0 .45px,transparent .6px),radial-gradient(circle at 70% 60%,rgba(255,255,255,.95) 0 .5px,transparent .7px);background-size:7px 7px,9px 9px;mix-blend-mode:soft-light}
+
+/* =========================================================
+   HOME — character select stage, not cards
+   ========================================================= */
+#home.active{display:flex;min-height:100vh;align-items:center;justify-content:center;padding:clamp(16px,3vw,34px)}
+.archive-home{width:min(1180px,100%)}
+.archive-mark{text-align:center;margin-bottom:18px}
+.archive-mark .eyebrow{font-size:10px;font-weight:800;letter-spacing:.42em;color:var(--muted)}
+.archive-mark h1{margin-top:5px;font-size:clamp(26px,4vw,45px);letter-spacing:.15em;padding-left:.15em;font-weight:730}
+.archive-mark p{margin-top:8px;color:var(--muted);font-size:12px;letter-spacing:.08em}
+.character-stage{
+  position:relative;
+  display:flex;
+  min-height:min(72vh,690px);
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.72);
+  border-radius:32px;
+  box-shadow:0 36px 90px rgba(58,49,82,.20),inset 0 1px 0 rgba(255,255,255,.82);
+  background:rgba(255,255,255,.31);
+  backdrop-filter:blur(22px) saturate(120%);
+}
+.character-stage::after{content:"";position:absolute;inset:0;z-index:10;pointer-events:none;border-radius:inherit;box-shadow:inset 0 0 0 1px rgba(255,255,255,.28),inset 0 0 60px rgba(255,255,255,.18)}
+.character-door{
+  position:relative;
+  flex:1 1 50%;
+  min-width:0;
+  border:0;
+  overflow:hidden;
+  cursor:pointer;
+  background:transparent;
+  transition:flex .48s cubic-bezier(.2,.78,.18,1),filter .42s ease;
+}
+.character-door:first-child{border-right:1px solid rgba(255,255,255,.38)}
+.character-stage:hover .character-door{flex-basis:46%;filter:saturate(.82) brightness(.94)}
+.character-stage:hover .character-door:hover{flex-basis:54%;filter:saturate(1.06) brightness(1.02)}
+.door-backdrop{position:absolute;inset:0;transition:transform .65s cubic-bezier(.2,.75,.2,1)}
+.character-door:hover .door-backdrop{transform:scale(1.025)}
+.door-sy .door-backdrop{background:radial-gradient(circle at 42% 15%,rgba(255,255,255,.94),transparent 24%),radial-gradient(circle at 24% 35%,rgba(255,157,203,.38),transparent 36%),radial-gradient(circle at 82% 24%,rgba(144,200,255,.38),transparent 34%),linear-gradient(150deg,#fff6fb,#f5f2ff 50%,#eef7ff)}
+.door-sl .door-backdrop{background:linear-gradient(145deg,#eef8ff 0%,#dcecf5 30%,#3a2b38 52%,#1b0f16 72%,#0d070a 100%)}
+.door-sl .door-backdrop::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 24% 15%,rgba(255,255,255,.90),transparent 22%),radial-gradient(circle at 30% 38%,rgba(119,195,255,.34),transparent 38%),radial-gradient(circle at 74% 32%,rgba(196,20,55,.30),transparent 39%),radial-gradient(circle at 86% 76%,rgba(92,0,25,.32),transparent 35%),radial-gradient(ellipse at 52% 55%,rgba(108,83,119,.22),transparent 38%)}
+.door-portrait{position:absolute;inset:4% 3% 0;display:flex;align-items:flex-end;justify-content:center;z-index:2}
+.door-portrait img{width:100%;height:100%;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 22px 28px rgba(64,47,76,.18));transition:transform .55s cubic-bezier(.2,.78,.18,1),filter .4s ease}
+.character-door:hover .door-portrait img{transform:scale(1.025) translateY(-5px)}
+.door-sl .door-portrait img{filter:drop-shadow(-12px 18px 25px rgba(96,160,208,.13)) drop-shadow(12px 18px 25px rgba(121,9,35,.20))}
+.door-vignette{position:absolute;inset:0;z-index:3;background:linear-gradient(to top,rgba(47,35,59,.68),transparent 47%,rgba(255,255,255,.04));pointer-events:none}
+.door-sl .door-vignette{background:linear-gradient(to top,rgba(14,8,13,.84),transparent 49%),linear-gradient(90deg,rgba(220,240,255,.08),transparent 48%,rgba(82,0,19,.12))}
+.door-copy{position:absolute;left:0;right:0;bottom:0;z-index:6;padding:44px clamp(16px,4vw,34px) 30px;color:#fff;text-align:left;text-shadow:0 3px 18px rgba(23,16,32,.28)}
+.door-code{font-size:9px;font-weight:800;letter-spacing:.36em;opacity:.66}
+.door-name{margin-top:5px;font-size:clamp(30px,4.7vw,56px);line-height:1;font-weight:720;letter-spacing:.22em;padding-left:.22em}
+.door-en{margin-top:8px;font-size:11px;font-weight:700;letter-spacing:.19em;opacity:.82}
+.door-enter{margin-top:19px;display:inline-flex;align-items:center;gap:10px;font-size:11px;font-weight:800;letter-spacing:.14em;padding:9px 13px 9px 16px;border:1px solid rgba(255,255,255,.35);border-radius:999px;background:rgba(255,255,255,.12);backdrop-filter:blur(12px)}
+.door-enter i{display:inline-block;width:30px;height:1px;background:linear-gradient(90deg,rgba(255,255,255,.35),#fff);transition:width .3s ease}.character-door:hover .door-enter i{width:46px}
+
+/* home decorative systems */
+.butterfly-glyph{position:absolute;z-index:4;color:#fff;opacity:.30;font-size:clamp(34px,4vw,58px);filter:drop-shadow(0 0 13px rgba(255,181,219,.55));animation:glyphFloat 6s ease-in-out infinite}
+.butterfly-glyph.g1{left:9%;top:12%;transform:rotate(-18deg)}.butterfly-glyph.g2{right:11%;top:26%;font-size:31px;animation-delay:-3s}
+@keyframes glyphFloat{50%{transform:translateY(-9px) rotate(-8deg)}}
+.duality-orbit{position:absolute;z-index:4;left:50%;top:38%;width:min(48vw,300px);aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none;opacity:.82;filter:drop-shadow(0 0 18px rgba(74,32,60,.10))}
+.duality-orbit .orbit-ring{position:absolute;inset:8%;border-radius:50%;background:conic-gradient(from -70deg,rgba(212,241,255,.76),rgba(255,228,154,.56) 23%,rgba(255,255,255,.08) 41%,rgba(125,45,76,.10) 50%,rgba(230,52,84,.58) 72%,rgba(104,3,31,.52) 90%,rgba(212,241,255,.76));-webkit-mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 1px));mask:radial-gradient(farthest-side,transparent calc(100% - 2px),#000 calc(100% - 1px));animation:orbitTurn 22s linear infinite}
+.duality-orbit .orbit-ring::before{content:"";position:absolute;inset:13%;border-radius:50%;border:1px dashed rgba(255,255,255,.18)}
+.duality-orbit .seraph-node,.duality-orbit .fallen-node{position:absolute;width:58px;height:58px;border-radius:50%;display:grid;place-items:center;box-sizing:border-box}
+.duality-orbit .seraph-node{left:5%;top:16%;border:1px solid rgba(218,244,255,.52);background:radial-gradient(circle,rgba(255,255,255,.30),rgba(165,221,255,.08) 56%,transparent 70%);box-shadow:0 0 24px rgba(167,220,255,.18)}
+.duality-orbit .seraph-node::before{content:"";width:38px;height:12px;border-radius:50%;border:2px solid rgba(255,231,164,.72);box-shadow:0 0 11px rgba(255,224,140,.26);transform:rotate(-9deg)}
+.duality-orbit .seraph-node::after{content:"✦";position:absolute;bottom:5px;font-size:10px;color:rgba(224,247,255,.78);text-shadow:0 0 8px rgba(190,232,255,.75)}
+.duality-orbit .fallen-node{right:5%;bottom:16%;border:1px solid rgba(226,58,86,.34);background:radial-gradient(circle,rgba(128,8,35,.21),rgba(49,3,18,.08) 60%,transparent 72%);box-shadow:0 0 28px rgba(173,16,47,.18)}
+.duality-orbit .fallen-node::before{content:"";width:34px;height:34px;border-radius:50%;border:1px solid rgba(229,62,89,.56);box-shadow:inset 0 0 12px rgba(165,8,40,.18),0 0 10px rgba(173,13,43,.14)}
+.duality-orbit .fallen-node::after{content:"⛧";position:absolute;font-size:18px;line-height:1;color:rgba(232,76,99,.70);text-shadow:0 0 8px rgba(211,25,55,.28)}
+.duality-orbit .rift-core{position:absolute;left:50%;top:50%;width:38%;height:54%;transform:translate(-50%,-50%) rotate(8deg);border-radius:50%;background:linear-gradient(90deg,rgba(201,236,255,.10),rgba(255,255,255,.03) 43%,rgba(106,5,33,.09) 58%,rgba(211,31,63,.12));filter:blur(12px);opacity:.68;animation:riftBreathe 7s ease-in-out infinite alternate}
+@keyframes orbitTurn{to{transform:rotate(360deg)}}
+@keyframes riftBreathe{to{transform:translate(-50%,-50%) rotate(-4deg) scale(1.12);opacity:.45}}
+.fog{position:absolute;z-index:4;pointer-events:none;left:50%;top:55%;width:96%;height:31%;transform:translate(-50%,-50%);filter:blur(22px);opacity:.38;background:radial-gradient(ellipse at 30% 52%,rgba(198,232,255,.54),transparent 50%),radial-gradient(ellipse at 55% 45%,rgba(181,176,205,.18),transparent 43%),radial-gradient(ellipse at 76% 52%,rgba(119,5,33,.46),transparent 52%);animation:fogDrift 12s ease-in-out infinite alternate}
+.fog.f2{top:72%;width:112%;height:20%;opacity:.26;animation-delay:-4s;transform:translate(-50%,-50%) scaleX(-1)}
+@keyframes fogDrift{to{transform:translate(-45%,-54%) scale(1.08)}}
+.particle-field{position:absolute;inset:0;z-index:5;overflow:hidden;pointer-events:none}
+.particle{position:absolute;width:3px;height:3px;border-radius:50%;opacity:0;animation:particleRise var(--dur) linear var(--delay) infinite}
+.particle.cold{background:#dff4ff;box-shadow:0 0 8px rgba(181,225,255,.95)}
+.particle.gold{background:#ffe3a0;box-shadow:0 0 8px rgba(255,216,118,.74)}
+.particle.ember{background:#e94461;box-shadow:0 0 9px rgba(233,68,97,.90)}
+@keyframes particleRise{0%{transform:translate3d(0,18px,0) scale(.45);opacity:0}18%{opacity:.85}100%{transform:translate3d(var(--drift),-120px,0) scale(.10);opacity:0}}
+
+/* =========================================================
+   GALLERY FRAME
+   ========================================================= */
+#gallery{min-height:100vh;padding-bottom:42px}
+.game-topbar{position:sticky;top:0;z-index:60;display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(248,247,252,.60);border-bottom:1px solid rgba(255,255,255,.66);backdrop-filter:blur(22px) saturate(125%);box-shadow:0 7px 26px rgba(64,58,84,.05)}
+body.mode-sl .game-topbar{background:linear-gradient(90deg,rgba(246,251,255,.72),rgba(237,242,248,.62) 48%,rgba(28,15,20,.74) 52%,rgba(18,9,13,.80));border-bottom-color:rgba(255,255,255,.12)}
+.back{border:1px solid rgba(255,255,255,.72);background:rgba(255,255,255,.45);border-radius:999px;padding:7px 11px;color:var(--ink);font-size:12px;cursor:pointer;box-shadow:inset 0 1px 0 rgba(255,255,255,.75)}
+body.mode-sl .back{background:rgba(255,255,255,.14);color:#f2eef4;border-color:rgba(255,255,255,.18)}
+.top-archive{min-width:0;display:flex;align-items:center;gap:10px}
+.top-index{font-family:Georgia,serif;font-size:10px;letter-spacing:.16em;color:var(--muted)}
+.top-name{font-size:15px;font-weight:800;letter-spacing:.13em;white-space:nowrap}
+.top-status{margin-left:auto;display:flex;align-items:center;gap:7px;padding:5px 10px;border:1px solid rgba(255,255,255,.65);border-radius:999px;background:rgba(255,255,255,.40);font-size:10px;font-weight:800;letter-spacing:.12em;color:var(--muted)}
+body.mode-sl .top-status{background:rgba(15,9,12,.36);border-color:rgba(255,255,255,.11);color:#c9b8c0}
+.top-status::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent)}
+
+.character-hero{position:relative;overflow:hidden;margin:18px auto 0;width:min(1120px,calc(100% - 24px));border-radius:26px;border:1px solid rgba(255,255,255,.67);background:rgba(255,255,255,.40);box-shadow:var(--stage-shadow);backdrop-filter:blur(20px);min-height:155px}
+.character-hero::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 18% 22%,rgba(255,255,255,.85),transparent 28%),linear-gradient(100deg,rgba(255,174,214,.22),transparent 50%,rgba(148,203,255,.20));pointer-events:none}
+body.mode-sl .character-hero{background:linear-gradient(125deg,rgba(244,251,255,.76),rgba(222,238,248,.58) 35%,rgba(88,67,83,.48) 54%,rgba(46,21,30,.72) 72%,rgba(21,9,14,.84));border-color:rgba(255,255,255,.18);box-shadow:0 28px 75px rgba(24,13,22,.20),inset 0 1px 0 rgba(255,255,255,.18)}
+body.mode-sl .character-hero::before{background:radial-gradient(circle at 18% 16%,rgba(255,255,255,.75),transparent 24%),radial-gradient(circle at 32% 62%,rgba(105,183,242,.22),transparent 34%),radial-gradient(circle at 80% 42%,rgba(176,8,40,.24),transparent 36%),radial-gradient(ellipse at 51% 50%,rgba(184,170,197,.10),transparent 28%)}
+.hero-grid{position:relative;z-index:3;display:grid;grid-template-columns:auto 1fr auto;gap:18px;align-items:center;padding:24px 28px}
+.hero-emblem{width:75px;height:75px;display:grid;place-items:center;border-radius:50%;border:1px solid rgba(255,255,255,.72);background:rgba(255,255,255,.30);box-shadow:inset 0 0 22px rgba(255,255,255,.32),0 8px 24px rgba(68,54,80,.08);font-size:31px;overflow:hidden;position:relative;isolation:isolate}
+body.mode-sl .hero-emblem{background:linear-gradient(90deg,rgba(221,244,255,.30),rgba(78,16,31,.27));border-color:rgba(255,255,255,.20);box-shadow:-6px 0 19px rgba(108,188,245,.10),6px 0 19px rgba(179,18,47,.13)}
+.hero-emblem .emblem-dual{position:absolute;inset:7px;border-radius:50%;overflow:hidden;background:linear-gradient(90deg,rgba(210,240,255,.23),rgba(255,255,255,.05) 48%,rgba(104,7,32,.13) 52%,rgba(201,30,59,.18));border:1px solid rgba(255,255,255,.12)}
+.hero-emblem .emblem-dual::before{content:"";position:absolute;left:7px;top:16px;width:24px;height:8px;border-radius:50%;border:1.5px solid rgba(255,226,151,.82);box-shadow:0 0 8px rgba(255,224,150,.23);transform:rotate(-8deg)}
+.hero-emblem .emblem-dual::after{content:"⛧";position:absolute;right:7px;bottom:10px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;border:1px solid rgba(220,56,82,.42);font-size:12px;line-height:1;color:rgba(223,64,87,.80);text-shadow:0 0 7px rgba(211,30,58,.22)}
+.hero-emblem .emblem-rift{position:absolute;left:50%;top:50%;width:1px;height:42px;transform:translate(-50%,-50%) rotate(8deg);background:linear-gradient(transparent,rgba(255,255,255,.38),rgba(216,64,87,.36),transparent);box-shadow:0 0 8px rgba(255,255,255,.12)}
+.hero-copy .kicker{font-size:9px;font-weight:900;letter-spacing:.38em;color:var(--muted)}
+.hero-copy h2{margin-top:4px;font-size:clamp(28px,4vw,44px);line-height:1;font-weight:720;letter-spacing:.20em;padding-left:.20em}
+.hero-copy .en{margin-top:9px;font-size:11px;letter-spacing:.18em;font-weight:700;color:var(--muted)}
+.hero-copy .desc{margin-top:10px;max-width:620px;font-size:12px;line-height:1.65;color:var(--muted)}
+.hero-count{text-align:right}.hero-count strong{display:block;font-family:Georgia,serif;font-size:28px;font-weight:500}.hero-count span{font-size:9px;letter-spacing:.21em;color:var(--muted)}
+body.mode-sl .hero-copy h2,body.mode-sl .hero-count strong{background:linear-gradient(90deg,#91d2ff 0%,#f3e0a3 46%,#ff7c8f 72%,#d42e4d 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+body.mode-sl .hero-copy .kicker,body.mode-sl .hero-copy .en,body.mode-sl .hero-copy .desc,body.mode-sl .hero-count span{color:#aa98a0}
+
+/* slow mixed mist on Shen Ling header */
+.sl-hero-fx{display:none;position:absolute;inset:0;z-index:1;pointer-events:none;overflow:hidden}
+body.mode-sl .sl-hero-fx{display:block}
+.sl-hero-fx::before,.sl-hero-fx::after{content:"";position:absolute;width:58%;height:70%;top:33%;filter:blur(26px);opacity:.26;animation:heroMist 9s ease-in-out infinite alternate}
+.sl-hero-fx::before{left:-7%;background:radial-gradient(ellipse,#d8f2ff,rgba(113,193,247,.20) 45%,transparent 70%)}
+.sl-hero-fx::after{right:-7%;background:radial-gradient(ellipse,rgba(174,17,47,.56),rgba(89,3,23,.20) 46%,transparent 72%);animation-delay:-4s}
+@keyframes heroMist{to{transform:translateY(-12px) scale(1.10)}}
+
+/* game nav */
+.game-nav{position:sticky;top:58px;z-index:55;width:min(900px,calc(100% - 24px));margin:14px auto 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));padding:5px;border:1px solid rgba(255,255,255,.72);border-radius:20px;background:rgba(255,255,255,.52);box-shadow:0 12px 35px rgba(58,52,79,.08),inset 0 1px 0 rgba(255,255,255,.82);backdrop-filter:blur(19px)}
+body.mode-sl .game-nav{background:linear-gradient(90deg,rgba(243,250,255,.64),rgba(234,242,248,.50) 48%,rgba(39,18,26,.73) 52%,rgba(22,10,15,.80));border-color:rgba(255,255,255,.14)}
+.nav-gem{position:relative;display:flex;align-items:center;justify-content:center;gap:9px;border:0;border-radius:15px;padding:9px 7px;color:var(--muted);background:transparent;cursor:pointer;transition:all .28s ease;overflow:hidden}
+.nav-gem::after{content:"";position:absolute;left:22%;right:22%;bottom:3px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);transform:scaleX(0);opacity:0;transition:.28s ease}
+.nav-gem.active{color:var(--ink);background:rgba(255,255,255,.42);box-shadow:inset 0 1px 0 rgba(255,255,255,.75),0 5px 14px rgba(55,47,70,.06)}
+.nav-gem.active::after{transform:scaleX(1);opacity:1}
+body.mode-sl .nav-gem{color:#a9989f}body.mode-sl .nav-gem.active{color:#f5eef1;background:linear-gradient(90deg,rgba(194,230,255,.13),rgba(103,13,31,.18));box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+.gem-icon{position:relative;width:30px;height:30px;display:grid;place-items:center;border-radius:50%;font-size:14px;border:1px solid rgba(255,255,255,.68);background:rgba(255,255,255,.35);box-shadow:inset 0 0 10px rgba(255,255,255,.40)}
+.nav-gem.active .gem-icon{box-shadow:0 0 15px rgba(219,128,171,.15),inset 0 0 10px rgba(255,255,255,.52)}
+body.mode-sl .gem-icon{background:linear-gradient(90deg,rgba(204,237,255,.14),rgba(99,14,31,.16));border-color:rgba(255,255,255,.13)}
+.gem-copy{text-align:left}.gem-cn{display:block;font-size:11px;font-weight:850;letter-spacing:.06em}.gem-en{display:block;margin-top:2px;font-size:7px;font-weight:800;letter-spacing:.13em;opacity:.58}
+
+.content-stage{width:min(1120px,calc(100% - 24px));margin:16px auto 0;min-height:420px;padding:clamp(14px,2.8vw,28px);border:1px solid rgba(255,255,255,.64);border-radius:26px;background:rgba(255,255,255,.42);box-shadow:var(--stage-shadow);backdrop-filter:blur(22px)}
+body.mode-sl .content-stage{background:linear-gradient(105deg,rgba(245,251,255,.64),rgba(237,244,250,.51) 47%,rgba(41,18,26,.67) 53%,rgba(22,10,15,.78));border-color:rgba(255,255,255,.14);box-shadow:0 30px 80px rgba(16,8,13,.23),inset 0 1px 0 rgba(255,255,255,.12)}
+.section{display:none}.section.active{display:block;animation:sectionIn .34s ease both}@keyframes sectionIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.section-heading{display:flex;align-items:end;gap:13px;margin-bottom:18px;padding-bottom:12px;border-bottom:1px solid rgba(126,105,130,.10)}
+body.mode-sl .section-heading{border-color:rgba(255,255,255,.09)}
+.section-mark{font-family:Georgia,serif;font-size:28px;color:var(--accent);opacity:.55}.section-copy h3{font-size:19px;letter-spacing:.10em}.section-copy p{margin-top:4px;font-size:9px;letter-spacing:.18em;color:var(--muted)}
+.section-note{margin-left:auto;max-width:380px;text-align:right;color:var(--muted);font-size:10px;line-height:1.5}
+body.mode-sl .section-copy h3{color:#eee4e8}body.mode-sl .section-copy p,body.mode-sl .section-note{color:#9b888f}
+
+/* portrait/editorial collection */
+.collection-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.art-card{position:relative;min-width:0;overflow:hidden;border-radius:18px;border:1px solid rgba(255,255,255,.68);background:rgba(255,255,255,.42);box-shadow:0 12px 30px rgba(54,45,68,.10),inset 0 1px 0 rgba(255,255,255,.68);cursor:pointer;transition:transform .28s ease,box-shadow .28s ease,border-color .28s ease}
+.art-card:hover{transform:translateY(-4px);box-shadow:0 20px 38px rgba(54,45,68,.14),0 0 0 1px rgba(255,255,255,.18)}
+body.mode-sl .art-card{background:linear-gradient(110deg,rgba(249,253,255,.40),rgba(63,26,36,.42));border-color:rgba(255,255,255,.14);box-shadow:0 14px 34px rgba(10,5,8,.20)}
+.art-thumb{position:relative;aspect-ratio:3/4;overflow:hidden;background:radial-gradient(circle at 50% 15%,rgba(255,255,255,.70),transparent 34%),rgba(255,255,255,.18)}
+.art-thumb img{width:100%;height:100%;object-fit:contain;display:block;transition:transform .45s cubic-bezier(.2,.75,.2,1)}.art-card:hover img{transform:scale(1.025)}
+.art-thumb::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(to top,rgba(51,40,62,.24),transparent 38%)}
+body.mode-sl .art-thumb::after{background:linear-gradient(to top,rgba(21,8,15,.42),transparent 42%),linear-gradient(90deg,rgba(189,228,255,.05),transparent 49%,rgba(133,7,33,.10))}
+.art-meta{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:center;padding:10px 11px 12px}.art-no{font-family:Georgia,serif;font-size:13px;color:var(--accent);opacity:.66}.art-label{font-size:12px;font-weight:800;letter-spacing:.06em}.art-en{margin-top:2px;font-size:7px;letter-spacing:.13em;color:var(--muted);font-weight:800}
+body.mode-sl .art-label{color:#eee7e9}
+
+/* variation viewer */
+.variation-stack{display:flex;flex-direction:column;gap:18px}
+.variation-group{overflow:hidden;border-radius:20px;border:1px solid rgba(255,255,255,.66);background:rgba(255,255,255,.38);box-shadow:0 14px 34px rgba(57,48,69,.08),inset 0 1px 0 rgba(255,255,255,.62)}
+body.mode-sl .variation-group{background:linear-gradient(110deg,rgba(249,253,255,.35),rgba(52,22,31,.46));border-color:rgba(255,255,255,.13);box-shadow:0 15px 40px rgba(10,5,8,.18)}
+.var-head{display:flex;align-items:center;gap:10px;padding:11px 13px;border-bottom:1px solid rgba(125,105,130,.08)}body.mode-sl .var-head{border-color:rgba(255,255,255,.08)}
+.var-index{font-family:Georgia,serif;font-size:10px;color:var(--accent);opacity:.64}.var-title{font-size:13px;font-weight:850;letter-spacing:.08em}.var-count{margin-left:auto;font-size:8px;font-weight:800;letter-spacing:.16em;color:var(--muted)}
+body.mode-sl .var-title{color:#eee4e8}
+.var-stage{display:grid;grid-template-columns:minmax(0,1fr) 122px;gap:13px;padding:13px}
+.var-main{position:relative;min-height:360px;display:flex;align-items:center;justify-content:center;overflow:hidden;border-radius:15px;background:radial-gradient(circle at 50% 16%,rgba(255,255,255,.63),transparent 32%),rgba(255,255,255,.20)}
+body.mode-sl .var-main{background:linear-gradient(90deg,rgba(234,247,255,.18),rgba(38,15,24,.34))}
+.var-main img{width:100%;height:100%;max-height:620px;object-fit:contain;display:block;cursor:zoom-in;transition:opacity .22s ease,transform .3s ease}
+.var-main img.switching{opacity:.20;transform:scale(.99)}
+.filmstrip{display:flex;flex-direction:column;gap:7px;max-height:540px;overflow:auto;padding-right:2px;scrollbar-width:thin;scrollbar-color:rgba(120,105,130,.20) transparent}
+.film-thumb{position:relative;flex:0 0 auto;width:100%;aspect-ratio:3/4;border-radius:10px;border:1px solid rgba(255,255,255,.54);overflow:hidden;background:rgba(255,255,255,.22);cursor:pointer;opacity:.64;transition:.24s ease}
+.film-thumb:hover,.film-thumb.active{opacity:1;transform:translateX(-2px);border-color:rgba(219,128,171,.46);box-shadow:0 6px 15px rgba(70,55,78,.09)}
+body.mode-sl .film-thumb{border-color:rgba(255,255,255,.10)}body.mode-sl .film-thumb.active{border-color:rgba(223,61,87,.42);box-shadow:0 0 16px rgba(190,21,51,.10)}
+.film-thumb img{width:100%;height:100%;object-fit:contain}.film-num{position:absolute;right:5px;bottom:4px;min-width:22px;padding:2px 4px;text-align:center;border-radius:999px;background:rgba(30,22,34,.55);color:#fff;font-family:Georgia,serif;font-size:8px;backdrop-filter:blur(6px)}
+
+/* wardrobe */
+.wardrobe-bar{display:flex;align-items:center;gap:12px;margin-bottom:15px;padding:10px 12px;border-radius:16px;border:1px solid rgba(255,255,255,.61);background:rgba(255,255,255,.34)}
+body.mode-sl .wardrobe-bar{background:linear-gradient(90deg,rgba(222,243,255,.18),rgba(65,20,32,.28));border-color:rgba(255,255,255,.10)}
+.wardrobe-title{font-size:10px;font-weight:900;letter-spacing:.23em;color:var(--muted)}
+.form-switch{margin-left:auto;display:none;gap:5px;padding:4px;border-radius:999px;border:1px solid rgba(255,255,255,.17);background:rgba(18,10,14,.18)}
+body.mode-sl .form-switch{display:flex}
+.form-btn{border:0;border-radius:999px;padding:7px 11px;background:transparent;color:#a9959d;cursor:pointer;font-size:9px;font-weight:900;letter-spacing:.08em;transition:.28s ease}
+.form-btn.active[data-form="小天使"]{color:#456e8d;background:linear-gradient(90deg,rgba(224,246,255,.90),rgba(255,241,188,.76));box-shadow:0 4px 14px rgba(104,187,242,.13)}
+.form-btn.active[data-form="小恶魔"]{color:#ffe2e6;background:linear-gradient(90deg,#7b1730,#40101c);box-shadow:0 4px 15px rgba(183,25,50,.18)}
+.wardrobe-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+.wardrobe-card{position:relative;overflow:hidden;border-radius:18px;border:1px solid rgba(255,255,255,.65);background:rgba(255,255,255,.36);box-shadow:0 13px 32px rgba(56,47,68,.09),inset 0 1px 0 rgba(255,255,255,.70);cursor:pointer;transition:.28s ease}
+.wardrobe-card:hover{transform:translateY(-4px)}
+body.mode-sl .wardrobe-card{background:linear-gradient(110deg,rgba(245,252,255,.35),rgba(55,20,31,.44));border-color:rgba(255,255,255,.12);box-shadow:0 15px 34px rgba(8,4,7,.19)}
+.wardrobe-img{position:relative;aspect-ratio:3/4;overflow:hidden;background:radial-gradient(circle at 50% 14%,rgba(255,255,255,.62),transparent 34%),rgba(255,255,255,.18)}
+.wardrobe-img img{width:100%;height:100%;object-fit:contain;transition:opacity .24s ease,transform .42s ease}.wardrobe-card:hover img{transform:scale(1.025)}
+.wardrobe-img::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(44,33,53,.32),transparent 42%);pointer-events:none}.wardrobe-info{position:absolute;z-index:3;left:0;right:0;bottom:0;padding:34px 12px 12px;color:#fff;text-shadow:0 2px 12px rgba(20,14,25,.35)}
+.wardrobe-no{font-family:Georgia,serif;font-size:9px;letter-spacing:.16em;opacity:.64}.wardrobe-name{margin-top:2px;font-size:15px;font-weight:850;letter-spacing:.10em}.wardrobe-en{margin-top:3px;font-size:7px;font-weight:800;letter-spacing:.16em;opacity:.66}
+
+/* full-screen viewer */
+.viewer{position:fixed;inset:0;z-index:999;display:none;align-items:center;justify-content:center;padding:18px;background:rgba(20,14,24,.66);backdrop-filter:blur(18px) saturate(.72)}
+.viewer.active{display:flex;animation:viewerIn .22s ease both}@keyframes viewerIn{from{opacity:0}to{opacity:1}}
+.viewer::before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 48%,rgba(218,128,171,.13),transparent 44%);pointer-events:none}
+body.mode-sl .viewer::before{background:radial-gradient(circle at 35% 48%,rgba(127,205,255,.14),transparent 38%),radial-gradient(circle at 67% 48%,rgba(178,18,49,.16),transparent 40%)}
+.viewer-shell{position:relative;z-index:2;width:min(980px,96vw);max-height:92vh;display:grid;grid-template-columns:minmax(0,1fr) 190px;gap:12px;padding:12px;border:1px solid rgba(255,255,255,.17);border-radius:22px;background:rgba(33,25,38,.70);box-shadow:0 30px 90px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.09)}
+.viewer-image{min-height:300px;max-height:86vh;display:flex;align-items:center;justify-content:center;border-radius:15px;overflow:hidden;background:rgba(255,255,255,.04)}.viewer-image img{max-width:100%;max-height:84vh;object-fit:contain}
+.viewer-side{display:flex;flex-direction:column;justify-content:flex-end;padding:16px 10px 12px;color:#eee7ef}.viewer-kicker{font-size:8px;font-weight:900;letter-spacing:.25em;color:#a894a2}.viewer-label{margin-top:7px;font-size:20px;font-weight:800;letter-spacing:.08em}.viewer-file{margin-top:8px;font-size:9px;line-height:1.5;color:#8f7e8a;word-break:break-all}.viewer-close{position:absolute;right:10px;top:10px;z-index:3;width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.16);background:rgba(12,8,14,.52);color:#fff;font-size:20px;cursor:pointer}
+
+/* Shen Ling active theme + demon form deepens right side without replacing angel half */
+body.mode-sl{
+  --ink:#5b6576;--muted:#988890;--accent:#d44261;--accent2:#8bd0ff;
+  background:linear-gradient(90deg,#f4fbff 0%,#eef7ff 44%,#211117 52%,#10080b 100%);
+}
+body.mode-sl::before{content:"";position:fixed;inset:0;z-index:-3;pointer-events:none;background:radial-gradient(circle at 17% 10%,rgba(255,255,255,.90),transparent 21%),radial-gradient(circle at 30% 30%,rgba(114,191,247,.24),transparent 34%),radial-gradient(circle at 76% 28%,rgba(179,11,44,.26),transparent 35%),radial-gradient(circle at 86% 74%,rgba(86,0,19,.30),transparent 32%)}
+body.mode-sl.form-devil .content-stage,body.mode-sl.form-devil .character-hero{box-shadow:0 30px 80px rgba(16,8,13,.28),18px 0 44px rgba(164,13,43,.08),-12px 0 34px rgba(105,188,244,.05),inset 0 1px 0 rgba(255,255,255,.10)}
+body.mode-sl.form-devil .sl-hero-fx::after{opacity:.48}
+
+@media(max-width:820px){
+  .character-stage{min-height:620px}
+  .hero-grid{grid-template-columns:auto 1fr}.hero-count{display:none}
+  .collection-grid,.wardrobe-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .var-stage{grid-template-columns:minmax(0,1fr)}
+  .filmstrip{flex-direction:row;max-height:none;overflow-x:auto;padding:0 0 4px}.film-thumb{width:76px;flex-basis:76px}
+}
+@media(max-width:600px){
+  #home.active{padding:10px}.archive-mark{margin:5px 0 13px}.archive-mark p{display:none}
+  .character-stage{min-height:76vh;border-radius:24px}.character-stage:hover .character-door,.character-stage:hover .character-door:hover{flex-basis:50%;filter:none}
+  .door-copy{padding:32px 10px 18px}.door-name{font-size:28px}.door-en{font-size:8px;letter-spacing:.10em}.door-enter{font-size:8px;padding:7px 8px 7px 10px}.door-enter i{width:18px}
+  .duality-orbit{width:190px;top:35%}.fog{width:120%}
+  .game-topbar{padding:10px}.top-index{display:none}.top-status{padding:5px 7px}.top-name{font-size:12px}.back{font-size:10px}
+  .character-hero{margin-top:10px;border-radius:20px}.hero-grid{padding:18px 15px;gap:12px}.hero-emblem{width:54px;height:54px;font-size:22px}.hero-copy h2{font-size:27px}.hero-copy .desc{display:none}
+  .game-nav{top:51px;margin-top:9px;border-radius:17px}.nav-gem{gap:4px;padding:7px 3px}.gem-icon{width:27px;height:27px}.gem-en{display:none}.gem-cn{font-size:9px}
+  .content-stage{margin-top:9px;padding:12px;border-radius:20px}.section-note{display:none}.section-heading{margin-bottom:12px}.section-mark{font-size:22px}.section-copy h3{font-size:16px}
+  .collection-grid,.wardrobe-grid{gap:9px}.art-card,.wardrobe-card{border-radius:14px}.art-meta{padding:8px}.art-label{font-size:10px}.art-en{display:none}
+  .var-stage{padding:9px}.var-main{min-height:300px}.variation-group{border-radius:16px}
+  .wardrobe-bar{align-items:flex-start;flex-direction:column}.form-switch{margin-left:0;width:100%;display:grid!important;grid-template-columns:1fr 1fr}.form-btn{width:100%}
+  .viewer-shell{grid-template-columns:1fr;padding:8px}.viewer-side{padding:5px 10px 9px}.viewer-file{display:none}.viewer-image{max-height:72vh}.viewer-image img{max-height:70vh}
+}
+@media(max-width:390px){.collection-grid,.wardrobe-grid{grid-template-columns:1fr 1fr}.door-name{font-size:24px}.hero-emblem{display:none}.hero-grid{grid-template-columns:1fr}.top-status{display:none}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition-duration:.01ms!important}}
+
+
+/* =========================================================
+   FINAL V3 · SHEN LING CLICK-TOGGLE TRANSFORMATION SYSTEM
+   click-left = full Seraph / click-right = full Fallen
+   ========================================================= */
+
+/* Home: no 50/50 hard split, no detached halo/seal. */
+.door-sl .door-backdrop{
+  background:
+    radial-gradient(circle at 50% 19%,rgba(255,255,255,.96),transparent 22%),
+    radial-gradient(circle at 34% 35%,rgba(135,207,255,.30),transparent 35%),
+    radial-gradient(circle at 77% 72%,rgba(89,17,42,.12),transparent 27%),
+    linear-gradient(155deg,#fbfeff 0%,#edf7ff 54%,#e8edf5 78%,#d9d0d7 100%);
+}
+.door-sl .door-backdrop::before{
+  background:
+    radial-gradient(circle at 50% 24%,rgba(255,241,185,.16),transparent 27%),
+    radial-gradient(circle at 82% 80%,rgba(124,17,47,.10),transparent 26%);
+}
+.door-sl .door-vignette{
+  background:linear-gradient(to top,rgba(38,37,54,.66),transparent 51%),radial-gradient(circle at 51% 36%,transparent 25%,rgba(58,54,75,.05) 74%);
+}
+.sl-entry-aura{position:absolute;z-index:1;left:50%;top:39%;width:min(42vw,270px);aspect-ratio:1;transform:translate(-50%,-50%);pointer-events:none;filter:drop-shadow(0 0 25px rgba(142,202,242,.15))}
+.sl-entry-aura .entry-ring{position:absolute;border-radius:50%;inset:8%;border:1px solid rgba(210,239,255,.58);box-shadow:0 0 28px rgba(150,211,250,.12),inset 0 0 22px rgba(255,241,188,.10);animation:entrySpin 20s linear infinite}
+.sl-entry-aura .entry-ring.r2{inset:23%;border-style:dashed;border-color:rgba(219,183,106,.38);animation-direction:reverse;animation-duration:13s}
+.sl-entry-aura .entry-core{position:absolute;inset:35%;border-radius:50%;background:radial-gradient(circle,rgba(255,255,255,.62),rgba(183,225,250,.17) 48%,rgba(103,19,45,.08) 75%,transparent);box-shadow:0 0 34px rgba(182,227,255,.22)}
+.sl-entry-aura .entry-crack{position:absolute;left:50%;top:49%;width:1px;height:34%;transform-origin:50% 0;background:linear-gradient(to bottom,rgba(141,29,57,.46),rgba(205,55,79,.12),transparent);opacity:.44}
+.sl-entry-aura .c1{transform:rotate(18deg)}.sl-entry-aura .c2{transform:rotate(151deg) scaleY(.72)}.sl-entry-aura .c3{transform:rotate(263deg) scaleY(.58)}
+@keyframes entrySpin{to{transform:rotate(360deg)}}
+
+/* Hero emblem is strictly clipped; no emoji can escape the circle. */
+.hero-emblem{overflow:hidden!important;line-height:1;font-size:26px}
+.sy-emblem{display:grid;place-items:center;width:100%;height:100%;font-size:27px;line-height:1}
+.sl-emblem{position:relative;width:43px;height:43px;border-radius:50%;display:block;border:1px solid rgba(136,196,232,.40);box-shadow:0 0 18px rgba(139,207,248,.16),inset 0 0 16px rgba(255,255,255,.40);transition:all .72s cubic-bezier(.2,.8,.18,1)}
+.sl-emblem::before{content:"";position:absolute;left:50%;top:7px;width:26px;height:8px;border-radius:50%;border:2px solid rgba(222,190,111,.84);transform:translateX(-50%);box-shadow:0 0 8px rgba(255,224,144,.30);transition:all .72s ease}
+.sl-emblem::after{content:"✦";position:absolute;left:50%;top:52%;transform:translate(-50%,-50%);font-size:15px;color:#7dbfe8;text-shadow:0 0 10px rgba(129,200,245,.42);transition:all .72s ease}
+body.mode-sl.form-devil .sl-emblem{border-color:rgba(221,58,83,.42);background:radial-gradient(circle,rgba(103,9,32,.23),transparent 70%);box-shadow:0 0 21px rgba(198,22,51,.18),inset 0 0 16px rgba(93,4,26,.18)}
+body.mode-sl.form-devil .sl-emblem::before{top:25px;width:25px;height:12px;border-color:rgba(216,53,78,.72);border-top-color:transparent;border-left-color:transparent;border-right-color:transparent;transform:translateX(-50%) rotate(180deg);box-shadow:none}
+body.mode-sl.form-devil .sl-emblem::after{content:"◆";color:#ec5269;text-shadow:0 0 12px rgba(225,45,72,.48);font-size:14px}
+
+/* One global two-position switch. It is click-only; no drag behavior. */
+.hero-side{display:flex;align-items:flex-end;gap:16px}
+.duality-toggle{display:none;min-width:286px}
+body.mode-sl .duality-toggle{display:block}
+.toggle-track{position:relative;isolation:isolate;width:286px;height:58px;display:grid;grid-template-columns:1fr 1fr;padding:5px;border-radius:999px;overflow:hidden;border:1px solid rgba(148,196,226,.26);background:linear-gradient(90deg,rgba(246,253,255,.76),rgba(228,244,253,.64));box-shadow:0 10px 28px rgba(76,128,162,.10),inset 0 1px 0 rgba(255,255,255,.94);transition:background 1s ease,border-color 1s ease,box-shadow 1s ease}
+.toggle-thumb{position:absolute;z-index:1;left:5px;top:5px;width:calc(50% - 5px);height:48px;border-radius:999px;pointer-events:none;background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(215,241,255,.86) 55%,rgba(255,234,168,.48));border:1px solid rgba(255,255,255,.90);box-shadow:0 8px 19px rgba(82,151,196,.18),inset 0 1px 0 #fff,0 0 20px rgba(172,222,253,.14);transform:translateX(0);transition:transform 1.05s cubic-bezier(.16,.82,.17,1),background .8s ease,box-shadow .8s ease,border-color .8s ease}
+.thumb-core{position:absolute;left:14px;top:50%;width:20px;height:20px;transform:translateY(-50%);border-radius:50%;border:1px solid rgba(115,184,226,.38);background:radial-gradient(circle at 38% 30%,#fff,rgba(176,224,252,.56) 42%,rgba(255,230,153,.20) 72%);box-shadow:0 0 12px rgba(140,205,246,.28)}
+.toggle-choice{position:relative;z-index:3;border:0;background:transparent;display:flex;align-items:center;justify-content:center;gap:8px;min-width:0;border-radius:999px;padding:6px 10px;cursor:pointer;color:#7893a4;transition:color .62s ease,text-shadow .62s ease;user-select:none;-webkit-user-select:none}
+.toggle-choice .choice-mark{font-size:14px;line-height:1;opacity:.72}.toggle-choice span:last-child{display:flex;flex-direction:column;align-items:flex-start;line-height:1.08}.toggle-choice b{font-size:9px;letter-spacing:.16em}.toggle-choice small{margin-top:4px;font-size:8px;font-weight:750;letter-spacing:.08em;opacity:.68}.toggle-choice.active{color:#426f8c;text-shadow:0 0 10px rgba(143,209,248,.20)}
+.toggle-caption{margin-top:6px;text-align:center;font-size:7px;font-weight:900;letter-spacing:.18em;color:#8ea7b6;transition:color .8s ease}
+body.mode-sl.form-devil .toggle-track{background:linear-gradient(90deg,rgba(37,13,21,.92),rgba(18,7,12,.96));border-color:rgba(214,48,76,.23);box-shadow:0 12px 32px rgba(13,5,9,.32),0 0 26px rgba(155,13,42,.08),inset 0 1px 0 rgba(255,175,188,.04)}
+body.mode-sl.form-devil .toggle-thumb{transform:translateX(100%);background:linear-gradient(135deg,#73162d,#3c0b18 62%,#16060b);border-color:rgba(235,82,104,.24);box-shadow:0 9px 23px rgba(76,3,21,.42),0 0 24px rgba(202,25,55,.16),inset 0 1px 0 rgba(255,160,174,.08)}
+body.mode-sl.form-devil .thumb-core{left:auto;right:14px;border-color:rgba(230,65,91,.46);background:radial-gradient(circle at 40% 34%,#e9546b,#8e1730 47%,#310814 76%);box-shadow:0 0 15px rgba(216,36,65,.42)}
+body.mode-sl.form-devil .toggle-choice{color:#9f7d84}.toggle-choice.devil.active{color:#ffdce2;text-shadow:0 0 11px rgba(220,58,84,.34)}
+body.mode-sl.form-devil .toggle-caption{color:#c16a79}
+
+/* Wardrobe just reflects the global form, avoiding conflicting controls. */
+.form-switch,.form-btn{display:none!important}
+.form-echo{display:none;margin-left:auto;align-items:center;gap:7px;padding:7px 11px;border-radius:999px;font-size:8px;font-weight:900;letter-spacing:.12em;color:#507d9a;background:rgba(237,250,255,.70);border:1px solid rgba(142,203,239,.22);box-shadow:inset 0 1px 0 rgba(255,255,255,.90)}
+body.mode-sl .form-echo{display:flex}.form-echo i{width:6px;height:6px;border-radius:50%;background:#90d4ff;box-shadow:0 0 9px rgba(137,211,255,.78)}
+body.mode-sl.form-devil .form-echo{color:#f2b3bd;background:rgba(62,13,26,.58);border-color:rgba(215,51,79,.20)}body.mode-sl.form-devil .form-echo i{background:#e43d58;box-shadow:0 0 10px rgba(228,61,88,.72)}
+
+/* Shen Ling is a FULL theme at either endpoint — never permanent half-and-half. */
+body.mode-sl:not(.form-devil){--ink:#52677b;--muted:#71899b;--accent:#74bde8;--accent2:#d6b766;background:radial-gradient(circle at 17% 8%,rgba(255,255,255,.98),transparent 22%),radial-gradient(circle at 82% 15%,rgba(255,237,178,.22),transparent 28%),radial-gradient(circle at 48% 68%,rgba(139,208,249,.20),transparent 43%),linear-gradient(145deg,#fafdff 0%,#edf8ff 48%,#f8f6ef 100%)}
+body.mode-sl:not(.form-devil)::before{background:radial-gradient(circle at 20% 12%,rgba(255,255,255,.94),transparent 23%),radial-gradient(circle at 38% 40%,rgba(132,207,251,.18),transparent 36%),radial-gradient(circle at 80% 25%,rgba(255,223,135,.13),transparent 34%)}
+body.mode-sl:not(.form-devil) .game-topbar{background:rgba(246,252,255,.76);border-bottom-color:rgba(255,255,255,.80)}
+body.mode-sl:not(.form-devil) .back{background:rgba(255,255,255,.66);color:#527188;border-color:rgba(255,255,255,.88)}
+body.mode-sl:not(.form-devil) .top-status{background:rgba(248,253,255,.68);border-color:rgba(154,207,237,.22);color:#66869a}
+body.mode-sl:not(.form-devil) .character-hero{background:linear-gradient(125deg,rgba(255,255,255,.84),rgba(233,247,255,.70) 56%,rgba(251,246,225,.62));border-color:rgba(255,255,255,.88);box-shadow:0 27px 68px rgba(87,145,180,.12),inset 0 1px 0 #fff}
+body.mode-sl:not(.form-devil) .character-hero::before{background:radial-gradient(circle at 17% 15%,rgba(255,255,255,.92),transparent 27%),radial-gradient(circle at 72% 30%,rgba(255,225,142,.14),transparent 32%),radial-gradient(circle at 36% 66%,rgba(111,195,245,.16),transparent 36%)}
+body.mode-sl:not(.form-devil) .hero-copy h2,body.mode-sl:not(.form-devil) .hero-count strong{background:linear-gradient(90deg,#5d9bc0,#8bcff4 56%,#b99a54);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+body.mode-sl:not(.form-devil) .hero-copy .kicker,body.mode-sl:not(.form-devil) .hero-copy .en,body.mode-sl:not(.form-devil) .hero-copy .desc,body.mode-sl:not(.form-devil) .hero-count span{color:#748da0}
+body.mode-sl:not(.form-devil) .game-nav{background:rgba(247,252,255,.70);border-color:rgba(255,255,255,.88)}
+body.mode-sl:not(.form-devil) .nav-gem{color:#7690a0}body.mode-sl:not(.form-devil) .nav-gem.active{color:#426d88;background:rgba(255,255,255,.74);box-shadow:0 7px 17px rgba(91,151,187,.08),inset 0 1px 0 #fff}
+body.mode-sl:not(.form-devil) .gem-icon{background:linear-gradient(135deg,rgba(255,255,255,.92),rgba(222,244,255,.66));border-color:rgba(255,255,255,.95)}
+body.mode-sl:not(.form-devil) .content-stage{background:rgba(248,253,255,.68);border-color:rgba(255,255,255,.90);box-shadow:0 30px 72px rgba(87,142,175,.10),inset 0 1px 0 #fff}
+body.mode-sl:not(.form-devil) .section-copy h3,body.mode-sl:not(.form-devil) .art-label,body.mode-sl:not(.form-devil) .var-title{color:#4f697b}
+body.mode-sl:not(.form-devil) .section-copy p,body.mode-sl:not(.form-devil) .section-note{color:#7890a0}
+body.mode-sl:not(.form-devil) .art-card,body.mode-sl:not(.form-devil) .variation-group,body.mode-sl:not(.form-devil) .wardrobe-card{background:rgba(255,255,255,.64);border-color:rgba(255,255,255,.90);box-shadow:0 14px 34px rgba(91,148,181,.09),inset 0 1px 0 #fff}
+body.mode-sl:not(.form-devil) .var-main{background:radial-gradient(circle at 50% 15%,rgba(255,255,255,.88),transparent 34%),rgba(228,246,255,.38)}
+body.mode-sl:not(.form-devil) .wardrobe-bar{background:rgba(247,252,255,.72);border-color:rgba(255,255,255,.88)}
+body.mode-sl:not(.form-devil) .viewer::before{background:radial-gradient(circle at 50% 48%,rgba(126,204,249,.16),transparent 42%),radial-gradient(circle at 64% 30%,rgba(255,219,124,.07),transparent 32%)}
+
+body.mode-sl.form-devil{--ink:#eadce0;--muted:#a78990;--accent:#e04460;--accent2:#b88a61;background:radial-gradient(circle at 18% 8%,rgba(102,12,35,.24),transparent 27%),radial-gradient(circle at 82% 20%,rgba(213,34,66,.16),transparent 33%),radial-gradient(circle at 50% 74%,rgba(87,3,25,.24),transparent 42%),linear-gradient(145deg,#211016 0%,#11080c 51%,#090507 100%)}
+body.mode-sl.form-devil::before{background:radial-gradient(circle at 18% 13%,rgba(122,17,40,.18),transparent 28%),radial-gradient(circle at 72% 32%,rgba(200,26,57,.16),transparent 34%),radial-gradient(circle at 88% 78%,rgba(49,0,14,.34),transparent 36%)}
+body.mode-sl.form-devil .game-topbar{background:rgba(22,10,15,.80);border-bottom-color:rgba(234,79,102,.10)}
+body.mode-sl.form-devil .back{background:rgba(58,22,31,.55);color:#ead9dd;border-color:rgba(238,97,117,.13)}
+body.mode-sl.form-devil .top-status{background:rgba(65,18,30,.46);border-color:rgba(222,61,85,.16);color:#d796a1}
+body.mode-sl.form-devil .character-hero{background:linear-gradient(135deg,rgba(70,21,34,.84),rgba(31,12,18,.92) 57%,rgba(12,6,9,.96));border-color:rgba(228,64,90,.13);box-shadow:0 30px 82px rgba(0,0,0,.34),0 0 42px rgba(143,10,37,.08),inset 0 1px 0 rgba(255,157,171,.04)}
+body.mode-sl.form-devil .character-hero::before{background:radial-gradient(circle at 20% 17%,rgba(135,23,45,.22),transparent 28%),radial-gradient(circle at 76% 37%,rgba(211,37,67,.14),transparent 34%),radial-gradient(circle at 45% 70%,rgba(46,0,15,.26),transparent 36%)}
+body.mode-sl.form-devil .hero-copy h2,body.mode-sl.form-devil .hero-count strong{background:linear-gradient(90deg,#ff9baa,#e84a64 55%,#ad1733);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+body.mode-sl.form-devil .hero-copy .kicker,body.mode-sl.form-devil .hero-copy .en,body.mode-sl.form-devil .hero-copy .desc,body.mode-sl.form-devil .hero-count span{color:#a98289}
+body.mode-sl.form-devil .game-nav{background:rgba(28,12,18,.78);border-color:rgba(224,61,86,.11)}
+body.mode-sl.form-devil .nav-gem{color:#a7858b}body.mode-sl.form-devil .nav-gem.active{color:#ffe4e8;background:linear-gradient(135deg,rgba(120,19,42,.34),rgba(49,10,20,.52));box-shadow:0 7px 19px rgba(0,0,0,.20),inset 0 1px 0 rgba(255,167,180,.04)}
+body.mode-sl.form-devil .gem-icon{background:linear-gradient(135deg,rgba(103,18,38,.35),rgba(35,8,16,.60));border-color:rgba(225,66,91,.13)}
+body.mode-sl.form-devil .content-stage{background:rgba(28,12,18,.80);border-color:rgba(226,65,91,.11);box-shadow:0 34px 88px rgba(0,0,0,.34),0 0 52px rgba(126,6,33,.07),inset 0 1px 0 rgba(255,155,170,.03)}
+body.mode-sl.form-devil .section-copy h3,body.mode-sl.form-devil .art-label,body.mode-sl.form-devil .var-title{color:#eadce0}
+body.mode-sl.form-devil .section-copy p,body.mode-sl.form-devil .section-note{color:#a08389}
+body.mode-sl.form-devil .art-card,body.mode-sl.form-devil .variation-group,body.mode-sl.form-devil .wardrobe-card{background:linear-gradient(145deg,rgba(55,20,29,.72),rgba(25,10,15,.80));border-color:rgba(225,68,93,.10);box-shadow:0 17px 38px rgba(0,0,0,.27),inset 0 1px 0 rgba(255,155,170,.03)}
+body.mode-sl.form-devil .var-main{background:radial-gradient(circle at 50% 14%,rgba(118,19,42,.14),transparent 34%),rgba(13,6,9,.55)}
+body.mode-sl.form-devil .wardrobe-bar{background:rgba(45,16,24,.68);border-color:rgba(220,61,86,.11)}
+body.mode-sl.form-devil .viewer::before{background:radial-gradient(circle at 50% 48%,rgba(196,21,52,.18),transparent 42%),radial-gradient(circle at 66% 42%,rgba(91,0,24,.13),transparent 34%)}
+
+/* Ambient mist + particles continuously inherit current form. */
+.sl-gallery-ambient{display:none;position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+body.mode-sl .sl-gallery-ambient{display:block}.app{position:relative;z-index:1}
+.ambient-mist{position:absolute;border-radius:50%;filter:blur(48px);opacity:.20;animation:ambientMist 14s ease-in-out infinite alternate;transition:background 1.05s ease,opacity 1.05s ease}
+.mist-a{left:-12%;top:13%;width:62%;height:32%;background:radial-gradient(ellipse,rgba(169,225,255,.58),transparent 67%)}
+.mist-b{right:-15%;top:35%;width:60%;height:36%;background:radial-gradient(ellipse,rgba(255,225,137,.30),transparent 68%);animation-delay:-5s}
+.mist-c{left:18%;bottom:-12%;width:72%;height:38%;background:radial-gradient(ellipse,rgba(120,199,244,.25),transparent 68%);animation-delay:-8s}
+body.mode-sl.form-devil .mist-a{background:radial-gradient(ellipse,rgba(151,10,41,.42),transparent 67%);opacity:.24}body.mode-sl.form-devil .mist-b{background:radial-gradient(ellipse,rgba(78,0,21,.52),transparent 68%);opacity:.30}body.mode-sl.form-devil .mist-c{background:radial-gradient(ellipse,rgba(213,35,64,.20),transparent 68%);opacity:.22}
+@keyframes ambientMist{to{transform:translate3d(5%,-3%,0) scale(1.09)}}
+.ambient-dust,.morph-particles{position:absolute;inset:0;pointer-events:none}.ambient-speck{position:absolute;left:var(--x);top:var(--y);width:var(--s);height:var(--s);border-radius:50%;background:#eaf8ff;box-shadow:0 0 9px rgba(160,219,255,.78);opacity:0;animation:ambientSpeck var(--d) linear var(--delay) infinite;transition:background .8s ease,box-shadow .8s ease}
+.ambient-speck:nth-child(3n){background:#ffe9ac;box-shadow:0 0 9px rgba(255,220,128,.62)}body.mode-sl.form-devil .ambient-speck{background:#d93653;box-shadow:0 0 10px rgba(217,54,83,.68)}body.mode-sl.form-devil .ambient-speck:nth-child(3n){background:#8d1931;box-shadow:0 0 10px rgba(141,25,49,.58)}
+@keyframes ambientSpeck{0%{opacity:0;transform:translateY(18px) scale(.5)}18%{opacity:.72}100%{opacity:0;transform:translateY(-110px) translateX(19px) scale(.1)}}
+
+/* Full-screen directional morph. Body switches immediately underneath; old theme veil retracts in the same direction as the thumb. */
+.theme-morph{position:fixed;inset:0;z-index:1500;pointer-events:none;visibility:hidden;overflow:hidden}.theme-morph.active{visibility:visible}.morph-veil{position:absolute;inset:-4%;filter:saturate(1.04);will-change:transform}
+.theme-morph.to-devil .morph-veil{background:radial-gradient(circle at 18% 10%,#fff,transparent 22%),radial-gradient(circle at 70% 20%,rgba(255,230,151,.23),transparent 29%),radial-gradient(circle at 45% 65%,rgba(139,211,252,.27),transparent 40%),linear-gradient(145deg,#fbfeff,#edf8ff 52%,#f8f6ef);transform-origin:right center;animation:veilToDevil 1.18s cubic-bezier(.24,.78,.18,1) both}
+.theme-morph.to-angel .morph-veil{background:radial-gradient(circle at 18% 10%,rgba(117,14,39,.26),transparent 26%),radial-gradient(circle at 76% 24%,rgba(211,36,67,.19),transparent 34%),linear-gradient(145deg,#211016,#11080c 53%,#090507);transform-origin:left center;animation:veilToAngel 1.18s cubic-bezier(.24,.78,.18,1) both}
+@keyframes veilToDevil{0%{transform:scaleX(1);opacity:1}68%{opacity:1}88%{opacity:.42}100%{transform:scaleX(0);opacity:0}}@keyframes veilToAngel{0%{transform:scaleX(1);opacity:1}68%{opacity:1}88%{opacity:.38}100%{transform:scaleX(0);opacity:0}}
+.morph-ripple{position:absolute;left:50%;top:18%;width:95px;height:95px;margin:-47px;border-radius:50%;opacity:0;border:1px solid rgba(230,63,89,.0)}.theme-morph.to-devil .morph-ripple{left:73%;border-color:rgba(230,63,89,.42);box-shadow:0 0 28px rgba(199,23,54,.16)}.theme-morph.to-angel .morph-ripple{left:27%;border-color:rgba(180,228,255,.62);box-shadow:0 0 30px rgba(157,216,251,.22)}.theme-morph.active .morph-ripple{animation:morphRipple 1.16s ease-out both}.theme-morph .r2{animation-delay:.11s!important}.theme-morph .r3{animation-delay:.22s!important}@keyframes morphRipple{0%{opacity:.84;transform:scale(.28)}100%{opacity:0;transform:scale(7.5)}}
+.morph-streaks{position:absolute;inset:0;opacity:0}.theme-morph.to-devil .morph-streaks{background:repeating-linear-gradient(105deg,transparent 0 8%,rgba(207,37,65,.08) 8.2% 8.5%,transparent 8.7% 15%);animation:streakFlash 1.0s .08s ease-out both}.theme-morph.to-angel .morph-streaks{background:repeating-linear-gradient(75deg,transparent 0 8%,rgba(220,245,255,.13) 8.2% 8.5%,transparent 8.7% 15%);animation:streakFlash 1.0s .08s ease-out both}@keyframes streakFlash{0%{opacity:0;transform:translateX(0)}22%{opacity:.86}100%{opacity:0;transform:translateX(8%)}}
+.morph-speck{position:absolute;width:var(--size);height:var(--size);border-radius:50%;opacity:0;animation:morphSpeck 1.12s var(--delay) cubic-bezier(.18,.73,.2,1) both}.morph-speck.ember{background:#ea405c;box-shadow:0 0 12px rgba(234,64,92,.85)}.morph-speck.star{background:#e8f8ff;box-shadow:0 0 12px rgba(181,228,255,.94)}.morph-speck.star:nth-child(3n){background:#ffe4a1;box-shadow:0 0 12px rgba(255,219,126,.80)}@keyframes morphSpeck{0%{opacity:0;transform:translate(0,0) scale(.3)}17%{opacity:1}100%{opacity:0;transform:translate(var(--tx),var(--ty)) scale(.08)}}
+
+/* Variation rail never shows browser broken-image icons. */
+.var-empty{position:absolute;inset:0;display:grid;place-items:center;align-content:center;gap:7px;text-align:center;color:var(--muted);pointer-events:none}.var-empty span{font-size:10px;font-weight:900;letter-spacing:.18em}.var-empty small{font-size:8px;letter-spacing:.08em;opacity:.65;word-break:break-all;padding:0 12px}.film-thumb{min-height:48px;aspect-ratio:auto;display:flex;align-items:center;justify-content:center;gap:7px}.film-thumb .film-num{position:static;background:transparent;color:inherit;font-size:12px}.film-dot{width:4px;height:4px;border-radius:50%;background:currentColor;opacity:.24}.film-thumb.failed{opacity:.28;text-decoration:line-through}.film-thumb.active .film-dot{opacity:1;box-shadow:0 0 8px currentColor}
+
+@media(max-width:900px){.hero-side{align-items:center}.duality-toggle{min-width:240px}.toggle-track{width:240px}}
+@media(max-width:720px){.hero-grid{grid-template-columns:auto 1fr}.hero-side{grid-column:1/-1;width:100%;justify-content:space-between;align-items:center}.hero-side .hero-count{display:block}.duality-toggle{min-width:0;width:min(100%,330px)}.toggle-track{width:100%}}
+@media(max-width:600px){.sl-entry-aura{width:190px;top:34%}.hero-side{display:block}.hero-side .hero-count{display:none}.duality-toggle{width:100%}.toggle-track{width:100%;height:54px}.toggle-thumb{height:44px}.toggle-choice b{font-size:8px}.toggle-choice small{font-size:7px}.toggle-caption{font-size:6.5px}.wardrobe-bar{flex-direction:row;align-items:center}.form-echo{margin-left:auto}.filmstrip{gap:6px}.film-thumb{width:58px;flex-basis:58px;min-height:42px}}
+
+
+/* =========================================================
+   INTERACTION POLISH · butterflies / seamless morph / variation cue
+   ========================================================= */
+
+/* Shen Yang click burst: localized, short-lived, and non-blocking. */
+.butterfly-burst-layer{position:fixed;inset:0;z-index:2200;pointer-events:none;overflow:hidden}
+.butterfly-burst{position:fixed;left:0;top:0;display:block;will-change:transform,opacity,filter;font-size:var(--bs);line-height:1;opacity:0;filter:drop-shadow(0 0 8px rgba(255,158,210,.48)) drop-shadow(0 0 13px rgba(130,196,255,.22));animation:butterflyScatter var(--bd) var(--bdelay) cubic-bezier(.16,.72,.18,1) forwards}
+.butterfly-burst:nth-child(3n){filter:drop-shadow(0 0 9px rgba(133,199,255,.54)) drop-shadow(0 0 13px rgba(255,196,223,.18))}
+@keyframes butterflyScatter{
+  0%{opacity:0;transform:translate(var(--bx),var(--by)) rotate(0deg) scale(.24);filter:blur(1px) brightness(1.22)}
+  9%{opacity:.72;filter:blur(0) brightness(1.10)}
+  34%{opacity:.56;transform:translate(calc(var(--bx) + var(--dx-mid)),calc(var(--by) + var(--dy-mid))) rotate(var(--rot-mid)) scale(.92)}
+  62%{opacity:.16}
+  100%{opacity:0;transform:translate(calc(var(--bx) + var(--dx)),calc(var(--by) + var(--dy))) rotate(var(--rot)) scale(.22);filter:blur(1.15px) brightness(1.02)}
+}
+
+
+/* =========================================================
+   SHEN LING CLICK BURST
+   Seraph = sacred feathers + stars + halo ripple
+   Fallen = dark wing shards + embers + seal ripple
+   ========================================================= */
+.sl-click-burst-layer{
+  position:fixed;
+  inset:0;
+  z-index:2201;
+  pointer-events:none;
+  overflow:hidden;
+}
+
+/* Shared click-positioned pieces */
+.sl-burst-piece,
+.sl-burst-ring{
+  position:fixed;
+  left:0;
+  top:0;
+  pointer-events:none;
+  will-change:transform,opacity,filter;
+}
+
+/* ---------- SERAPH ---------- */
+.sl-burst-ring.seraph-ring{
+  width:18px;
+  height:18px;
+  margin:-9px 0 0 -9px;
+  border-radius:50%;
+  border:1px solid rgba(228,248,255,.92);
+  box-shadow:
+    0 0 0 1px rgba(255,224,132,.20),
+    0 0 14px rgba(182,229,255,.52),
+    inset 0 0 8px rgba(255,255,255,.70);
+  animation:seraphClickRing 560ms cubic-bezier(.12,.72,.16,1) forwards;
+}
+.sl-burst-ring.seraph-ring::after{
+  content:"";
+  position:absolute;
+  inset:4px;
+  border-radius:50%;
+  border:1px dashed rgba(255,220,120,.64);
+}
+@keyframes seraphClickRing{
+  0%{opacity:0;transform:translate(var(--cx),var(--cy)) scale(.28)}
+  12%{opacity:.82}
+  65%{opacity:.36}
+  100%{opacity:0;transform:translate(var(--cx),var(--cy)) scale(5.2)}
+}
+
+.sl-burst-piece.seraph-feather{
+  width:7px;
+  height:18px;
+  margin:-9px 0 0 -3.5px;
+  border-radius:90% 12% 88% 12%;
+  opacity:0;
+  background:
+    linear-gradient(160deg,
+      rgba(255,255,255,.98) 0 22%,
+      rgba(205,239,255,.88) 44%,
+      rgba(255,231,154,.52) 72%,
+      rgba(255,255,255,.10) 100%);
+  border:1px solid rgba(255,255,255,.72);
+  box-shadow:
+    0 0 8px rgba(199,236,255,.52),
+    0 0 13px rgba(255,225,137,.18);
+  transform-origin:50% 76%;
+  animation:seraphFeatherBurst var(--dur) var(--delay) cubic-bezier(.16,.72,.18,1) forwards;
+}
+.sl-burst-piece.seraph-feather::after{
+  content:"";
+  position:absolute;
+  left:48%;
+  top:3px;
+  bottom:3px;
+  width:1px;
+  background:linear-gradient(to bottom,rgba(255,255,255,.85),rgba(118,178,211,.28),transparent);
+  transform:rotate(6deg);
+}
+@keyframes seraphFeatherBurst{
+  0%{
+    opacity:0;
+    transform:translate(var(--cx),var(--cy)) rotate(var(--r0)) scale(.42);
+    filter:blur(.8px) brightness(1.18);
+  }
+  12%{opacity:.82;filter:blur(0) brightness(1.08)}
+  48%{
+    opacity:.58;
+    transform:translate(
+      calc(var(--cx) + var(--mx)),
+      calc(var(--cy) + var(--my))
+    ) rotate(var(--rm)) scale(.96);
+  }
+  72%{opacity:.18}
+  100%{
+    opacity:0;
+    transform:translate(
+      calc(var(--cx) + var(--dx)),
+      calc(var(--cy) + var(--dy))
+    ) rotate(var(--r1)) scale(.36);
+    filter:blur(1px);
+  }
+}
+
+.sl-burst-piece.seraph-star{
+  margin:-8px 0 0 -8px;
+  width:16px;
+  height:16px;
+  display:grid;
+  place-items:center;
+  opacity:0;
+  color:#fff4c6;
+  font-size:var(--ss);
+  line-height:1;
+  text-shadow:
+    0 0 5px #fff,
+    0 0 11px rgba(161,220,255,.72),
+    0 0 14px rgba(255,214,112,.42);
+  animation:seraphStarBurst var(--dur) var(--delay) ease-out forwards;
+}
+@keyframes seraphStarBurst{
+  0%{opacity:0;transform:translate(var(--cx),var(--cy)) rotate(0deg) scale(.20)}
+  15%{opacity:.92;transform:translate(var(--cx),var(--cy)) rotate(25deg) scale(1)}
+  55%{opacity:.48}
+  100%{
+    opacity:0;
+    transform:translate(
+      calc(var(--cx) + var(--dx)),
+      calc(var(--cy) + var(--dy))
+    ) rotate(145deg) scale(.12);
+  }
+}
+
+/* ---------- FALLEN ---------- */
+.sl-burst-ring.fallen-ring{
+  width:20px;
+  height:20px;
+  margin:-10px 0 0 -10px;
+  border-radius:50%;
+  border:1px dashed rgba(237,58,88,.72);
+  box-shadow:
+    0 0 13px rgba(221,36,69,.48),
+    inset 0 0 11px rgba(76,0,20,.50);
+  animation:fallenClickRing 520ms cubic-bezier(.12,.70,.18,1) forwards;
+}
+.sl-burst-ring.fallen-ring::before,
+.sl-burst-ring.fallen-ring::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:72%;
+  height:1px;
+  transform-origin:center;
+  background:linear-gradient(90deg,transparent,rgba(239,69,96,.88),transparent);
+}
+.sl-burst-ring.fallen-ring::before{transform:translate(-50%,-50%) rotate(33deg)}
+.sl-burst-ring.fallen-ring::after{transform:translate(-50%,-50%) rotate(-33deg)}
+@keyframes fallenClickRing{
+  0%{opacity:0;transform:translate(var(--cx),var(--cy)) rotate(-18deg) scale(.32)}
+  14%{opacity:.86}
+  58%{opacity:.45}
+  100%{opacity:0;transform:translate(var(--cx),var(--cy)) rotate(92deg) scale(5.0)}
+}
+
+.sl-burst-piece.fallen-shard{
+  width:13px;
+  height:16px;
+  margin:-8px 0 0 -6.5px;
+  opacity:0;
+  clip-path:polygon(
+    50% 0,
+    74% 29%,
+    100% 17%,
+    84% 50%,
+    100% 84%,
+    65% 70%,
+    50% 100%,
+    35% 70%,
+    0 84%,
+    16% 50%,
+    0 17%,
+    26% 29%
+  );
+  background:
+    linear-gradient(145deg,#e43f5e 0 12%,#7f132c 36%,#2b0612 68%,#080305 100%);
+  box-shadow:
+    0 0 8px rgba(230,50,80,.50),
+    0 0 15px rgba(104,1,28,.24);
+  animation:fallenShardBurst var(--dur) var(--delay) cubic-bezier(.12,.75,.18,1) forwards;
+}
+@keyframes fallenShardBurst{
+  0%{
+    opacity:0;
+    transform:translate(var(--cx),var(--cy)) rotate(var(--r0)) scale(.32);
+    filter:blur(.8px) brightness(1.30);
+  }
+  10%{opacity:.90;filter:blur(0) brightness(1.05)}
+  45%{
+    opacity:.68;
+    transform:translate(
+      calc(var(--cx) + var(--mx)),
+      calc(var(--cy) + var(--my))
+    ) rotate(var(--rm)) scale(1.02);
+  }
+  72%{opacity:.20}
+  100%{
+    opacity:0;
+    transform:translate(
+      calc(var(--cx) + var(--dx)),
+      calc(var(--cy) + var(--dy))
+    ) rotate(var(--r1)) scale(.22);
+    filter:blur(.9px);
+  }
+}
+
+.sl-burst-piece.fallen-ember{
+  width:var(--es);
+  height:var(--es);
+  margin:calc(var(--es) / -2) 0 0 calc(var(--es) / -2);
+  border-radius:50%;
+  opacity:0;
+  background:#ef4a66;
+  box-shadow:
+    0 0 7px rgba(239,74,102,.90),
+    0 0 13px rgba(139,5,37,.48);
+  animation:fallenEmberBurst var(--dur) var(--delay) ease-out forwards;
+}
+@keyframes fallenEmberBurst{
+  0%{opacity:0;transform:translate(var(--cx),var(--cy)) scale(.25)}
+  10%{opacity:1}
+  52%{opacity:.62}
+  100%{
+    opacity:0;
+    transform:translate(
+      calc(var(--cx) + var(--dx)),
+      calc(var(--cy) + var(--dy))
+    ) scale(.08);
+  }
+}
+
+@media(prefers-reduced-motion:reduce){
+  .sl-burst-piece,.sl-burst-ring{animation-duration:.01ms!important}
+}
+
+
+/* The toggle moves immediately, while the underlying theme waits until the sweep fully covers it. */
+body.mode-sl .duality-toggle.is-devil .toggle-track{background:linear-gradient(90deg,rgba(37,13,21,.92),rgba(18,7,12,.96));border-color:rgba(214,48,76,.23);box-shadow:0 12px 32px rgba(13,5,9,.32),0 0 26px rgba(155,13,42,.08),inset 0 1px 0 rgba(255,175,188,.04)}
+body.mode-sl .duality-toggle:not(.is-devil) .toggle-track{background:linear-gradient(90deg,rgba(246,253,255,.76),rgba(228,244,253,.64));border-color:rgba(148,196,226,.26);box-shadow:0 10px 28px rgba(76,128,162,.10),inset 0 1px 0 rgba(255,255,255,.94)}
+body.mode-sl .duality-toggle.is-devil .toggle-thumb{transform:translateX(100%);background:linear-gradient(135deg,#73162d,#3c0b18 62%,#16060b);border-color:rgba(235,82,104,.24);box-shadow:0 9px 23px rgba(76,3,21,.42),0 0 24px rgba(202,25,55,.16),inset 0 1px 0 rgba(255,160,174,.08)}
+body.mode-sl .duality-toggle:not(.is-devil) .toggle-thumb{transform:translateX(0);background:linear-gradient(135deg,rgba(255,255,255,.96),rgba(215,241,255,.86) 55%,rgba(255,234,168,.48));border-color:rgba(255,255,255,.90);box-shadow:0 8px 19px rgba(82,151,196,.18),inset 0 1px 0 #fff,0 0 20px rgba(172,222,253,.14)}
+body.mode-sl .duality-toggle:not(.is-devil) .thumb-core{left:14px;right:auto;border-color:rgba(115,184,226,.38);background:radial-gradient(circle at 38% 30%,#fff,rgba(176,224,252,.56) 42%,rgba(255,230,153,.20) 72%);box-shadow:0 0 12px rgba(140,205,246,.28)}
+body.mode-sl .duality-toggle:not(.is-devil) .toggle-choice{color:#7893a4}body.mode-sl .duality-toggle:not(.is-devil) .toggle-choice.angel.active{color:#426f8c;text-shadow:0 0 10px rgba(143,209,248,.20)}
+body.mode-sl .duality-toggle:not(.is-devil) .toggle-caption{color:#8ea7b6}
+body.mode-sl .duality-toggle.is-devil .thumb-core{left:auto;right:14px;border-color:rgba(230,65,91,.46);background:radial-gradient(circle at 40% 34%,#e9546b,#8e1730 47%,#310814 76%);box-shadow:0 0 15px rgba(216,36,65,.42)}
+body.mode-sl .duality-toggle.is-devil .toggle-choice{color:#9f7d84}body.mode-sl .duality-toggle.is-devil .toggle-choice.devil.active{color:#ffdce2;text-shadow:0 0 11px rgba(220,58,84,.34)}
+body.mode-sl .duality-toggle.is-devil .toggle-caption{color:#c16a79}
+.toggle-thumb{transition:transform 1.48s cubic-bezier(.18,.86,.16,1),background 1.05s ease,box-shadow 1.05s ease,border-color 1.05s ease}
+.toggle-track{transition:background 1.25s ease,border-color 1.25s ease,box-shadow 1.25s ease}
+body.morphing .toggle-thumb{box-shadow:0 0 0 1px rgba(255,255,255,.38),0 0 28px rgba(171,214,245,.25),0 10px 28px rgba(48,29,41,.20)}
+body.morphing.form-devil .toggle-thumb{box-shadow:0 0 0 1px rgba(240,85,108,.18),0 0 32px rgba(219,39,66,.27),0 11px 30px rgba(36,7,16,.38)}
+
+/* Seamless directional transform. No full-frame flash: the theme swap occurs under the opaque center of this sweep. */
+.theme-morph{background:transparent!important}
+.morph-veil{inset:-12% -48%;width:auto;filter:none!important;opacity:0;will-change:transform,opacity;box-shadow:none}
+.theme-morph.to-devil .morph-veil{
+  background:
+    radial-gradient(ellipse at 42% 46%,rgba(217,37,69,.34),transparent 28%),
+    radial-gradient(ellipse at 50% 52%,rgba(63,2,20,.94) 0 31%,rgba(19,6,12,.98) 48%,rgba(8,4,7,.99) 67%,transparent 75%),
+    linear-gradient(105deg,transparent 7%,rgba(82,5,27,.32) 24%,#15070d 44%,#080406 58%,rgba(104,6,31,.42) 73%,transparent 92%);
+  animation:seamlessSweepDevil 1.32s cubic-bezier(.42,.04,.14,1) both;
+}
+.theme-morph.to-angel .morph-veil{
+  background:
+    radial-gradient(ellipse at 58% 46%,rgba(255,236,165,.34),transparent 27%),
+    radial-gradient(ellipse at 50% 52%,rgba(224,247,255,.98) 0 32%,rgba(247,252,255,.99) 48%,rgba(255,250,231,.99) 66%,transparent 75%),
+    linear-gradient(75deg,transparent 7%,rgba(151,215,250,.33) 24%,#eefaff 44%,#fffdf4 58%,rgba(255,222,137,.32) 73%,transparent 92%);
+  animation:seamlessSweepAngel 1.32s cubic-bezier(.42,.04,.14,1) both;
+}
+.morph-veil::after{content:"";position:absolute;top:-5%;bottom:-5%;width:8%;opacity:.92;filter:blur(12px);mix-blend-mode:screen}
+.theme-morph.to-devil .morph-veil::after{right:25%;background:linear-gradient(90deg,transparent,rgba(237,55,83,.46),rgba(124,8,36,.72),transparent)}
+.theme-morph.to-angel .morph-veil::after{left:25%;background:linear-gradient(90deg,transparent,rgba(194,234,255,.70),rgba(255,228,145,.58),transparent)}
+@keyframes seamlessSweepDevil{
+  0%{opacity:0;transform:translate3d(-74%,0,0) skewX(-7deg) scaleX(.72)}
+  8%{opacity:.9}
+  48%{opacity:1;transform:translate3d(-3%,0,0) skewX(-3deg) scaleX(1.02)}
+  72%{opacity:1;transform:translate3d(25%,0,0) skewX(-2deg) scaleX(1.00)}
+  86%{opacity:.98;transform:translate3d(55%,0,0) skewX(-5deg) scaleX(.90)}
+  92%{opacity:.28;transform:translate3d(70%,0,0) skewX(-7deg) scaleX(.82)}
+  96%,100%{opacity:0;transform:translate3d(82%,0,0) skewX(-8deg) scaleX(.74)}
+}
+@keyframes seamlessSweepAngel{
+  0%{opacity:0;transform:translate3d(74%,0,0) skewX(7deg) scaleX(.72)}
+  8%{opacity:.9}
+  48%{opacity:1;transform:translate3d(3%,0,0) skewX(3deg) scaleX(1.02)}
+  72%{opacity:1;transform:translate3d(-25%,0,0) skewX(2deg) scaleX(1.00)}
+  86%{opacity:.98;transform:translate3d(-55%,0,0) skewX(5deg) scaleX(.90)}
+  92%{opacity:.28;transform:translate3d(-70%,0,0) skewX(7deg) scaleX(.82)}
+  96%,100%{opacity:0;transform:translate3d(-82%,0,0) skewX(8deg) scaleX(.74)}
+}
+.morph-streaks{mix-blend-mode:screen}
+.theme-morph.to-devil .morph-streaks{animation:streakGlideDevil 1.18s .04s ease-out both}
+.theme-morph.to-angel .morph-streaks{animation:streakGlideAngel 1.18s .04s ease-out both}
+@keyframes streakGlideDevil{0%{opacity:0;transform:translateX(-12%)}22%{opacity:.58}62%{opacity:.32}100%{opacity:0;transform:translateX(19%)}}
+@keyframes streakGlideAngel{0%{opacity:0;transform:translateX(12%)}22%{opacity:.68}62%{opacity:.34}100%{opacity:0;transform:translateX(-19%)}}
+.morph-speck{animation-duration:1.14s}
+
+
+/* Transformation herald: a winged sigil physically leads the moving corruption/purification front. */
+.morph-front{
+  position:absolute;z-index:3;top:-12%;bottom:-12%;width:14%;opacity:0;pointer-events:none;
+  filter:blur(12px);mix-blend-mode:screen;will-change:transform,opacity;
+}
+.theme-morph.to-devil .morph-front{
+  left:-18%;
+  background:linear-gradient(90deg,transparent,rgba(112,7,31,.18),rgba(238,48,78,.74),rgba(76,3,23,.42),transparent);
+  box-shadow:0 0 46px rgba(203,27,59,.20);
+  animation:morphFrontDevil 1.13s linear both;
+}
+.theme-morph.to-angel .morph-front{
+  right:-18%;
+  background:linear-gradient(90deg,transparent,rgba(149,215,252,.24),rgba(244,252,255,.92),rgba(255,221,126,.58),transparent);
+  box-shadow:0 0 54px rgba(182,230,255,.30);
+  animation:morphFrontAngel 1.13s linear both;
+}
+@keyframes morphFrontDevil{
+  0%{opacity:0;transform:translate3d(0,0,0) skewX(-10deg)}
+  13%{opacity:.96}
+  82%{opacity:.88}
+  94%{opacity:.14}
+  100%{opacity:0;transform:translate3d(138vw,0,0) skewX(-10deg)}
+}
+@keyframes morphFrontAngel{
+  0%{opacity:0;transform:translate3d(0,0,0) skewX(10deg)}
+  13%{opacity:.96}
+  82%{opacity:.90}
+  94%{opacity:.14}
+  100%{opacity:0;transform:translate3d(-138vw,0,0) skewX(10deg)}
+}
+
+
+/* =========================================================
+   HERALD V2 · smooth flight + layered angel/demon apparition
+   Outer shell only translates on X; inner body handles float/wing motion.
+   ========================================================= */
+.morph-herald{
+  position:absolute;
+  z-index:7;
+  left:-190px;
+  top:43%;
+  width:150px;
+  height:150px;
+  margin-top:-75px;
+  opacity:0;
+  pointer-events:none;
+  will-change:transform,opacity;
+  transform:translate3d(0,0,0);
+  backface-visibility:hidden;
+  contain:layout paint style;
+}
+.theme-morph.to-devil .morph-herald{
+  animation:heraldTrackDevil 1.18s linear both;
+}
+.theme-morph.to-angel .morph-herald{
+  left:auto;
+  right:-190px;
+  animation:heraldTrackAngel 1.18s linear both;
+}
+@keyframes heraldTrackDevil{
+  0%{opacity:0;transform:translate3d(0,0,0)}
+  7%{opacity:.96}
+  88%{opacity:1}
+  96%{opacity:.34}
+  100%{opacity:0;transform:translate3d(calc(100vw + 380px),0,0)}
+}
+@keyframes heraldTrackAngel{
+  0%{opacity:0;transform:translate3d(0,0,0)}
+  7%{opacity:.96}
+  88%{opacity:1}
+  96%{opacity:.34}
+  100%{opacity:0;transform:translate3d(calc(-100vw - 380px),0,0)}
+}
+
+.herald-body{
+  position:absolute;
+  inset:0;
+  transform:translate3d(0,-22px,0) scale(.88);
+  transform-origin:center;
+  will-change:transform,filter;
+  backface-visibility:hidden;
+}
+.theme-morph.to-devil .herald-body{
+  filter:drop-shadow(0 0 12px rgba(235,43,76,.46))
+         drop-shadow(0 0 30px rgba(111,2,29,.34));
+  animation:heraldBodyFloatDevil 1.18s cubic-bezier(.22,.62,.22,1) both;
+}
+.theme-morph.to-angel .herald-body{
+  filter:drop-shadow(0 0 14px rgba(223,247,255,.88))
+         drop-shadow(0 0 34px rgba(255,219,126,.34));
+  animation:heraldBodyFloatAngel 1.18s cubic-bezier(.22,.62,.22,1) both;
+}
+@keyframes heraldBodyFloatDevil{
+  0%{transform:translate3d(0,-28px,0) scale(.72)}
+  22%{transform:translate3d(0,-17px,0) scale(.91)}
+  48%{transform:translate3d(0,1px,0) scale(1.03)}
+  72%{transform:translate3d(0,11px,0) scale(.98)}
+  100%{transform:translate3d(0,20px,0) scale(.82)}
+}
+@keyframes heraldBodyFloatAngel{
+  0%{transform:translate3d(0,-31px,0) scale(.72)}
+  22%{transform:translate3d(0,-19px,0) scale(.91)}
+  48%{transform:translate3d(0,-1px,0) scale(1.03)}
+  72%{transform:translate3d(0,10px,0) scale(.98)}
+  100%{transform:translate3d(0,19px,0) scale(.82)}
+}
+
+/* Aura rings */
+.herald-aura{
+  position:absolute;
+  left:50%;
+  top:50%;
+  border-radius:50%;
+  pointer-events:none;
+  transform:translate(-50%,-50%);
+}
+.aura-outer{width:118px;height:118px;opacity:.42}
+.aura-inner{width:78px;height:78px;opacity:.72}
+.theme-morph.to-angel .aura-outer{
+  border:1px solid rgba(205,239,255,.45);
+  box-shadow:0 0 28px rgba(191,232,255,.24),inset 0 0 24px rgba(255,255,255,.22);
+  animation:angelAuraBreathe .82s ease-in-out infinite alternate;
+}
+.theme-morph.to-angel .aura-inner{
+  border:1px dashed rgba(255,222,126,.62);
+  box-shadow:0 0 18px rgba(255,224,137,.24);
+  animation:angelAuraSpin 2.8s linear infinite;
+}
+.theme-morph.to-devil .aura-outer{
+  border:1px solid rgba(204,31,62,.26);
+  box-shadow:0 0 34px rgba(150,4,37,.25),inset 0 0 28px rgba(91,0,24,.30);
+  animation:devilAuraBreathe .68s ease-in-out infinite alternate;
+}
+.theme-morph.to-devil .aura-inner{
+  border:1px dashed rgba(239,62,89,.54);
+  box-shadow:0 0 18px rgba(222,31,64,.24);
+  animation:devilAuraSpin 1.7s linear infinite;
+}
+@keyframes angelAuraBreathe{to{transform:translate(-50%,-50%) scale(1.09);opacity:.20}}
+@keyframes devilAuraBreathe{to{transform:translate(-50%,-50%) scale(1.12);opacity:.18}}
+@keyframes angelAuraSpin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes devilAuraSpin{to{transform:translate(-50%,-50%) rotate(-360deg)}}
+
+/* Wings */
+.herald-wing{
+  position:absolute;
+  z-index:3;
+  top:45%;
+  width:78px;
+  height:52px;
+  will-change:transform;
+  backface-visibility:hidden;
+}
+.herald-wing-l{right:53%;transform-origin:100% 52%}
+.herald-wing-r{left:53%;transform-origin:0 52%}
+.herald-wing b,.herald-wing em{
+  position:absolute;
+  inset:0;
+  display:block;
+  content:"";
+  pointer-events:none;
+}
+
+/* Angel: layered feather fan */
+.theme-morph.to-angel .herald-wing{
+  background:
+    linear-gradient(145deg,rgba(255,255,255,.90),rgba(185,230,253,.40) 56%,rgba(255,230,155,.13));
+  border:1px solid rgba(240,252,255,.78);
+  box-shadow:inset 0 0 20px rgba(255,255,255,.56),0 0 18px rgba(191,232,255,.30);
+}
+.theme-morph.to-angel .herald-wing-l{
+  clip-path:polygon(100% 46%,85% 11%,68% 24%,55% 2%,39% 26%,24% 8%,13% 39%,0 30%,13% 60%,5% 86%,35% 70%,58% 95%,72% 65%,100% 61%);
+  animation:angelWingL .46s ease-in-out infinite alternate;
+}
+.theme-morph.to-angel .herald-wing-r{
+  clip-path:polygon(0 46%,15% 11%,32% 24%,45% 2%,61% 26%,76% 8%,87% 39%,100% 30%,87% 60%,95% 86%,65% 70%,42% 95%,28% 65%,0 61%);
+  animation:angelWingR .46s ease-in-out infinite alternate;
+}
+.theme-morph.to-angel .herald-wing b{
+  inset:9px 10px 4px;
+  opacity:.65;
+  background:repeating-linear-gradient(158deg,rgba(255,255,255,.88) 0 4px,rgba(177,222,247,.18) 5px 8px,transparent 9px 12px);
+  filter:blur(.2px);
+}
+.theme-morph.to-angel .herald-wing em{
+  inset:18px 16px 8px;
+  opacity:.34;
+  background:linear-gradient(145deg,#fff,rgba(255,225,137,.42),transparent);
+}
+@keyframes angelWingL{
+  from{transform:rotate(16deg) skewX(-6deg) scaleY(.94)}
+  to{transform:rotate(5deg) skewX(-3deg) scaleY(1.06)}
+}
+@keyframes angelWingR{
+  from{transform:rotate(-16deg) skewX(6deg) scaleY(.94)}
+  to{transform:rotate(-5deg) skewX(3deg) scaleY(1.06)}
+}
+
+/* Demon: multi-lobed bat wings + vein glow */
+.theme-morph.to-devil .herald-wing{
+  background:
+    radial-gradient(circle at 70% 42%,rgba(230,54,82,.22),transparent 27%),
+    linear-gradient(150deg,rgba(157,14,43,.86),rgba(35,2,13,.92) 63%,rgba(7,2,5,.94));
+  border:1px solid rgba(230,57,85,.26);
+  box-shadow:inset 0 0 22px rgba(69,0,20,.52),0 0 18px rgba(173,15,44,.28);
+}
+.theme-morph.to-devil .herald-wing-l{
+  clip-path:polygon(100% 46%,82% 4%,66% 27%,51% 5%,38% 34%,20% 15%,27% 49%,2% 33%,13% 63%,0 89%,36% 72%,57% 98%,69% 65%,100% 59%);
+  animation:devilWingL .38s cubic-bezier(.33,.1,.67,.9) infinite alternate;
+}
+.theme-morph.to-devil .herald-wing-r{
+  clip-path:polygon(0 46%,18% 4%,34% 27%,49% 5%,62% 34%,80% 15%,73% 49%,98% 33%,87% 63%,100% 89%,64% 72%,43% 98%,31% 65%,0 59%);
+  animation:devilWingR .38s cubic-bezier(.33,.1,.67,.9) infinite alternate;
+}
+.theme-morph.to-devil .herald-wing b{
+  inset:10px 8px;
+  opacity:.63;
+  background:
+    linear-gradient(28deg,transparent 0 46%,rgba(238,57,86,.48) 48% 50%,transparent 52%),
+    linear-gradient(-18deg,transparent 0 48%,rgba(129,5,35,.56) 50% 52%,transparent 54%);
+}
+.theme-morph.to-devil .herald-wing em{
+  inset:18px 14px 6px;
+  opacity:.46;
+  background:radial-gradient(ellipse,rgba(226,43,72,.34),transparent 70%);
+}
+@keyframes devilWingL{
+  from{transform:rotate(-10deg) skewX(-8deg) scaleY(.90)}
+  to{transform:rotate(3deg) skewX(-3deg) scaleY(1.08)}
+}
+@keyframes devilWingR{
+  from{transform:rotate(10deg) skewX(8deg) scaleY(.90)}
+  to{transform:rotate(-3deg) skewX(3deg) scaleY(1.08)}
+}
+
+/* Core */
+.herald-core{
+  position:absolute;
+  z-index:6;
+  left:50%;
+  top:50%;
+  width:50px;
+  height:50px;
+  transform:translate(-50%,-50%);
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+}
+.herald-core::before,.herald-core::after{
+  display:block;
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+}
+.theme-morph.to-angel .herald-core{
+  background:radial-gradient(circle at 33% 28%,#fff 0 18%,#e5f7ff 38%,#d0ebfa 60%,#d5b85f 100%);
+  border:1px solid rgba(255,255,255,.96);
+  box-shadow:inset 0 0 0 4px rgba(255,255,255,.34),0 0 26px rgba(186,232,255,.70),0 0 45px rgba(255,221,124,.22);
+}
+.theme-morph.to-angel .herald-core::before{
+  content:"";
+  width:66px;height:66px;border-radius:50%;
+  border:1px solid rgba(225,247,255,.52);
+  box-shadow:0 0 14px rgba(203,239,255,.33);
+  animation:coreRingAngel 1.15s linear infinite;
+}
+.theme-morph.to-angel .herald-core::after{
+  content:"✦";
+  position:relative;
+  left:auto;top:auto;
+  transform:none;
+  color:#669dc2;
+  font-size:23px;
+  font-weight:900;
+  text-shadow:0 0 8px #fff,0 0 15px rgba(255,216,108,.54);
+}
+.theme-morph.to-devil .herald-core{
+  background:radial-gradient(circle at 35% 29%,#b82a45 0 14%,#6d1027 42%,#260610 72%,#080305 100%);
+  border:1px solid rgba(243,81,104,.54);
+  box-shadow:inset 0 0 0 5px rgba(0,0,0,.27),0 0 27px rgba(231,39,71,.48),0 0 46px rgba(113,3,31,.30);
+}
+.theme-morph.to-devil .herald-core::before{
+  content:"";
+  width:70px;height:70px;border-radius:50%;
+  border:1px dashed rgba(238,64,91,.55);
+  box-shadow:0 0 17px rgba(206,28,58,.25);
+  animation:coreRingDevil .78s linear infinite;
+}
+.theme-morph.to-devil .herald-core::after{
+  content:"⛧";
+  position:relative;
+  left:auto;top:auto;
+  transform:none;
+  color:#f0abb5;
+  font-size:24px;
+  font-weight:900;
+  text-shadow:0 0 9px rgba(255,78,104,.72);
+}
+@keyframes coreRingAngel{to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes coreRingDevil{to{transform:translate(-50%,-50%) rotate(-360deg)}}
+
+/* Halo / crown */
+.herald-halo{
+  position:absolute;
+  z-index:5;
+  left:50%;
+  top:20%;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  pointer-events:none;
+}
+.theme-morph.to-angel .herald-halo{
+  width:78px;height:24px;
+  border:2px solid rgba(255,226,132,.92);
+  box-shadow:0 0 13px rgba(255,229,145,.68),0 0 27px rgba(190,231,255,.24),inset 0 0 11px rgba(255,255,255,.58);
+  animation:haloFloat .62s ease-in-out infinite alternate;
+}
+.theme-morph.to-devil .herald-halo{
+  width:88px;height:88px;top:50%;
+  border:1px dashed rgba(235,55,84,.66);
+  box-shadow:0 0 18px rgba(203,24,55,.33),inset 0 0 24px rgba(91,2,27,.34);
+  animation:sealSpin .95s linear infinite;
+}
+.herald-crown{
+  position:absolute;z-index:5;left:50%;top:29%;width:38px;height:22px;transform:translate(-50%,-50%);
+}
+.theme-morph.to-angel .herald-crown{
+  clip-path:polygon(0 100%,10% 40%,26% 72%,42% 9%,57% 72%,74% 40%,90% 72%,100% 100%);
+  background:linear-gradient(to bottom,#fff7d2,#d9b75b);
+  filter:drop-shadow(0 0 7px rgba(255,222,126,.48));
+  opacity:.72;
+}
+.theme-morph.to-devil .herald-crown{
+  top:22%;
+  clip-path:polygon(0 100%,17% 7%,36% 68%,50% 0,64% 68%,83% 7%,100% 100%);
+  background:linear-gradient(to bottom,#ad1e39,#300713);
+  filter:drop-shadow(0 0 8px rgba(219,43,70,.38));
+  opacity:.80;
+}
+@keyframes haloFloat{to{transform:translate(-50%,-50%) translateY(-4px) scale(1.05);opacity:.74}}
+@keyframes sealSpin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+
+/* Trails */
+.herald-trail{
+  position:absolute;
+  z-index:1;
+  top:50%;
+  height:18px;
+  transform:translateY(-50%);
+  pointer-events:none;
+  border-radius:999px;
+  will-change:opacity,transform;
+}
+.trail-main{width:210px;opacity:.82;filter:blur(4px)}
+.trail-soft{width:270px;height:36px;opacity:.33;filter:blur(13px)}
+.theme-morph.to-devil .trail-main,
+.theme-morph.to-devil .trail-soft{right:62%}
+.theme-morph.to-devil .trail-main{
+  background:linear-gradient(90deg,transparent,rgba(91,3,25,.20),rgba(235,42,72,.64));
+}
+.theme-morph.to-devil .trail-soft{
+  background:linear-gradient(90deg,transparent,rgba(103,0,30,.10),rgba(207,25,58,.32));
+}
+.theme-morph.to-angel .trail-main,
+.theme-morph.to-angel .trail-soft{left:62%}
+.theme-morph.to-angel .trail-main{
+  background:linear-gradient(90deg,rgba(239,252,255,.80),rgba(255,224,131,.40),transparent);
+}
+.theme-morph.to-angel .trail-soft{
+  background:linear-gradient(90deg,rgba(183,229,255,.38),rgba(255,231,160,.16),transparent);
+}
+
+/* Small-screen: reduce geometry, keep animation path smooth */
+@media(max-width:600px){
+  .morph-herald{width:120px;height:120px;margin-top:-60px}
+  .herald-wing{width:61px;height:43px}
+  .herald-core{width:43px;height:43px}
+  .aura-outer{width:96px;height:96px}
+  .aura-inner{width:66px;height:66px}
+  .theme-morph.to-angel .herald-halo{width:64px;height:20px}
+  .theme-morph.to-devil .herald-halo{width:72px;height:72px}
+  .trail-main{width:145px}.trail-soft{width:190px}
+}
+
+
+/* Variation chooser: visually announces itself as an interactive game control. */
+.var-stage{grid-template-columns:minmax(0,1fr) 152px}
+.variation-rail{min-width:0;display:flex;flex-direction:column;gap:9px;padding:8px;border-radius:15px;background:linear-gradient(180deg,rgba(255,255,255,.38),rgba(255,255,255,.14));border:1px solid rgba(255,255,255,.48);box-shadow:inset 0 1px 0 rgba(255,255,255,.64)}
+body.mode-sl .variation-rail{background:linear-gradient(180deg,rgba(238,249,255,.13),rgba(41,18,27,.20));border-color:rgba(255,255,255,.10)}
+.variation-cue{position:relative;overflow:hidden;display:grid;grid-template-columns:27px minmax(0,1fr);align-items:center;gap:7px;padding:8px 7px 9px;border-radius:11px;color:var(--ink);background:rgba(255,255,255,.46);border:1px solid rgba(255,255,255,.60);box-shadow:0 5px 14px rgba(59,48,70,.06),inset 0 1px 0 rgba(255,255,255,.75)}
+body.mode-sl .variation-cue{background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.08)}
+.variation-cue::after{content:"";position:absolute;left:-35%;top:0;width:28%;height:100%;transform:skewX(-18deg);background:linear-gradient(90deg,transparent,rgba(255,255,255,.66),transparent);animation:cueSheen 3.4s ease-in-out infinite}
+@keyframes cueSheen{0%,58%{left:-40%;opacity:0}66%{opacity:.75}88%{left:120%;opacity:.15}100%{left:120%;opacity:0}}
+.cue-arrow{width:27px;height:27px;display:grid;place-items:center;border-radius:50%;color:#fff;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 0 0 4px rgba(255,255,255,.15),0 0 17px rgba(218,126,170,.18);animation:cueNudge 1.5s ease-in-out infinite}
+@keyframes cueNudge{0%,100%{transform:translateY(-1px)}50%{transform:translateY(3px)}}
+.cue-copy{min-width:0}.cue-copy strong{display:block;font-size:9px;line-height:1.25;letter-spacing:.07em}.cue-copy small{display:block;margin-top:3px;font-size:6.5px;font-weight:850;letter-spacing:.13em;color:var(--muted)}
+.filmstrip{gap:8px;max-height:475px;padding:2px}
+.film-thumb{min-height:55px!important;border-radius:12px!important;opacity:.72!important;background:rgba(255,255,255,.31)!important;border:1px solid rgba(255,255,255,.64)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.62);transform:none!important}
+.film-thumb::before{content:"选择";font-size:6px;font-weight:900;letter-spacing:.12em;opacity:.44}
+.film-thumb .film-num{font-size:15px!important;font-weight:850;letter-spacing:.04em}.film-thumb .film-dot{width:5px;height:5px}
+.film-thumb:hover{opacity:1!important;border-color:color-mix(in srgb,var(--accent) 52%,white)!important;box-shadow:0 7px 17px rgba(63,50,73,.09),inset 0 1px 0 rgba(255,255,255,.72)}
+.film-thumb.active{opacity:1!important;color:#fff!important;background:linear-gradient(135deg,var(--accent),color-mix(in srgb,var(--accent2) 68%,var(--accent)))!important;border-color:rgba(255,255,255,.66)!important;box-shadow:0 9px 22px rgba(83,55,83,.15),0 0 18px color-mix(in srgb,var(--accent) 25%,transparent)!important}
+.film-thumb.active::before{content:"当前";opacity:.92}.film-thumb.active .film-dot{background:#fff;box-shadow:0 0 9px #fff}
+body.mode-sl.form-devil .film-thumb.active{background:linear-gradient(135deg,#bd2442,#5a1021)!important;box-shadow:0 9px 22px rgba(0,0,0,.25),0 0 19px rgba(220,45,72,.15)!important}
+body.mode-sl:not(.form-devil) .film-thumb.active{background:linear-gradient(135deg,#72bce6,#b5dff4 65%,#d3b866)!important;color:#315b72!important}
+
+@media(max-width:760px){
+  .var-stage{grid-template-columns:1fr}
+  .variation-rail{order:-1;padding:7px}
+  .variation-cue{grid-template-columns:25px minmax(0,1fr);padding:7px}
+  .cue-arrow{width:25px;height:25px;transform:rotate(-90deg);animation:cueNudgeMobile 1.5s ease-in-out infinite}
+  @keyframes cueNudgeMobile{0%,100%{transform:rotate(-90deg) translateY(-1px)}50%{transform:rotate(-90deg) translateY(3px)}}
+  .filmstrip{flex-direction:row;max-height:none;overflow-x:auto;padding:2px 2px 5px}
+  .film-thumb{width:76px!important;flex-basis:76px!important;min-height:48px!important}
+}
+
+</style>
+</head>
+<body>
+<div class="butterfly-burst-layer" id="butterflyBurstLayer"></div>
+<div class="sl-click-burst-layer" id="slClickBurstLayer"></div>
+<div class="world-ambient"><i class="ambient-orb a"></i><i class="ambient-orb b"></i><i class="ambient-orb c"></i></div>
+<div class="noise"></div>
+<div class="app" id="appRoot">
+
+  <section id="home" class="view active">
+    <div class="archive-home">
+      <header class="archive-mark">
+        <div class="eyebrow">CHARACTER ARCHIVE / COLLECTION MODE</div>
+        <h1>全立绘图鉴</h1>
+        <p>选择角色进入独立鉴赏档案 · PORTRAIT / VARIATION / EVENT / WARDROBE</p>
+      </header>
+
+      <div class="character-stage">
+        <button class="character-door door-sy" onclick="openGallery('沈漾')" aria-label="进入沈漾图鉴">
+          <div class="door-backdrop"></div>
+          <div class="door-portrait"><img id="coverSyImg" alt="沈漾"></div>
+          <span class="butterfly-glyph g1">🦋</span><span class="butterfly-glyph g2">🦋</span>
+          <div class="door-vignette"></div>
+          <div class="door-copy">
+            <div class="door-code">ARCHIVE · 01</div>
+            <div class="door-name">沈漾</div>
+            <div class="door-en">SHEN YANG · BUTTERFLY BLOOM</div>
+            <div class="door-enter">ENTER ARCHIVE <i></i></div>
+          </div>
+        </button>
+
+        <button class="character-door door-sl" onclick="openGallery('沈澪')" aria-label="进入沈澪图鉴">
+          <div class="door-backdrop"></div>
+          <div class="door-portrait"><img id="coverSlImg" alt="沈澪"></div>
+          <div class="sl-entry-aura" aria-hidden="true"><i class="entry-ring r1"></i><i class="entry-ring r2"></i><i class="entry-core"></i><i class="entry-crack c1"></i><i class="entry-crack c2"></i><i class="entry-crack c3"></i></div>
+          <div class="fog"></div><div class="fog f2"></div>
+          <div class="particle-field" id="homeParticles"></div>
+          <div class="door-vignette"></div>
+          <div class="door-copy">
+            <div class="door-code">ARCHIVE · 02</div>
+            <div class="door-name">沈澪</div>
+            <div class="door-en">SHEN LING · SERAPH × FALLEN</div>
+            <div class="door-enter">ENTER ARCHIVE <i></i></div>
+          </div>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section id="gallery" class="view">
+    <div class="game-topbar">
+      <button class="back" onclick="goHome()">← ARCHIVE</button>
+      <div class="top-archive">
+        <span class="top-index" id="topIndex">ARCHIVE · 01</span>
+        <span class="top-name" id="topName">沈漾 / SHEN YANG</span>
+      </div>
+      <div class="top-status" id="topStatus">COLLECTION MODE</div>
+    </div>
+
+    <header class="character-hero">
+      <div class="sl-hero-fx"></div>
+      <div class="hero-grid">
+        <div class="hero-emblem" id="heroEmblem">🦋</div>
+        <div class="hero-copy">
+          <div class="kicker" id="heroKicker">CHARACTER ARCHIVE · 01</div>
+          <h2 id="heroName">沈漾</h2>
+          <div class="en" id="heroEn">SHEN YANG · BUTTERFLY BLOOM</div>
+          <div class="desc" id="heroDesc">粉蓝蝴蝶主题的完整立绘收藏。普通立绘、动作差分、事件分类与状态栏衣装统一归档。</div>
+        </div>
+        <div class="hero-side">
+          <div class="hero-count"><strong>04</strong><span>COLLECTIONS</span></div>
+          <div class="duality-toggle" id="dualityToggle" aria-label="沈澪形态切换">
+            <div class="toggle-track">
+              <div class="toggle-thumb" aria-hidden="true"><span class="thumb-core"></span></div>
+              <button class="toggle-choice angel active" type="button" data-form="小天使"><span class="choice-mark">✦</span><span><b>SERAPH</b><small>小天使</small></span></button>
+              <button class="toggle-choice devil" type="button" data-form="小恶魔"><span class="choice-mark">◆</span><span><b>FALLEN</b><small>小恶魔</small></span></button>
+            </div>
+            <div class="toggle-caption" id="toggleCaption">SANCTIFIED FORM · 天使形态</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <nav class="game-nav" aria-label="图鉴分类">
+      <button class="nav-gem active" data-target="single"><span class="gem-icon">◇</span><span class="gem-copy"><span class="gem-cn">单图</span><span class="gem-en">PORTRAIT</span></span></button>
+      <button class="nav-gem" data-target="diff"><span class="gem-icon">✦</span><span class="gem-copy"><span class="gem-cn">动作差分</span><span class="gem-en">VARIATION</span></span></button>
+      <button class="nav-gem" data-target="ejac"><span class="gem-icon">◈</span><span class="gem-copy"><span class="gem-cn">射精分类</span><span class="gem-en">EVENT CG</span></span></button>
+      <button class="nav-gem" data-target="status"><span class="gem-icon">♢</span><span class="gem-copy"><span class="gem-cn">状态栏立绘</span><span class="gem-en">WARDROBE</span></span></button>
+    </nav>
+
+    <main class="content-stage">
+      <section id="single" class="section active">
+        <div class="section-heading"><div class="section-mark">01</div><div class="section-copy"><h3>普通单图</h3><p>PORTRAIT COLLECTION</p></div><div class="section-note"> </div></div>
+        <div id="singleGrid" class="collection-grid"></div>
+      </section>
+
+      <section id="diff" class="section">
+        <div class="section-heading"><div class="section-mark">02</div><div class="section-copy"><h3>动作差分</h3><p>VARIATION VIEWER</p></div><div class="section-note">每个动作改成主图 + Filmstrip 缩略带，像游戏里的差分鉴赏器。</div></div>
+        <div id="diffContainer" class="variation-stack"></div>
+      </section>
+
+      <section id="ejac" class="section">
+        <div class="section-heading"><div class="section-mark">03</div><div class="section-copy"><h3>射精分类</h3><p>EVENT CG ARCHIVE</p></div><div class="section-note">分类逻辑与原命名完全不变，只升级浏览方式。</div></div>
+        <div id="ejacContainer" class="variation-stack"></div>
+      </section>
+
+      <section id="status" class="section">
+        <div class="section-heading"><div class="section-mark">04</div><div class="section-copy"><h3>状态栏立绘</h3><p>WARDROBE COLLECTION</p></div><div class="section-note" id="statusSectionNote">七套衣装作为编号收藏卡展示。</div></div>
+        <div class="wardrobe-bar">
+          <span class="wardrobe-title">WARDROBE / FORM SELECT</span>
+          <div class="form-echo" id="wardrobeFormEcho"><i></i><span>SERAPH · 小天使</span></div>
+        </div>
+        <div id="statusContainer" class="wardrobe-grid"></div>
+      </section>
+    </main>
+  </section>
+</div>
+
+<div class="sl-gallery-ambient" id="slGalleryAmbient" aria-hidden="true">
+  <div class="ambient-mist mist-a"></div><div class="ambient-mist mist-b"></div><div class="ambient-mist mist-c"></div>
+  <div class="ambient-dust" id="ambientDust"></div>
+</div>
+<div class="theme-morph" id="themeMorph" aria-hidden="true">
+  <div class="morph-veil"></div>
+  <div class="morph-front"></div>
+  <div class="morph-ripple r1"></div><div class="morph-ripple r2"></div><div class="morph-ripple r3"></div>
+  <div class="morph-streaks"></div>
+  <div class="morph-herald" aria-hidden="true">
+    <div class="herald-body">
+      <i class="herald-aura aura-outer"></i>
+      <i class="herald-aura aura-inner"></i>
+      <i class="herald-wing herald-wing-l"><b></b><em></em></i>
+      <i class="herald-wing herald-wing-r"><b></b><em></em></i>
+      <i class="herald-halo"></i>
+      <i class="herald-crown"></i>
+      <i class="herald-core"></i>
+      <i class="herald-trail trail-main"></i>
+      <i class="herald-trail trail-soft"></i>
+    </div>
+  </div>
+  <div class="morph-particles" id="morphParticles"></div>
+</div>
+
+<div id="viewer" class="viewer" onclick="viewerBackdrop(event)">
+  <div class="viewer-shell">
+    <button class="viewer-close" onclick="closeViewer()">×</button>
+    <div class="viewer-image"><img id="viewerImg" alt=""></div>
+    <aside class="viewer-side"><div class="viewer-kicker" id="viewerKicker">CHARACTER ARCHIVE</div><div class="viewer-label" id="viewerLabel"></div><div class="viewer-file" id="viewerFile"></div></aside>
+  </div>
+</div>
+
+<script>
+const BASE_URL='https://raw.githubusercontent.com/AliceNekoqqq/Pic/master/img/';
+let CHARACTER='沈漾';
+let CURRENT_FORM='小天使';
+const STATUS_IMAGES=['制服','日常','外出','赤裸','内衣','挑逗','泳装'];
+const EN_STATUS={制服:'UNIFORM',日常:'CASUAL',外出:'OUTING',赤裸:'NUDE',内衣:'LINGERIE',挑逗:'TEASE',泳装:'SWIMWEAR'};
+const DATA={
+  '沈漾':{
+    single:['阴部自拍','露出','全裸自拍','室内露出自拍','肛门调教','高潮','户外露出自拍','调教','憋尿'],
+    differential:{'足交':10,'性交':11,'口交':11,'肛交':10,'乳交':10,'深喉':6,'素股':8},
+    ejaculation:{'口爆':3,'颜射':3,'足射':3,'乳射':3,'内射':5,'外射':4,'臀射':3}
+  },
+  '沈澪':{
+    single:['阴部自拍','露出','全裸自拍','室内露出自拍','肛门调教','高潮','户外露出自拍','调教','憋尿'],
+    differential:{'足交':10,'性交':11,'口交':11,'肛交':10,'乳交':10,'深喉':6,'素股':8},
+    ejaculation:{'口爆':3,'颜射':3,'足射':3,'乳射':3,'内射':5,'外射':4,'臀射':3}
+  }
+};
+function url(parts){return BASE_URL+parts.join('-')+'.png'}
+function filename(parts){return parts.join('-')+'.png'}
+function variationParts(name,index,isEjac){return isEjac?[CHARACTER,'射精',name,String(index)]:[CHARACTER,name,String(index)]}
+function createEl(tag,cls,html=''){const el=document.createElement(tag);if(cls)el.className=cls;if(html)el.innerHTML=html;return el}
+function openViewer(src,label,file){document.getElementById('viewerImg').src=src;document.getElementById('viewerLabel').textContent=label;document.getElementById('viewerFile').textContent=file||'';document.getElementById('viewerKicker').textContent=`${CHARACTER} · CHARACTER ARCHIVE`;document.getElementById('viewer').classList.add('active')}
+function closeViewer(){document.getElementById('viewer').classList.remove('active')}
+function viewerBackdrop(e){if(e.target.id==='viewer')closeViewer()}
+
+function buildParticles(){const field=document.getElementById('homeParticles');field.innerHTML='';const types=['cold','gold','ember'];for(let i=0;i<34;i++){const p=createEl('i',`particle ${types[i%types.length]}`);const left=5+(i*37%91);const top=28+(i*29%68);const dur=5.5+(i%7)*.7;const delay=-(i%11)*.68;const drift=((i*19)%80)-40;p.style.cssText=`left:${left}%;top:${top}%;--dur:${dur}s;--delay:${delay}s;--drift:${drift}px`;field.appendChild(p)}}
+
+function setFallback(img,urls,removeNode){let i=0;function next(){if(i>=urls.length){if(removeNode)removeNode.remove();else img.style.display='none';return}img.src=urls[i++]}img.onerror=next;next()}
+
+function artCard(parts,label,index){const card=createEl('article','art-card');const thumb=createEl('div','art-thumb');const img=document.createElement('img');img.alt=label;img.loading='lazy';img.src=url(parts);img.onerror=()=>card.remove();img.onclick=()=>openViewer(img.src,label,filename(parts));thumb.appendChild(img);card.appendChild(thumb);const meta=createEl('div','art-meta',`<span class="art-no">${String(index+1).padStart(2,'0')}</span><div><div class="art-label">${label}</div><div class="art-en">ARCHIVE PORTRAIT</div></div>`);card.appendChild(meta);return card}
+
+function buildSingle(){const grid=document.getElementById('singleGrid');grid.innerHTML='';DATA[CHARACTER].single.forEach((name,i)=>grid.appendChild(artCard([CHARACTER,name],name,i)))}
+
+function buildVariation(containerId,obj,isEjac){
+  const container=document.getElementById(containerId);
+  container.innerHTML='';
+  Object.entries(obj).forEach(([name,count],groupIndex)=>{
+    const group=createEl('article','variation-group');
+    group.innerHTML=`<div class="var-head"><span class="var-index">${String(groupIndex+1).padStart(2,'0')}</span><span class="var-title">${name}</span><span class="var-count">${count} VARIATIONS</span></div>`;
+    const stage=createEl('div','var-stage');
+    const main=createEl('div','var-main');
+    const mainImg=document.createElement('img');
+    mainImg.alt=name;
+    mainImg.style.display='none';
+    const empty=createEl('div','var-empty','<span>IMAGE ARCHIVE</span><small>正在连接图床…</small>');
+    main.append(mainImg,empty);
+    const strip=createEl('div','filmstrip');
+
+    function exactParts(index){
+      return isEjac
+        ? [CHARACTER,'射精',name,String(index)]
+        : [CHARACTER,name,String(index)];
+    }
+    function loadIndex(index,button){
+      const parts=exactParts(index);
+      const src=url(parts);
+      strip.querySelectorAll('.film-thumb').forEach(x=>x.classList.remove('active','failed'));
+      if(button)button.classList.add('active');
+      mainImg.style.display='none';
+      empty.style.display='grid';
+      empty.innerHTML='<span>LOADING</span><small>'+filename(parts)+'</small>';
+      const probe=new Image();
+      probe.onload=()=>{
+        mainImg.src=src;
+        mainImg.alt=`${name} · ${index}`;
+        mainImg.dataset.file=filename(parts);
+        mainImg.style.display='block';
+        empty.style.display='none';
+      };
+      probe.onerror=()=>{
+        if(button)button.classList.add('failed');
+        empty.style.display='grid';
+        empty.innerHTML=`<span>NO IMAGE</span><small>${filename(parts)}</small>`;
+      };
+      probe.src=src;
+    }
+
+    for(let i=1;i<=count;i++){
+      const btn=createEl('button','film-thumb');
+      btn.type='button';
+      btn.innerHTML=`<span class="film-num">${String(i).padStart(2,'0')}</span><span class="film-dot"></span>`;
+      btn.setAttribute('aria-label',`${name} 差分 ${i}`);
+      btn.onclick=()=>loadIndex(i,btn);
+      strip.appendChild(btn);
+    }
+    mainImg.onclick=()=>{if(mainImg.src)openViewer(mainImg.src,mainImg.alt||name,mainImg.dataset.file||'')};
+    const rail=createEl('aside','variation-rail');
+    rail.innerHTML=`<div class="variation-cue"><span class="cue-arrow">↓</span><span class="cue-copy"><strong>点击编号切换差分</strong><small>SELECT VARIATION</small></span></div>`;
+    rail.appendChild(strip);
+    stage.append(main,rail);
+    group.appendChild(stage);
+    container.appendChild(group);
+    const first=strip.querySelector('.film-thumb');
+    if(first)loadIndex(1,first);
+  });
+}
+
+function buildStatus(){const grid=document.getElementById('statusContainer');grid.innerHTML='';const note=document.getElementById('statusSectionNote');note.textContent=CHARACTER==='沈澪'?'七套衣装可在小天使 / 小恶魔之间原位切换；形态图缺失时自动回退普通版。':'七套状态栏衣装作为编号收藏卡展示。';STATUS_IMAGES.forEach((name,i)=>{const card=createEl('article','wardrobe-card');card.dataset.name=name;const frame=createEl('div','wardrobe-img');const img=document.createElement('img');img.alt=name;img.loading='lazy';frame.appendChild(img);const info=createEl('div','wardrobe-info',`<div class="wardrobe-no">WARDROBE · ${String(i+1).padStart(2,'0')}</div><div class="wardrobe-name">${name}</div><div class="wardrobe-en">${EN_STATUS[name]||'OUTFIT'}</div>`);frame.appendChild(info);card.appendChild(frame);grid.appendChild(card);setWardrobeImage(card,img,name)})}
+function setWardrobeImage(card,img,name){img.style.opacity='.18';let partsList;if(CHARACTER==='沈澪'){partsList=[[CHARACTER,name,CURRENT_FORM],[CHARACTER,name]]}else{partsList=[[CHARACTER,name]]}let idx=0;function next(){if(idx>=partsList.length){card.remove();return}const parts=partsList[idx++];img.dataset.file=filename(parts);img.src=url(parts)}img.onerror=next;img.onload=()=>{img.style.opacity='1';img.onclick=()=>openViewer(img.src,CHARACTER==='沈澪'?`${name} · ${CURRENT_FORM}`:name,img.dataset.file)};next()}
+function refreshWardrobeImages(){document.querySelectorAll('.wardrobe-card').forEach(card=>{const img=card.querySelector('img');const name=card.dataset.name;if(name)setWardrobeImage(card,img,name)})}
+
+
+function syncFormUI(updateCopy=true){
+  const devil=CURRENT_FORM==='小恶魔';
+  const toggle=document.getElementById('dualityToggle');
+  if(toggle)toggle.classList.toggle('is-devil',devil);
+  document.querySelectorAll('.toggle-choice').forEach(btn=>btn.classList.toggle('active',btn.dataset.form===CURRENT_FORM));
+  const caption=document.getElementById('toggleCaption');
+  if(caption)caption.textContent=devil?'UNSEALED FORM · 恶魔形态':'SANCTIFIED FORM · 天使形态';
+  const echo=document.getElementById('wardrobeFormEcho');
+  if(echo){echo.classList.toggle('is-devil',devil);const s=echo.querySelector('span');if(s)s.textContent=devil?'FALLEN · 小恶魔':'SERAPH · 小天使'}
+  if(updateCopy && CHARACTER==='沈澪'){
+    document.getElementById('heroEn').textContent=devil?'SHEN LING · FALLEN FORM':'SHEN LING · SERAPH FORM';
+    document.getElementById('heroDesc').textContent=devil?'等门在身后合上，她才弯起真正的眼睛——原来月光底下，最乖的影子也会长出小小的角。':'她把锋芒藏进笑里，像一场落在掌心的雪，安静得让人舍不得怀疑。';
+    document.getElementById('topStatus').textContent=devil?'FALLEN MODE':'SERAPH MODE';
+  }
+}
+
+function seedAmbient(){
+  const field=document.getElementById('ambientDust');
+  if(!field||field.children.length)return;
+  for(let i=0;i<42;i++){
+    const p=createEl('i','ambient-speck');
+    p.style.setProperty('--x',`${(i*47)%101}%`);
+    p.style.setProperty('--y',`${(i*31)%97}%`);
+    p.style.setProperty('--s',`${1+(i%4)*.7}px`);
+    p.style.setProperty('--d',`${7+(i%8)*1.1}s`);
+    p.style.setProperty('--delay',`${-(i%13)*.73}s`);
+    field.appendChild(p);
+  }
+}
+
+function seedMorphParticles(toDevil){
+  const field=document.getElementById('morphParticles');
+  field.innerHTML='';
+  for(let i=0;i<72;i++){
+    const p=createEl('i',toDevil?'morph-speck ember':'morph-speck star');
+    const y=3+(i*37)%94;
+    const x=toDevil?-2+(i*23)%34:68+(i*29)%35;
+    const tx=(toDevil?1:-1)*(105+((i*41)%330));
+    const ty=((i*17)%150)-75;
+    p.style.cssText=`left:${x}%;top:${y}%;--tx:${tx}px;--ty:${ty}px;--delay:${(i%12)*.032}s;--size:${1.7+(i%5)*.72}px`;
+    field.appendChild(p);
+  }
+}
+
+let morphTimer=0;
+let morphSwapTimer=0;
+let morphCopyTimer=0;
+let MORPH_LOCK=false;
+function setForm(form,animate=true){
+  if(CHARACTER!=='沈澪' || !['小天使','小恶魔'].includes(form) || form===CURRENT_FORM || MORPH_LOCK)return;
+  const toDevil=form==='小恶魔';
+  const morph=document.getElementById('themeMorph');
+  clearTimeout(morphTimer);clearTimeout(morphSwapTimer);clearTimeout(morphCopyTimer);
+  CURRENT_FORM=form;
+
+  /* Move the switch immediately, but keep the old page theme underneath. */
+  const toggle=document.getElementById('dualityToggle');
+  if(toggle)toggle.classList.toggle('is-devil',toDevil);
+  document.querySelectorAll('.toggle-choice').forEach(btn=>btn.classList.toggle('active',btn.dataset.form===CURRENT_FORM));
+  const caption=document.getElementById('toggleCaption');
+
+  if(!animate){
+    document.body.classList.toggle('form-devil',toDevil);
+    syncFormUI(true);refreshWardrobeImages();return;
+  }
+
+  MORPH_LOCK=true;
+  if(caption)caption.textContent=toDevil?'CORRUPTION SEQUENCE · 黑暗侵蚀中':'PURIFICATION SEQUENCE · 圣辉净化中';
+  seedMorphParticles(toDevil);
+  morph.style.visibility='';
+  morph.className=`theme-morph active ${toDevil?'to-devil':'to-angel'}`;
+  document.body.classList.add('morphing');
+
+  /* Theme swaps only when the central sweep is opaque, hiding gradient snapping. */
+  morphSwapTimer=setTimeout(()=>{
+    document.body.classList.toggle('form-devil',toDevil);
+    refreshWardrobeImages();
+  },180);
+
+  morphCopyTimer=setTimeout(()=>{
+    syncFormUI(true);
+  },360);
+
+  morphTimer=setTimeout(()=>{
+    morph.className='theme-morph';
+    morph.style.visibility='hidden';
+    document.body.classList.remove('morphing');
+    syncFormUI(true);
+    MORPH_LOCK=false;
+  },1240);
+}
+
+function buildAll(){buildSingle();buildVariation('diffContainer',DATA[CHARACTER].differential,false);buildVariation('ejacContainer',DATA[CHARACTER].ejaculation,true);buildStatus()}
+function resetNav(){document.querySelectorAll('.nav-gem').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));document.querySelector('.nav-gem[data-target="single"]').classList.add('active');document.getElementById('single').classList.add('active')}
+
+function applyCharacter(){
+  const sl=CHARACTER==='沈澪';
+  document.body.classList.toggle('mode-sl',sl);
+  document.body.classList.remove('form-devil','morphing');
+  MORPH_LOCK=false;
+  CURRENT_FORM='小天使';
+  document.getElementById('dualityToggle')?.classList.remove('is-devil');
+  syncFormUI(false);
+  document.getElementById('topIndex').textContent=sl?'ARCHIVE · 02':'ARCHIVE · 01';
+  document.getElementById('topName').textContent=sl?'沈澪 / SHEN LING':'沈漾 / SHEN YANG';
+  document.getElementById('heroKicker').textContent=sl?'CHARACTER ARCHIVE · 02':'CHARACTER ARCHIVE · 01';
+  document.getElementById('heroName').textContent=CHARACTER;
+  document.getElementById('heroEmblem').innerHTML=sl?'<span class="sl-emblem"><i></i></span>':'<span class="sy-emblem">🦋</span>';
+  document.getElementById('heroEn').textContent=sl?'SHEN LING · SERAPH FORM':'SHEN YANG · BUTTERFLY BLOOM';
+  document.getElementById('heroDesc').textContent=sl?'她把锋芒藏进笑里，像一场落在掌心的雪，安静得让人舍不得怀疑':'振翅予众生，敛翼予一人。';
+  document.getElementById('topStatus').textContent=sl?'SERAPH MODE':'COLLECTION MODE';
+  document.title=`${CHARACTER} · CHARACTER ARCHIVE`;
+}
+function openGallery(char){CHARACTER=char;applyCharacter();resetNav();buildAll();document.getElementById('home').classList.remove('active');document.getElementById('gallery').classList.add('active');window.scrollTo(0,0)}
+function goHome(){closeViewer();document.getElementById('gallery').classList.remove('active');document.getElementById('home').classList.add('active');document.body.classList.remove('mode-sl','form-devil','morphing');document.getElementById('themeMorph').className='theme-morph';document.title='CHARACTER ARCHIVE · 沈漾 / 沈澪';window.scrollTo(0,0)}
+
+document.querySelectorAll('.nav-gem').forEach(btn=>btn.addEventListener('click',()=>{document.querySelectorAll('.nav-gem').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.section').forEach(x=>x.classList.remove('active'));btn.classList.add('active');document.getElementById(btn.dataset.target).classList.add('active')}));
+document.querySelectorAll('.toggle-choice').forEach(btn=>btn.addEventListener('click',()=>setForm(btn.dataset.form,true)));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeViewer()});
+
+function spawnButterflyBurst(clientX,clientY){
+  const layer=document.getElementById('butterflyBurstLayer');
+  if(!layer)return;
+  const count=11;
+  for(let i=0;i<count;i++){
+    const b=document.createElement('span');
+    b.className='butterfly-burst';
+    b.textContent='🦋';
+    const angle=(-155+(i*(310/(count-1))))*Math.PI/180;
+    const distance=56+((i*37)%92);
+    const dx=Math.cos(angle)*distance;
+    const dy=Math.sin(angle)*distance-18-((i%3)*10);
+    const rot=(-110+(i*47)%235)+'deg';
+    b.style.setProperty('--bx',clientX+'px');
+    b.style.setProperty('--by',clientY+'px');
+    b.style.setProperty('--dx',dx.toFixed(1)+'px');
+    b.style.setProperty('--dy',dy.toFixed(1)+'px');
+    b.style.setProperty('--dx-mid',(dx*.52).toFixed(1)+'px');
+    b.style.setProperty('--dy-mid',(dy*.48-12).toFixed(1)+'px');
+    b.style.setProperty('--rot',rot);
+    b.style.setProperty('--rot-mid',(-38+(i*29)%76)+'deg');
+    b.style.setProperty('--bs',(13+(i%5)*2.2)+'px');
+    b.style.setProperty('--bd',(610+(i%4)*58)+'ms');
+    b.style.setProperty('--bdelay',(i%4)*18+'ms');
+    layer.appendChild(b);
+    setTimeout(()=>b.remove(),920);
+  }
+}
+
+
+function spawnSeraphBurst(clientX,clientY){
+  const layer=document.getElementById('slClickBurstLayer');
+  if(!layer)return;
+
+  /* Halo ripple */
+  const ring=document.createElement('span');
+  ring.className='sl-burst-ring seraph-ring';
+  ring.style.setProperty('--cx',clientX+'px');
+  ring.style.setProperty('--cy',clientY+'px');
+  layer.appendChild(ring);
+  setTimeout(()=>ring.remove(),700);
+
+  /* Sacred feathers: mostly rise and fan outward. */
+  const featherCount=9;
+  for(let i=0;i<featherCount;i++){
+    const p=document.createElement('i');
+    p.className='sl-burst-piece seraph-feather';
+    const angle=(-160+(i*(140/(featherCount-1))))*Math.PI/180;
+    const distance=48+((i*31)%64);
+    const dx=Math.cos(angle)*distance;
+    const dy=Math.sin(angle)*distance-34-((i%3)*9);
+    p.style.setProperty('--cx',clientX+'px');
+    p.style.setProperty('--cy',clientY+'px');
+    p.style.setProperty('--dx',dx.toFixed(1)+'px');
+    p.style.setProperty('--dy',dy.toFixed(1)+'px');
+    p.style.setProperty('--mx',(dx*.48).toFixed(1)+'px');
+    p.style.setProperty('--my',(dy*.43-7).toFixed(1)+'px');
+    p.style.setProperty('--r0',(-28+(i*17)%52)+'deg');
+    p.style.setProperty('--rm',(-80+(i*29)%170)+'deg');
+    p.style.setProperty('--r1',(-130+(i*43)%280)+'deg');
+    p.style.setProperty('--dur',(590+(i%4)*48)+'ms');
+    p.style.setProperty('--delay',(i%3)*12+'ms');
+    layer.appendChild(p);
+    setTimeout(()=>p.remove(),850);
+  }
+
+  /* Stars: fewer, lighter, slightly higher than the feathers. */
+  for(let i=0;i<5;i++){
+    const s=document.createElement('span');
+    s.className='sl-burst-piece seraph-star';
+    s.textContent=i%2===0?'✦':'✧';
+    const angle=(-155+i*35)*Math.PI/180;
+    const distance=44+((i*27)%54);
+    const dx=Math.cos(angle)*distance;
+    const dy=Math.sin(angle)*distance-25;
+    s.style.setProperty('--cx',clientX+'px');
+    s.style.setProperty('--cy',clientY+'px');
+    s.style.setProperty('--dx',dx.toFixed(1)+'px');
+    s.style.setProperty('--dy',dy.toFixed(1)+'px');
+    s.style.setProperty('--dur',(520+(i%3)*55)+'ms');
+    s.style.setProperty('--delay',(30+i*18)+'ms');
+    s.style.setProperty('--ss',(10+(i%3)*2)+'px');
+    layer.appendChild(s);
+    setTimeout(()=>s.remove(),820);
+  }
+}
+
+function spawnFallenBurst(clientX,clientY){
+  const layer=document.getElementById('slClickBurstLayer');
+  if(!layer)return;
+
+  /* Brief broken seal. */
+  const ring=document.createElement('span');
+  ring.className='sl-burst-ring fallen-ring';
+  ring.style.setProperty('--cx',clientX+'px');
+  ring.style.setProperty('--cy',clientY+'px');
+  layer.appendChild(ring);
+  setTimeout(()=>ring.remove(),660);
+
+  /* Wing/seal shards: sharper, wider and a little lower than Seraph. */
+  const shardCount=10;
+  for(let i=0;i<shardCount;i++){
+    const p=document.createElement('i');
+    p.className='sl-burst-piece fallen-shard';
+    const angle=(-190+(i*(200/(shardCount-1))))*Math.PI/180;
+    const distance=52+((i*39)%76);
+    const dx=Math.cos(angle)*distance;
+    const dy=Math.sin(angle)*distance+((i%3)*8)-5;
+    p.style.setProperty('--cx',clientX+'px');
+    p.style.setProperty('--cy',clientY+'px');
+    p.style.setProperty('--dx',dx.toFixed(1)+'px');
+    p.style.setProperty('--dy',dy.toFixed(1)+'px');
+    p.style.setProperty('--mx',(dx*.50).toFixed(1)+'px');
+    p.style.setProperty('--my',(dy*.46).toFixed(1)+'px');
+    p.style.setProperty('--r0',(-70+(i*31)%125)+'deg');
+    p.style.setProperty('--rm',(-145+(i*47)%290)+'deg');
+    p.style.setProperty('--r1',(-260+(i*71)%520)+'deg');
+    p.style.setProperty('--dur',(570+(i%4)*44)+'ms');
+    p.style.setProperty('--delay',(i%4)*10+'ms');
+    layer.appendChild(p);
+    setTimeout(()=>p.remove(),830);
+  }
+
+  /* Hot embers lag just behind the wing fragments. */
+  for(let i=0;i<7;i++){
+    const e=document.createElement('i');
+    e.className='sl-burst-piece fallen-ember';
+    const angle=(-205+i*38)*Math.PI/180;
+    const distance=38+((i*33)%70);
+    const dx=Math.cos(angle)*distance;
+    const dy=Math.sin(angle)*distance+8;
+    e.style.setProperty('--cx',clientX+'px');
+    e.style.setProperty('--cy',clientY+'px');
+    e.style.setProperty('--dx',dx.toFixed(1)+'px');
+    e.style.setProperty('--dy',dy.toFixed(1)+'px');
+    e.style.setProperty('--dur',(500+(i%4)*55)+'ms');
+    e.style.setProperty('--delay',(25+i*13)+'ms');
+    e.style.setProperty('--es',(3+(i%3)*1.2)+'px');
+    layer.appendChild(e);
+    setTimeout(()=>e.remove(),820);
+  }
+}
+
+
+document.addEventListener('click',e=>{
+  const syDoor=e.target.closest && e.target.closest('.door-sy');
+  const slDoor=e.target.closest && e.target.closest('.door-sl');
+  const galleryActive=document.getElementById('gallery')?.classList.contains('active');
+
+  if(syDoor || (galleryActive && CHARACTER==='沈漾')){
+    spawnButterflyBurst(e.clientX,e.clientY);
+    return;
+  }
+
+  if(slDoor || (galleryActive && CHARACTER==='沈澪')){
+    const devilNow=document.body.classList.contains('form-devil') || CURRENT_FORM==='小恶魔';
+    if(devilNow) spawnFallenBurst(e.clientX,e.clientY);
+    else spawnSeraphBurst(e.clientX,e.clientY);
+  }
+},true);
+
+buildParticles();
+seedAmbient();
+setFallback(document.getElementById('coverSyImg'),[url(['沈漾','全裸自拍']),url(['沈漾','外出']),url(['沈漾','日常'])]);
+/* 沈澪图鉴首页专用封面：优先 沈澪-封面.png，后续仅作缺图兜底。 */
+setFallback(document.getElementById('coverSlImg'),[url(['沈澪','封面']),url(['沈澪','外出','小天使']),url(['沈澪','外出']),url(['沈澪','全裸自拍'])]);
+</script>
+</body>
+</html>
