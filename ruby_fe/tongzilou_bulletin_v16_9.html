@@ -1,0 +1,2232 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>筒子楼情况简报 · 2008 MSN Special V16.9</title>
+    <style>
+        :root {
+            --win-gray: #c0c0c0;
+            --win-blue: #000080;
+            --win-light: #ffffff;
+            --win-shadow: #808080;
+            --glass-bg: rgba(235, 245, 255, 0.94);
+            --text-main: #0f172a;
+            --paper-font-size: 17px;
+            --paper-line-height: 38px;
+            --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #fbcfe8 45%, #e9d5ff 75%, #bae6fd 100%);
+            --theme-glow: 0 25px 60px rgba(100, 120, 180, 0.35);
+            --bg-pattern: radial-gradient(rgba(255, 255, 255, 0.7) 1px, transparent 0);
+            --bg-pattern-size: 24px 24px;
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: "Tahoma", "Microsoft YaHei", "SimSun", sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 6px;
+            position: relative;
+            overflow-x: hidden;
+            color: var(--text-main);
+            transition: background 0.5s ease, color 0.5s ease;
+            background: var(--bg-gradient);
+        }
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-image: 
+                var(--bg-pattern),
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.02) 2px, rgba(0,0,0,0.02) 4px);
+            background-size: var(--bg-pattern-size), 100% 4px;
+            pointer-events: none;
+            z-index: 1;
+            opacity: 0.6;
+        }
+        body::after {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        body[data-theme="default"] {
+            --win-blue: #000080;
+            --glass-bg: rgba(235, 245, 255, 0.94);
+            --text-main: #0f172a;
+            --bg-gradient: linear-gradient(135deg, #e0f2fe 0%, #fbcfe8 45%, #e9d5ff 75%, #bae6fd 100%);
+            --theme-glow: 0 25px 60px rgba(100, 120, 180, 0.35);
+            --bg-pattern: radial-gradient(rgba(255, 255, 255, 0.7) 1px, transparent 0);
+        }
+        body[data-theme="y2k"] {
+            --win-blue: #be185d;
+            --glass-bg: rgba(254, 242, 248, 0.95);
+            --text-main: #831843;
+            --bg-gradient: linear-gradient(135deg, #fbcfe8 0%, #f472b6 40%, #c084fc 80%, #f472b6 100%);
+            --theme-glow: 0 25px 60px rgba(236, 72, 153, 0.45);
+            --bg-pattern: radial-gradient(rgba(255, 255, 255, 0.8) 1.5px, transparent 0);
+        }
+        body[data-theme="amber"] {
+            --win-blue: #78350f;
+            --glass-bg: rgba(254, 243, 199, 0.96);
+            --text-main: #451a03;
+            --bg-gradient: radial-gradient(circle at 50% 50%, #fef3c7 0%, #fde68a 50%, #d97706 100%);
+            --theme-glow: 0 25px 60px rgba(217, 119, 6, 0.35);
+            --bg-pattern: repeating-linear-gradient(0deg, rgba(180, 120, 60, 0.08) 0px, rgba(180, 120, 60, 0.08) 1px, transparent 1px, transparent 12px);
+        }
+        body[data-theme="cyber"] {
+            --win-blue: #065f46;
+            --glass-bg: rgba(4, 47, 36, 0.96);
+            --text-main: #a7f3d0;
+            --bg-gradient: linear-gradient(135deg, #022c22 0%, #064e3b 50%, #022c22 100%);
+            --theme-glow: 0 25px 60px rgba(16, 185, 129, 0.5);
+            --bg-pattern: linear-gradient(rgba(16, 185, 129, 0.15) 1px, transparent 1px);
+            --bg-pattern-size: 100% 4px;
+        }
+
+        body[data-fontsize="small"] {
+            --paper-font-size: 15px;
+            --paper-line-height: 32px;
+        }
+        body[data-fontsize="medium"] {
+            --paper-font-size: 17px;
+            --paper-line-height: 38px;
+        }
+        body[data-fontsize="large"] {
+            --paper-font-size: 20px;
+            --paper-line-height: 44px;
+        }
+
+        body.crt-mode .bulletin-container::before {
+            content: "";
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.28) 50%),
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.85;
+        }
+        body.crt-mode .bulletin-container {
+            box-shadow: var(--theme-glow), 0 0 25px rgba(255, 255, 255, 0.3);
+            animation: crtFlicker 0.15s infinite alternate;
+        }
+        @keyframes crtFlicker {
+            0% { opacity: 0.98; }
+            100% { opacity: 1; }
+        }
+
+        body.dark-mode[data-theme="default"] {
+            --win-blue: #1e1b4b;
+            --glass-bg: rgba(15, 23, 42, 0.95);
+            --text-main: #f1f5f9;
+            --bg-gradient: linear-gradient(135deg, #030712 0%, #0f172a 50%, #1e1b4b 100%);
+            --theme-glow: 0 25px 60px rgba(99, 102, 241, 0.3);
+        }
+        body.dark-mode[data-theme="y2k"] {
+            --win-blue: #831843;
+            --glass-bg: rgba(30, 10, 25, 0.95);
+            --text-main: #fbcfe8;
+            --bg-gradient: linear-gradient(135deg, #1f0412 0%, #4c0519 50%, #2e1065 100%);
+            --theme-glow: 0 25px 60px rgba(244, 114, 182, 0.35);
+        }
+        body.dark-mode[data-theme="amber"] {
+            --win-blue: #78350f;
+            --glass-bg: rgba(28, 19, 8, 0.95);
+            --text-main: #fef3c7;
+            --bg-gradient: linear-gradient(135deg, #180e04 0%, #451a03 50%, #291203 100%);
+            --theme-glow: 0 25px 60px rgba(245, 158, 11, 0.3);
+        }
+        body.dark-mode[data-theme="cyber"] {
+            --win-blue: #022c22;
+            --glass-bg: rgba(2, 44, 34, 0.96);
+            --text-main: #6ee7b7;
+            --bg-gradient: linear-gradient(135deg, #000000 0%, #022c22 50%, #064e3b 100%);
+            --theme-glow: 0 25px 60px rgba(52, 211, 153, 0.5);
+        }
+
+        body.dark-mode .bulletin-container { 
+            border-color: rgba(255, 255, 255, 0.18); 
+            box-shadow: 0 0 60px rgba(50, 100, 255, 0.08);
+        }
+        body.dark-mode .notebook-paper {
+            background: #1e293b;
+            color: #f8fafc;
+            border-color: #334155;
+        }
+        body.dark-mode .notebook-body {
+            color: #f8fafc;
+            background-image: linear-gradient(to bottom, transparent 94%, #334155 94%);
+        }
+        body.dark-mode .status-sticky-note {
+            background: #422006;
+            border-color: #713f12;
+            color: #fef08a;
+        }
+        body.dark-mode .rumor-card { background: #4c0519; border-color: #f43f5e; }
+        body.dark-mode .rumor-content { color: #fecdd3; }
+        body.dark-mode .photo-card {
+            background: #1e293b;
+            border-color: #334155;
+        }
+        body.dark-mode .photo-frame { background: #1e293b; }
+        body.dark-mode .photo-caption-bar { background: #334155; color: #fff; }
+        body.dark-mode .item-modal-box { background: #1e293b; border-color: #334155; }
+        body.dark-mode .item-modal-body { background: #1e293b; color: #f8fafc; }
+        body.dark-mode .item-modal-header { background: #1e1b4b; }
+        body.dark-mode .map-modal-content { background: #1e293b; border-color: #334155; }
+        body.dark-mode .map-modal-header { background: #1e1b4b; color: #fff; }
+        body.dark-mode .map-modal-body { background: #1a1a2e; }
+        body.dark-mode .map-modal-body .map-item { background: #16213e; border-color: #2a3a5e; }
+        body.dark-mode .map-modal-body .map-item .map-label { color: #c8d0e0; background: #1a2744; border-top-color: #2a3a5e; }
+        body.dark-mode .map-fullscreen-overlay .fs-label { background: rgba(0,0,0,0.8); color: #f0f0f0; }
+        body.dark-mode .map-fullscreen-overlay .fs-close { color: #fff; }
+
+        @keyframes msnNudge {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            15% { transform: translate(-8px, -6px) rotate(-1deg); }
+            30% { transform: translate(8px, 6px) rotate(1deg); }
+            45% { transform: translate(-6px, 4px) rotate(-0.5deg); }
+            60% { transform: translate(6px, -4px) rotate(0.5deg); }
+            75% { transform: translate(-3px, 2px) rotate(0deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
+        }
+        .nudge-active { animation: msnNudge 0.45s ease-in-out; }
+
+        .photo-overlay-mask {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 998;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .photo-overlay-mask.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .photo-placeholder {
+            display: none;
+            width: 100%;
+        }
+
+        .wink-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .wink-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        .wink-box {
+            background: #fff;
+            border: 4px solid #ec4899;
+            border-radius: 16px;
+            padding: 20px 30px;
+            box-shadow: 0 20px 50px rgba(236, 72, 153, 0.5);
+            text-align: center;
+            transform: scale(0.5);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .wink-overlay.active .wink-box { transform: scale(1.1); }
+        .wink-emoji { font-size: 64px; animation: winkBounce 0.6s infinite alternate; }
+        @keyframes winkBounce { 0% { transform: scale(1); } 100% { transform: scale(1.2) rotate(10deg); } }
+
+        .bulletin-container {
+            width: 100%;
+            max-width: 1120px;
+            background: var(--glass-bg);
+            border: 3px solid rgba(255, 255, 255, 0.9);
+            box-shadow: var(--theme-glow);
+            padding: 14px;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: box-shadow 0.5s ease, background 0.5s ease;
+        }
+        .bulletin-header {
+            background: var(--win-blue);
+            color: #ffffff;
+            padding: 6px 12px;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 6px;
+            transition: background 0.4s ease;
+            position: relative;
+        }
+        .bulletin-header-controls {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-wrap: wrap;
+        }
+        
+        .mobile-toggle-btn {
+            display: none;
+            background: var(--win-gray);
+            border-top: 1px solid var(--win-light);
+            border-left: 1px solid var(--win-light);
+            border-right: 1px solid #000;
+            border-bottom: 1px solid #000;
+            font-size: 12px;
+            color: #000;
+            padding: 2px 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .news-ticker-bar {
+            background: #0b1a2d;
+            border: 1px inset #808080;
+            color: #38bdf8;
+            font-family: "SimSun", monospace;
+            font-size: 13px;
+            padding: 4px 10px;
+            overflow: hidden;
+            white-space: nowrap;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .news-ticker-tag {
+            background: #c41e3a;
+            color: #fff;
+            font-size: 11px;
+            padding: 2px 10px;
+            letter-spacing: 2px;
+            font-weight: bold;
+            flex-shrink: 0;
+            box-shadow: inset 0 -2px 0 #8b0000;
+        }
+        .news-ticker-text {
+            display: inline-block;
+            white-space: nowrap;
+            animation: tickerScroll 28s linear infinite;
+            padding-left: 100%;
+        }
+        @keyframes tickerScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-100%); } }
+
+        .win-mode-btn {
+            background: var(--win-gray);
+            border-top: 1px solid var(--win-light);
+            border-left: 1px solid var(--win-light);
+            border-right: 1px solid #000000;
+            border-bottom: 1px solid #000000;
+            font-size: 12px;
+            color: #000;
+            padding: 3px 7px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            user-select: none;
+            touch-action: manipulation;
+            transition: 0.15s;
+        }
+        .win-mode-btn:hover {
+            background: #d0d0d0;
+            box-shadow: inset 0 0 10px rgba(255,255,255,0.5);
+        }
+        .win-mode-btn:active {
+            border-top: 1px solid #000000;
+            border-left: 1px solid #000000;
+            border-right: 1px solid var(--win-light);
+            border-bottom: 1px solid var(--win-light);
+        }
+        .bulletin-body { display: flex; gap: 14px; align-items: stretch; }
+        .left-column { flex: 0 0 340px; display: flex; flex-direction: column; gap: 10px; }
+
+        .photo-card {
+            background: #fcf9f5;
+            padding: 12px 12px 30px 12px;
+            border: 2px solid var(--win-light);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.06);
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 20;
+        }
+        .photo-card::before {
+            content: "";
+            position: absolute;
+            top: -10px; left: 50%;
+            transform: translateX(-50%) rotate(-1deg);
+            width: 100px; height: 24px;
+            background: rgba(253, 224, 71, 0.85);
+            border: 1px dashed rgba(202, 138, 4, 0.6);
+            z-index: 25;
+        }
+        .photo-frame {
+            width: 100%; height: 340px;
+            background: #faf8f5;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid #90b0d0;
+            border-radius: 2px;
+        }
+        .photo-corner-tl, .photo-corner-tr, .photo-corner-bl, .photo-corner-br {
+            position: absolute; width: 18px; height: 18px; z-index: 15; pointer-events: none;
+        }
+        .photo-corner-tl { top:0; left:0; border-top: 6px solid #1e293b; border-left: 6px solid #1e293b; }
+        .photo-corner-tr { top:0; right:0; border-top: 6px solid #1e293b; border-right: 6px solid #1e293b; }
+        .photo-corner-bl { bottom:0; left:0; border-bottom: 6px solid #1e293b; border-left: 6px solid #1e293b; }
+        .photo-corner-br { bottom:0; right:0; border-bottom: 6px solid #1e293b; border-right: 6px solid #1e293b; }
+        .photo-sticker-tag {
+            position: absolute; top: 8px; right: 8px;
+            background: linear-gradient(135deg, #f43f5e, #ec4899);
+            color: #fff; font-size: 10px; font-weight: bold;
+            padding: 2px 7px; border-radius: 10px;
+            transform: rotate(6deg); z-index: 14; border: 1px solid #fff;
+        }
+        
+        .photo-close-btn {
+            display: none;
+            position: absolute;
+            top: 6px;
+            right: 8px;
+            background: #dc2626;
+            color: #fff;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 2px 8px;
+            border: 1px solid #fff;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+        }
+        
+        .photo-card.peeled {
+            position: fixed !important;
+            top: 50% !important;
+            left: 50% !important;
+            width: min(92vw, 420px) !important;
+            max-height: 88vh !important;
+            transform: translate(-50%, -50%) scale(1) !important;
+            z-index: 999 !important;
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.85) !important;
+            display: flex;
+            flex-direction: column;
+            padding: 16px 16px 36px 16px;
+            background: #fcf9f5;
+            border: 3px solid #ffffff;
+            animation: photoPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes photoPop {
+            0% { transform: translate(-50%, -50%) scale(0.6); opacity: 0; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+        }
+        .photo-card.peeled .photo-close-btn { display: block; }
+        .photo-card.peeled .photo-frame {
+            height: auto !important;
+            max-height: calc(88vh - 150px) !important;
+            width: 100% !important;
+            background: transparent;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .photo-card.peeled .photo-frame img {
+            width: 100% !important;
+            height: auto !important;
+            max-height: calc(88vh - 170px) !important;
+            object-fit: contain !important;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .photo-card.peeled .photo-nav {
+            display: flex !important;
+        }
+        .photo-card.peeled .photo-birthday {
+            display: block !important;
+        }
+        .photo-nav {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            gap: 16px;
+            margin-top: 6px;
+            font-size: 13px;
+            color: #555;
+        }
+        .photo-nav button {
+            background: var(--win-gray);
+            border-top: 1px solid var(--win-light);
+            border-left: 1px solid var(--win-light);
+            border-right: 1px solid #000;
+            border-bottom: 1px solid #000;
+            padding: 2px 12px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            color: #000;
+            transition: 0.1s;
+        }
+        .photo-nav button:active {
+            border-top: 1px solid #000;
+            border-left: 1px solid #000;
+            border-right: 1px solid var(--win-light);
+            border-bottom: 1px solid var(--win-light);
+        }
+        .photo-nav span {
+            min-width: 40px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+        .photo-birthday {
+            display: none;
+            text-align: center;
+            font-size: 13px;
+            color: #831843;
+            font-weight: bold;
+            margin-top: 4px;
+            padding: 2px 0;
+            background: rgba(252, 231, 243, 0.6);
+            border-radius: 3px;
+        }
+        body.dark-mode .photo-birthday {
+            color: #fbcfe8;
+            background: rgba(131, 24, 67, 0.3);
+        }
+        
+        .photo-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            display: block;
+        }
+        .photo-caption-bar {
+            margin-top: 8px;
+            background: var(--win-gray);
+            border: 1px inset #808080;
+            text-align: center; padding: 6px;
+            font-size: 13px; font-weight: bold; color: #000;
+        }
+
+        .rumor-card {
+            background: #fff1f2;
+            border: 2px dashed #f43f5e;
+            padding: 10px 12px;
+            position: relative;
+            box-shadow: 0 4px 10px rgba(225, 29, 72, 0.1);
+        }
+        .rumor-card::before {
+            content: "🗣️ 筒子楼情报站";
+            position: absolute;
+            top: -12px; left: 12px;
+            background: #be123c; color: #fff;
+            font-size: 11px; font-weight: bold;
+            padding: 1px 8px; border-radius: 3px;
+        }
+        .rumor-content {
+            margin-top: 6px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: #9f1239;
+            font-family: "SimSun", serif;
+        }
+
+        /* 地图按钮 - 替换原MSN状态栏 */
+        .map-btn-card {
+            background: #e8f5e9;
+            border: 2px solid #43a047;
+            padding: 10px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            user-select: none;
+            transition: transform 0.15s ease, background 0.15s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-weight: bold;
+            font-size: 15px;
+            color: #1b5e20;
+        }
+        .map-btn-card:hover {
+            background: #c8e6c9;
+            transform: scale(1.02);
+        }
+        .map-btn-card:active {
+            transform: scale(0.96);
+        }
+        body.dark-mode .map-btn-card {
+            background: #1e3a2f;
+            border-color: #4caf50;
+            color: #a5d6a7;
+        }
+        body.dark-mode .map-btn-card:hover {
+            background: #2e4f3f;
+        }
+
+        /* 地图模态框 */
+        .map-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 10002;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .map-modal-overlay.active {
+            display: flex;
+        }
+        .map-modal-content {
+            background: #fff;
+            border: 3px solid var(--win-light);
+            max-width: 820px;
+            width: 100%;
+            max-height: 92vh;
+            box-shadow: 0 30px 80px rgba(0,0,0,0.6);
+            border-radius: 4px;
+            display: flex;
+            flex-direction: column;
+            animation: mapModalPop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes mapModalPop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .map-modal-header {
+            background: var(--win-blue);
+            color: #fff;
+            padding: 8px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 15px;
+            flex-shrink: 0;
+        }
+        .map-modal-header .map-close-btn {
+            background: var(--win-gray);
+            border: 1px solid #000;
+            color: #000;
+            cursor: pointer;
+            padding: 0 10px;
+            font-size: 15px;
+            font-weight: bold;
+            line-height: 1.6;
+        }
+        .map-modal-header .map-close-btn:hover { background: #d0d0d0; }
+        .map-modal-header .map-close-btn:active {
+            border-top: 1px solid #000;
+            border-left: 1px solid #000;
+            border-right: 1px solid var(--win-light);
+            border-bottom: 1px solid var(--win-light);
+        }
+        .map-modal-body {
+            padding: 16px;
+            overflow-y: auto;
+            flex: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            background: #f5f5f5;
+        }
+        .map-modal-body .map-item {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 3px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            transition: transform 0.15s ease;
+        }
+        .map-modal-body .map-item:hover {
+            transform: scale(1.02);
+        }
+        .map-modal-body .map-item:active {
+            transform: scale(0.97);
+        }
+        .map-modal-body .map-item img {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 4 / 3;
+            object-fit: cover;
+            display: block;
+            background: #e0e0e0;
+            pointer-events: none;
+        }
+        .map-modal-body .map-item .map-label {
+            padding: 6px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            text-align: center;
+            color: #333;
+            background: #fafafa;
+            border-top: 1px solid #eee;
+            pointer-events: none;
+        }
+
+        /* 全屏图片查看器 */
+        .map-fullscreen-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            z-index: 10003;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            cursor: pointer;
+        }
+        .map-fullscreen-overlay.active {
+            display: flex;
+        }
+        .map-fullscreen-overlay img {
+            max-width: 95vw;
+            max-height: 90vh;
+            object-fit: contain;
+            box-shadow: 0 0 60px rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+            cursor: default;
+        }
+        .map-fullscreen-overlay .fs-close {
+            position: absolute;
+            top: 20px; right: 30px;
+            font-size: 44px;
+            color: #fff;
+            cursor: pointer;
+            font-weight: bold;
+            text-shadow: 0 0 20px rgba(0,0,0,0.8);
+            z-index: 10004;
+            transition: transform 0.2s;
+        }
+        .map-fullscreen-overlay .fs-close:hover {
+            transform: scale(1.2);
+        }
+        .map-fullscreen-overlay .fs-label {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #fff;
+            background: rgba(0,0,0,0.7);
+            padding: 8px 24px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: bold;
+            pointer-events: none;
+            white-space: nowrap;
+            max-width: 80%;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .fortune-card {
+            background: #fef9e7;
+            border: 2px solid #f59e0b;
+            padding: 8px 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.06);
+            border-radius: 4px;
+            display: flex; 
+            flex-direction: column; 
+            gap: 3px;
+            cursor: default;
+            font-size: 12px;
+        }
+        .fortune-card .fortune-title {
+            font-weight: bold;
+            color: #b45309;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+        .fortune-card .fortune-yi { color: #15803d; }
+        .fortune-card .fortune-ji { color: #b91c1c; }
+
+        .thermometer-bar {
+            background: #0b1a2d;
+            border: 1px inset #808080;
+            padding: 3px 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 11px;
+            color: #38bdf8;
+            font-family: "SimSun", monospace;
+        }
+        .thermometer-bar .temp-indoor { color: #fbbf24; }
+        .thermometer-bar .temp-outdoor { color: #60a5fa; }
+
+        .memory-progress {
+            background: #1e293b;
+            border: 1px solid #334155;
+            padding: 4px 10px;
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 11px;
+            color: #94a3b8;
+            font-family: "SimSun", monospace;
+        }
+        .memory-progress .progress-track {
+            flex: 1;
+            height: 6px;
+            background: #334155;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .memory-progress .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #fbbf24, #f59e0b);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+        .memory-progress .progress-label {
+            font-size: 10px;
+            color: #fbbf24;
+            min-width: 70px;
+            text-align: right;
+        }
+
+        .lyrics-box {
+            background: rgba(2, 44, 34, 0.6);
+            border: 1px solid #059669;
+            border-radius: 3px;
+            padding: 4px 10px;
+            font-size: 11px;
+            color: #34d399;
+            font-family: monospace;
+            min-height: 36px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            line-height: 1.6;
+            transition: all 0.3s ease;
+        }
+        .lyrics-box .lyrics-line {
+            opacity: 0.7;
+        }
+        .lyrics-box .lyrics-line.active {
+            opacity: 1;
+            color: #6ee7b7;
+        }
+
+        .birthday-banner {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 2px solid #f59e0b;
+            border-radius: 4px;
+            padding: 4px 12px;
+            font-size: 13px;
+            color: #78350f;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            min-height: 32px;
+            transition: all 0.3s ease;
+        }
+        .birthday-banner.has-birthday {
+            background: linear-gradient(135deg, #fce7f3, #fbcfe8);
+            border-color: #ec4899;
+            color: #831843;
+            animation: bannerPulse 2s ease-in-out infinite;
+        }
+        .birthday-banner .bday-emoji { font-size: 18px; }
+        .birthday-banner .bday-text { font-size: 13px; }
+        .birthday-banner .bday-text strong { color: #be185d; }
+        .birthday-banner.has-birthday .bday-text strong { color: #be185d; }
+        @keyframes bannerPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.85; }
+        }
+
+        .calendar-card {
+            background: #fffbebf5;
+            border: 2px solid #f59e0b;
+            padding: 8px 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            display: flex; flex-direction: column; gap: 4px; cursor: pointer;
+            border-radius: 4px;
+        }
+        .calendar-top { display: flex; justify-content: space-between; font-size: 12px; font-weight: bold; color: #b45309; }
+        .calendar-yi-ji { display: flex; gap: 12px; font-size: 12px; font-family: "SimSun", serif; }
+        .calendar-tag-yi { color: #15803d; font-weight: bold; }
+        .calendar-tag-ji { color: #b91c1c; font-weight: bold; }
+
+        .cookie-tin-card {
+            background: linear-gradient(135deg, #d97706 0%, #92400e 100%);
+            border: 2px solid #fef3c7;
+            padding: 8px 12px;
+            color: #fff;
+            box-shadow: inset 0 0 8px rgba(0,0,0,0.4), 0 4px 10px rgba(0,0,0,0.15);
+            cursor: default;
+            border-radius: 4px;
+        }
+        .cookie-tin-title { 
+            font-size: 13px; 
+            font-weight: bold; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        .cookie-tin-title:hover { opacity: 0.8; }
+        .cookie-tin-content { 
+            display: flex; 
+            flex-direction: column;
+            gap: 4px; 
+            margin-top: 6px; 
+            display: none; 
+        }
+        .cookie-tin-card.open .cookie-tin-content { display: flex; }
+        .cookie-item {
+            background: rgba(255,255,255,0.15);
+            border: 1px solid rgba(255,255,255,0.3);
+            padding: 4px 10px;
+            border-radius: 3px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.15s;
+            user-select: none;
+            color: #fff;
+        }
+        .cookie-item:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.02);
+        }
+        .cookie-item:active {
+            transform: scale(0.96);
+        }
+
+        .item-modal {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 10001;
+        }
+        .item-modal.show { display: flex; }
+        .item-modal-box {
+            background: var(--win-gray);
+            border: 3px solid var(--win-light);
+            max-width: 420px;
+            width: 92%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+            border-radius: 2px;
+        }
+        .item-modal-header {
+            background: var(--win-blue);
+            color: #fff;
+            padding: 6px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .item-modal-header .close-btn {
+            background: var(--win-gray);
+            border: 1px solid #000;
+            color: #000;
+            cursor: pointer;
+            padding: 0 8px;
+            font-size: 13px;
+            font-weight: bold;
+            line-height: 1.5;
+        }
+        .item-modal-header .close-btn:hover { background: #d0d0d0; }
+        .item-modal-header .close-btn:active {
+            border-top: 1px solid #000;
+            border-left: 1px solid #000;
+            border-right: 1px solid var(--win-light);
+            border-bottom: 1px solid var(--win-light);
+        }
+        .item-modal-body {
+            padding: 16px 18px;
+            background: #fff;
+            color: #000;
+            font-size: 14px;
+            line-height: 1.7;
+        }
+        .item-modal-body .item-desc {
+            margin-top: 4px;
+        }
+        .item-modal-footer {
+            padding: 8px 12px 12px;
+            text-align: center;
+            background: #fff;
+        }
+        body.dark-mode .item-modal-body { background: #1e293b; color: #f8fafc; }
+        body.dark-mode .item-modal-footer { background: #1e293b; }
+
+        .char-tabs { 
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+        }
+        .char-tab-btn {
+            flex: 1 0 auto;
+            min-width: 70px;
+            background: var(--win-gray);
+            border-top: 2px solid var(--win-light);
+            border-left: 2px solid var(--win-light);
+            border-right: 2px solid #000;
+            border-bottom: 2px solid #000;
+            padding: 6px 4px;
+            text-align: center;
+            font-size: 12px;
+            cursor: pointer;
+            transition: 0.1s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.3;
+            font-weight: bold;
+        }
+        .char-tab-btn:hover { background: #d0d0d0; }
+        .char-tab-btn.active { background: var(--win-blue); color: #fff; font-weight: bold; }
+        .char-tab-btn .char-name { font-size: 12px; }
+
+        .right-column { width: 100%; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+        
+        .status-sticky-note {
+            background: #fef08a;
+            border: 1px solid #fde047;
+            padding: 10px 14px;
+            box-shadow: 0 4px 12px rgba(100, 80, 0, 0.15);
+            color: #854d0e;
+            position: relative;
+            border-radius: 4px;
+        }
+        .status-sticky-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            user-select: none;
+        }
+        .status-sticky-title { font-size: 13px; font-weight: bold; }
+        .status-toggle-btn { font-size: 11px; font-weight: bold; color: #a16207; cursor: pointer; }
+        .status-sticky-content {
+            font-size: 13px;
+            line-height: 1.6;
+            margin-top: 6px;
+            font-family: "SimSun", serif;
+            transition: all 0.3s ease;
+        }
+
+        .notebook-paper {
+            width: 100%;
+            background: rgba(255, 255, 255, 0.96);
+            border: 2px solid var(--win-light);
+            padding: 18px 22px;
+            display: flex; flex-direction: column;
+            min-height: 320px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.03);
+            border-radius: 4px;
+        }
+        .notebook-paper::before {
+            content: "";
+            position: absolute; top:0; left:0; right:0; bottom:0;
+            background:
+                linear-gradient(to right, transparent 49.6%, rgba(0,0,0,0.04) 50%, transparent 50.4%),
+                linear-gradient(to bottom, transparent 49.6%, rgba(0,0,0,0.04) 50%, transparent 50.4%),
+                radial-gradient(ellipse at 85% 15%, rgba(180, 120, 60, 0.1) 0%, rgba(180, 120, 60, 0.04) 30%, transparent 60%);
+            pointer-events: none;
+            z-index: 2;
+        }
+        .notebook-seal {
+            position: absolute; bottom: 12px; right: 16px;
+            width: 76px; height: 76px;
+            border: 2px dashed rgba(220, 38, 38, 0.35);
+            border-radius: 50%; color: rgba(220, 38, 38, 0.45);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 10px; font-weight: bold; transform: rotate(-14deg);
+            pointer-events: none; text-align: center;
+        }
+        .notebook-header {
+            display: flex; justify-content: space-between; align-items: center;
+            font-size: 12px; color: #312e81; font-weight: bold;
+            border-bottom: 1px solid #c7d2fe; padding-bottom: 8px; margin-bottom: 12px;
+            z-index: 3;
+        }
+        .notebook-body {
+            font-size: var(--paper-font-size);
+            line-height: var(--paper-line-height);
+            color: #0f172a;
+            text-align: justify;
+            white-space: pre-wrap;
+            background-image: linear-gradient(to bottom, transparent 94%, #cbd5e1 94%);
+            background-size: 100% var(--paper-line-height);
+            width: 100%;
+            font-family: "STKaiti", "KaiTi", "SimSun", serif;
+            z-index: 3;
+            transition: font-size 0.3s ease, line-height 0.3s ease;
+        }
+        .typewriter-cursor {
+            display: inline-block; width: 8px; height: 16px; background: #000080;
+            vertical-align: middle; margin-left: 3px; animation: blink 0.8s infinite;
+        }
+
+        .vintage-stamp-mark {
+            position: absolute;
+            top: 40px;
+            right: 40px;
+            border: 3px double #dc2626;
+            color: #dc2626;
+            font-weight: bold;
+            font-size: 13px;
+            padding: 4px 10px;
+            border-radius: 4px;
+            transform: rotate(-12deg);
+            opacity: 0.82;
+            pointer-events: none;
+            z-index: 10;
+            background: rgba(254, 226, 226, 0.2);
+            box-shadow: 0 0 2px rgba(220, 38, 38, 0.4);
+            animation: stampDrop 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes stampDrop {
+            0% { transform: scale(3) rotate(0deg); opacity: 0; }
+            100% { transform: scale(1) rotate(-12deg); opacity: 0.82; }
+        }
+
+        .win-taskbar {
+            margin-top: 4px;
+            background: var(--win-gray);
+            border: 2px solid var(--win-light);
+            padding: 4px 8px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            font-size: 12px;
+            gap: 8px;
+            color: #000;
+            flex-wrap: wrap;
+        }
+        .win-taskbar-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .win-taskbar-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .meizu-mp3-display {
+            background: #022c22;
+            border: 1px inset #059669;
+            color: #34d399;
+            font-family: monospace;
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 3px;
+            display: flex; align-items: center; gap: 8px;
+            box-shadow: inset 0 0 5px rgba(0,0,0,0.8);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        .mp3-progress-bar {
+            position: absolute;
+            bottom: 0; left: 0;
+            height: 2px;
+            background: #34d399;
+            width: 40%;
+            animation: mp3Progress 10s linear infinite;
+        }
+        @keyframes mp3Progress { 0% { width: 0%; } 100% { width: 100%; } }
+        .mp3-equalizer { display: flex; gap: 2px; align-items: flex-end; height: 12px; }
+        .eq-bar {
+            width: 3px; background: #34d399; height: 100%;
+            animation: eqJump 0.8s infinite ease-in-out alternate;
+        }
+        .eq-bar:nth-child(2) { animation-delay: 0.2s; }
+        .eq-bar:nth-child(3) { animation-delay: 0.4s; }
+        @keyframes eqJump { 0% { height: 20%; } 100% { height: 100%; } }
+
+        @media (max-width: 680px) {
+            body { padding: 4px 2px; }
+            .bulletin-container { padding: 8px 6px; gap: 8px; border-width: 2px; }
+            .bulletin-header { padding: 6px 8px; }
+            .mobile-toggle-btn { display: inline-block; }
+            
+            .bulletin-header-controls {
+                display: none;
+                position: absolute;
+                top: 100%; left: 0; right: 0;
+                background: var(--win-gray);
+                border: 2px solid var(--win-light);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+                padding: 8px;
+                z-index: 500;
+                grid-template-columns: repeat(3, 1fr);
+                gap: 6px;
+            }
+            .bulletin-header-controls.mobile-open { display: grid; }
+            
+            .win-mode-btn { padding: 6px 2px; font-size: 11px; width: 100%; }
+            .bulletin-body { flex-direction: column; gap: 10px; }
+            .left-column { flex: 0 0 auto; width: 100%; gap: 8px; }
+            .photo-frame { height: 280px; }
+            .notebook-paper { padding: 14px 12px; min-height: 220px; }
+            .notebook-body { font-size: var(--paper-font-size); }
+            .win-taskbar { font-size: 11px; padding: 4px; flex-direction: column; align-items: stretch; }
+            .meizu-mp3-display { font-size: 10px; padding: 2px 4px; }
+            .win-taskbar-left, .win-taskbar-right { justify-content: center; }
+            .photo-card.peeled { width: min(96vw, 360px) !important; }
+            .thermometer-bar { font-size: 10px; flex-wrap: wrap; }
+            .memory-progress { font-size: 10px; }
+            .char-tabs { gap: 3px; }
+            .char-tab-btn { min-width: 50px; font-size: 10px; padding: 4px 2px; }
+            .item-modal-box { max-width: 95%; }
+            
+            .map-modal-body {
+                grid-template-columns: 1fr;
+                gap: 12px;
+                padding: 12px;
+            }
+            .map-modal-content {
+                max-width: 100%;
+                max-height: 95vh;
+            }
+            .map-modal-body .map-item img {
+                aspect-ratio: auto;
+                height: 45vh;
+                width: 100%;
+                object-fit: contain;
+                background: #1a1a2e;
+            }
+            .map-modal-body .map-item .map-label {
+                font-size: 13px;
+                padding: 8px;
+            }
+            
+            /* 全屏查看器移动端：图片撑满宽度，高度自适应，可滚动 */
+            .map-fullscreen-overlay {
+                overflow-y: auto;
+                align-items: flex-start;
+                padding: 60px 20px 80px;
+                cursor: default;
+            }
+            .map-fullscreen-overlay img {
+                width: 100%;
+                height: auto;
+                max-height: none;
+                margin: 0 auto;
+                display: block;
+                border-radius: 4px;
+                box-shadow: 0 0 30px rgba(255,255,255,0.1);
+                border: 1px solid rgba(255,255,255,0.2);
+            }
+            /* 横版地图在移动端旋转90度，利用纵向空间 */
+            .map-fullscreen-overlay img.rotated-landscape {
+                width: auto;
+                height: auto;
+                max-width: 100vh; /* 旋转后，宽度方向对应屏幕高度 */
+                max-height: 100vw; /* 旋转后，高度方向对应屏幕宽度 */
+                object-fit: contain;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) rotate(90deg);
+                margin-top: 0;
+            }
+            .map-fullscreen-overlay .fs-close {
+                position: fixed;
+                top: 12px;
+                right: 16px;
+                font-size: 32px;
+                background: rgba(0,0,0,0.6);
+                padding: 0 12px;
+                border-radius: 30px;
+                line-height: 1.5;
+            }
+            .map-fullscreen-overlay .fs-label {
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                font-size: 14px;
+                padding: 6px 16px;
+                white-space: normal;
+                max-width: 80%;
+                background: rgba(0,0,0,0.7);
+                border-radius: 20px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body data-theme="default" data-fontsize="medium">
+    <div class="wink-overlay" id="winkOverlay">
+        <div class="wink-box">
+            <div class="wink-emoji">😘💬</div>
+            <div style="font-weight:bold; color:#ec4899; margin-top:10px; font-size:16px;">MSN 抖动与大贴图 Wink!</div>
+            <div style="font-size:12px; color:#666; margin-top:4px;">【筒子楼 2008 特别限定】</div>
+        </div>
+    </div>
+
+    <div class="item-modal" id="itemModal">
+        <div class="item-modal-box">
+            <div class="item-modal-header">
+                <span id="itemModalTitle">物品</span>
+                <button class="close-btn" onclick="closeItemModal()">✕</button>
+            </div>
+            <div class="item-modal-body" id="itemModalBody">
+                <div class="item-desc" id="itemModalDesc">描述</div>
+            </div>
+            <div class="item-modal-footer">
+                <button class="win-mode-btn" onclick="closeItemModal()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 地图模态框 -->
+    <div class="map-modal-overlay" id="mapModal">
+        <div class="map-modal-content">
+            <div class="map-modal-header">
+                <span>🗺️ 筒子楼及周边地图</span>
+                <button class="map-close-btn" onclick="closeMapModal()">✕</button>
+            </div>
+            <div class="map-modal-body" id="mapModalBody">
+                <div class="map-item" onclick="openMapFullscreen(this.querySelector('img').src, this.querySelector('.map-label').textContent, false)">
+                    <img src="https://raw.githubusercontent.com/zhamuqiu/tongren/refs/heads/main/IMG_011%E7%AD%92%E5%AD%90%E6%A5%BC%E5%86%85%E9%83%A8%E6%88%BF%E9%97%B4.png" alt="主角房间内部" loading="lazy" onerror="this.style.display='none';this.parentElement.querySelector('.map-label').textContent='⚠️ 图片加载失败'">
+                    <div class="map-label">🏠 主角房间内部</div>
+                </div>
+                <div class="map-item" onclick="openMapFullscreen(this.querySelector('img').src, this.querySelector('.map-label').textContent, true)">
+                    <img src="https://raw.githubusercontent.com/zhamuqiu/tongren/refs/heads/main/IMG_012%E7%AD%92%E5%AD%90%E6%A5%BC%E7%8E%B0%E7%8A%B6.png" alt="筒子楼地图" loading="lazy" onerror="this.style.display='none';this.parentElement.querySelector('.map-label').textContent='⚠️ 图片加载失败'">
+                    <div class="map-label">🏢 筒子楼地图</div>
+                </div>
+                <div class="map-item" onclick="openMapFullscreen(this.querySelector('img').src, this.querySelector('.map-label').textContent, true)">
+                    <img src="https://raw.githubusercontent.com/zhamuqiu/tongren/refs/heads/main/%E5%AD%A6%E6%A0%A1.png" alt="学校地图" loading="lazy" onerror="this.style.display='none';this.parentElement.querySelector('.map-label').textContent='⚠️ 图片加载失败'">
+                    <div class="map-label">🏫 学校地图</div>
+                </div>
+                <div class="map-item" onclick="openMapFullscreen(this.querySelector('img').src, this.querySelector('.map-label').textContent, true)">
+                    <img src="https://raw.githubusercontent.com/zhamuqiu/tongren/main/%E5%A4%A7%E5%9C%B0%E5%9B%BE.png" alt="海淀区地图" loading="lazy" onerror="this.style.display='none';this.parentElement.querySelector('.map-label').textContent='⚠️ 图片加载失败'">
+                    <div class="map-label">🗺️ 海淀区地图</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 全屏图片查看器 -->
+    <div class="map-fullscreen-overlay" id="mapFullscreenOverlay" onclick="closeMapFullscreen()">
+        <span class="fs-close" onclick="event.stopPropagation(); closeMapFullscreen();">✕</span>
+        <img id="mapFullscreenImg" src="" alt="放大查看" onclick="event.stopPropagation();">
+        <div class="fs-label" id="mapFullscreenLabel"></div>
+    </div>
+
+    <div class="bulletin-container" id="app">
+        <div class="photo-overlay-mask" id="photoMask"></div>
+
+        <div class="bulletin-header">
+            <div style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">💾 筒子楼简报 · 2008 MSN V16.9</div>
+            <button class="mobile-toggle-btn" id="mobileToggleBtn">⚙️ 工具箱 ▾</button>
+            <div class="bulletin-header-controls" id="headerControls">
+                <button class="win-mode-btn" id="addNoteBtn">📝 便签</button>
+                <button class="win-mode-btn" id="themeBtn">🎨 配色</button>
+                <button class="win-mode-btn" id="nightModeBtn">🌙 夜间</button>
+                <button class="win-mode-btn" id="crtBtn">📟 CRT</button>
+                <button class="win-mode-btn" id="fontSizeBtn">🔤 字号</button>
+                <button class="win-mode-btn" id="stampBtn">💮 盖章</button>
+                <button class="win-mode-btn" id="winkBtn">😉 Wink</button>
+                <button class="win-mode-btn" id="nudgeBtn">🔔 抖动</button>
+                <button class="win-mode-btn" id="soundBtn">🔊 音效</button>
+            </div>
+        </div>
+
+        <div class="news-ticker-bar">
+            <div class="news-ticker-tag">2008 MSN 晚报</div>
+            <div class="news-ticker-text" id="newsTickerText"></div>
+        </div>
+
+        <div class="bulletin-body" id="workspaceContent">
+            <div style="text-align:center; padding:50px; color:#004080; font-size:14px; font-weight:bold; width:100%;">
+                💾 正在调阅 2008 年家属院档案记录...
+            </div>
+        </div>
+
+        <div class="win-taskbar">
+            <div class="win-taskbar-left">
+                <div class="meizu-mp3-display" id="mp3PlayerBtn" title="点击切换 MP3 曲目">
+                    <div class="mp3-progress-bar"></div>
+                    <div class="mp3-equalizer">
+                        <div class="eq-bar"></div><div class="eq-bar"></div><div class="eq-bar"></div>
+                    </div>
+                    <span>📟 MEIZU M6 | <span id="mp3TrackText">周杰伦 - 青花瓷.mp3</span></span>
+                </div>
+                <div class="thermometer-bar" id="thermometerBar">
+                    🌡️ <span class="temp-outdoor" id="tempOutdoor">--°C</span> 室外
+                    | 🏠 <span class="temp-indoor" id="tempIndoor">--°C</span> 筒子楼
+                </div>
+            </div>
+            <div class="win-taskbar-right">
+                <div class="memory-progress" id="memoryProgress">
+                    <span>📖 记忆碎片</span>
+                    <div class="progress-track">
+                        <div class="progress-fill" id="memoryFill" style="width:0%"></div>
+                    </div>
+                    <span class="progress-label" id="memoryLabel">0 / 7</span>
+                </div>
+                <div id="wordCountDisplay" style="font-size:12px; color:#000;">字数: 0 字</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const BASE_URL = ['https:/', '/raw.githubusercontent.com', '/zhamuqiu/tongren/refs/heads/main'].join('');
+        let soundEnabled = false;
+        let audioCtx = null;
+        let currentThemeIndex = 0;
+        const themeList = [
+            { id: 'default', name: '🎨 蓝紫全息' },
+            { id: 'y2k', name: '🌸 梦幻粉紫' },
+            { id: 'amber', name: '📜 复古黄纸' },
+            { id: 'cyber', name: '📟 赛博荧光' }
+        ];
+
+        const fontSizeList = ['small', 'medium', 'large'];
+        const fontLabelMap = { 'small': '🔤 小号', 'medium': '🔤 中号', 'large': '🔤 大号' };
+        let currentFontIndex = 1;
+
+        // ========== 歌词数据 ==========
+        const lyricsMap = {
+            '周杰伦 - 青花瓷.mp3': ['天青色等烟雨 而我在等你', '月色被打捞起 晕开了结局', '如传世的青花瓷自顾自美丽'],
+            '五月天 - 天使.mp3': ['你就是我的天使 保护着我的天使', '从此我再没有忧伤', '像孩子依赖着肩膀 像眼泪依赖着脸庞'],
+            '许嵩 - 玫瑰花的葬礼.mp3': ['玫瑰花的葬礼 埋葬关于你的回忆', '感觉双手麻痹 不能自已', '已拉不住你'],
+            '群星 - We Are Ready.mp3': ['We Are Ready 把心和心都连在一起', 'We Are Ready 去创造奇迹', '北京欢迎你 有梦想谁都了不起'],
+        };
+        let currentLyrics = [];
+        let lyricsIndex = 0;
+        let lyricsInterval = null;
+
+        // ========== 生日数据 ==========
+        const birthdays = {
+            '洪晓彤': '4月20',
+            '洪晓蕾': '5月2',
+            '洪晓花': '6月19',
+            '苏雨夜': '5月12',
+            '苏悦': '7月9',
+            '李莉': '6月6',
+            '林秀': '10月3',
+            '唐果': '12月25',
+            '赵梅': '4月29',
+            '沈念': '6月1',
+            '蒋佩琴': '6月6',
+            '文馨': '12月1',
+            '邵婷': '8月8',
+            '齐冰': '7月2',
+            '齐雪': '7月2'
+        };
+        const allChars = ['洪晓彤', '洪晓蕾', '洪晓花', '苏雨夜', '苏悦', '李莉', '林秀', '唐果', '赵梅', '沈念', '蒋佩琴', '文馨', '邵婷', '齐冰', '齐雪'];
+
+        // ========== 物品数据 ==========
+        const itemInfoMap = {
+            'key302': {
+                title: '🔑 302室备用钥匙',
+                desc: '小卖部赵梅阿姨赠与的备用钥匙。302室位于三楼最角落，因为帮赵梅搬运杂物获得。房间隔音良好，堆放着杂物，有一张旧床可以休息，是个安静的落脚点。'
+            },
+            'homeKey': {
+                title: '🔑 自家钥匙',
+                desc: '自家的房间钥匙，家里每人一把。藏着筒子楼里这个家所有的秘密、烟火气和温暖。'
+            },
+            'nokia': {
+                title: '📱 诺基亚7310S',
+                desc: '洪晓彤送给{{user}}的生日礼物。机身轻薄，渐变彩壳尤其受女生欢迎。妹妹洪晓花常偷偷拿来把玩，在同学面前炫耀“这是我哥的手机”。'
+            }
+        };
+
+        // ========== 记忆碎片进度 ==========
+        let memoryUnlocked = new Set();
+
+        function updateMemoryProgress() {
+            const fill = document.getElementById('memoryFill');
+            const label = document.getElementById('memoryLabel');
+            if (!fill || !label) return;
+            const count = memoryUnlocked.size;
+            const pct = Math.round((count / allChars.length) * 100);
+            fill.style.width = pct + '%';
+            label.textContent = count + ' / ' + allChars.length;
+        }
+
+        // ========== 物品弹窗 ==========
+        function showItemInfo(itemId) {
+            const info = itemInfoMap[itemId];
+            if (!info) return;
+            document.getElementById('itemModalTitle').textContent = info.title;
+            document.getElementById('itemModalDesc').textContent = info.desc;
+            document.getElementById('itemModal').classList.add('show');
+            playRetroBeep(500, 'sine');
+        }
+
+        function closeItemModal() {
+            document.getElementById('itemModal').classList.remove('show');
+            playRetroBeep(400, 'sine');
+        }
+        document.getElementById('itemModal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeItemModal();
+        });
+
+        // ========== 地图模态框 ==========
+        function openMapModal() {
+            document.getElementById('mapModal').classList.add('active');
+            playRetroBeep(600, 'sine');
+        }
+
+        function closeMapModal() {
+            document.getElementById('mapModal').classList.remove('active');
+            playRetroBeep(400, 'sine');
+        }
+        document.getElementById('mapModal')?.addEventListener('click', function(e) {
+            if (e.target === this) closeMapModal();
+        });
+
+        // ========== 全屏查看器 ==========
+        function openMapFullscreen(src, label, isLandscape) {
+            const img = document.getElementById('mapFullscreenImg');
+            img.src = src;
+            img.classList.remove('rotated-landscape');
+            // 在移动端且为横版图片时，添加旋转类
+            if (isLandscape && window.innerWidth <= 680) {
+                img.classList.add('rotated-landscape');
+            }
+            document.getElementById('mapFullscreenLabel').textContent = label || '地图';
+            document.getElementById('mapFullscreenOverlay').classList.add('active');
+            playRetroBeep(500, 'sine');
+        }
+
+        function closeMapFullscreen() {
+            document.getElementById('mapFullscreenOverlay').classList.remove('active');
+            playRetroBeep(400, 'sine');
+        }
+        // 点击遮罩关闭已在 HTML 中绑定
+
+        // ========== 照片轮播状态 ==========
+        let currentPhotoIndex = 0;
+        let currentPhotoUrls = [];
+        let currentBirthdayStr = '';
+
+        function playRetroBeep(freq = 600, type = 'sine', duration = 0.04) {
+            if (!soundEnabled) return;
+            try {
+                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e) {}
+        }
+
+        function triggerWink() {
+            const wink = document.getElementById('winkOverlay');
+            if (wink) {
+                playRetroBeep(880, 'square', 0.2);
+                wink.classList.add('active');
+                setTimeout(() => {
+                    playRetroBeep(440, 'triangle', 0.2);
+                    wink.classList.remove('active');
+                }, 2200);
+            }
+        }
+
+        function triggerMSNNudge() {
+            const app = document.getElementById('app');
+            if (app) {
+                app.classList.remove('nudge-active');
+                void app.offsetWidth;
+                app.classList.add('nudge-active');
+                playRetroBeep(250, 'square', 0.15);
+            }
+        }
+
+        function toggleStatusNote() {
+            const content = document.getElementById('statusStickyContent');
+            const btn = document.getElementById('statusToggleBtn');
+            if (!content || !btn) return;
+            if (content.style.display === 'none') {
+                content.style.display = 'block';
+                btn.textContent = '[ 折叠 - ]';
+            } else {
+                content.style.display = 'none';
+                btn.textContent = '[ 展开 + ]';
+            }
+            playRetroBeep(500, 'sine');
+        }
+
+        function addCustomNote(text) {
+            const container = document.getElementById('userNotesContainer');
+            if (!container) return;
+            const note = document.createElement('div');
+            note.className = 'status-sticky-note';
+            const timeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            note.innerHTML = `
+                <div class="status-sticky-header">
+                    <span class="status-sticky-title">📌 自定义备忘录 (${timeStr})</span>
+                    <span style="cursor:pointer; font-weight:bold; font-size:14px;" onclick="this.parentElement.parentElement.remove()">✕</span>
+                </div>
+                <div class="status-sticky-content">${text.replace(/\n/g, '<br>')}</div>
+            `;
+            container.appendChild(note);
+            playRetroBeep(650, 'sine');
+        }
+
+        function addVintageStamp() {
+            const paper = document.querySelector('.notebook-paper');
+            if (!paper) return;
+            const stamps = ['【绝密档案】', '【2008北京奥运】', '【筒子楼留念】', '【已阅 2008】', '【审核通过】'];
+            const text = stamps[Math.floor(Math.random() * stamps.length)];
+            const oldStamp = paper.querySelector('.vintage-stamp-mark');
+            if (oldStamp) oldStamp.remove();
+            const stampEl = document.createElement('div');
+            stampEl.className = 'vintage-stamp-mark';
+            stampEl.textContent = text;
+            paper.appendChild(stampEl);
+            playRetroBeep(180, 'sawtooth', 0.12);
+        }
+
+        function getMessageData() {
+            const msgs = getChatMessages(getCurrentMessageId());
+            if (!msgs || msgs.length === 0) return null;
+            return msgs[0].message;
+        }
+
+        function parseData(text) {
+            const result = { time: '', location: '', text: '', roles: [], statusText: '', rumors: '' };
+            const rMatch = text.match(/<rumor_block>([\s\S]*?)<\/rumor_block>/);
+            if (rMatch && rMatch[1]) result.rumors = rMatch[1].trim();
+            const vMatch = text.match(/<vintage_post>([\s\S]*?)<\/vintage_post>/);
+            if (vMatch && vMatch[1]) {
+                const c = vMatch[1];
+                const tm = c.match(/时间[：:]\s*([^\n]+)/);
+                if (tm) result.time = tm[1].trim();
+                const lm = c.match(/地点[：:]\s*([^\n]+)/);
+                if (lm) result.location = lm[1].trim();
+                const txm = c.match(/文本[：:]\s*([\s\S]*?)(?=\n\s*\n|$)/);
+                result.text = txm ? txm[1].trim() : c.replace(/时间[：:].*/g, '').replace(/地点[：:].*/g, '').trim();
+                const roleSection = c.match(/角色[：:]\s*([\s\S]*?)(?=\n\s*文本[：:]|\n\s*\n|$)/);
+                if (roleSection && roleSection[1]) {
+                    roleSection[1].split('\n').forEach(line => {
+                        const cleaned = line.replace(/^[\s\-\*]+/, '').trim();
+                        if (cleaned.includes('|')) {
+                            const parts = cleaned.split('|');
+                            result.roles.push({ name: parts[0].trim(), outfit: parts[1].trim() });
+                        }
+                    });
+                }
+            }
+            if (result.roles.length === 0) result.roles.push({ name: '洪晓花', outfit: '日常' });
+            const sMatch = text.match(/<Status_block>([\s\S]*?)<\/Status_block>/);
+            if (sMatch && sMatch[1]) result.statusText = sMatch[1].replace(/<\/?details>/g, '').trim();
+            return result;
+        }
+
+        // ========================================
+        // 修改点：大狗特殊处理 + 多角色/多装扮自定义图床
+        // ========================================
+        function getCandidateUrls(charName, outfit) {
+            if (charName === '大狗') {
+                return [
+                    `${BASE_URL}/dagou.png`,
+                    `${BASE_URL}/dagou2.png`
+                ];
+            }
+
+            const NEW_BASE_URL = 'https://raw.githubusercontent.com/zhamuqiu/setu/refs/heads/main';
+            const TONGREN2_BASE_URL = 'https://raw.githubusercontent.com/zhamuqiu/tongren2/refs/heads/main';
+            const NINE_CHARS = ['赵梅', '唐果', '林秀', '洪晓彤', '苏悦', '苏雨夜', '洪晓花', '洪晓蕾', '李莉'];
+            const SPECIAL_CHARS = ['沈念', '蒋佩琴', '文馨', '邵婷', '齐冰', '齐雪'];
+
+            let baseUrl = BASE_URL;
+            if (outfit === '内衣') {
+                baseUrl = NEW_BASE_URL;
+            } else if (NINE_CHARS.includes(charName)) {
+                baseUrl = TONGREN2_BASE_URL;
+            } else if (SPECIAL_CHARS.includes(charName)) {
+                baseUrl = NEW_BASE_URL;
+            } else {
+                baseUrl = BASE_URL;
+            }
+
+            const pinyinMap = {
+                '洪晓彤': 'hong_xiaotong',
+                '洪晓花': 'hong_xiaohua',
+                '洪晓蕾': 'hong_xiaolei',
+                '苏雨夜': 'su_yuye',
+                '苏悦': 'su_yue',
+                '李莉': 'li_li',
+                '林秀': 'lin_xiu',
+                '唐果': 'tang_guo',
+                '赵梅': 'zhao_mei',
+                '沈念': 'shen_nian',
+                '蒋佩琴': 'jiang_peiqin',
+                '文馨': 'wen_xin',
+                '邵婷': 'shao_ting',
+                '齐冰': 'qi_bing',
+                '齐雪': 'qi_xue'
+            };
+            const prefix = pinyinMap[charName] || 'hong_xiaohua';
+
+            const outfitPrefixMap = {
+                '制服': 'uniform',
+                '日常': 'daily',
+                '外出': 'outing',
+                '赤裸': 'nsfw',
+                '内衣': 'underwear'
+            };
+            const key = outfitPrefixMap[outfit] || 'uniform';
+
+            const fixedVariants = ['制服', '外出', '日常', '赤裸', '内衣'];
+            const count = fixedVariants.includes(outfit) ? 5 : 1;
+            const urls = [];
+            for (let i = 1; i <= count; i++) {
+                urls.push(`${baseUrl}/${prefix}_${key}_${i}.png`);
+            }
+            return urls;
+        }
+
+        function isFixedVariant(outfit) {
+            return ['制服', '外出', '日常', '赤裸', '内衣'].includes(outfit);
+        }
+
+        function getFixedIndex(dateStr, charName, outfit) {
+            const dateMatch = dateStr.match(/(\d{4})年(\d{2})月(\d{2})日/);
+            let baseSeed = 0;
+            if (dateMatch) {
+                const y = parseInt(dateMatch[1]);
+                const m = parseInt(dateMatch[2]);
+                const d = parseInt(dateMatch[3]);
+                baseSeed = y * 10000 + m * 100 + d;
+            } else {
+                let hash = 0;
+                for (let i = 0; i < dateStr.length; i++) {
+                    hash = (hash << 5) - hash + dateStr.charCodeAt(i);
+                    hash |= 0;
+                }
+                baseSeed = Math.abs(hash);
+            }
+            const extra = charName + outfit;
+            let extraHash = 0;
+            for (let i = 0; i < extra.length; i++) {
+                extraHash = (extraHash << 5) - extraHash + extra.charCodeAt(i);
+                extraHash |= 0;
+            }
+            const combined = baseSeed + extraHash;
+            return Math.abs(combined) % 5;
+        }
+
+        function getLunarInfo(dateStr) {
+            const map = {
+                '2008-03-01':'正月廿四','2008-03-02':'正月廿五','2008-03-03':'正月廿六','2008-03-04':'正月廿七','2008-03-05':'正月廿八','2008-03-06':'正月廿九','2008-03-07':'正月三十','2008-03-08':'二月初一','2008-03-09':'二月初二','2008-03-10':'二月初三','2008-03-11':'二月初四','2008-03-12':'二月初五','2008-03-13':'二月初六','2008-03-14':'二月初七','2008-03-15':'二月初八','2008-03-16':'二月初九','2008-03-17':'二月初十','2008-03-18':'二月十一','2008-03-19':'二月十二','2008-03-20':'二月十三','2008-03-21':'二月十四','2008-03-22':'二月十五','2008-03-23':'二月十六','2008-03-24':'二月十七','2008-03-25':'二月十八','2008-03-26':'二月十九','2008-03-27':'二月二十','2008-03-28':'二月廿一','2008-03-29':'二月廿二','2008-03-30':'二月廿三','2008-03-31':'二月廿四',
+                '2008-04-01':'二月廿五','2008-04-02':'二月廿六','2008-04-03':'二月廿七','2008-04-04':'二月廿八','2008-04-05':'二月廿九','2008-04-06':'三月初一','2008-04-07':'三月初二','2008-04-08':'三月初三','2008-04-09':'三月初四','2008-04-10':'三月初五','2008-04-11':'三月初六','2008-04-12':'三月初七','2008-04-13':'三月初八','2008-04-14':'三月初九','2008-04-15':'三月初十','2008-04-16':'三月十一','2008-04-17':'三月十二','2008-04-18':'三月十三','2008-04-19':'三月十四','2008-04-20':'三月十五','2008-04-21':'三月十六','2008-04-22':'三月十七','2008-04-23':'三月十八','2008-04-24':'三月十九','2008-04-25':'三月二十','2008-04-26':'三月廿一','2008-04-27':'三月廿二','2008-04-28':'三月廿三','2008-04-29':'三月廿四','2008-04-30':'三月廿五',
+                '2008-05-01':'三月廿六','2008-05-02':'三月廿七','2008-05-03':'三月廿八','2008-05-04':'三月廿九','2008-05-05':'四月初一','2008-05-06':'四月初二','2008-05-07':'四月初三','2008-05-08':'四月初四','2008-05-09':'四月初五','2008-05-10':'四月初六','2008-05-11':'四月初七','2008-05-12':'四月初八','2008-05-13':'四月初九','2008-05-14':'四月初十','2008-05-15':'四月十一','2008-05-16':'四月十二','2008-05-17':'四月十三','2008-05-18':'四月十四','2008-05-19':'四月十五','2008-05-20':'四月十六','2008-05-21':'四月十七','2008-05-22':'四月十八','2008-05-23':'四月十九','2008-05-24':'四月二十','2008-05-25':'四月廿一','2008-05-26':'四月廿二','2008-05-27':'四月廿三','2008-05-28':'四月廿四','2008-05-29':'四月廿五','2008-05-30':'四月廿六','2008-05-31':'四月廿七',
+                '2008-06-01':'四月廿八','2008-06-02':'四月廿九','2008-06-03':'四月三十','2008-06-04':'五月初一','2008-06-05':'五月初二','2008-06-06':'五月初三','2008-06-07':'五月初四','2008-06-08':'五月初五','2008-06-09':'五月初六','2008-06-10':'五月初七','2008-06-11':'五月初八','2008-06-12':'五月初九','2008-06-13':'五月初十','2008-06-14':'五月十一','2008-06-15':'五月十二','2008-06-16':'五月十三','2008-06-17':'五月十四','2008-06-18':'五月十五','2008-06-19':'五月十六','2008-06-20':'五月十七','2008-06-21':'五月十八','2008-06-22':'五月十九','2008-06-23':'五月二十','2008-06-24':'五月廿一','2008-06-25':'五月廿二','2008-06-26':'五月廿三','2008-06-27':'五月廿四','2008-06-28':'五月廿五','2008-06-29':'五月廿六','2008-06-30':'五月廿七',
+                '2008-07-01':'五月廿八','2008-07-02':'五月廿九','2008-07-03':'六月初一','2008-07-04':'六月初二','2008-07-05':'六月初三','2008-07-06':'六月初四','2008-07-07':'六月初五','2008-07-08':'六月初六','2008-07-09':'六月初七','2008-07-10':'六月初八','2008-07-11':'六月初九','2008-07-12':'六月初十','2008-07-13':'六月十一','2008-07-14':'六月十二','2008-07-15':'六月十三','2008-07-16':'六月十四','2008-07-17':'六月十五','2008-07-18':'六月十六','2008-07-19':'六月十七','2008-07-20':'六月十八','2008-07-21':'六月十九','2008-07-22':'六月二十','2008-07-23':'六月廿一','2008-07-24':'六月廿二','2008-07-25':'六月廿三','2008-07-26':'六月廿四','2008-07-27':'六月廿五','2008-07-28':'六月廿六','2008-07-29':'六月廿七','2008-07-30':'六月廿八','2008-07-31':'六月廿九',
+                '2008-08-01':'七月初一','2008-08-02':'七月初二','2008-08-03':'七月初三','2008-08-04':'七月初四','2008-08-05':'七月初五','2008-08-06':'七月初六','2008-08-07':'七月初七','2008-08-08':'七月初八','2008-08-09':'七月初九','2008-08-10':'七月初十','2008-08-11':'七月十一','2008-08-12':'七月十二','2008-08-13':'七月十三','2008-08-14':'七月十四','2008-08-15':'七月十五','2008-08-16':'七月十六','2008-08-17':'七月十七','2008-08-18':'七月十八','2008-08-19':'七月十九','2008-08-20':'七月二十','2008-08-21':'七月廿一','2008-08-22':'七月廿二','2008-08-23':'七月廿三','2008-08-24':'七月廿四','2008-08-25':'七月廿五','2008-08-26':'七月廿六','2008-08-27':'七月廿七','2008-08-28':'七月廿八','2008-08-29':'七月廿九','2008-08-30':'七月三十','2008-08-31':'八月初一',
+            };
+            const match = dateStr.match(/(\d{4})年(\d{2})月(\d{2})日/);
+            if (!match) return '农历春日';
+            const key = `${match[1]}-${match[2]}-${match[3]}`;
+            return map[key] || '农历春日';
+        }
+
+        function getWeatherByDate(dateStr) {
+            const match = dateStr.match(/(\d{4})年(\d{2})月(\d{2})日/);
+            if (!match) return '🌤️ 北京 · 晴转多云 18°C~26°C';
+            const m = parseInt(match[2]);
+            const d = parseInt(match[3]);
+            const seed = d % 3;
+            const temps = [
+                ['晴转多云', '18°C~26°C'],
+                ['多云转阴', '15°C~22°C'],
+                ['小雨', '12°C~18°C'],
+            ];
+            const weather = temps[seed];
+            return `🌤️ 北京 · ${weather[0]} ${weather[1]}`;
+        }
+
+        function getEventByDate(dateStr) {
+            const match = dateStr.match(/(\d{4})年(\d{2})月(\d{2})日/);
+            if (!match) return '筒子楼小卖部北冰洋买二送一';
+            const m = parseInt(match[2]);
+            const events = {
+                3: '周杰伦《青花瓷》蝉联冠军',
+                4: '周杰伦《青花瓷》蝉联冠军',
+                5: '举国同心 · 抗震救灾',
+                6: '奥运倒计时 · 备战冲刺',
+                7: '奥运倒计时 · 最后冲刺',
+                8: '北京奥运 · 举国欢庆',
+            };
+            return events[m] || '筒子楼小卖部北冰洋买二送一';
+        }
+
+        function getTemperature(dateStr) {
+            const match = dateStr.match(/(\d{4})年(\d{2})月(\d{2})日/);
+            if (!match) return { outdoor: 22, indoor: 26 };
+            const m = parseInt(match[2]);
+            const base = m >= 6 && m <= 8 ? 28 : m >= 3 && m <= 5 ? 18 : 10;
+            const outdoor = base + Math.floor(Math.random() * 6) - 3;
+            const indoor = outdoor + 4 + Math.floor(Math.random() * 3);
+            return { outdoor, indoor };
+        }
+
+        function checkBirthday(dateStr) {
+            const match = dateStr.match(/(\d{4})年(\d{2})月(\d{2})日/);
+            if (!match) return null;
+            const mmdd = match[2] + '月' + match[3] + '日';
+            for (const [name, bday] of Object.entries(birthdays)) {
+                if (bday === mmdd) return name;
+            }
+            return null;
+        }
+
+        function updateLyrics(trackName) {
+            const lyrics = lyricsMap[trackName] || ['🎵 音乐响起...', '', ''];
+            currentLyrics = lyrics;
+            lyricsIndex = 0;
+            if (lyricsInterval) clearInterval(lyricsInterval);
+            const box = document.getElementById('lyricsBox');
+            if (!box) return;
+            box.innerHTML = lyrics.map((l, i) => 
+                `<div class="lyrics-line ${i === 0 ? 'active' : ''}">${l || '&nbsp;'}</div>`
+            ).join('');
+            lyricsInterval = setInterval(() => {
+                lyricsIndex = (lyricsIndex + 1) % lyrics.length;
+                const lines = box.querySelectorAll('.lyrics-line');
+                lines.forEach((el, i) => {
+                    el.classList.toggle('active', i === lyricsIndex);
+                });
+            }, 4000);
+        }
+
+        function togglePhotoPeeled(forceClose = false) {
+            const photoCard = document.getElementById('photoCard');
+            const mask = document.getElementById('photoMask');
+            const placeholder = document.getElementById('photoPlaceholder');
+            if (!photoCard || !mask) return;
+            if (forceClose || photoCard.classList.contains('peeled')) {
+                photoCard.classList.remove('peeled');
+                mask.classList.remove('active');
+                if (placeholder) placeholder.style.display = 'none';
+            } else {
+                if (placeholder) {
+                    placeholder.style.height = photoCard.offsetHeight + 'px';
+                    placeholder.style.display = 'block';
+                }
+                photoCard.classList.add('peeled');
+                mask.classList.add('active');
+                playRetroBeep(350, 'sine');
+            }
+        }
+
+        function photoNavPrev() {
+            if (currentPhotoUrls.length <= 1) return;
+            currentPhotoIndex = (currentPhotoIndex - 1 + currentPhotoUrls.length) % currentPhotoUrls.length;
+            const img = document.getElementById('activePhotoImg');
+            if (img) img.src = currentPhotoUrls[currentPhotoIndex];
+            const span = document.getElementById('photoNavIndex');
+            if (span) span.textContent = `${currentPhotoIndex + 1} / ${currentPhotoUrls.length}`;
+            playRetroBeep(400, 'sine');
+        }
+
+        function photoNavNext() {
+            if (currentPhotoUrls.length <= 1) return;
+            currentPhotoIndex = (currentPhotoIndex + 1) % currentPhotoUrls.length;
+            const img = document.getElementById('activePhotoImg');
+            if (img) img.src = currentPhotoUrls[currentPhotoIndex];
+            const span = document.getElementById('photoNavIndex');
+            if (span) span.textContent = `${currentPhotoIndex + 1} / ${currentPhotoUrls.length}`;
+            playRetroBeep(400, 'sine');
+        }
+
+        function updateBirthdayBanner(dateStr, activeCharName) {
+            const banner = document.getElementById('birthdayBanner');
+            const textEl = document.getElementById('birthdayText');
+            if (!banner || !textEl) return;
+            
+            const todayBday = checkBirthday(dateStr);
+            let displayName = null;
+            if (activeCharName && birthdays[activeCharName]) {
+                const match = dateStr.match(/(\d{4})年(\d{2})月(\d{2})日/);
+                if (match) {
+                    const todayMmdd = match[2] + '月' + match[3] + '日';
+                    if (birthdays[activeCharName] === todayMmdd) {
+                        displayName = activeCharName;
+                    }
+                }
+            }
+            const finalName = displayName || todayBday;
+            
+            const bdayEl = document.getElementById('photoBirthday');
+            if (activeCharName && birthdays[activeCharName]) {
+                currentBirthdayStr = birthdays[activeCharName];
+                if (bdayEl) bdayEl.textContent = '🎂 生日：' + birthdays[activeCharName];
+            } else if (bdayEl) {
+                bdayEl.textContent = '';
+            }
+            
+            if (finalName) {
+                banner.className = 'birthday-banner has-birthday';
+                textEl.innerHTML = '🎉 今日寿星：<strong>' + finalName + '</strong>';
+                if (!memoryUnlocked.has(finalName)) {
+                    memoryUnlocked.add(finalName);
+                    updateMemoryProgress();
+                }
+            } else {
+                banner.className = 'birthday-banner';
+                textEl.textContent = '';
+            }
+        }
+
+        function bindHeaderControls() {
+            document.getElementById('winkBtn')?.addEventListener('click', triggerWink);
+            document.getElementById('nudgeBtn')?.addEventListener('click', triggerMSNNudge);
+            document.getElementById('stampBtn')?.addEventListener('click', addVintageStamp);
+            
+            document.getElementById('mobileToggleBtn')?.addEventListener('click', function() {
+                const controls = document.getElementById('headerControls');
+                if (!controls) return;
+                controls.classList.toggle('mobile-open');
+                this.textContent = controls.classList.contains('mobile-open') ? '⚙️ 收起工具 ▴' : '⚙️ 工具箱 ▾';
+                playRetroBeep(500, 'sine');
+            });
+
+            document.getElementById('themeBtn')?.addEventListener('click', function() {
+                currentThemeIndex = (currentThemeIndex + 1) % themeList.length;
+                const theme = themeList[currentThemeIndex];
+                document.body.setAttribute('data-theme', theme.id);
+                this.textContent = theme.name;
+                playRetroBeep(750, 'sine');
+            });
+
+            document.getElementById('nightModeBtn')?.addEventListener('click', function() {
+                document.body.classList.toggle('dark-mode');
+                const isDark = document.body.classList.contains('dark-mode');
+                this.textContent = isDark ? '☀️ 日间' : '🌙 夜间';
+                playRetroBeep(600, 'sine');
+            });
+
+            document.getElementById('crtBtn')?.addEventListener('click', function() {
+                document.body.classList.toggle('crt-mode');
+                const isCrt = document.body.classList.contains('crt-mode');
+                this.textContent = isCrt ? '📟 CRT:开' : '📟 CRT';
+                playRetroBeep(650, 'square');
+            });
+
+            document.getElementById('fontSizeBtn')?.addEventListener('click', function() {
+                currentFontIndex = (currentFontIndex + 1) % fontSizeList.length;
+                const fontKey = fontSizeList[currentFontIndex];
+                document.body.setAttribute('data-fontsize', fontKey);
+                this.textContent = fontLabelMap[fontKey];
+                playRetroBeep(550, 'sine');
+            });
+
+            document.getElementById('soundBtn')?.addEventListener('click', (e) => {
+                soundEnabled = !soundEnabled;
+                e.target.textContent = soundEnabled ? '🔊 音效:开' : '🔊 音效';
+            });
+            document.getElementById('addNoteBtn')?.addEventListener('click', () => {
+                const input = prompt('添加一条新的备忘录/便签：');
+                if (input && input.trim()) addCustomNote(input.trim());
+            });
+            document.getElementById('mp3PlayerBtn')?.addEventListener('click', () => {
+                const tracks = ['周杰伦 - 青花瓷.mp3', '五月天 - 天使.mp3', '许嵩 - 玫瑰花的葬礼.mp3', '群星 - We Are Ready.mp3'];
+                const el = document.getElementById('mp3TrackText');
+                let idx = (tracks.indexOf(el.textContent) + 1) % tracks.length;
+                el.textContent = tracks[idx];
+                updateLyrics(tracks[idx]);
+                playRetroBeep(500, 'sine');
+            });
+
+            document.getElementById('photoMask')?.addEventListener('click', () => togglePhotoPeeled(true));
+        }
+
+        function toggleCookieTin(e) {
+            e.stopPropagation();
+            const card = document.getElementById('cookieTinCard');
+            if (card) card.classList.toggle('open');
+            playRetroBeep(400, 'sine');
+        }
+
+        function render(data, rawText) {
+            const displayTime = data.time || '2008年04月05日 星期六 07:12';
+            const displayLoc = data.location || '北京 · 筒子楼';
+            let fullText = data.text || rawText;
+
+            document.getElementById('wordCountDisplay').textContent = `字数: ${fullText.length} 字`;
+
+            const lunar = getLunarInfo(displayTime);
+            const weather = getWeatherByDate(displayTime);
+            const event = getEventByDate(displayTime);
+            const tickerText = `📢 戊子年(鼠年) ${lunar} ｜ ${weather} ｜ ${event} ｜ 筒子楼小卖部北冰洋买二送一...`;
+            const tickerEl = document.getElementById('newsTickerText');
+            if (tickerEl) tickerEl.textContent = tickerText;
+
+            const temp = getTemperature(displayTime);
+            document.getElementById('tempOutdoor').textContent = temp.outdoor + '°C';
+            document.getElementById('tempIndoor').textContent = temp.indoor + '°C';
+
+            const currentTrack = document.getElementById('mp3TrackText')?.textContent || '周杰伦 - 青花瓷.mp3';
+            updateLyrics(currentTrack);
+
+            const roles = data.roles;
+            const tabsHtml = roles.map((role, idx) => {
+                return `<button class="char-tab-btn ${idx === 0 ? 'active' : ''}" data-index="${idx}" data-name="${role.name}">
+                    <span class="char-name">🟢 ${role.name}</span>
+                </button>`;
+            }).join('');
+
+            const rumorHtml = data.rumors ? `
+                <div class="rumor-card">
+                    <div class="rumor-content">${data.rumors.replace(/\n/g, '<br>')}</div>
+                </div>
+            ` : '';
+
+            const yiList = ['听MP3', '吃北冰洋冰棍', '逛小卖部', 'MSN挂机', '写随笔'];
+            const jiList = ['做补习卷子', '被大妈告状', '打碎玻璃', '夜不归宿'];
+            const calendarHtml = `
+                <div class="calendar-card" id="calendarCard" title="点击撕翻黄历">
+                    <div class="calendar-top">
+                        <span>🗓️ 2008 戊子年老黄历</span>
+                        <span>${lunar}</span>
+                    </div>
+                    <div class="calendar-yi-ji">
+                        <span class="calendar-tag-yi">宜: ${yiList[Math.floor(Math.random()*yiList.length)]}</span>
+                        <span class="calendar-tag-ji">忌: ${jiList[Math.floor(Math.random()*jiList.length)]}</span>
+                    </div>
+                </div>
+            `;
+
+            const fortuneYi = yiList[Math.floor(Math.random() * yiList.length)];
+            const fortuneJi = jiList[Math.floor(Math.random() * jiList.length)];
+            const fortuneHtml = `
+                <div class="fortune-card">
+                    <div class="fortune-title">📿 今日签文</div>
+                    <div><span class="fortune-yi">宜：${fortuneYi}</span> ｜ <span class="fortune-ji">忌：${fortuneJi}</span></div>
+                </div>
+            `;
+
+            const tinHtml = `
+                <div class="cookie-tin-card" id="cookieTinCard">
+                    <div class="cookie-tin-title" onclick="toggleCookieTin(event)">
+                        <span>🍪 筒子楼旧铁盒 (线索)</span>
+                        <span id="tinArrow">▼</span>
+                    </div>
+                    <div class="cookie-tin-content">
+                        <div class="cookie-item" onclick="showItemInfo('key302')">🔑 302室备用钥匙</div>
+                        <div class="cookie-item" onclick="showItemInfo('homeKey')">🔑 自家钥匙</div>
+                        <div class="cookie-item" onclick="showItemInfo('nokia')">📱 诺基亚7310S</div>
+                    </div>
+                </div>
+            `;
+
+            // ====== 地图按钮 (替换 MSN 状态栏) ======
+            const mapBtnHtml = `
+                <div class="map-btn-card" onclick="openMapModal()">
+                    <span>🗺️</span> 筒子楼地图
+                    <span style="font-size:11px; opacity:0.7;">点击查看 4 张地图</span>
+                </div>
+            `;
+
+            const lyricsHtml = `
+                <div class="lyrics-box" id="lyricsBox">
+                    <div class="lyrics-line active">天青色等烟雨 而我在等你</div>
+                    <div class="lyrics-line">月色被打捞起 晕开了结局</div>
+                    <div class="lyrics-line">如传世的青花瓷自顾自美丽</div>
+                </div>
+            `;
+
+            let statusHtml = data.statusText ? `
+                <div class="status-sticky-note">
+                    <div class="status-sticky-header" onclick="toggleStatusNote()">
+                        <span class="status-sticky-title">📌 状态附言</span>
+                        <span class="status-toggle-btn" id="statusToggleBtn">[ 折叠 - ]</span>
+                    </div>
+                    <div class="status-sticky-content" id="statusStickyContent">${data.statusText.replace(/\n/g, '<br>')}</div>
+                </div>
+            ` : '';
+
+            const html = `
+                <div class="left-column">
+                    <div class="photo-card" id="photoCard" title="点击撕下/查看高清大图">
+                        <button class="photo-close-btn" id="photoCloseBtn" onclick="event.stopPropagation(); togglePhotoPeeled(true);">✕ 贴回</button>
+                        <div class="photo-frame">
+                            <div class="photo-corner-tl"></div><div class="photo-corner-tr"></div>
+                            <div class="photo-corner-bl"></div><div class="photo-corner-br"></div>
+                            <div class="photo-sticker-tag">★ Y2K 2008</div>
+                            <img id="activePhotoImg" src="" alt="Portrait">
+                        </div>
+                        <div class="photo-caption-bar" id="photoCaptionBar"></div>
+                        <div class="photo-birthday" id="photoBirthday"></div>
+                        <div class="photo-nav" id="photoNav">
+                            <button onclick="photoNavPrev()">◀</button>
+                            <span id="photoNavIndex">1 / 1</span>
+                            <button onclick="photoNavNext()">▶</button>
+                        </div>
+                    </div>
+                    <div class="photo-placeholder" id="photoPlaceholder"></div>
+                    ${rumorHtml}
+                    ${mapBtnHtml}
+                    ${fortuneHtml}
+                    <div class="char-tabs">${tabsHtml}</div>
+                    ${calendarHtml}
+                    ${tinHtml}
+                    ${lyricsHtml}
+                </div>
+                <div class="right-column">
+                    <div id="userNotesContainer" style="display:flex; flex-direction:column; gap:8px;">
+                        ${statusHtml}
+                    </div>
+                    <div class="notebook-paper">
+                        <div class="notebook-seal">2008·北京<br>家属院<br>★档案★</div>
+                        <div class="notebook-header">
+                            <div>📅 ${displayTime}</div>
+                            <div>📍 ${displayLoc}</div>
+                        </div>
+                        <div class="notebook-body" id="typewriterTarget"><span class="typewriter-cursor"></span></div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('workspaceContent').innerHTML = html;
+            bindHeaderControls();
+
+            const photoCard = document.getElementById('photoCard');
+            if (photoCard) {
+                photoCard.addEventListener('click', (e) => {
+                    if (e.target.id !== 'photoCloseBtn' && !e.target.closest('.photo-nav')) togglePhotoPeeled();
+                });
+            }
+            document.getElementById('calendarCard')?.addEventListener('click', () => playRetroBeep(700, 'square'));
+
+            let activeIndex = 0;
+            const imgElement = document.getElementById('activePhotoImg');
+            const captionBar = document.getElementById('photoCaptionBar');
+            const navSpan = document.getElementById('photoNavIndex');
+            const bdaySpan = document.getElementById('photoBirthday');
+
+            function updateRole(clickedName) {
+                const current = roles[activeIndex];
+                const urls = getCandidateUrls(current.name, current.outfit);
+                currentPhotoUrls = urls;
+                let idx;
+                if (isFixedVariant(current.outfit) && data.time) {
+                    idx = getFixedIndex(data.time, current.name, current.outfit);
+                    if (idx >= urls.length) idx = 0;
+                } else {
+                    idx = Math.floor(Math.random() * urls.length);
+                }
+                currentPhotoIndex = idx;
+                imgElement.src = urls[idx];
+                captionBar.textContent = `姓名：${current.name} ｜ 装扮：${current.outfit}`;
+                if (navSpan) navSpan.textContent = `${idx + 1} / ${urls.length}`;
+                
+                if (bdaySpan && birthdays[current.name]) {
+                    bdaySpan.textContent = '🎂 生日：' + birthdays[current.name];
+                } else if (bdaySpan) {
+                    bdaySpan.textContent = '';
+                }
+                
+                updateBirthdayBanner(displayTime, current.name);
+            }
+            updateRole();
+
+            setTimeout(() => {
+                updateBirthdayBanner(displayTime, roles[0]?.name);
+            }, 100);
+
+            document.querySelectorAll('.char-tab-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.char-tab-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    activeIndex = parseInt(this.dataset.index);
+                    updateRole(this.dataset.name);
+                });
+            });
+
+            let charIndex = 0;
+            const target = document.getElementById('typewriterTarget');
+            function typeWriter() {
+                if (charIndex < fullText.length) {
+                    target.innerHTML = fullText.substring(0, charIndex + 1) + '<span class="typewriter-cursor"></span>';
+                    charIndex++;
+                    setTimeout(typeWriter, 16);
+                } else {
+                    target.innerHTML = fullText;
+                }
+            }
+            typeWriter();
+
+            roles.forEach(r => {
+                if (!memoryUnlocked.has(r.name)) {
+                    memoryUnlocked.add(r.name);
+                }
+            });
+            updateMemoryProgress();
+        }
+
+        function init() {
+            try {
+                const raw = getMessageData();
+                if (!raw) throw new Error('未捕获到对应档案数据。');
+                render(parseData(raw), raw);
+            } catch(e) {
+                document.getElementById('workspaceContent').innerHTML = `<div style="text-align:center; padding:40px; color:#004080;">档案加载异常：${e.message}</div>`;
+            }
+        }
+        if (typeof $ !== 'undefined') $(init); else document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
