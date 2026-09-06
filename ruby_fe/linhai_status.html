@@ -1,0 +1,1593 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>核心档案 - 极致丝滑全透视差版</title>
+  <style>
+    /* ==========================================================
+       极致轻透磨砂玻璃及变量声明（白天护眼+毛玻璃透视）
+       ========================================================== */
+    :root {
+      --bg-gradient: linear-gradient(135deg, rgba(239, 234, 230, 0.55) 0%, rgba(226, 230, 237, 0.45) 70%, rgba(216, 223, 234, 0.5) 100%);
+      --surface: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+      --surface-strong: rgba(255, 255, 255, 0.25);
+      
+      --ink: #423938;            
+      --muted: #6b5c5b;          
+      --line: rgba(204, 131, 108, 0.25); 
+      --glass-border: rgba(255, 255, 255, 0.4);
+      --glass-inset: inset 0 1px 2px rgba(255, 255, 255, 0.5);
+      
+      --accent: #d8816c;         
+      --accent-glow: rgba(216, 129, 108, 0.08);
+      
+      --shadow: 0 10px 40px rgba(66, 57, 56, 0.06);
+      --panel-shadow: 0 20px 50px rgba(66, 57, 56, 0.04);
+      
+      --thought-bg: rgba(215, 226, 239, 0.5); 
+      --thought-border: rgba(175, 198, 223, 0.4);
+      
+      --scroll-thumb: rgba(216, 129, 108, 0.25);
+      --row-bg-odd: rgba(255, 255, 255, 0.1);
+      
+      --badge-bg: rgba(255, 255, 255, 0.4);
+      --badge-border: rgba(204, 131, 108, 0.25);
+      --badge-text: #423938;
+      
+      --npc-badge-bg: rgba(229, 185, 128, 0.2);
+      --npc-badge-border: rgba(229, 185, 128, 0.4);
+      --npc-badge-text: #8e6833;
+      
+      --blur-val: blur(20px) saturate(120%);
+    }
+
+    .dark-theme {
+      --bg-gradient: linear-gradient(135deg, rgba(20, 16, 16, 0.6) 0%, rgba(24, 29, 36, 0.6) 100%);
+      --surface: linear-gradient(135deg, rgba(35, 28, 27, 0.1) 0%, rgba(20, 24, 30, 0.03) 100%);
+      --surface-strong: rgba(40, 32, 31, 0.15);
+      --ink: #f7e9e8;            
+      --muted: #bda2a0;          
+      --line: rgba(255, 255, 255, 0.15);
+      --glass-border: rgba(255, 255, 255, 0.08);
+      --glass-inset: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+      --accent: #f5a99a;
+      --accent-glow: rgba(245, 169, 154, 0.1);
+      --shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+      --panel-shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
+      
+      --thought-bg: rgba(30, 37, 48, 0.35);
+      --thought-border: rgba(255, 255, 255, 0.1);
+      
+      --scroll-thumb: rgba(255, 255, 255, 0.15);
+      --row-bg-odd: transparent;
+      
+      --badge-bg: rgba(20, 16, 16, 0.55);
+      --badge-border: rgba(245, 169, 154, 0.25);
+      --badge-text: #f5a99a;
+
+      --npc-badge-bg: rgba(245, 206, 154, 0.15);
+      --npc-badge-border: rgba(245, 206, 154, 0.3);
+      --npc-badge-text: #f5ce9a;
+    }
+
+    /* ==========================================================
+       基础结构与高性能过渡缓存
+       ========================================================== */
+    html, body { 
+      margin: 0; 
+      padding: 0; 
+      font-family: ui-rounded, -apple-system-ui-rounded, "SF Pro Rounded", "PingFang SC", "Microsoft YaHei", sans-serif; 
+      background: transparent; 
+      color: var(--ink); 
+      height: auto; 
+      min-height: 0;
+      overflow: visible;
+      transition: background 0.35s ease, color 0.3s ease;
+    }
+    
+    ::-webkit-scrollbar { width: 4px; height: 4px; background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--scroll-thumb); border-radius: 4px; }
+    
+    .widget-container { 
+      position: relative; 
+      margin: 10px auto; 
+      z-index: 10; 
+      width: 100%;
+      max-width: 900px;
+      padding: 1px;
+      box-sizing: border-box;
+      background: var(--bg-gradient);
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      backdrop-filter: var(--blur-val);
+      -webkit-backdrop-filter: var(--blur-val);
+      border: 1px solid var(--glass-border);
+    }
+
+    /* ==========================================================
+       天气粒子引擎置顶画布
+       ========================================================== */
+    .weather-screen-effect {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      pointer-events: none;
+      z-index: 9999;
+      overflow: hidden;
+    }
+
+    .weather-particle {
+      position: absolute;
+      pointer-events: none;
+      will-change: transform, opacity;
+    }
+
+    @keyframes falling-rain {
+      0% { transform: translateY(-10vh) translateX(0) scaleY(1); opacity: 0; }
+      10% { opacity: 0.8; }
+      90% { opacity: 0.8; }
+      100% { transform: translateY(105vh) translateX(-50px) scaleY(0.7); opacity: 0; }
+    }
+
+    @keyframes cloud-drift {
+      0% { transform: translate(-30vw, 15vh) scale(0.8); opacity: 0; }
+      20% { opacity: 0.28; }
+      80% { opacity: 0.28; }
+      100% { transform: translate(110vw, 10vh) scale(1.3); opacity: 0; }
+    }
+
+    @keyframes sunlamp-glow {
+      0% { transform: scale(0.6); opacity: 0; }
+      30% { opacity: 0.45; }
+      70% { opacity: 0.45; }
+      100% { transform: scale(1.6); opacity: 0; }
+    }
+
+    @keyframes snow-flutter {
+      0% { transform: translateY(-10vh) rotate(0deg); opacity: 0; }
+      10% { opacity: 0.9; }
+      90% { opacity: 0.9; }
+      100% { transform: translateY(105vh) translateX(40px) rotate(360deg); opacity: 0; }
+    }
+
+    .illustration-btn, .back-to-profile-btn, .mvu-lightbox-close, .theme-btn, .thought-header-click, .action-toast-btn {
+      touch-action: manipulation;
+      will-change: transform, opacity;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      transform: translate3d(0, 0, 0);
+    }
+
+    /* ==========================================================
+       折叠标题栏 
+       ========================================================== */
+    .main-toggle-header {
+      position: relative; 
+      z-index: 3;
+      padding: 16px 24px; 
+      box-sizing: border-box;
+      background: var(--surface-strong);
+      border: 1px solid var(--line); 
+      border-top: 1px solid var(--glass-border);
+      border-left: 1px solid var(--glass-border);
+      box-shadow: var(--glass-inset);
+      border-radius: 22px; 
+      display: flex; 
+      justify-content: center; 
+      align-items: center; 
+      cursor: pointer; 
+      backdrop-filter: var(--blur-val); 
+      -webkit-backdrop-filter: var(--blur-val);
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .main-toggle-header:active {
+      transform: scale(0.99) translate3d(0,0,0);
+    }
+    
+    .header-title { 
+      font-weight: 800; 
+      font-size: 17px; 
+      letter-spacing: 3px; 
+      color: var(--ink); 
+      display: flex; 
+      align-items: center;
+      gap: 8px; 
+    }
+    .header-title span { 
+      font-size: 11px;
+      color: var(--accent); 
+      display: inline-block;
+      transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    
+    .theme-btn {
+      position: absolute; 
+      right: 16px; top: 50%; transform: translateY(-50%) translate3d(0,0,0); 
+      font-size: 14px; cursor: pointer; 
+      width: 32px; height: 32px; border-radius: 50%; 
+      background: var(--surface); color: var(--ink); 
+      display: flex; align-items: center; justify-content: center; 
+      border: 1px solid var(--line);
+      box-shadow: var(--glass-inset);
+      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1.15);
+    }
+
+    .widget-container.open .main-toggle-header { margin-bottom: 12px; }
+    .widget-container.open .header-title span { transform: rotate(180deg); }
+
+    /* ==========================================================
+       主面板折叠 Grid
+       ========================================================== */
+    .folding-grid-wrapper {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.45s cubic-bezier(0.25, 1, 0.5, 1);
+      overflow: hidden;
+      width: 100%;
+    }
+    
+    .widget-container.open .folding-grid-wrapper {
+      grid-template-rows: 1fr;
+    }
+
+    .list-wrapper {
+      min-height: 0;
+      position: relative;
+      z-index: 2;
+      width: 100%; 
+      background: var(--surface); 
+      border: 1px solid var(--line);
+      border-top: 1px solid var(--glass-border);
+      border-left: 1px solid var(--glass-border);
+      box-shadow: var(--panel-shadow), var(--glass-inset);
+      border-radius: 24px; 
+      backdrop-filter: var(--blur-val); 
+      -webkit-backdrop-filter: var(--blur-val);
+      box-sizing: border-box; 
+      opacity: 0;
+      transform: translateY(-10px) translate3d(0,0,0);
+      transition: opacity 0.4s cubic-bezier(0.25, 1, 0.5, 1),
+                  transform 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+      overflow: hidden; 
+    }
+    .widget-container.open .list-wrapper {
+      opacity: 1;
+      transform: translateY(0) translate3d(0,0,0);
+    }
+
+    /* ==========================================================
+       世界状态栏 & 天气微动画
+       ========================================================== */
+    .world-state { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center;
+      padding: 14px 24px; 
+      border-bottom: 1.5px solid var(--line);
+      font-size: 15.5px; 
+      font-weight: 700;
+      color: var(--muted); 
+    }
+    .world-state strong { 
+      color: var(--ink); 
+      background: rgba(255, 255, 255, 0.15); 
+      border: 1px solid var(--glass-border);
+      padding: 4px 10px; 
+      border-radius: 7px; 
+    }
+    
+    .weather-container {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+      transition: opacity 0.2s ease;
+    }
+    .weather-container:hover {
+      opacity: 0.85;
+      text-shadow: 0 0 6px var(--accent);
+    }
+
+    .weather-anim-icon {
+      position: relative;
+      width: 22px;
+      height: 22px;
+      display: inline-block;
+      vertical-align: middle;
+      overflow: hidden;
+    }
+
+    .weather-sunny-ray {
+      width: 16px; height: 16px;
+      background: #f4c042;
+      border-radius: 50%;
+      position: absolute;
+      top: 3px; left: 3px;
+      box-shadow: 0 0 8px #f4c042;
+      animation: spin-sunny 12s linear infinite;
+    }
+    @keyframes spin-sunny {
+      0% { transform: rotate(0deg) scale(1); }
+      50% { transform: rotate(180deg) scale(1.1); box-shadow: 0 0 12px #f4c042; }
+      100% { transform: rotate(360deg) scale(1); }
+    }
+
+    .weather-rain-cloud {
+      width: 14px; height: 8px;
+      background: #8b99a6;
+      border-radius: 6px;
+      position: absolute;
+      top: 3px; left: 4px;
+    }
+    .weather-rain-drops {
+      position: absolute;
+      width: 100%; height: 100%;
+    }
+    .weather-rain-drops::before, .weather-rain-drops::after {
+      content: '';
+      position: absolute;
+      width: 1.5px; height: 5px;
+      background: #50a1df;
+      animation: rain-fall 0.8s linear infinite;
+    }
+    .weather-rain-drops::before { left: 6px; top: 12px; }
+    .weather-rain-drops::after { left: 12px; top: 10px; animation-delay: 0.3s; }
+    @keyframes rain-fall {
+      0% { transform: translateY(-3px) skewX(-10deg); opacity: 0; }
+      50% { opacity: 1; }
+      100% { transform: translateY(6px) skewX(-10deg); opacity: 0; }
+    }
+
+    .weather-cloudy-cloud1 {
+      width: 13px; height: 8px;
+      background: #b0c0d0;
+      border-radius: 6px;
+      position: absolute;
+      top: 6px; left: 2px;
+      animation: drift-cloudy 4s ease-in-out infinite alternate;
+    }
+    .weather-cloudy-cloud2 {
+      width: 11px; height: 7px;
+      background: rgba(255,255,255,0.7);
+      border-radius: 5px;
+      position: absolute;
+      top: 3px; left: 8px;
+      animation: drift-cloudy 5s ease-in-out infinite alternate-reverse;
+    }
+    @keyframes drift-cloudy {
+      0% { transform: translateX(-1px); }
+      100% { transform: translateX(2px); }
+    }
+
+    .weather-snow-cloud {
+      width: 14px; height: 8px;
+      background: #a2b5cd;
+      border-radius: 6px;
+      position: absolute;
+      top: 3px; left: 4px;
+    }
+    .weather-snow-flakes::before, .weather-snow-flakes::after {
+      content: '❄';
+      position: absolute;
+      font-size: 8px;
+      color: #e0f0ff;
+      animation: snow-down 2.2s linear infinite;
+    }
+    .weather-snow-flakes::before { left: 6px; top: 10px; }
+    .weather-snow-flakes::after { left: 12px; top: 11px; animation-delay: 1.1s; }
+    @keyframes snow-down {
+      0% { transform: translateY(-2px) rotate(0deg); opacity: 0; }
+      50% { opacity: 1; }
+      100% { transform: translateY(7px) rotate(360deg); opacity: 0; }
+    }
+
+    /* ==========================================================
+       角色列表展示区域 - 解决页面切换产生挤压Bug的核心强制定义
+       ========================================================== */
+    .char-list-area {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 16px;
+      gap: 12px;
+    }
+
+    .char-item { 
+      display: block;
+      width: 100%;
+      clear: both;
+      box-sizing: border-box;
+      background: var(--surface-strong); 
+      border: 1.5px solid var(--line); 
+      border-top: 1.5px solid var(--glass-border);
+      border-left: 1.5px solid var(--glass-border);
+      box-shadow: var(--glass-inset), 0 8px 30px rgba(50, 34, 33, 0.02);
+      border-radius: 20px; 
+      overflow: hidden;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.25s ease, opacity 0.25s ease; 
+      cursor: grab;
+    }
+    
+    .char-item:last-child {
+      border-bottom-left-radius: 20px;
+      border-bottom-right-radius: 20px;
+    }
+    
+    .char-item:hover {
+      box-shadow: var(--glass-inset), 0 12px 35px rgba(216, 129, 108, 0.06);
+      border-color: var(--accent);
+    }
+    .char-item:active { cursor: grabbing; }
+    .char-item.dragging {
+      opacity: 0.5;
+      border: 1.5px dashed var(--accent);
+      transform: scale(0.98);
+    }
+
+    .char-summary { 
+      padding: 18px 24px; 
+      cursor: pointer; 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      transition: background-color 0.25s ease;
+      width: 100%;
+      box-sizing: border-box;
+    }
+    .char-summary:active { background-color: rgba(255,255,255,0.1); }
+
+    .char-identity-group { display: flex; align-items: center; gap: 10px; }
+    .char-avatar-section { display: none; flex-direction: column; align-items: center; gap: 12px; flex-shrink: 0; }
+
+    .char-avatar-container {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid var(--glass-border);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.03));
+      box-shadow: 0 8px 24px rgba(216, 129, 108, 0.04);
+      position: relative;
+      mask-image: radial-gradient(circle, white 100%, black 100%);
+      -webkit-mask-image: -webkit-radial-gradient(circle, white 100%, black 100%);
+      transform: translate3d(0, 0, 0);
+    }
+    .char-avatar-container img {
+      width: 100%; height: 100%; object-fit: cover; object-position: center top; border-radius: 50%; transition: opacity 0.25s ease-in-out;
+    }
+
+    .char-avatar-fallback {
+      display: flex; position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; align-items: center; justify-content: center; font-size: 52px; font-weight: 900; color: var(--muted); background: rgba(255, 255, 255, 0.12); z-index: 1;
+    }
+
+    .avatar-action-group { display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: center; }
+
+    .illustration-btn {
+      background: var(--surface); border: 1px solid var(--line); box-shadow: var(--glass-inset), 0 4px 10px rgba(0,0,0,0.02); color: var(--ink); font-size: 11.5px; font-weight: 800; padding: 6.5px 12px; width: 110px; border-radius: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 4px; transition: background 0.3s ease, border-color 0.3s ease, color 0.3s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .illustration-btn:hover { background: var(--accent); color: white; border-color: var(--accent); transform: scale(1.05) translate3d(0, 0, 0); }
+
+    .nsfw-toggle-btn { background: rgba(216, 129, 108, 0.12); border: 1px solid var(--accent); color: var(--accent); }
+    .nsfw-toggle-btn.active { background: var(--accent); color: #fff; }
+    .random-avatar-btn { display: none; background: rgba(255, 255, 255, 0.15); border: 1px dashed var(--accent); color: var(--ink); transform: scale(0.9) translate3d(0, -8px, 0); animation: popInBtn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+    @keyframes popInBtn { to { opacity: 1; transform: scale(1) translate3d(0, 0, 0); } }
+
+    .char-name { 
+      font-size: 20px; font-weight: 800; color: var(--ink); display: flex; align-items: center; gap: 8px; 
+    }
+    .char-name::before { 
+      content: ''; display: inline-block; width: 6px; height: 16px; border-radius: 3px; background: var(--accent); 
+    }
+    
+    .npc-badge {
+      font-size: 10px;
+      font-weight: 900;
+      padding: 2.5px 8px;
+      border-radius: 6px;
+      background: var(--npc-badge-bg);
+      border: 1px solid var(--npc-badge-border);
+      color: var(--npc-badge-text);
+      letter-spacing: 0.5px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+    }
+
+    .char-brief { display: flex; gap: 8px; }
+    .char-brief span { 
+      background: var(--badge-bg); color: var(--badge-text); font-size: 13px; font-weight: 800; padding: 4px 12px; border-radius: 8px; border: 1px solid var(--badge-border); box-shadow: 0 2px 6px rgba(0,0,0,0.02); letter-spacing: 0.5px; transition: all 0.3s ease;
+    }
+
+    .char-item.active .char-summary { border-bottom: 2px solid var(--line); }
+    .char-item.active .char-avatar-section { display: flex; }
+
+    /* ==========================================================
+       卡片内详情
+       ========================================================== */
+    .char-details { 
+      max-height: 0; opacity: 0; overflow: hidden; padding: 0 18px; box-sizing: border-box; gap: 16px; display: flex; flex-direction: row; align-items: flex-start; transform: translateY(-8px) translate3d(0,0,0); transition: max-height 0.45s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1), padding 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .char-item.active .char-details { max-height: 950px; opacity: 1; transform: translateY(0) translate3d(0,0,0); padding: 18px; }
+
+    .char-main-flow { display: flex; flex-direction: column; gap: 12px; flex-grow: 1; width: calc(100% - 176px); }
+
+    .thought-container { width: 100%; border-radius: 12px; overflow: hidden; border: 1.5px solid var(--thought-border); background: var(--thought-bg); box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.25); transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+    .thought-container:hover { transform: translateY(-1px); }
+
+    .thought-header-click { padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; background: rgba(255, 255, 255, 0.12); transition: background-color 0.25s ease; }
+    .thought-header-click:active { background-color: rgba(255, 255, 255, 0.2); }
+    .thought-header-click span { font-size: 13.5px; font-weight: 855; color: var(--ink); }
+    .thought-header-click .arrow-icon { font-size: 10px; color: var(--muted); transition: transform 0.35s cubic-bezier(0.25, 0.8, 0.25, 1.25); }
+
+    .thought-grid-wrapper { display: grid; grid-template-rows: 0fr; transition: grid-template-rows 0.38s cubic-bezier(0.25, 1, 0.5, 1); overflow: hidden; }
+    .thought-container.open .thought-grid-wrapper { grid-template-rows: 1fr; }
+
+    .thought-box { min-height: 0; border-top: 1px solid var(--thought-border); box-sizing: border-box; opacity: 0; transform: translateY(-6px) translate3d(0,0,0); transition: opacity 0.35s ease, transform 0.35s cubic-bezier(0.25, 1, 0.5, 1); }
+    .thought-container.open .thought-box { opacity: 1; transform: translateY(0) translate3d(0,0,0); }
+
+    .t-content { padding: 12px 14px; font-size: 15.5px; font-style: italic; color: var(--ink); font-weight: 700; line-height: 1.6; white-space: pre-wrap; border-radius: 8px; }
+
+    .lower-content-area { width: 100%; overflow: hidden; }
+    .attr-vertical-list { max-height: 320px; overflow-y: auto; padding-right: 6px; }
+
+    .attr-row { display: flex; align-items: center; padding: 8px 10px; border-bottom: 1.5px solid var(--line); min-height: 38px; box-sizing: border-box; border-radius: 8px; transition: background-color 0.2s ease; }
+    .attr-row:nth-child(odd) { background-color: var(--row-bg-odd); }
+    
+    .a-label { min-width: 110px; font-size: 14.5px; color: var(--muted); font-weight: 700; margin-right: 10px; flex-shrink: 0; }
+    .a-value { font-size: 14.5px; color: var(--ink); font-weight: 600; line-height: 1.5; word-break: break-all; flex-grow: 1; padding: 4px 8px; border-radius: 6px; min-height: 20px; transition: all 0.2s ease; }
+
+    /* ==========================================================
+       图鉴页 & 网格
+       ========================================================== */
+    .illustration-gallery-layer { display: none; padding: 16px; flex-direction: column; gap: 12px; max-height: 580px; overflow-y: auto; }
+    .gallery-header-nav { display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--line); padding-bottom: 12px; }
+
+    .back-to-profile-btn { background: var(--surface-strong); border: 1px solid var(--glass-border); padding: 6.5px 14px; border-radius: 20px; font-size: 13px; font-weight: 800; cursor: pointer; display: flex; align-items: center; gap: 6px; color: var(--ink); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .back-to-profile-btn:hover { background: var(--accent); color: white; border-color: var(--accent); transform: translateX(-3px) translate3d(0, 0, 0); }
+
+    .sub-section-title { font-size: 13.5px; font-weight: 855; color: var(--ink); padding-left: 6px; border-left: 3px solid var(--accent); margin: 14px 0 8px; }
+    .gallery-quad-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin-bottom: 10px; }
+    .gallery-grid-item { background: var(--surface); border: 1px solid var(--line); border-top: 1px solid var(--glass-border); border-left: 1px solid var(--glass-border); border-radius: 8px; overflow: hidden; cursor: pointer; position: relative; transition: transform 0.3s cubic-bezier(0.25, 0.8, 0.25, 1.1), border-color 0.25s ease; }
+    .gallery-grid-item:hover { transform: translateY(-2px) scale(1.02) translate3d(0,0,0); border-color: var(--accent); }
+
+    .gallery-grid-thumb { width: 100%; aspect-ratio: 3 / 4; background: rgba(255, 255, 255, 0.05); overflow: hidden; }
+    .gallery-grid-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .gallery-grid-badge { position: absolute; top: 4px; right: 4px; background: var(--surface-strong); font-size: 7.5px; font-weight: 900; padding: 1px 4px; border-radius: 4px; color: var(--accent); border: 1px solid var(--glass-border); }
+    .gallery-grid-info { padding: 4px; text-align: center; background: rgba(255, 255, 255, 0.02); border-top: 1px solid var(--line); }
+    .gallery-grid-label { font-size: 10.5px; font-weight: 800; color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* ==========================================================
+       情境图集弹窗（通透磨砂玻璃质感）
+       ========================================================== */
+    .mvu-lightbox { 
+      display: none; 
+      position: fixed; 
+      top: 0; left: 0; 
+      width: 100%; height: 100%; 
+      background: rgba(239, 234, 230, 0.65); 
+      backdrop-filter: var(--blur-val); -webkit-backdrop-filter: var(--blur-val); 
+      z-index: 2000; 
+      flex-direction: column; 
+      opacity: 0; 
+      transition: opacity 0.3s ease; 
+    }
+    .dark-theme .mvu-lightbox {
+      background: rgba(20, 16, 16, 0.65); 
+    }
+    .mvu-lightbox.active { display: flex; opacity: 1; }
+    
+    .mvu-lightbox-header {
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1.5px solid var(--line);
+    }
+    
+    .mvu-lightbox-body {
+      flex: 1;
+      padding: 24px;
+      overflow-y: auto; 
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    .mvu-lightbox-close { 
+      border: 1px solid var(--glass-border); 
+      background: var(--surface); color: var(--ink); 
+      width: 32px; height: 32px; border-radius: 50%; 
+      display: flex; align-items: center; justify-content: center; 
+      cursor: pointer; font-weight: bold; 
+    }
+
+    /* ==========================================================
+       单屏大图悬浮导航与设置头像操作条
+       ========================================================== */
+    .photo-zoom-overlay { 
+      display: none; 
+      position: fixed; 
+      top: 0; left: 0; 
+      width: 100%; height: 100%; 
+      background: rgba(0, 0, 0, 0.93); 
+      z-index: 3000; 
+      align-items: center; 
+      justify-content: center; 
+      opacity: 0; 
+      transition: opacity 0.25s ease; 
+    }
+    .photo-zoom-overlay.active { display: flex; opacity: 1; }
+    
+    .zoom-large-image { 
+      max-width: 90%; 
+      max-height: 75%; 
+      object-fit: contain; 
+      border-radius: 12px; 
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6); 
+      transition: transform 0.25s ease-out, opacity 0.2s ease;
+    }
+
+    .zoom-nav-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 48px; height: 48px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: #fff;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.25s ease;
+      z-index: 3100;
+    }
+    .zoom-nav-btn:hover {
+      background: rgba(255, 255, 255, 0.3);
+      transform: translateY(-50%) scale(1.1);
+    }
+    .zoom-nav-btn:active {
+      transform: translateY(-50%) scale(0.95);
+    }
+    .zoom-prev-btn { left: 24px; }
+    .zoom-next-btn { right: 24px; }
+
+    .zoom-control-bar {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3200;
+      display: flex;
+      gap: 16px;
+    }
+
+    .action-toast-btn {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 1px 1px rgba(255,255,255,0.2);
+      color: #fff;
+      font-size: 13.5px;
+      font-weight: 800;
+      padding: 10px 24px;
+      border-radius: 30px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .action-toast-btn:hover {
+      background: var(--accent);
+      border-color: var(--accent);
+      transform: scale(1.05) translate3d(0, 0, 0);
+    }
+    .action-toast-btn:active {
+      transform: scale(0.95) translate3d(0, 0, 0);
+    }
+
+    @media (max-width: 680px) {
+      .char-details { flex-direction: column; }
+      .char-avatar-section { width: 100%; align-items: center; }
+      .char-main-flow { width: 100%; }
+      .attr-vertical-list { max-height: 240px; }
+      .world-state { font-size: 14px; flex-direction: column; gap: 8px; }
+      .zoom-nav-btn { width: 40px; height: 40px; font-size: 16px; }
+      .zoom-prev-btn { left: 8px; }
+      .zoom-next-btn { right: 8px; }
+      .zoom-control-bar { bottom: 20px; }
+    }
+  </style>
+</head>
+<body id="themeBody">
+  <div id="weatherScreenEffect" class="weather-screen-effect"></div>
+
+  <div class="widget-container" id="mainWidget">
+    <div class="main-toggle-header">
+      <div class="header-title" onclick="toggleMainWidget()" style="flex-grow: 1; justify-content: center;">
+        角色档案 <span>▼</span>
+      </div>
+      <div class="theme-btn" id="themeBtn" onclick="toggleTheme(event)" title="明暗转换">☀️</div>
+    </div>
+
+    <div class="folding-grid-wrapper">
+      <div class="list-wrapper">
+        <div class="content-layer">
+          <div class="world-state">
+            <span class="w-time">时间：<strong>--:--</strong></span>
+            
+            <span class="w-weather weather-container" onclick="triggerWeatherInteraction()" title="点击召唤天气神迹">
+              天气：
+              <span id="weather-anim-icon-slot"></span>
+              <strong id="weather-text-node">获取中</strong>
+            </span>
+            
+            <span class="w-loc">地点：<strong>获取中</strong></span>
+          </div>
+
+          <div class="char-list-area" id="profile-list-view"></div>
+
+          <div class="illustration-gallery-layer" id="illustration-gallery-view">
+            <div class="gallery-header-nav">
+              <button class="back-to-profile-btn" onclick="switchView('profile')">◀ 返回档案</button>
+              <div class="gallery-title-text" id="gallery-char-title">角色图鉴</div>
+            </div>
+            <div id="gallery-vertical-grid-container"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="mvu-lightbox-overlay" class="mvu-lightbox" onclick="closeLightbox(event)">
+    <div class="mvu-lightbox-header">
+      <div class="gallery-title-text" id="mvu-lightbox-caption">情境图集</div>
+      <button class="mvu-lightbox-close" onclick="closeLightbox(event)">✕</button>
+    </div>
+    <div class="mvu-lightbox-body">
+      <div class="gallery-quad-grid" id="mvu-lightbox-grid"></div>
+    </div>
+  </div>
+
+  <div id="photo-zoom-overlay" class="photo-zoom-overlay" onclick="closeZoomView(event)">
+    <div class="zoom-nav-btn zoom-prev-btn" onclick="navigateZoom(-1, event)">◀</div>
+    <img id="zoom-large-image" class="zoom-large-image" src="" alt="立绘全景" />
+    <div class="zoom-nav-btn zoom-next-btn" onclick="navigateZoom(1, event)">▶</div>
+    
+    <div class="zoom-control-bar">
+      <button class="action-toast-btn" onclick="setZoomedImageAsAvatar(event)">👤 设为当前头像</button>
+    </div>
+  </div>
+
+  <script>
+    const THEME_MEMORY_KEY = 'stellar-archive-theme-memory';
+    const LOCAL_DATA_FALLBACK_KEY = 'mvu-character-list-data';
+    const USER_AVATAR_PREFS_KEY = 'stellar-archive-user-avatar-prefs';
+
+    const guoBase = 'https://raw.githubusercontent.com/renlei-0001/hailinshi/main/guosiyu';
+    const fangBase = 'https://raw.githubusercontent.com/renlei-0001/hailinshi/main/fangziyi';
+    const linBase = 'https://raw.githubusercontent.com/renlei-0001/hailinshi/main/linxinyue';
+
+    const imageUrlMap = {
+      '郭思雨': {
+        id: 'guo_siyu',
+        sfwBase: guoBase,
+        nsfwBase: guoBase,
+        uniform: `${guoBase}/guo_siyu_uniform.png`,
+        outing: `${guoBase}/guo_siyu_outing.png`,
+        daily: `${guoBase}/guo_siyu_daily.png`,
+        nsfw: `${guoBase}/guo_siyu_nsfw.png`
+      },
+      '方子怡': {
+        id: 'fang_ziyi',
+        sfwBase: fangBase,
+        nsfwBase: fangBase,
+        uniform: `${fangBase}/fang_ziyi_uniform.png`,
+        outing: `${fangBase}/fang_ziyi_outing.png`,
+        daily: `${fangBase}/fang_ziyi_daily.png`,
+        nsfw: `${fangBase}/fang_ziyi_nsfw.png`
+      },
+      '林欣悦': {
+        id: 'lin_xinyue',
+        sfwBase: linBase,
+        nsfwBase: linBase,
+        uniform: `${linBase}/lin_xinyue_uniform.png`,
+        outing: `${linBase}/lin_xinyue_outing.png`,
+        daily: `${linBase}/lin_xinyue_daily.png`,
+        nsfw: `${linBase}/lin_xinyue_nsfw.png`
+      }
+    };
+
+    const SFW_VARIANTS = [
+      { key: 'uniform', label: '制服' },
+      { key: 'daily', label: '日常' },
+      { key: 'outing', label: '外出' },
+      { key: 'nsfw', label: '赤裸' }
+    ];
+
+    const NSFW_VARIANTS = [
+      { key: 'blowjob', label: '口交' },
+      { key: 'ride', label: '骑乘' },
+      { key: 'holding_pee', label: '憋尿' }, 
+      { key: 'nom', label: '正常位' },
+      { key: 'anal', label: '肛交' },
+      { key: 'orgasm', label: '高潮' },
+      { key: 'back', label: '后背位' },
+      { key: 'ftf', label: '面对面' }
+    ];
+
+    const MAX_DETECT_LIMIT = 15;
+    const detectedCounts = {};
+    const fallbackAvatars = { '郭思雨': 'G', '方子怡': 'F', '林欣悦': 'L' };
+    
+    // 全局头像偏好存储对象
+    let userAvatarPrefs = {
+      modes: {},         // 各角色当前的头像模式 ('sfw' | 'nsfw' | 'custom_rand')
+      customUrls: {}     // 各角色绑定的自定义图鉴大图 URL
+    };
+
+    // 初始化加载本地持久化头像数据
+    (function loadAvatarPrefs() {
+      const savedPrefs = localStorage.getItem(USER_AVATAR_PREFS_KEY);
+      if (savedPrefs) {
+        try {
+          userAvatarPrefs = JSON.parse(savedPrefs);
+          if (!userAvatarPrefs.modes) userAvatarPrefs.modes = {};
+          if (!userAvatarPrefs.customUrls) userAvatarPrefs.customUrls = {};
+        } catch (e) {
+          console.error("加载头像内存失败", e);
+        }
+      }
+    })();
+
+    function saveAvatarPrefs() {
+      localStorage.setItem(USER_AVATAR_PREFS_KEY, JSON.stringify(userAvatarPrefs));
+    }
+
+    const verifiedImagesPool = {
+      '郭思雨': [],
+      '方子怡': [],
+      '林欣悦': []
+    };
+
+    let cachedSourceData = null;
+    let isInteractionRunning = false; 
+
+    let currentGalleryActiveCharName = '';
+    let activeZoomUrlsList = [];
+    let currentZoomIndex = 0;
+
+    function setAnimatedWeatherIcon(weatherStr) {
+      const slot = document.getElementById('weather-anim-icon-slot');
+      if (!slot) return;
+      
+      let animationHtml = '';
+      if (weatherStr.includes('雨')) {
+        animationHtml = `<div class="weather-anim-icon" title="雨天"><div class="weather-rain-cloud"></div><div class="weather-rain-drops"></div></div>`;
+      } else if (weatherStr.includes('阴') || weatherStr.includes('云')) {
+        animationHtml = `<div class="weather-anim-icon" title="阴天"><div class="weather-cloudy-cloud1"></div><div class="weather-cloudy-cloud2"></div></div>`;
+      } else if (weatherStr.includes('雪')) {
+        animationHtml = `<div class="weather-anim-icon" title="雪天"><div class="weather-snow-cloud"></div><div class="weather-snow-flakes"></div></div>`;
+      } else {
+        animationHtml = `<div class="weather-anim-icon" title="晴天"><div class="weather-sunny-ray"></div></div>`;
+      }
+      slot.innerHTML = animationHtml;
+    }
+
+    function triggerWeatherInteraction() {
+      if (isInteractionRunning) return;
+      isInteractionRunning = true;
+
+      const effectSky = document.getElementById('weatherScreenEffect');
+      if (!effectSky) return;
+
+      const weatherNode = document.getElementById('weather-text-node');
+      const weatherText = weatherNode ? weatherNode.innerText : '晴天';
+
+      if (weatherText.includes('雨')) {
+        for (let i = 0; i < 70; i++) {
+          const rain = document.createElement('div');
+          rain.className = 'weather-particle';
+          rain.style.width = '1.5px';
+          rain.style.height = `${20 + Math.random() * 20}px`;
+          rain.style.background = 'linear-gradient(to bottom, rgba(80,161,223,0), rgba(80,161,223,0.75))';
+          rain.style.left = `${Math.random() * 100}vw`;
+          rain.style.animation = `falling-rain ${0.8 + Math.random() * 0.5}s linear infinite`;
+          rain.style.animationDelay = `${Math.random() * 1.5}s`;
+          effectSky.appendChild(rain);
+        }
+      } else if (weatherText.includes('阴') || weatherText.includes('云')) {
+        for (let i = 0; i < 8; i++) {
+          const cloud = document.createElement('div');
+          cloud.className = 'weather-particle';
+          cloud.style.width = `${180 + Math.random() * 160}px`;
+          cloud.style.height = `${100 + Math.random() * 80}px`;
+          const isDark = document.getElementById('themeBody').classList.contains('dark-theme');
+          cloud.style.background = isDark ? 'radial-gradient(circle, rgba(100,105,115,0.4) 0%, rgba(0,0,0,0) 70%)' : 'radial-gradient(circle, rgba(255,255,255,0.65) 0%, rgba(255,255,255,0) 75%)';
+          cloud.style.filter = 'blur(16px)';
+          cloud.style.borderRadius = '50%';
+          cloud.style.animation = `cloud-drift ${7.5 + Math.random() * 3}s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards`;
+          cloud.style.animationDelay = `${i * 0.45}s`;
+          effectSky.appendChild(cloud);
+        }
+      } else if (weatherText.includes('雪')) {
+        for (let i = 0; i < 50; i++) {
+          const snow = document.createElement('div');
+          snow.className = 'weather-particle';
+          snow.textContent = '❄';
+          snow.style.color = '#e0f0ff';
+          snow.style.fontSize = `${10 + Math.random() * 14}px`;
+          snow.style.left = `${Math.random() * 100}vw`;
+          snow.style.animation = `snow-flutter ${2.2 + Math.random() * 1.2}s linear forwards`;
+          snow.style.animationDelay = `${Math.random() * 2}s`;
+          effectSky.appendChild(snow);
+        }
+      } else {
+        const sun = document.createElement('div');
+        sun.className = 'weather-particle';
+        sun.style.width = '350px';
+        sun.style.height = '350px';
+        sun.style.background = 'radial-gradient(circle, rgba(244,192,66,0.3) 0%, rgba(216,129,108,0.06) 45%, rgba(0,0,0,0) 70%)';
+        sun.style.left = 'calc(50vw - 175px)';
+        sun.style.top = 'calc(45vh - 175px)';
+        sun.style.animation = 'sunlamp-glow 4.0s cubic-bezier(0.1, 0.8, 0.25, 1) forwards';
+        effectSky.appendChild(sun);
+      }
+
+      setTimeout(() => {
+        effectSky.style.transition = 'opacity 0.8s ease';
+        effectSky.style.opacity = '0';
+        setTimeout(() => {
+          effectSky.innerHTML = '';
+          effectSky.style.opacity = '1';
+          effectSky.style.transition = 'none';
+          isInteractionRunning = false;
+        }, 850);
+      }, 4200);
+    }
+
+    function prefetchAndBuildImagePools() {
+      Object.keys(imageUrlMap).forEach(charName => {
+        const meta = imageUrlMap[charName];
+        const allKeys = [...SFW_VARIANTS.map(v=>v.key), ...NSFW_VARIANTS.map(v=>v.key)];
+        allKeys.forEach(variantKey => {
+          const baseCover = `${meta.nsfwBase}/${meta.id}_${variantKey}.png`;
+          const baseTester = new Image();
+          baseTester.src = baseCover;
+          baseTester.onload = () => {
+            if (!verifiedImagesPool[charName].includes(baseCover)) verifiedImagesPool[charName].push(baseCover);
+          };
+
+          for (let i = 1; i <= MAX_DETECT_LIMIT; i++) {
+            const testUrl = `${meta.nsfwBase}/${meta.id}_${variantKey}_${i}.png`;
+            const tester = new Image();
+            tester.src = testUrl;
+            tester.onload = () => {
+              if (!verifiedImagesPool[charName].includes(testUrl)) {
+                verifiedImagesPool[charName].push(testUrl);
+              }
+            };
+          }
+        });
+      });
+    }
+
+    function getActiveCharacterAvatar(name) {
+      const meta = imageUrlMap[name];
+      if (!meta) return '';
+      const mode = userAvatarPrefs.modes[name] || 'sfw';
+      if (mode === 'custom_rand') {
+        return userAvatarPrefs.customUrls[name] || meta.nsfw;
+      }
+      return mode === 'nsfw' ? meta.nsfw : meta.uniform;
+    }
+
+    function toggleAvatarMode(event, name) {
+      event.stopPropagation();
+      const currentMode = userAvatarPrefs.modes[name] || 'sfw';
+      const nextMode = currentMode === 'sfw' ? 'nsfw' : 'sfw';
+      
+      userAvatarPrefs.modes[name] = nextMode;
+      saveAvatarPrefs(); // 保存至本地
+
+      const btn = event.currentTarget;
+      const box = btn.closest('.char-avatar-section');
+      const randomBtn = box.querySelector('.random-avatar-btn');
+
+      if (nextMode === 'nsfw' || nextMode === 'custom_rand') {
+        btn.classList.add('active');
+        if (randomBtn) randomBtn.style.display = 'flex';
+      } else {
+        btn.classList.remove('active');
+        if (randomBtn) randomBtn.style.display = 'none';
+      }
+      applyAvatarUpdate(name, box);
+    }
+
+    function triggerRandomAvatar(event, name) {
+      event.stopPropagation();
+      const pool = verifiedImagesPool[name] || [];
+      if (pool.length === 0) return;
+
+      let selectedUrl = '';
+      if (pool.length === 1) {
+        selectedUrl = pool[0];
+      } else {
+        let attempts = 0;
+        do {
+          selectedUrl = pool[Math.floor(Math.random() * pool.length)];
+          attempts++;
+        } while (selectedUrl === userAvatarPrefs.customUrls[name] && attempts < 10);
+      }
+
+      userAvatarPrefs.modes[name] = 'custom_rand';
+      userAvatarPrefs.customUrls[name] = selectedUrl;
+      saveAvatarPrefs(); // 保存至本地
+
+      const btn = event.currentTarget;
+      const box = btn.closest('.char-avatar-section');
+      applyAvatarUpdate(name, box);
+    }
+
+    function applyAvatarUpdate(name, avatarSectionEl) {
+      const img = avatarSectionEl.querySelector('.char-avatar-container img');
+      if (img) {
+        img.removeAttribute('data-fail-tries'); 
+        img.style.opacity = '0';
+        setTimeout(() => {
+          img.src = getActiveCharacterAvatar(name);
+          img.style.opacity = '1';
+        }, 120);
+      }
+    }
+
+    function handleImageFallbacks(imgEl, originalUrl, backupUrl, textFallback) {
+      let tries = parseInt(imgEl.getAttribute('data-fail-tries') || '0');
+      tries++;
+      imgEl.setAttribute('data-fail-tries', tries);
+
+      const name = imgEl.alt;
+      const meta = imageUrlMap[name];
+      if (!meta) return;
+
+      if (tries === 1) {
+        const baseDir = originalUrl.substring(0, originalUrl.lastIndexOf('/'));
+        const fileName = originalUrl.substring(originalUrl.lastIndexOf('/') + 1);
+        if (!fileName.includes('_1.png') && !fileName.includes('_2.png')) {
+          imgEl.src = `${baseDir}/${meta.id}_nsfw_1.png`;
+          return;
+        }
+      } 
+      
+      if (tries === 2) {
+        imgEl.src = originalUrl.replace('_1.png', '_2.png');
+        return;
+      }
+
+      imgEl.style.display = 'none';
+      const fallbackDiv = imgEl.parentNode.querySelector('.char-avatar-fallback');
+      if (fallbackDiv) fallbackDiv.style.display = 'flex';
+    }
+
+    // ==========================================================
+    // 设为当前头像并在本地存储永久保存
+    // ==========================================================
+    function setZoomedImageAsAvatar(event) {
+      event.stopPropagation();
+      const chosenUrl = activeZoomUrlsList[currentZoomIndex];
+      const charName = currentGalleryActiveCharName;
+      if (!chosenUrl || !charName) return;
+
+      userAvatarPrefs.modes[charName] = 'custom_rand';
+      userAvatarPrefs.customUrls[charName] = chosenUrl;
+      saveAvatarPrefs(); // 写入 localStorage 核心保存层
+
+      renderWidget();
+
+      const originalBtnText = event.currentTarget.innerText;
+      event.currentTarget.innerText = '✅ 设置成功！';
+      event.currentTarget.style.backgroundColor = '#d8816c';
+      
+      setTimeout(() => {
+        const btn = document.querySelector('.action-toast-btn');
+        if (btn) {
+          btn.innerText = originalBtnText;
+          btn.style.backgroundColor = '';
+        }
+        closeZoomView();
+        const lightbox = document.getElementById('mvu-lightbox-overlay');
+        if (lightbox) lightbox.classList.remove('active');
+        switchView('profile');
+      }, 1000);
+    }
+
+    function syncOrderUpdate() {
+      if (!cachedSourceData) return;
+      
+      const container = document.getElementById('profile-list-view');
+      const items = container.querySelectorAll('.char-item');
+      let rawChars = parseCompat(_.get(cachedSourceData, 'stat_data.角色列表', {}));
+      
+      const newSortedRawChars = {};
+      items.forEach(el => {
+        const name = el.getAttribute('data-char-name');
+        if (name && rawChars[name]) {
+          newSortedRawChars[name] = rawChars[name];
+        }
+      });
+
+      cachedSourceData.stat_data.角色列表 = newSortedRawChars;
+      const latestPayload = cachedSourceData.stat_data;
+      localStorage.setItem(LOCAL_DATA_FALLBACK_KEY, JSON.stringify(latestPayload));
+
+      try {
+        window.parent.postMessage({
+          type: "update_variables",
+          variables: {
+            "stat_data": JSON.stringify(latestPayload)
+          }
+        }, "*");
+      } catch (e) {
+        console.error("ST Order Sync Error: ", e);
+      }
+    }
+
+    function makeDraggable(containerSelector) {
+      const container = document.querySelector(containerSelector);
+      let dragEl = null;
+
+      container.addEventListener('dragstart', (e) => {
+        if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.closest('.a-value') || e.target.closest('.t-content') || e.target.closest('.illustration-btn')) {
+          e.preventDefault();
+          return;
+        }
+        dragEl = e.target.closest('.char-item');
+        if (dragEl) dragEl.classList.add('dragging');
+      });
+
+      container.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        const dragging = document.querySelector('.char-item.dragging');
+        if (!dragging) return;
+        const afterElement = getDragAfterElement(container, e.clientY);
+        if (afterElement == null) {
+          container.appendChild(dragging);
+        } else {
+          container.insertBefore(dragging, afterElement);
+        }
+      });
+
+      container.addEventListener('dragend', () => {
+        if (dragEl) {
+          dragEl.classList.remove('dragging');
+          dragEl = null;
+          syncOrderUpdate();
+        }
+      });
+    }
+
+    function getDragAfterElement(container, y) {
+      const draggableElements = [...container.querySelectorAll('.char-item:not(.dragging)')];
+      return draggableElements.reduce((closest, child) => {
+        const box = child.getBoundingClientRect();
+        const offset = y - box.top - box.height / 2;
+        if (offset < 0 && offset > closest.offset) {
+          return { offset: offset, element: child };
+        } else {
+          return closest;
+        }
+      }, { offset: Number.NEGATIVE_INFINITY }).element;
+    }
+
+    function switchView(target) {
+      const profileView = document.getElementById('profile-list-view');
+      const galleryView = document.getElementById('illustration-gallery-view');
+      if (target === 'gallery') {
+        profileView.style.display = 'none';
+        galleryView.style.display = 'flex';
+      } else {
+        galleryView.style.display = 'none';
+        profileView.style.display = 'flex'; 
+      }
+    }
+
+    function enterGalleryMode(event, charName) {
+      event.stopPropagation();
+      const meta = imageUrlMap[charName];
+      if (!meta) return;
+
+      currentGalleryActiveCharName = charName; 
+
+      document.getElementById('gallery-char-title').textContent = `${charName} 角色图鉴`;
+      const container = document.getElementById('gallery-vertical-grid-container');
+      container.innerHTML = '';
+
+      const sfwTitle = document.createElement('div');
+      sfwTitle.className = 'sub-section-title';
+      sfwTitle.textContent = '普通情境 (SFW)';
+      const sfwGrid = document.createElement('div');
+      sfwGrid.className = 'gallery-quad-grid';
+      container.appendChild(sfwTitle);
+      container.appendChild(sfwGrid);
+
+      const nsfwTitle = document.createElement('div');
+      nsfwTitle.className = 'sub-section-title';
+      nsfwTitle.textContent = '私密情境 (NSFW)';
+      const nsfwGrid = document.createElement('div');
+      nsfwGrid.className = 'gallery-quad-grid';
+      container.appendChild(nsfwTitle);
+      container.appendChild(nsfwGrid);
+
+      SFW_VARIANTS.forEach(variant => detectAndAppendItem(meta, charName, true, variant, sfwGrid));
+      NSFW_VARIANTS.forEach(variant => detectAndAppendItem(meta, charName, false, variant, nsfwGrid));
+
+      switchView('gallery');
+    }
+
+    function detectAndAppendItem(meta, charName, isSfw, variant, parentGrid) {
+      const base = isSfw ? meta.sfwBase : meta.nsfwBase;
+      const cacheKey = `${meta.id}_${variant.key}`;
+      const defaultCover = `${base}/${meta.id}_${variant.key}_1.png`;
+
+      const item = document.createElement('div');
+      item.className = 'gallery-grid-item';
+      item.innerHTML = `
+        <div class="gallery-grid-thumb">
+          <img src="${defaultCover}" alt="" loading="lazy">
+        </div>
+        <div class="gallery-grid-info">
+          <div class="gallery-grid-label">${variant.label}</div>
+        </div>
+      `;
+
+      const img = item.querySelector('img');
+      img.onerror = function() {
+        img.src = `${base}/${meta.id}_${variant.key}.png`;
+        img.onerror = function() {
+          img.src = `${base}/${meta.id}_${variant.key}_2.png`;
+          img.onerror = function() { item.remove(); }
+        }
+      };
+
+      let checkSum = 0;
+      let successes = 0;
+
+      for (let i = 1; i <= MAX_DETECT_LIMIT; i++) {
+        const temp = new Image();
+        temp.src = `${base}/${meta.id}_${variant.key}_${i}.png`;
+        temp.onload = () => { successes++; checkSum++; verify(); };
+        temp.onerror = () => { checkSum++; verify(); };
+      }
+
+      function verify() {
+        if (checkSum === MAX_DETECT_LIMIT) {
+          if (successes > 0) {
+            detectedCounts[cacheKey] = { isMulti: true, count: successes };
+            if (successes > 1) {
+              const badge = document.createElement('div');
+              badge.className = 'gallery-grid-badge';
+              badge.textContent = `${successes}P`;
+              item.querySelector('.gallery-grid-thumb').appendChild(badge);
+            }
+          } else {
+            const single = new Image();
+            single.src = `${base}/${meta.id}_${variant.key}.png`;
+            single.onload = () => {
+              detectedCounts[cacheKey] = { isMulti: false, count: 1 };
+            };
+            single.onerror = () => {
+              const singleTest = new Image();
+              singleTest.src = `${base}/${meta.id}_${variant.key}_1.png`;
+              singleTest.onload = () => {
+                detectedCounts[cacheKey] = { isMulti: true, count: 1 };
+              };
+              singleTest.onerror = () => item.remove();
+            };
+          }
+        }
+      }
+
+      item.onclick = () => {
+        const state = detectedCounts[cacheKey] || { isMulti: false, count: 1 };
+        launchLightbox(meta, charName, isSfw, variant, state);
+      };
+
+      parentGrid.appendChild(item);
+    }
+
+    function launchLightbox(meta, charName, isSfw, variant, state) {
+      const base = isSfw ? meta.sfwBase : meta.nsfwBase;
+      const overlay = document.getElementById('mvu-lightbox-overlay');
+      const container = document.getElementById('mvu-lightbox-grid');
+      document.getElementById('mvu-lightbox-caption').textContent = `${charName} - ${variant.label} (${state.count}张)`;
+      container.innerHTML = '';
+
+      activeZoomUrlsList = [];
+
+      if (!state.isMulti) {
+        const url = `${base}/${meta.id}_${variant.key}.png`;
+        activeZoomUrlsList.push(url);
+        appendLightboxCard(container, url, variant.label, 0);
+      } else {
+        for (let i = 1; i <= state.count; i++) {
+          const url = `${base}/${meta.id}_${variant.key}_${i}.png`;
+          activeZoomUrlsList.push(url);
+          appendLightboxCard(container, url, `${variant.label} - ${i}`, i - 1);
+        }
+      }
+      overlay.classList.add('active');
+    }
+
+    function appendLightboxCard(parent, url, tag, index) {
+      const item = document.createElement('div');
+      item.className = 'gallery-grid-item';
+      item.innerHTML = `
+        <div class="gallery-grid-thumb">
+          <img src="${url}" alt="" loading="lazy">
+        </div>
+        <div class="gallery-grid-info">
+          <div class="gallery-grid-label">${tag}</div>
+        </div>
+      `;
+      const img = item.querySelector('img');
+      img.onerror = () => {
+        const baseVariantUrl = url.substring(0, url.lastIndexOf('_')) + '.png';
+        img.src = baseVariantUrl;
+      };
+      
+      item.onclick = (e) => {
+        e.stopPropagation();
+        openZoomView(index);
+      };
+      parent.appendChild(item);
+    }
+
+    function openZoomView(index) {
+      currentZoomIndex = index;
+      const zoomOverlay = document.getElementById('photo-zoom-overlay');
+      const zoomImg = document.getElementById('zoom-large-image');
+      
+      zoomImg.src = activeZoomUrlsList[currentZoomIndex];
+      zoomOverlay.style.display = 'flex';
+      setTimeout(() => {
+        zoomOverlay.classList.add('active');
+      }, 20);
+    }
+
+    function navigateZoom(direction, event) {
+      if (event) event.stopPropagation();
+      if (activeZoomUrlsList.length <= 1) return;
+
+      currentZoomIndex = (currentZoomIndex + direction + activeZoomUrlsList.length) % activeZoomUrlsList.length;
+      
+      const zoomImg = document.getElementById('zoom-large-image');
+      zoomImg.style.transform = 'scale(0.95)';
+      zoomImg.style.opacity = '0.5';
+
+      setTimeout(() => {
+        zoomImg.src = activeZoomUrlsList[currentZoomIndex];
+        zoomImg.style.transform = 'scale(1)';
+        zoomImg.style.opacity = '1';
+      }, 100);
+    }
+
+    function closeZoomView(event) {
+      if (event && (event.target.closest('.zoom-nav-btn') || event.target.closest('.zoom-control-bar'))) return;
+      const zoomOverlay = document.getElementById('photo-zoom-overlay');
+      zoomOverlay.classList.remove('active');
+      setTimeout(() => {
+        zoomOverlay.style.display = 'none';
+      }, 250);
+    }
+
+    function closeLightbox(event) {
+      const overlay = document.getElementById('mvu-lightbox-overlay');
+      if (event.target === overlay || event.target.className === 'mvu-lightbox-close') {
+        overlay.classList.remove('active');
+      }
+    }
+
+    document.addEventListener('keydown', (e) => {
+      const zoomOverlay = document.getElementById('photo-zoom-overlay');
+      if (zoomOverlay && zoomOverlay.classList.contains('active')) {
+        if (e.key === 'ArrowRight' || e.key === 'd') {
+          navigateZoom(1);
+        } else if (e.key === 'ArrowLeft' || e.key === 'a') {
+          navigateZoom(-1);
+        } else if (e.key === 'Escape') {
+          closeZoomView();
+        }
+      }
+    });
+
+    (function initThemeMemory() {
+      const savedTheme = localStorage.getItem(THEME_MEMORY_KEY);
+      const bodyNode = document.getElementById('themeBody');
+      const btnNode = document.getElementById('themeBtn');
+      if (savedTheme === 'dark' && bodyNode) {
+        bodyNode.classList.add('dark-theme');
+        if (btnNode) btnNode.innerHTML = '✨';
+      }
+    })();
+
+    function toggleTheme(event) {
+      event.stopPropagation();
+      const body = document.getElementById('themeBody');
+      const btn = document.getElementById('themeBtn');
+      body.classList.toggle('dark-theme');
+      if (body.classList.contains('dark-theme')) {
+        btn.innerHTML = '✨'; 
+        localStorage.setItem(THEME_MEMORY_KEY, 'dark');
+      } else {
+        btn.innerHTML = '☀️';  
+        localStorage.setItem(THEME_MEMORY_KEY, 'light');
+      }
+    }
+
+    function toggleMainWidget() {
+      document.getElementById('mainWidget').classList.toggle('open');
+    }
+
+    function toggleChar(element) {
+      element.closest('.char-item').classList.toggle('active');
+    }
+
+    function toggleThought(event, element) {
+      event.stopPropagation();
+      element.closest('.thought-container').classList.toggle('open');
+    }
+
+    if (typeof _ === 'undefined') {
+      var _ = { get: (obj, path, defValue) => path.split('.').reduce((a, c) => (a && a[c] !== undefined ? a[c] : null), obj) ?? defValue };
+    }
+    function parseCompat(data) {
+      if (!data) return {};
+      if (typeof data === 'string') { try { return JSON.parse(data); } catch (e) { return {}; } }
+      return data;
+    }
+
+    function buildRow(label, value) {
+      const displayValue = (value === undefined || value === null || value === '') 
+        ? '<span style="opacity:0.4; font-style:italic;">暂无</span>' : value;
+      return `
+        <div class="attr-row">
+          <div class="a-label">${label}</div>
+          <div class="a-value">${displayValue}</div>
+        </div>`;
+    }
+
+    function renderWidget() {
+      try {
+        let all_variables = {};
+        try { if (typeof getAllVariables !== 'undefined') all_variables = getAllVariables() || {}; } catch(e){}
+        let latestMvu = null;
+        try { if (typeof Mvu !== 'undefined') latestMvu = Mvu.getMvuData({type: 'message', message_id: 'latest'}); } catch(e){}
+        
+        let dataSource = (latestMvu && latestMvu.stat_data) ? latestMvu : all_variables;
+
+        const localCheck = localStorage.getItem(LOCAL_DATA_FALLBACK_KEY);
+        if (localCheck && (!dataSource.stat_data || Object.keys(dataSource.stat_data).length === 0)) {
+          dataSource = { stat_data: JSON.parse(localCheck) };
+        }
+
+        cachedSourceData = dataSource;
+        
+        const qs = (sel) => document.querySelector(sel);
+        
+        if(qs('.w-time strong')) qs('.w-time strong').innerText = _.get(dataSource, 'stat_data.世界状态.当前时间', '--:--');
+        if(qs('.w-loc strong')) qs('.w-loc strong').innerText = _.get(dataSource, 'stat_data.世界状态.当前位置', '未知');
+        
+        const weatherVal = _.get(dataSource, 'stat_data.世界状态.当前天气', '晴天');
+        const weatherTextNode = document.getElementById('weather-text-node');
+        if(weatherTextNode) weatherTextNode.innerText = weatherVal;
+        setAnimatedWeatherIcon(weatherVal);
+
+        let rawChars = parseCompat(_.get(dataSource, 'stat_data.角色列表', {}));
+        let htmlStr = '';
+
+        if (Object.keys(rawChars).length === 0) {
+          htmlStr = '<div style="text-align:center; padding:30px 10px; font-weight:700; color:var(--ink); font-size:15px;">暂无角色...去聊天吧！</div>';
+        } else {
+          Object.entries(rawChars).forEach(([name, rawData]) => {
+            const data = parseCompat(rawData);
+            const ageInfo = _.get(data, '年龄', '?'); 
+            const sexCountInfo = _.get(data, '性交次数', '0'); 
+            const thoughtTxt = _.get(data, '心理想法', '平静...');
+
+            const isNpc = !imageUrlMap[name] || !imageUrlMap[name].uniform;
+            const npcLabel = isNpc ? '<span class="npc-badge">[NPC]</span>' : '';
+
+            // 这里优先使用经过 loadAvatarPrefs() 读回的本地路径
+            const defaultUrl = getActiveCharacterAvatar(name);
+            const fallbackUrl = defaultUrl ? defaultUrl.replace('.png', '_1.png') : '';
+            const fallbackLetter = fallbackAvatars[name] || name.charAt(0);
+            
+            const isNsfwActive = userAvatarPrefs.modes[name] === 'nsfw' || userAvatarPrefs.modes[name] === 'custom_rand';
+
+            const listKeys = [
+              '身份', '年龄', '罩杯', '身高', '体重', '和user的关系', '性格', '背景',
+              '上衣和下衣', '腿部服饰', '内衣', '足部服饰', '道具或配饰',
+              '身材', '胸部', '小穴', '菊穴', '腿部', '怀孕情况',
+              '性交次数', '性开发程度', '熟练性技', '性癖喜好'
+            ];
+
+            let rowStr = '';
+            listKeys.forEach(key => rowStr += buildRow(key, _.get(data, key)));
+            htmlStr += `
+              <div class="char-item" draggable="true" data-char-name="${name}">
+                <div class="char-summary" onclick="toggleChar(this)">
+                  <div class="char-identity-group">
+                    <div class="char-name">${name} ${npcLabel}</div>
+                  </div>
+                  <div class="char-brief">
+                    <span>年龄: ${ageInfo}</span>
+                    <span>性交次数: ${sexCountInfo}</span>
+                  </div>
+                </div>
+                <div class="char-details">
+                  
+                  <div class="char-avatar-section">
+                    <div class="char-avatar-container">
+                      <img src="${defaultUrl}" alt="${name}" onerror="handleImageFallbacks(this, '${defaultUrl}', '${fallbackUrl}', '${fallbackLetter}')">
+                      <div class="char-avatar-fallback" style="display:none;">${fallbackLetter}</div>
+                    </div>
+                    <div class="avatar-action-group">
+                      <button class="illustration-btn" onclick="enterGalleryMode(event, '${name}')">🖼️ 角色图鉴</button>
+                      <button class="illustration-btn nsfw-toggle-btn ${isNsfwActive ? 'active' : ''}" onclick="toggleAvatarMode(event, '${name}')">🔞 NSFW头像</button>
+                      <button class="illustration-btn random-avatar-btn" style="display: ${isNsfwActive ? 'flex' : 'none'};" onclick="triggerRandomAvatar(event, '${name}')">🎲 随机切换</button>
+                    </div>
+                  </div>
+
+                  <div class="char-main-flow">
+                    <div class="thought-container">
+                      <div class="thought-header-click" onclick="toggleThought(event, this)">
+                        <span>💭 心理想法</span>
+                        <span class="arrow-icon">▼</span>
+                      </div>
+                      
+                      <div class="thought-grid-wrapper">
+                        <div class="thought-box">
+                          <div class="t-content">“ ${thoughtTxt} ”</div>
+                        </div>
+                      </div>
+                      
+                    </div>
+                    <div class="lower-content-area">
+                      <div class="attr-vertical-list">
+                        ${rowStr}
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+            `;
+          });
+        }
+        const appBody = document.getElementById('profile-list-view');
+        if(appBody) {
+          appBody.innerHTML = htmlStr;
+          makeDraggable('#profile-list-view'); 
+        }
+
+        const recheckTheme = localStorage.getItem(THEME_MEMORY_KEY);
+        if(document.getElementById('themeBody').classList.contains('dark-theme') || recheckTheme === 'dark'){
+           document.getElementById('themeBody').classList.add('dark-theme');
+           if(document.getElementById('themeBtn')) document.getElementById('themeBtn').innerHTML = '✨';
+        }
+      } catch(e) { console.error(e); }
+    }
+
+    prefetchAndBuildImagePools();
+
+    window.onload = renderWidget;
+    setTimeout(renderWidget, 550);
+  </script>
+</body>
+</html>
