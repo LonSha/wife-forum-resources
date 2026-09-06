@@ -1,0 +1,1153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scene Status Panel with Flip & Gallery (All Added)</title>
+    <style>
+        /* ========== 全局CSS变量定义 ========== */
+        :root {
+            /* 默认 SFW 主题 (会被 JS 覆盖为角色主题) */
+            --theme-main: #f48fb1;
+            --theme-sub: #f8bbd0;
+            --theme-dark: #c2185b;
+            --theme-rgb: 244, 143, 177;
+            --theme-dark-rgb: 194, 24, 91;
+            --bg-color: #ffffff;
+            --text-main: #333333;
+            --text-sub: #444444;
+            --info-hover: rgba(0, 0, 0, 0.08);
+            --ecg-speed: 5s;
+            --card-glow: 0 16px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        /* ========== NSFW 氛围色情化变量覆盖 ========== */
+        body.nsfw-mode {
+            /* 暧昧的霓虹粉红与极暗深紫黑的交织 */
+            --theme-main: #ff0055;
+            --theme-sub: #c51162;
+            --theme-dark: #3e0018;
+            --theme-rgb: 255, 0, 85;
+            --theme-dark-rgb: 62, 0, 24;
+            --bg-color: #0a0005; /* 深邃的暗黑粉底色 */
+            --text-main: #ffb6c1; /* 字体泛着柔和的淡粉色 */
+            --text-sub: #c7839b;
+            --info-hover: rgba(255, 0, 85, 0.12);
+            --ecg-speed: 1.8s; /* 剧烈的心跳！ */
+            --card-glow: 0 0 50px rgba(255, 0, 85, 0.4), inset 0 0 30px rgba(255, 0, 85, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+            background: transparent;
+            padding: 12px;
+            transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .status-card {
+            max-width: 760px;
+            margin: 0 auto;
+            background-color: var(--bg-color);
+            border: 1px solid rgba(var(--theme-rgb), 0.2);
+            border-radius: 20px;
+            overflow: hidden;
+            display: flex;
+            align-items: stretch;
+            box-shadow: var(--card-glow);
+            color: var(--text-main);
+            position: relative;
+            transition: all 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        body.nsfw-mode .status-card {
+            border-color: rgba(var(--theme-rgb), 0.6);
+        }
+
+        /* ========== 顶部边角点缀 ========== */
+        .top-left-decor {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 5;
+            display: flex;
+            align-items: flex-start;
+            pointer-events: none;
+        }
+
+        .top-left-decor::before {
+            content: '';
+            display: block;
+            width: 24px;
+            height: 24px;
+            border-top: 2px solid var(--theme-main);
+            border-left: 2px solid var(--theme-main);
+            opacity: 0.6;
+            transition: border-color 0.5s ease;
+        }
+
+        .top-left-text {
+            font-family: monospace;
+            font-size: 10px;
+            color: var(--text-sub);
+            letter-spacing: 2px;
+            margin-left: 6px;
+            margin-top: 2px;
+            transition: color 0.5s ease;
+        }
+
+        /* ========== 细密下倾流星动画系统 ========== */
+        @keyframes steepMeteor {
+            0% { transform: translateX(-200px) translateY(-150px) rotate(35deg); opacity: 0; }
+            10% { opacity: 1; }
+            70% { opacity: 1; }
+            100% { transform: translateX(900px) translateY(800px) rotate(35deg); opacity: 0; }
+        }
+
+        .meteor {
+            position: absolute;
+            width: 80px;
+            height: 1.5px;
+            background: linear-gradient(90deg, transparent, rgba(var(--theme-rgb), 0.3), rgba(var(--theme-rgb), 0.9));
+            filter: drop-shadow(0 0 3px rgba(var(--theme-rgb), 0.6));
+            animation: steepMeteor 3s linear infinite;
+            pointer-events: none;
+            z-index: 1;
+            transition: background 0.5s ease;
+        }
+
+        .meteor::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            width: 2.5px;
+            height: 2.5px;
+            background-color: var(--theme-sub);
+            border-radius: 50%;
+            box-shadow: 0 0 6px 2px rgba(var(--theme-rgb), 0.9);
+            transition: all 0.5s ease;
+        }
+
+        .m1 { top: -30%; left: 0; animation-duration: 4s; animation-delay: 0s; }
+        .m2 { top: -10%; left: -50px; animation-duration: 3s; animation-delay: 1.2s; }
+        .m3 { top: 10%; left: -80px; animation-duration: 5s; animation-delay: 0.8s; }
+        .m4 { top: 30%; left: 0; animation-duration: 3.5s; animation-delay: 2.5s; }
+        .m5 { top: -40%; left: -100px; animation-duration: 4.2s; animation-delay: 0.5s; }
+        .m6 { top: 20%; left: -40px; animation-duration: 2.8s; animation-delay: 1.8s; }
+        .m7 { top: -20%; left: -150px; animation-duration: 4.8s; animation-delay: 3s; }
+        .m8 { top: 40%; left: -60px; animation-duration: 3.2s; animation-delay: 1.5s; }
+
+        /* ========== 底部心电图与爱心系统 ========== */
+        .ecg-layer {
+            position: absolute;
+            bottom: 10px;
+            left: 0;
+            width: 100%;
+            height: 40px;
+            z-index: 3;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+        }
+
+        @keyframes drawHeartbeat {
+            0% { stroke-dashoffset: 1200; opacity: 0; }
+            10% { opacity: 1; }
+            60% { stroke-dashoffset: 0; opacity: 1; }
+            80% { opacity: 0; }
+            100% { stroke-dashoffset: 0; opacity: 0; }
+        }
+
+        .ecg-svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .ecg-line {
+            fill: none;
+            stroke: var(--theme-sub);
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            filter: drop-shadow(0 0 3px rgba(var(--theme-rgb), 0.5));
+            stroke-dasharray: 1200;
+            stroke-dashoffset: 1200;
+            animation: drawHeartbeat var(--ecg-speed) ease-in-out infinite;
+            transition: stroke 0.5s ease;
+        }
+
+        .heart-icon {
+            position: absolute;
+            right: 8%;
+            top: 50%;
+            width: 26px;
+            height: 26px;
+            filter: drop-shadow(0 0 6px rgba(var(--theme-rgb), 0.6));
+            animation: heartBeat calc(var(--ecg-speed) * 0.3) ease-in-out infinite;
+        }
+
+        .heart-icon svg {
+            width: 100%;
+            height: 100%;
+            fill: var(--theme-main);
+            transition: fill 0.5s ease;
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: translateY(-50%) scale(1); }
+            50% { transform: translateY(-50%) scale(1.15); }
+        }
+
+        /* ========== 左右信息区域 ========== */
+        .info-panel {
+            flex: 1;
+            padding: 30px 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            z-index: 2;
+        }
+
+        .info-panel::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image:
+                linear-gradient(rgba(var(--theme-rgb), 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(var(--theme-rgb), 0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            z-index: -1;
+            transition: opacity 0.5s ease;
+        }
+
+        body.nsfw-mode .info-panel::before {
+            background-image:
+                linear-gradient(rgba(var(--theme-rgb), 0.06) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(var(--theme-rgb), 0.06) 1px, transparent 1px);
+        }
+
+        .left-info {
+            align-items: flex-end;
+            text-align: right;
+            border-right: 1px solid rgba(var(--theme-rgb), 0.1);
+            padding-right: 10px;
+        }
+
+        .right-info {
+            align-items: flex-start;
+            text-align: left;
+            border-left: 1px solid rgba(var(--theme-rgb), 0.1);
+            padding-left: 10px;
+        }
+
+        /* ========== 中间图片区域 (带3D翻转) ========== */
+        .center-image-container {
+            width: 320px;
+            flex-shrink: 0;
+            background-color: transparent;
+            position: relative;
+            z-index: 2;
+            -webkit-mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,1) 20%, rgba(0,0,0,1) 80%, transparent 100%);
+            mask-image: linear-gradient(to right, transparent 0%, rgba(0,0,0,1) 20%, rgba(0,0,0,1) 80%, transparent 100%);
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .flip-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.8);
+            background: rgba(var(--theme-dark-rgb), 0.6);
+            padding: 4px 10px;
+            border-radius: 10px;
+            z-index: 10;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+            backdrop-filter: blur(2px);
+        }
+
+        .center-image-container:hover .flip-hint {
+            opacity: 1;
+        }
+
+        .flipper {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+            display: flex;
+            align-items: stretch;
+        }
+
+        .flipper.flipped {
+            transform: rotateY(180deg);
+        }
+
+        .front, .back {
+            width: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        .front {
+            position: relative;
+            z-index: 2;
+            transform: rotateY(0deg);
+        }
+
+        .back {
+            position: absolute;
+            top: 0; left: 0;
+            height: 100%;
+            transform: rotateY(180deg);
+        }
+
+        .flipper img {
+            width: 100%;
+            height: auto;
+            display: block;
+            transition: transform 0.5s ease;
+        }
+
+        .center-image-container:hover .flipper img {
+            transform: scale(1.03);
+        }
+
+        /* ========== 图库按钮 ========== */
+        .gallery-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 10;
+            padding: 6px 14px;
+            background: linear-gradient(135deg, rgba(var(--theme-rgb), 0.1), rgba(var(--theme-rgb), 0.05));
+            border: 1px solid var(--theme-sub);
+            border-radius: 8px;
+            color: var(--text-main);
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 2px;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+        }
+
+        body.nsfw-mode .gallery-btn {
+            background: rgba(var(--theme-dark-rgb), 0.4);
+            border-color: var(--theme-main);
+            box-shadow: 0 0 10px rgba(var(--theme-rgb), 0.3);
+        }
+
+        .gallery-btn svg {
+            width: 14px;
+            height: 14px;
+            fill: var(--theme-main);
+            transition: fill 0.3s ease;
+        }
+
+        .gallery-btn:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 6px 16px rgba(var(--theme-rgb), 0.4);
+            background: var(--theme-main);
+            color: #fff;
+        }
+
+        .gallery-btn:hover svg {
+            fill: #fff;
+        }
+
+        /* ========== 翻页按钮 ========== */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--bg-color);
+            border: 1px solid rgba(var(--theme-rgb), 0.6);
+            color: var(--text-main);
+            font-size: 20px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.5s ease;
+            backdrop-filter: blur(4px);
+            opacity: 0;
+        }
+
+        body.nsfw-mode .nav-btn {
+            border-color: rgba(var(--theme-rgb), 0.8);
+            box-shadow: 0 0 15px rgba(var(--theme-rgb), 0.2);
+        }
+
+        .status-card:hover .nav-btn {
+            opacity: 1;
+        }
+
+        .nav-btn:hover {
+            background: var(--theme-main);
+            color: #fff;
+            transform: translateY(-50%) scale(1.15);
+            box-shadow: 0 0 25px rgba(var(--theme-rgb), 0.6);
+            border-color: var(--theme-main);
+        }
+
+        .nav-prev { left: 12px; }
+        .nav-next { right: 12px; }
+        .nav-hidden { display: none !important; }
+
+        /* ========== 文字数据块排版 ========== */
+        .info-block {
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 4;
+            padding: 4px;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+            cursor: default;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .left-info .info-block { align-items: flex-end; }
+        .right-info .info-block { align-items: flex-start; }
+        .info-block:last-child { margin-bottom: 0; }
+
+        .info-block:hover {
+            background: radial-gradient(circle at center, var(--info-hover) 0%, transparent 70%);
+        }
+
+        @keyframes labelBreatheVar {
+            0%, 100% { opacity: 0.8; filter: drop-shadow(0 0 2px transparent); }
+            50% { opacity: 1; filter: drop-shadow(0 0 8px rgba(var(--theme-rgb), 0.5)); }
+        }
+
+        .item-label {
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+            display: inline-block;
+            background: linear-gradient(90deg, var(--theme-main), var(--theme-sub));
+            -webkit-background-clip: text;
+            color: transparent;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            animation: labelBreatheVar 3s ease-in-out infinite;
+        }
+
+        .left-info .item-label { transform-origin: right center; }
+        .right-info .item-label { transform-origin: left center; }
+
+        .info-block:hover .item-label {
+            transform: scale(1.15);
+            background: linear-gradient(90deg, var(--theme-dark), var(--theme-main));
+            -webkit-background-clip: text;
+            filter: drop-shadow(0 0 10px rgba(var(--theme-main), 0.7));
+            animation: none;
+        }
+
+        .item-value {
+            color: var(--text-sub);
+            font-size: 16px;
+            line-height: 1.5;
+            word-break: break-word;
+            font-weight: 500;
+            display: inline-block;
+            transition: all 0.3s ease;
+        }
+
+        .info-block:hover .item-value {
+            transform: translateY(-2px);
+            color: var(--text-main);
+        }
+
+        .time-text {
+            font-family: monospace;
+            font-size: 20px;
+            color: var(--text-main);
+            font-weight: 600;
+            letter-spacing: 1px;
+            display: inline-block;
+        }
+
+        /* ========== 名字专属铭牌 ========== */
+        .name-plate {
+            display: flex;
+            align-items: center;
+            background: linear-gradient(135deg, rgba(var(--theme-rgb), 0.15), rgba(var(--theme-rgb), 0.05));
+            border-left: 3px solid var(--theme-sub);
+            padding: 8px 16px;
+            border-radius: 4px 12px 12px 4px;
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .name-plate::before {
+            content: '';
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: var(--theme-main);
+            margin-right: 12px;
+            box-shadow: 0 0 10px rgba(var(--theme-rgb), 0.9);
+            animation: labelBreatheVar 2s ease-in-out infinite;
+            transition: background-color 0.5s ease;
+        }
+
+        .name-highlight {
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            line-height: 1.1;
+            text-align: center;
+            background: linear-gradient(90deg, var(--theme-dark), var(--theme-main));
+            -webkit-background-clip: text;
+            color: transparent;
+            filter: drop-shadow(0 0 3px rgba(var(--theme-main), 0.4));
+            display: inline-block;
+            transition: opacity 0.4s ease;
+        }
+
+        .info-block:hover .name-plate {
+            background: linear-gradient(135deg, rgba(var(--theme-rgb), 0.25), rgba(var(--theme-rgb), 0.1));
+            border-left: 3px solid var(--theme-dark);
+            transform: translateX(4px) translateY(-2px);
+            box-shadow: 0 4px 15px rgba(var(--theme-rgb), 0.3);
+        }
+
+        .info-block:hover .name-highlight {
+            filter: drop-shadow(0 0 8px rgba(var(--theme-main), 0.7));
+            transform: scale(1.05);
+            transform-origin: left center;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 60px;
+            color: #999;
+            width: 100%;
+            font-size: 18px;
+            letter-spacing: 2px;
+        }
+
+        .fade-out { opacity: 0; }
+        .fade-in { opacity: 1; }
+
+        /* ========== 移动端完美适配 ========== */
+        @media (max-width: 600px) {
+            body { padding: 6px; }
+
+            .status-card {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                grid-template-rows: auto auto auto;
+                border-radius: 16px;
+                padding-bottom: 25px;
+            }
+
+            .status-card::before {
+                content: '';
+                position: absolute;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background-image:
+                    linear-gradient(rgba(var(--theme-rgb), 0.03) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(var(--theme-rgb), 0.03) 1px, transparent 1px);
+                background-size: 20px 20px;
+                background-position: 0 0;
+                z-index: 0;
+            }
+
+            body.nsfw-mode .status-card::before {
+                background-image:
+                    linear-gradient(rgba(var(--theme-rgb), 0.08) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(var(--theme-rgb), 0.08) 1px, transparent 1px);
+            }
+
+            .center-image-container {
+                grid-column: 1 / -1;
+                grid-row: 1;
+                width: 100%;
+                max-width: 320px;
+                margin: 0 auto 8px auto;
+                -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 85%, transparent 100%);
+                mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,1) 85%, transparent 100%);
+            }
+
+            .info-panel {
+                padding: 10px 4px;
+                background-image: none !important;
+                border: none;
+            }
+
+            .info-panel::before { display: none; }
+
+            .left-info { grid-column: 1; grid-row: 2; align-items: center; text-align: center; padding-bottom: 5px; }
+            .right-info { grid-column: 2; grid-row: 2; align-items: center; text-align: center; padding-bottom: 5px; }
+
+            .gallery-btn {
+                position: static;
+                grid-column: 1 / -1;
+                grid-row: 3;
+                justify-self: center;
+                margin-top: 10px;
+                margin-bottom: 5px;
+                padding: 8px 24px;
+                font-size: 12px;
+                border-radius: 16px;
+                background: linear-gradient(90deg, rgba(var(--theme-rgb), 0.1), rgba(var(--theme-rgb), 0.2));
+                border: 1px solid var(--theme-sub);
+            }
+
+            body.nsfw-mode .gallery-btn {
+                background: rgba(var(--theme-dark-rgb), 0.5);
+                box-shadow: 0 0 10px rgba(var(--theme-rgb), 0.2);
+            }
+
+            .left-info .info-block, .right-info .info-block {
+                align-items: center;
+                height: 70px;
+                margin-bottom: 0;
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-start;
+            }
+
+            .left-info .info-block:last-child, .right-info .info-block:last-child { margin-top: 18px; }
+
+            .item-label { font-size: 10px; letter-spacing: 2px; margin-bottom: 5px; }
+            .item-value { font-size: 13px; }
+            .time-text { font-size: 15px; }
+            .name-highlight { font-size: 15px; letter-spacing: 1px; }
+            .name-plate { padding: 4px 8px; border-radius: 4px 8px 8px 4px; }
+            .name-plate::before { width: 5px; height: 5px; margin-right: 6px; }
+
+            .nav-btn { opacity: 0.8; width: 32px; height: 32px; font-size: 16px; top: 35%; }
+            .nav-prev { left: 8px; }
+            .nav-next { right: 8px; }
+
+            .top-left-decor { top: 4px; left: 4px; }
+            .top-left-decor::before { width: 14px; height: 14px; }
+            .top-left-text { font-size: 8px; margin-top: -2px; }
+
+            .meteor { width: 40px; }
+
+            .ecg-layer { bottom: 5px; height: 30px; width: 100%; grid-column: 1 / -1; }
+            .ecg-line { display: none; }
+            .heart-icon { width: 20px; height: 20px; right: 8%; }
+        }
+
+        /* ========== 图库弹窗部分 (保证防塌陷网格) ========== */
+        .gallery-modal {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            z-index: 1000; display: flex; flex-direction: column; opacity: 0; visibility: hidden; transition: all 0.4s ease;
+        }
+
+        body.nsfw-mode .gallery-modal {
+            background: rgba(10, 0, 5, 0.92); /* 偏暗紫的背景 */
+        }
+
+        .gallery-modal.show { opacity: 1; visibility: visible; }
+
+        .gallery-header {
+            padding: 20px 30px; display: flex; justify-content: space-between; align-items: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1); flex-shrink: 0;
+        }
+
+        body.nsfw-mode .gallery-header { border-bottom-color: rgba(var(--theme-rgb), 0.2); }
+
+        .gallery-title { color: #fff; font-size: 20px; font-weight: 300; letter-spacing: 4px; text-transform: uppercase; }
+        .gallery-title span { color: var(--theme-sub); font-weight: bold; }
+
+        body.nsfw-mode .gallery-title { color: var(--text-main); text-shadow: 0 0 10px rgba(var(--theme-rgb), 0.5); }
+
+        .gallery-close {
+            color: #fff; font-size: 28px; cursor: pointer; width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center; border-radius: 50%;
+            background: rgba(255,255,255,0.1); transition: all 0.3s ease;
+        }
+
+        .gallery-close:hover { background: var(--theme-main); transform: rotate(90deg); box-shadow: 0 0 15px rgba(var(--theme-rgb), 0.6); }
+
+        .gallery-grid {
+            flex: 1; padding: 30px; overflow-y: auto;
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; align-content: flex-start;
+        }
+
+        .gallery-grid::-webkit-scrollbar { width: 8px; }
+        .gallery-grid::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        .gallery-grid::-webkit-scrollbar-thumb { background: var(--theme-main); border-radius: 4px; }
+
+        .gallery-item {
+            position: relative; width: 100%; padding-bottom: 133.33%; /* 维持比例，绝对防塌陷 */
+            border-radius: 12px; overflow: hidden; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.4s ease; background: #111;
+        }
+
+        body.nsfw-mode .gallery-item { border-color: rgba(var(--theme-rgb), 0.3); }
+
+        .gallery-item img {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; transition: transform 0.5s ease;
+        }
+
+        .gallery-item .overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(var(--theme-dark-rgb), 0.6); color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 14px; letter-spacing: 3px; font-weight: bold; opacity: 0; transition: opacity 0.3s ease; z-index: 2;
+        }
+
+        .gallery-item:hover { transform: translateY(-5px); border-color: var(--theme-main); box-shadow: 0 8px 25px rgba(var(--theme-rgb), 0.6); }
+        .gallery-item:hover img { transform: scale(1.1); }
+        .gallery-item:hover .overlay { opacity: 1; }
+
+        .preview-modal {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.9); z-index: 1100; display: flex; align-items: center; justify-content: center;
+            opacity: 0; visibility: hidden; transition: all 0.3s ease; cursor: zoom-out;
+        }
+
+        .preview-modal.show { opacity: 1; visibility: visible; }
+
+        .preview-modal img {
+            max-width: 90%; max-height: 90%; border-radius: 8px; box-shadow: 0 0 30px rgba(0,0,0,0.5);
+            transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        body.nsfw-mode .preview-modal img { box-shadow: 0 0 50px rgba(var(--theme-rgb), 0.4); }
+
+        .preview-modal.show img { transform: scale(1); }
+    </style>
+</head>
+<body>
+    <div class="status-card" id="content">
+        <div class="loading">CONNECTING TO TERMINAL...</div>
+    </div>
+
+    <!-- 图库模态框 -->
+    <div class="gallery-modal" id="gallery-modal">
+        <div class="gallery-header">
+            <div class="gallery-title">IMAGE <span id="gallery-char-name">GALLERY</span></div>
+            <div class="gallery-close" onclick="closeGallery()">&times;</div>
+        </div>
+        <div class="gallery-grid" id="gallery-grid"></div>
+    </div>
+
+    <!-- 大图预览层 -->
+    <div class="preview-modal" id="preview-modal" onclick="closePreview()">
+        <img id="preview-img" src="" alt="Preview">
+    </div>
+
+    <script>
+        var pageState = {
+            time: 'UNKNOWN',
+            location: 'UNKNOWN',
+            charactersList: [],
+            currentIndex: 0,
+            isNsfwMode: false
+        };
+
+        var themeColors = {
+            "default": { main: "#b39ddb", sub: "#d1c4e9", dark: "#7e57c2", rgb: "179, 157, 219", darkRgb: "126, 87, 194" },
+            "林霜": { main: "#81d4fa", sub: "#b3e5fc", dark: "#0288d1", rgb: "129, 212, 250", darkRgb: "2, 136, 209" },
+            "林雪": { main: "#29b6f6", sub: "#4fc3f7", dark: "#0277bd", rgb: "41, 182, 246", darkRgb: "2, 119, 189" },
+            "苏甜": { main: "#f8bbd0", sub: "#fce4ec", dark: "#c2185b", rgb: "248, 187, 208", darkRgb: "194, 24, 91" },
+            "陈渡微": { main: "#8d6e63", sub: "#bcaaa4", dark: "#5d4037", rgb: "141, 110, 99", darkRgb: "93, 64, 55" }
+        };
+
+        /* 林霜、林雪、苏甜和陈渡微的 SFW 图片 */
+        var characterImages = {
+            "林霜": [
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(1).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(2).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(3).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(4).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(5).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(6).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(7).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(8).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(9).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(10).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(11).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(12).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(13).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(14).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(15).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(16).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(17).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(18).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(19).png?raw=true"
+            ],
+            "林雪": [
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(1).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(2).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(3).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(4).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(5).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(6).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(7).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(8).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(9).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(10).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(11).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(12).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(13).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(14).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(15).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(16).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(17).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(18).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(19).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(20).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(21).png?raw=true"
+            ],
+            "苏甜": [
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(1).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(2).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(3).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(4).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(5).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(6).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(7).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(8).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(9).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(10).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(11).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(12).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(13).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(14).png?raw=true"
+            ],
+            "陈渡微": [
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/chen_duwei%20(1).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/chen_duwei%20(2).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/chen_duwei%20(3).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/chen_duwei%20(4).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/chen_duwei%20(5).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/chen_duwei%20(6).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/chen_duwei%20(7).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/chen_duwei%20(8).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/chen_duwei%20(9).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/chen_duwei%20(10).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/chen_duwei%20(11).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/chen_duwei%20(12).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/chen_duwei%20(13).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/chen_duwei%20(14).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/chen_duwei%20(15).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/chen_duwei%20(16).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/chen_duwei%20(17).png?raw=true"
+            ]
+        };
+
+        /* 林霜、林雪、苏甜和陈渡微的 NSFW 图片 */
+        var characterNsfwImages = {
+            "林霜": [
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(20).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(21).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(22).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(23).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(24).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(25).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(26).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(27).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(28).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(29).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(30).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(31).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(32).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(33).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(34).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(35).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_shuang%20(36).png?raw=true"
+            ],
+            "林雪": [
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(22).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(23).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(24).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(25).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(26).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(27).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(28).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(29).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(30).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(31).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(32).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(33).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(34).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(35).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(36).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/lin_xue%20(37).png?raw=true"
+            ],
+            "苏甜": [
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(15).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(16).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(17).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(18).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(19).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(20).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(21).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(22).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(23).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(24).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(25).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(26).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(27).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(28).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/su_tian%20(29).png?raw=true"
+            ],
+            "陈渡微": [
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/chen_duwei%20(18).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/chen_duwei%20(19).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/chen_duwei%20(20).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/chen_duwei%20(21).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/chen_duwei%20(22).png?raw=true",
+                "https://github.com/ycf-ovo/ycf-picture/blob/main/chen_duwei%20(23).png?raw=true"
+            ]
+        };
+
+        var transparentFallback = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+
+        function getMessageData() {
+            try {
+                var chatMessages = getChatMessages(getCurrentMessageId());
+                if (chatMessages && chatMessages.length > 0) return chatMessages[0].message;
+            } catch (e) {}
+            return "";
+        }
+
+        function parseData(messageText) {
+            var tagMatch = messageText.match(/<scene_status>([\s\S]*?)<\/scene_status>/);
+            if (!tagMatch || !tagMatch[1]) return;
+            var lines = tagMatch[1].trim().split('\n');
+            var tempChar = null;
+            lines.forEach(function(line) {
+                var match = line.match(/\[(.*?)\|(.*?)\]/);
+                if (match) {
+                    var key = match[1].trim(), value = match[2].trim();
+                    if (key === '时间') pageState.time = value;
+                    else if (key === '地点') pageState.location = value;
+                    else if (key === '人物') {
+                        tempChar = { name: value, clothing: 'UNKNOWN', image: '', nsfwImage: '' };
+                        pageState.charactersList.push(tempChar);
+                    } else if (key === '服装' && tempChar) tempChar.clothing = value;
+                }
+            });
+            if (pageState.charactersList.length === 0) pageState.charactersList.push({ name: 'UNKNOWN', clothing: 'UNKNOWN', image: '', nsfwImage: '' });
+        }
+
+        function lockCharacterImages() {
+            pageState.charactersList.forEach(function(char) {
+                var cleanName = char.name.replace(/\s+/g, '');
+
+                if (!char.image || char.image.length < 5) {
+                    var imgArray = characterImages[cleanName];
+                    if (imgArray && imgArray.length > 0) {
+                        char.image = imgArray[Math.floor(Math.random() * imgArray.length)];
+                    } else {
+                        char.image = transparentFallback;
+                    }
+                }
+
+                if (!char.nsfwImage || char.nsfwImage.length < 5) {
+                    var nsfwArray = characterNsfwImages[cleanName];
+                    if (nsfwArray && nsfwArray.length > 0) {
+                        char.nsfwImage = nsfwArray[Math.floor(Math.random() * nsfwArray.length)];
+                    } else {
+                        char.nsfwImage = char.image;
+                    }
+                }
+            });
+        }
+
+        function formatName(name) {
+            var cleanName = name.replace(/\s+/g, '');
+            if (cleanName.length === 4) return cleanName.substring(0, 2) + '<br>' + cleanName.substring(2, 4);
+            return name;
+        }
+
+        function applyThemeColor(characterName) {
+            var theme = themeColors[characterName.replace(/\s+/g, '')] || themeColors["default"];
+            var root = document.documentElement;
+            root.style.setProperty('--theme-main', theme.main);
+            root.style.setProperty('--theme-sub', theme.sub);
+            root.style.setProperty('--theme-dark', theme.dark);
+            root.style.setProperty('--theme-rgb', theme.rgb);
+            root.style.setProperty('--theme-dark-rgb', theme.darkRgb);
+        }
+
+        function toggleFlip() {
+            pageState.isNsfwMode = !pageState.isNsfwMode;
+            var flipper = document.getElementById('dyn-flipper');
+
+            if (pageState.isNsfwMode) {
+                document.body.classList.add('nsfw-mode');
+                flipper.classList.add('flipped');
+            } else {
+                document.body.classList.remove('nsfw-mode');
+                flipper.classList.remove('flipped');
+            }
+        }
+        window.toggleFlip = toggleFlip;
+
+        function openGallery() {
+            var currentChar = pageState.charactersList[pageState.currentIndex];
+            var cleanName = currentChar.name.replace(/\s+/g, '');
+
+            var imgs = pageState.isNsfwMode ? (characterNsfwImages[cleanName] || []) : (characterImages[cleanName] || []);
+
+            document.getElementById('gallery-char-name').innerText = currentChar.name + (pageState.isNsfwMode ? " [NSFW]" : "");
+            var gridHtml = '';
+
+            if(imgs.length > 0) {
+                imgs.forEach(function(src) {
+                    gridHtml += '<div class="gallery-item" onclick="openPreview(\'' + src + '\')">' +
+                                '<img src="' + src + '" onerror="this.src=\'' + transparentFallback + '\'">' +
+                                '<div class="overlay">VIEW</div>' +
+                                '</div>';
+                });
+            } else {
+                gridHtml = '<div style="color: #fff; text-align: center; width: 100%; padding: 40px; grid-column: 1/-1;">NO IMAGES FOUND IN THIS MODE</div>';
+            }
+
+            document.getElementById('gallery-grid').innerHTML = gridHtml;
+            document.getElementById('gallery-modal').classList.add('show');
+        }
+
+        function closeGallery() { document.getElementById('gallery-modal').classList.remove('show'); }
+        function openPreview(src) { document.getElementById('preview-img').src = src; document.getElementById('preview-modal').classList.add('show'); }
+        function closePreview() { document.getElementById('preview-modal').classList.remove('show'); }
+
+        window.openGallery = openGallery; window.closeGallery = closeGallery;
+        window.openPreview = openPreview; window.closePreview = closePreview;
+
+        function renderInitialPage() {
+            var firstChar = pageState.charactersList[pageState.currentIndex];
+            applyThemeColor(firstChar.name);
+            var btnClass = pageState.charactersList.length > 1 ? 'nav-btn' : 'nav-btn nav-hidden';
+
+            var isMobile = window.innerWidth <= 600;
+            var svgPath = isMobile
+                ? ''
+                : '<path class="ecg-line" d="M0,20 L100,20 L110,10 L120,35 L130,5 L140,20 L250,20 M500,20 L650,20 L660,10 L670,35 L680,5 L690,20 L800,20" />';
+            var viewBox = "0 0 800 40";
+
+            var html =
+                '<div class="' + btnClass + ' nav-prev" onclick="turnPage(-1); event.stopPropagation();">&#10094;</div>' +
+                '<div class="' + btnClass + ' nav-next" onclick="turnPage(1); event.stopPropagation();">&#10095;</div>' +
+
+                '<div class="top-left-decor"><span class="top-left-text">SYS-DATA // SECURE</span></div>' +
+
+                '<div class="gallery-btn" onclick="openGallery(); event.stopPropagation();">' +
+                    '<svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>' +
+                    'GALLERY' +
+                '</div>' +
+
+                '<div class="meteor-layer">' +
+                    '<div class="meteor m1"></div><div class="meteor m2"></div><div class="meteor m3"></div><div class="meteor m4"></div>' +
+                    '<div class="meteor m5"></div><div class="meteor m6"></div><div class="meteor m7"></div><div class="meteor m8"></div>' +
+                '</div>' +
+
+                '<div class="ecg-layer">' +
+                    '<svg class="ecg-svg" preserveAspectRatio="none" viewBox="' + viewBox + '">' + svgPath + '</svg>' +
+                    '<div class="heart-icon">' +
+                        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>' +
+                    '</div>' +
+                '</div>' +
+
+                '<div class="info-panel left-info">' +
+                    '<div class="info-block"><div class="item-label">TIME</div><div class="item-value time-text">' + pageState.time + '</div></div>' +
+                    '<div class="info-block"><div class="item-label">LOCATION</div><div class="item-value">' + pageState.location + '</div></div>' +
+                '</div>' +
+
+                '<div class="center-image-container" onclick="toggleFlip()">' +
+                    '<div class="flipper ' + (pageState.isNsfwMode ? 'flipped' : '') + '" id="dyn-flipper">' +
+                        '<div class="front"><img id="dyn-img-front" src="' + firstChar.image + '" onerror="this.src=\'' + transparentFallback + '\'"></div>' +
+                        '<div class="back"><img id="dyn-img-back" src="' + firstChar.nsfwImage + '" onerror="this.src=\'' + transparentFallback + '\'"></div>' +
+                    '</div>' +
+                    '<div class="flip-hint">CLICK TO REVEAL</div>' +
+                '</div>' +
+
+                '<div class="info-panel right-info">' +
+                    '<div class="info-block"><div class="item-label">CHARACTER</div><div class="name-plate"><span class="name-highlight fade-in" id="dyn-name">' + formatName(firstChar.name) + '</span></div></div>' +
+                    '<div class="info-block"><div class="item-label">CLOTHING</div><div class="item-value fade-in" id="dyn-clothing">' + firstChar.clothing + '</div></div>' +
+                '</div>';
+
+            document.getElementById('content').innerHTML = html;
+        }
+
+        function turnPage(direction) {
+            var maxIndex = pageState.charactersList.length - 1;
+            pageState.currentIndex += direction;
+            if (pageState.currentIndex > maxIndex) pageState.currentIndex = 0;
+            if (pageState.currentIndex < 0) pageState.currentIndex = maxIndex;
+
+            var targetChar = pageState.charactersList[pageState.currentIndex];
+
+            var nameEl = document.getElementById('dyn-name'), clothEl = document.getElementById('dyn-clothing');
+            nameEl.classList.remove('fade-in'); clothEl.classList.remove('fade-in');
+            nameEl.classList.add('fade-out'); clothEl.classList.add('fade-out');
+
+            applyThemeColor(targetChar.name);
+
+            setTimeout(function() {
+                document.getElementById('dyn-img-front').src = targetChar.image || transparentFallback;
+                document.getElementById('dyn-img-back').src = targetChar.nsfwImage || transparentFallback;
+
+                nameEl.innerHTML = formatName(targetChar.name);
+                clothEl.innerHTML = targetChar.clothing;
+
+                nameEl.classList.remove('fade-out'); clothEl.classList.remove('fade-out');
+                nameEl.classList.add('fade-in'); clothEl.classList.add('fade-in');
+            }, 200);
+        }
+
+        window.turnPage = turnPage;
+
+        function init() {
+            try {
+                var messageText = getMessageData();
+                if (!messageText) { document.getElementById('content').innerHTML = '<div class="loading">WAITING FOR SYSTEM DATA...</div>'; return; }
+
+                parseData(messageText);
+
+                if (pageState.charactersList.length > 0) {
+                    lockCharacterImages();
+                    renderInitialPage();
+                    window.addEventListener('resize', function() { renderInitialPage(); });
+                }
+            } catch (error) { document.getElementById('content').innerHTML = '<div class="loading">❌ PANEL LOAD ERROR: ' + error.message + '</div>'; }
+        }
+
+        $(function() { init(); });
+    </script>
+</body>
+</html>
