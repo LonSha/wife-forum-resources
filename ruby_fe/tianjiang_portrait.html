@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>精致悬浮立绘展示系统</title>
+    <style>
+        :root {
+            --ink: #334155;
+            --line: rgba(255, 255, 255, 0.6);
+            --accent: #64748b;
+            --accent-glow: rgba(100, 116, 139, 0.3);
+            --shadow: 0 20px 40px rgba(15, 23, 42, 0.08);
+            --elastic: cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: transparent;
+            color: var(--ink);
+            padding: 12px;
+        }
+
+        .scene-card-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 940px;
+            margin: 0 auto 24px auto;
+        }
+
+        .scene-info-panel {
+            position: relative;
+            border-radius: 14px;
+            border: 1px solid var(--line);
+            border-top: 1px solid rgba(255, 255, 255, 0.95);
+            border-left: 1px solid rgba(255, 255, 255, 0.95);
+            background: rgba(248, 250, 252, 0.85);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .scene-info-panel::before {
+            content: "";
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image:
+                linear-gradient(rgba(148, 163, 184, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(148, 163, 184, 0.1) 1px, transparent 1px);
+            background-size: 24px 24px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .scene-info-panel::after {
+            content: "";
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(ellipse at center, rgba(255,255,255,0.8) 0%, transparent 60%);
+            opacity: 0.5;
+            pointer-events: none;
+            z-index: 0;
+            animation: slowDrift 15s ease-in-out infinite alternate;
+        }
+
+        @keyframes slowDrift {
+            0% { transform: translate(0, 0) rotate(0deg) scale(1); }
+            100% { transform: translate(5%, 5%) rotate(5deg) scale(1.1); }
+        }
+
+        .panel-edge-deco {
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            height: 60%;
+            width: 2px;
+            background: repeating-linear-gradient(to bottom, rgba(100, 116, 139, 0.2) 0, rgba(100, 116, 139, 0.2) 2px, transparent 2px, transparent 8px);
+            z-index: 0;
+        }
+
+        .scene-inner {
+            position: relative;
+            z-index: 1;
+        }
+
+        .scene-header {
+            padding: 20px 24px 14px;
+            border-bottom: 1px dashed rgba(148, 163, 184, 0.3);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .meta-row {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 24px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.7);
+            border: 1px solid rgba(255, 255, 255, 1);
+            color: #334155;
+            font-size: 14px;
+            font-weight: 700;
+            letter-spacing: 2.5px;
+            text-transform: uppercase;
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.02);
+        }
+
+        .meta-dot {
+            width: 6px;
+            height: 6px;
+            transform: rotate(45deg);
+            background: var(--accent);
+            box-shadow: 0 0 6px var(--accent-glow);
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; box-shadow: 0 0 0 0 var(--accent-glow); }
+            50% { opacity: 0.4; box-shadow: 0 0 0 5px rgba(100, 116, 139, 0); }
+            100% { opacity: 1; box-shadow: 0 0 0 0 rgba(100, 116, 139, 0); }
+        }
+
+        .controls-container {
+            margin-top: 14px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .action-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 6px 18px;
+            border-radius: 6px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            background: transparent;
+            color: #64748b;
+            font-weight: 600;
+            font-size: 13px;
+            letter-spacing: 1.5px;
+            cursor: pointer;
+            transition: all 0.3s var(--elastic);
+        }
+
+        .action-button:hover {
+            background: rgba(255, 255, 255, 0.9);
+            color: #1e293b;
+            border-color: rgba(148, 163, 184, 0.4);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 14px rgba(15, 23, 42, 0.05);
+        }
+
+        .collapse-icon {
+            width: 14px;
+            height: 14px;
+            transition: transform 0.4s var(--elastic);
+        }
+        .collapse-icon svg { width: 100%; height: 100%; fill: currentColor; }
+        .collapse-icon.collapsed { transform: rotate(180deg); }
+
+        .character-container {
+            padding: 30px 24px;
+            max-height: 2500px;
+            overflow: hidden;
+            transition: max-height 0.5s ease, padding 0.5s ease, opacity 0.5s ease;
+            opacity: 1;
+        }
+
+        .character-container.collapsed {
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            opacity: 0;
+        }
+
+        .character-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 28px;
+            justify-items: center;
+        }
+
+        .character-card {
+            position: relative;
+            width: 100%;
+            max-width: 264px;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.8) 100%);
+            border: 1px solid rgba(255, 255, 255, 1);
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.04);
+            border-radius: 10px;
+            padding: 10px;
+            transition: transform 0.4s var(--elastic), box-shadow 0.4s ease;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(24px) scale(0.95);
+            animation: elasticEntrance 0.6s var(--elastic) forwards;
+        }
+
+        @keyframes elasticEntrance {
+            0% { opacity: 0; transform: translateY(36px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .character-card::before {
+            content: "";
+            position: absolute;
+            top: 0; left: -150%;
+            width: 50%; height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-25deg);
+            transition: none;
+            z-index: 10;
+            pointer-events: none;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .character-card:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 16px 30px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(255,255,255,0.5) inset;
+            }
+            .character-card:hover::before {
+                animation: glassShine 0.7s ease-out;
+            }
+            .character-card:hover .corner-tl { transform: translate(-5px, -5px); opacity: 1; }
+            .character-card:hover .corner-tr { transform: translate(5px, -5px) rotate(90deg); opacity: 1; }
+            .character-card:hover .corner-bl { transform: translate(-5px, 5px) rotate(-90deg); opacity: 1; }
+            .character-card:hover .corner-br { transform: translate(5px, 5px) rotate(180deg); opacity: 1; }
+            .character-card:hover .character-avatar img {
+                transform: scale(1.04);
+                filter: brightness(1.02) contrast(1.05);
+            }
+            .character-card:hover .character-info-bar::before {
+                width: 36px;
+                background: var(--accent);
+            }
+        }
+
+        @keyframes glassShine {
+            0% { left: -150%; }
+            100% { left: 200%; }
+        }
+
+        .card-corners {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .card-corners svg {
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            fill: none;
+            stroke: var(--accent);
+            stroke-width: 1.5;
+            opacity: 0.6;
+            transition: transform 0.4s var(--elastic), opacity 0.4s ease;
+        }
+        .corner-tl { top: -1px; left: -1px; transform: translate(0, 0); }
+        .corner-tr { top: -1px; right: -1px; transform: translate(0, 0) rotate(90deg); }
+        .corner-bl { bottom: -1px; left: -1px; transform: translate(0, 0) rotate(-90deg); }
+        .corner-br { bottom: -1px; right: -1px; transform: translate(0, 0) rotate(180deg); }
+
+        .character-avatar {
+            width: 100%;
+            aspect-ratio: 2 / 3;
+            background: #f1f5f9;
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid rgba(148, 163, 184, 0.15);
+            cursor: zoom-in;
+        }
+
+        .character-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            transition: transform 0.5s var(--elastic), filter 0.5s ease;
+            filter: brightness(0.96) contrast(1.02);
+        }
+
+        .character-avatar-fallback {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            font-size: 13px;
+            letter-spacing: 1px;
+            gap: 8px;
+            pointer-events: none;
+        }
+        .character-avatar-fallback svg {
+            width: 24px;
+            height: 24px;
+            fill: #cbd5e1;
+        }
+
+        .character-info-bar {
+            padding: 14px 10px 10px 10px;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            position: relative;
+        }
+
+        .character-info-bar::before {
+            content: "";
+            position: absolute;
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 2px;
+            background: rgba(148, 163, 184, 0.4);
+            transition: width 0.4s var(--elastic), background 0.4s ease;
+        }
+
+        .character-name {
+            font-size: 17px;
+            font-weight: 800;
+            color: #1e293b;
+            letter-spacing: 1.5px;
+        }
+
+        .character-outfit {
+            font-size: 12px;
+            color: #64748b;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .system-loading {
+            padding: 48px;
+            text-align: center;
+            color: #94a3b8;
+            font-size: 14px;
+            letter-spacing: 3px;
+            animation: pulse 2s infinite;
+        }
+
+        /* ==================== 放大查看 Modal ==================== */
+        .image-viewer-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 999999;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            cursor: zoom-out;
+        }
+        .image-viewer-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+        .image-viewer-modal img {
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.4);
+            transform: scale(0.9);
+            transition: transform 0.4s var(--elastic);
+        }
+        .image-viewer-modal.show img {
+            transform: scale(1);
+        }
+        .modal-close-hint {
+            position: absolute;
+            top: 24px; right: 32px;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 14px;
+            letter-spacing: 2px;
+            font-weight: 600;
+            pointer-events: none;
+        }
+
+        /* ==================== 独立图库/仓库 Modal ==================== */
+        .gallery-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(15, 23, 42, 0.92);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            z-index: 999990;
+            flex-direction: column;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .gallery-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .gallery-modal-header {
+            flex-shrink: 0;
+            padding: 24px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.15);
+        }
+
+        .gallery-modal-title {
+            color: #f8fafc;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 3px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .gallery-modal-close {
+            color: #94a3b8;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            cursor: pointer;
+            padding: 8px 16px;
+            border-radius: 6px;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            transition: all 0.3s var(--elastic);
+        }
+
+        .gallery-modal-close:hover {
+            color: #f8fafc;
+            border-color: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .gallery-modal-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 32px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(148, 163, 184, 0.3) transparent;
+        }
+
+        .gallery-modal-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        .gallery-modal-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .gallery-modal-content::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.3);
+            border-radius: 3px;
+        }
+
+        .gallery-section {
+            margin-bottom: 32px;
+        }
+        .gallery-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .gallery-section-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #f1f5f9;
+            letter-spacing: 2px;
+            margin-bottom: 16px;
+            padding-left: 12px;
+            border-left: 3px solid var(--accent);
+        }
+
+        .gallery-row {
+            display: flex;
+            gap: 16px;
+            overflow-x: auto;
+            padding-bottom: 12px;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(148, 163, 184, 0.3) transparent;
+        }
+
+        .gallery-row::-webkit-scrollbar {
+            height: 4px;
+        }
+        .gallery-row::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .gallery-row::-webkit-scrollbar-thumb {
+            background: rgba(148, 163, 184, 0.3);
+            border-radius: 2px;
+        }
+
+        .gallery-thumb {
+            flex-shrink: 0;
+            width: 120px;
+            aspect-ratio: 2 / 3;
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: zoom-in;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: transform 0.3s var(--elastic), box-shadow 0.3s ease;
+            position: relative;
+            background: #1e293b;
+        }
+
+        .gallery-thumb:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.3);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .gallery-thumb img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+        }
+
+        .gallery-thumb-label {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            padding: 6px 8px;
+            background: rgba(15, 23, 42, 0.85);
+            color: #cbd5e1;
+            font-size: 10px;
+            text-align: center;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+
+        /* ==================== 移动端响应式适配 ==================== */
+        @media screen and (max-width: 768px) {
+            .scene-info-panel {
+                border-radius: 12px;
+            }
+            .scene-header {
+                padding: 16px 20px 12px;
+            }
+            .character-container {
+                padding: 24px 16px;
+            }
+            .character-grid {
+                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+                gap: 20px;
+            }
+            .gallery-modal-header {
+                padding: 20px 24px;
+            }
+            .gallery-modal-content {
+                padding: 24px;
+            }
+            .gallery-thumb {
+                width: 100px;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            body {
+                padding: 8px;
+            }
+            .scene-header {
+                padding: 14px 16px 10px;
+            }
+            .meta-row {
+                padding: 6px 16px;
+                font-size: 12px;
+                letter-spacing: 1px;
+                gap: 8px;
+            }
+            .action-button {
+                padding: 6px 14px;
+                font-size: 12px;
+            }
+            .character-container {
+                padding: 16px 12px;
+            }
+            .character-grid {
+                grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+                gap: 16px;
+            }
+            .character-card {
+                max-width: 100%;
+                padding: 6px;
+                border-radius: 8px;
+            }
+            .character-info-bar {
+                padding: 10px 6px 6px 6px;
+                gap: 4px;
+            }
+            .character-name {
+                font-size: 14px;
+                letter-spacing: 1px;
+            }
+            .character-outfit {
+                font-size: 10px;
+            }
+            .image-viewer-modal img {
+                max-width: 95vw;
+                max-height: 95vh;
+                border-radius: 8px;
+            }
+            .modal-close-hint {
+                top: 16px; right: 16px;
+                font-size: 11px;
+            }
+            .gallery-modal-header {
+                padding: 16px;
+            }
+            .gallery-modal-title {
+                font-size: 14px;
+                letter-spacing: 2px;
+            }
+            .gallery-modal-close {
+                padding: 6px 12px;
+                font-size: 11px;
+            }
+            .gallery-modal-content {
+                padding: 16px;
+            }
+            .gallery-thumb {
+                width: 85px;
+            }
+            .gallery-section-title {
+                font-size: 12px;
+                margin-bottom: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="scene-card-wrapper" id="app-root">
+        <div class="scene-info-panel">
+            <div class="system-loading">INITIALIZING VISUAL DATA...</div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            /* ========== 获取消息内容 ========== */
+            function getMessageData() {
+                var chatMessages = getChatMessages(getCurrentMessageId());
+                if (!chatMessages || chatMessages.length === 0) return null;
+                return chatMessages[0].message;
+            }
+
+            /* ========== 全局配置 ========== */
+            var basePath = "https://raw.githubusercontent.com/roxysl521-droid/tianjiang-buchong-/main/";
+            /* ★ 诗织专用仓库前缀 */
+            var shioriBasePath = "https://raw.githubusercontent.com/roxysl521-droid/tianjiang_buchong_bu/main/";
+
+            /* ★ 角色代码到仓库前缀的映射（其余角色使用默认 basePath） */
+            var charRepoMap = {
+                'shi_zhi': shioriBasePath
+                // 可继续添加其他独立仓库角色
+            };
+
+            var allCharacters = [
+                { name: '宫本璃绪', code: 'li_xu' },
+                { name: '月见里结月', code: 'jie_yue' },
+                { name: '红林刻子', code: 'ke_zi' },
+                { name: '月见里雪乃', code: 'xue_nai' },
+                { name: '白峰千冬', code: 'qian_dong' },
+                { name: '朝雾言叶', code: 'yan_ye' },
+                { name: '陈星瞳', code: 'chen_xing_tong' },
+                { name: '如月澄', code: 'chen' },
+                { name: '式部椿', code: 'chun' },
+                { name: '宫本静流', code: 'jing_liu' },
+                { name: '白峰柚', code: 'you' },
+                { name: '花菱柚叶', code: 'you_ye' },
+                { name: '久世纱英', code: 'sha_yin' },
+                { name: '神代栞', code: 'kan' },
+                // ★ 修改了诗织的名字为水濑诗织
+                { name: '水濑诗织', code: 'shi_zhi' }
+            ];
+
+            var outfitTypes = [
+                { label: '制服', code: 'zf' },
+                { label: '外出', code: 'wc' },
+                { label: '日常', code: 'rc' }
+            ];
+
+            var nameMap = {};
+            allCharacters.forEach(function(c) {
+                nameMap[c.name] = c.code;
+            });
+
+            var outfitMap = {
+                '外出': 'wc',
+                '日常': 'rc',
+                '制服': 'zf'
+            };
+
+            /* ========== 数据解析引擎 ========== */
+            function parseSceneData(text) {
+                var result = { type: 'SFW', characters: [] };
+                var match = text.match(/<SceneInfo>([\s\S]*?)<\/SceneInfo>/);
+                if (!match || !match[1]) return null;
+
+                var lines = match[1].split('\n');
+                lines.forEach(function(line) {
+                    line = line.trim();
+                    if (!line) return;
+
+                    if (line.indexOf('场景类型：') !== -1) {
+                        result.type = line.replace('场景类型：', '').trim();
+                    }
+
+                    if (line.startsWith('-')) {
+                        var parts = line.substring(1).split('|');
+                        if (parts.length >= 2) {
+                            result.characters.push({
+                                name: parts[0].trim(),
+                                outfit: parts[1].trim()
+                            });
+                        }
+                    }
+                });
+                return result;
+            }
+
+            /* ========== 图片路径映射 ========== */
+            /* 根据角色代码获取仓库前缀 */
+            function getBaseByCharCode(charCode) {
+                return charRepoMap[charCode] || basePath;
+            }
+
+            /* 主界面展示时，随机加载 1~3 中的一套 */
+            function getImageUrl(name, outfit) {
+                var codeName = nameMap[name] || 'unknown';
+                var codeOutfit = outfitMap[outfit] || 'unknown';
+                var randomSet = Math.floor(Math.random() * 3) + 1;
+                var repoBase = getBaseByCharCode(codeName);
+                return repoBase + codeName + '_' + codeOutfit + '_' + randomSet + '.png';
+            }
+
+            /* 图库中读取特定编号的图片 */
+            function getGalleryImageUrl(charCode, outfitCode, index) {
+                var repoBase = getBaseByCharCode(charCode);
+                return repoBase + charCode + '_' + outfitCode + '_' + index + '.png';
+            }
+
+            /* ========== SVG 装饰组件库 ========== */
+            var svgs = {
+                corner: '<svg viewBox="0 0 24 24"><polyline points="0,12 0,0 12,0"/></svg>',
+                noImage: '<svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>',
+                arrow: '<svg viewBox="0 0 24 24"><path d="M7 10l5 5 5-5z"/></svg>',
+                gallery: '<svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M4 8h4V4H4v4zm6 12h4v-4h-4v4zm-6 0h4v-4H4v4zm0-6h4v-4H4v4zm6 0h4v-4h-4v4zm6-10v4h4V4h-4zm-6 4h4V4h-4v4zm6 6h4v-4h-4v4zm0 6h4v-4h-4v4z"/></svg>'
+            };
+
+            /* ========== 构建 Gallery Modal 仓库 HTML ========== */
+            function buildGalleryModalHtml() {
+                var html = '<div class="gallery-modal" id="gallery-modal">';
+
+                /* Header */
+                html += '<div class="gallery-modal-header">';
+                html += '  <div class="gallery-modal-title">' + svgs.gallery + ' <span>VISUAL DATABASE</span></div>';
+                html += '  <div class="gallery-modal-close" onclick="window.closeGalleryModal()">CLOSE / 关闭</div>';
+                html += '</div>';
+
+                /* Content */
+                html += '<div class="gallery-modal-content">';
+                allCharacters.forEach(function(char) {
+                    html += '<div class="gallery-section">';
+                    html += '<div class="gallery-section-title">' + char.name + '</div>';
+                    html += '<div class="gallery-row">';
+
+                    outfitTypes.forEach(function(outfit) {
+                        /* 循环1到3加载全部套装 */
+                        for(var i = 1; i <= 3; i++) {
+                            var imgUrl = getGalleryImageUrl(char.code, outfit.code, i);
+                            html += '<div class="gallery-thumb" onclick="window.openImageModal(\'' + imgUrl + '\')">';
+                            /* 找不到图时自动隐藏该占位块，保持画廊整洁 */
+                            html += '  <img src="' + imgUrl + '" alt="' + char.name + ' ' + outfit.label + ' ' + i + '" onerror="this.parentElement.style.display=\'none\'">';
+                            html += '  <div class="gallery-thumb-label">' + outfit.label + ' ' + i + '</div>';
+                            html += '</div>';
+                        }
+                    });
+
+                    html += '</div>';
+                    html += '</div>';
+                });
+                html += '</div>';
+                html += '</div>';
+
+                return html;
+            }
+
+            /* ========== 渲染界面 ========== */
+            function renderApp() {
+                var root = document.getElementById('app-root');
+                var text = getMessageData();
+                if (!text) {
+                    root.innerHTML = '<div class="scene-info-panel"><div class="system-loading">SYSTEM ERROR: NO DATA FOUND</div></div>';
+                    return;
+                }
+
+                var data = parseSceneData(text);
+                if (!data || data.characters.length === 0) {
+                    root.style.display = 'none';
+                    return;
+                }
+
+                var html = '<div class="scene-info-panel">';
+                html += '<div class="panel-edge-deco"></div>';
+                html += '<div class="scene-inner">';
+
+                /* Header */
+                html += '<div class="scene-header">';
+                html += '  <div class="meta-row"><span class="meta-dot"></span><span>SCENE: ' + data.type + '</span></div>';
+                html += '  <div class="controls-container">';
+                html += '    <button class="action-button" id="btn-collapse">';
+                html += '      <div class="collapse-icon" id="icon-collapse">' + svgs.arrow + '</div>';
+                html += '      <span id="text-collapse">HIDE</span>';
+                html += '    </button>';
+                html += '    <button class="action-button" id="btn-gallery">';
+                html += '      ' + svgs.gallery;
+                html += '      <span>DATABASE</span>';
+                html += '    </button>';
+                html += '  </div>';
+                html += '</div>';
+
+                /* 在场角色展示 */
+                html += '<div class="character-container" id="char-container">';
+                html += '<div class="character-grid">';
+
+                data.characters.forEach(function(char, index) {
+                    var imgSrc = getImageUrl(char.name, char.outfit);
+                    var fallbackHtml = '<div class="character-avatar-fallback" style="display:none;">' + svgs.noImage + '<span>NO SIGNAL</span></div>';
+                    var errorEvent = "this.style.display='none'; this.nextElementSibling.style.display='flex';";
+
+                    var delay = index * 0.12;
+                    html += '<div class="character-card" style="animation-delay: ' + delay + 's;">';
+
+                    html += '  <div class="card-corners">';
+                    html += '    <div class="corner-tl">' + svgs.corner + '</div>';
+                    html += '    <div class="corner-tr">' + svgs.corner + '</div>';
+                    html += '    <div class="corner-bl">' + svgs.corner + '</div>';
+                    html += '    <div class="corner-br">' + svgs.corner + '</div>';
+                    html += '  </div>';
+
+                    html += '  <div class="character-avatar" onclick="window.openImageModal(\'' + imgSrc + '\')">';
+                    html += '    <img src="' + imgSrc + '" alt="' + char.name + '" onerror="' + errorEvent + '">';
+                    html +=      fallbackHtml;
+                    html += '  </div>';
+
+                    html += '  <div class="character-info-bar">';
+                    html += '    <div class="character-name">' + char.name + '</div>';
+                    html += '    <div class="character-outfit">' + char.outfit + '</div>';
+                    html += '  </div>';
+
+                    html += '</div>';
+                });
+
+                html += '</div></div>';
+                html += '</div></div>'; /* End scene-inner & scene-info-panel */
+
+                /* ======================= 追加独立 Modal 容器 ======================= */
+
+                /* Gallery/仓库 Modal (z-index: 999990) */
+                html += buildGalleryModalHtml();
+
+                /* Image/图片放大 Modal (z-index: 999999) */
+                html += '<div id="image-modal" class="image-viewer-modal" onclick="window.closeImageModal()">';
+                html += '  <div class="modal-close-hint">TAP TO CLOSE</div>';
+                html += '  <img id="modal-img" src="" alt="预览大图">';
+                html += '</div>';
+
+                root.innerHTML = html;
+
+                /* 绑定事件 */
+                setTimeout(function() {
+                    var container = document.getElementById('char-container');
+                    var icon = document.getElementById('icon-collapse');
+                    var collapseText = document.getElementById('text-collapse');
+                    var btnCollapse = document.getElementById('btn-collapse');
+                    var btnGallery = document.getElementById('btn-gallery');
+
+                    if (btnCollapse) {
+                        btnCollapse.onclick = function() {
+                            container.classList.toggle('collapsed');
+                            icon.classList.toggle('collapsed');
+                            collapseText.textContent = container.classList.contains('collapsed') ? 'SHOW' : 'HIDE';
+                        };
+                    }
+
+                    if (btnGallery) {
+                        btnGallery.onclick = function() {
+                            window.openGalleryModal();
+                        };
+                    }
+                }, 100);
+            }
+
+            /* ========== 全局 Modal 交互 ========== */
+            window.openImageModal = function(src) {
+                var modal = document.getElementById('image-modal');
+                var img = document.getElementById('modal-img');
+                if (modal && img) {
+                    img.src = src;
+                    modal.classList.add('show');
+                }
+            };
+            window.closeImageModal = function() {
+                var modal = document.getElementById('image-modal');
+                if (modal) {
+                    modal.classList.remove('show');
+                }
+            };
+
+            /* 新增：打开/关闭仓库面板 */
+            window.openGalleryModal = function() {
+                var modal = document.getElementById('gallery-modal');
+                if (modal) {
+                    modal.classList.add('show');
+                }
+            };
+            window.closeGalleryModal = function() {
+                var modal = document.getElementById('gallery-modal');
+                if (modal) {
+                    modal.classList.remove('show');
+                }
+            };
+
+            try {
+                renderApp();
+            } catch (err) {
+                console.error(err);
+            }
+        })();
+    </script>
+</body>
+</html>
