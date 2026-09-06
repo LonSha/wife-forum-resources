@@ -1,0 +1,1464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galgame风场景切幕卡</title>
+    <style>
+        :root {
+            --theme-color: #ff758c;
+            --theme-light: rgba(255, 117, 140, 0.15);
+            --theme-glow: rgba(255, 117, 140, 0.3);
+            --danger-color: #ff4757;
+            --danger-glow: rgba(255, 71, 87, 0.5);
+            --bg-color: #fcfcfd;
+            --panel-bg: #ffffff;
+            --sprite-bg: #f8f9fa;
+            --text-main: #2c2c2c;
+            --text-sub: #888888;
+            --border-color: rgba(0, 0, 0, 0.05);
+            --shadow-base: rgba(0, 0, 0, 0.05);
+            --shadow-heavy: rgba(0, 0, 0, 0.15);
+            --skeleton-bg: linear-gradient(90deg, #f4f5f7 25%, #e9ecef 50%, #f4f5f7 75%);
+            --overlay-pattern: rgba(255, 255, 255, 0.5);
+            --modal-bg: rgba(252, 252, 253, 0.95);
+            --tag-bg: rgba(255, 255, 255, 0.85);
+            --tab-locked: #f0f0f0;
+            --heart-empty: #eaeaea;
+        }
+
+        body.dark-mode {
+            --bg-color: #121212;
+            --panel-bg: #1e1e1e;
+            --sprite-bg: #181818;
+            --text-main: #e0e0e0;
+            --text-sub: #8a8a8a;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --shadow-base: rgba(0, 0, 0, 0.4);
+            --shadow-heavy: rgba(0, 0, 0, 0.6);
+            --skeleton-bg: linear-gradient(90deg, #1e1e1e 25%, #252525 50%, #1e1e1e 75%);
+            --overlay-pattern: rgba(0, 0, 0, 0.3);
+            --modal-bg: rgba(18, 18, 18, 0.98);
+            --tag-bg: rgba(30, 30, 30, 0.85);
+            --tab-locked: #252525;
+            --heart-empty: #333333;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, "Microsoft YaHei", "Noto Sans JP", sans-serif; background: transparent; padding: 3vw; transition: background-color 0.3s; }
+
+        /* 防挤压滚动容器：仅作为不支持 zoom 的浏览器的兜底，正常情况下卡片会等比缩小不再溢出 */
+        #render-target { overflow-x: auto; max-width: 100%; padding-bottom: 10px; }
+
+        .adv-container {
+            max-width: 950px; margin: 0 auto; border-radius: 16px; overflow: hidden;
+            position: relative; background: var(--bg-color);
+            box-shadow: 0 10px 30px var(--shadow-heavy), 0 2px 8px var(--shadow-base);
+            opacity: 0; transform: translateY(15px) scale(0.98);
+            animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards, containerBreathe 6s ease-in-out infinite 0.6s;
+            display: flex; align-items: stretch; min-height: 450px;
+            transition: background-color 0.5s ease, box-shadow 0.5s ease;
+            contain: layout style;
+        }
+        @keyframes popIn { to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes containerBreathe {
+            0%, 100% { box-shadow: 0 10px 30px var(--shadow-heavy), 0 0 0 var(--theme-light); }
+            50% { box-shadow: 0 15px 40px var(--shadow-heavy), 0 0 20px var(--theme-light); }
+        }
+
+        .theme-toggle {
+            position: absolute; top: 20px; right: 20px; width: 36px; height: 36px;
+            border-radius: 50%; background: var(--panel-bg); border: 1px solid var(--border-color);
+            display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 50;
+            box-shadow: 0 4px 10px var(--shadow-base); transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            font-size: 16px; color: var(--theme-color);
+        }
+        .theme-toggle:hover { transform: scale(1.1) rotate(15deg); box-shadow: 0 4px 15px var(--theme-glow); border-color: var(--theme-color); }
+
+        .adv-bg {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: radial-gradient(circle at 75% 20%, var(--theme-light) 0%, transparent 60%), radial-gradient(circle at 20% 80%, var(--theme-glow) 0%, transparent 50%);
+            opacity: 0.6; z-index: 0; pointer-events: none;
+            animation: bgShift 15s ease-in-out infinite alternate;
+        }
+        @keyframes bgShift {
+            0% { transform: scale(1) translate(0, 0) translateZ(0); }
+            100% { transform: scale(1.1) translate(-2%, 2%) translateZ(0); }
+        }
+
+        .adv-char-pattern {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 1; pointer-events: none; opacity: 0.08;
+            transition: opacity 0.5s ease, background-image 0.5s ease;
+        }
+        .adv-container:hover .adv-char-pattern { opacity: 0.12; }
+        body.dark-mode .adv-char-pattern { opacity: 0.05; }
+        body.dark-mode .adv-container:hover .adv-char-pattern { opacity: 0.08; }
+
+        .adv-overlay {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 2px, var(--overlay-pattern) 2px, var(--overlay-pattern) 4px);
+            z-index: 2; pointer-events: none; transition: background-image 0.5s ease;
+        }
+
+        .adv-particles {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 3; pointer-events: none; overflow: hidden;
+        }
+        .adv-particle {
+            position: absolute; border-radius: 50%;
+            background: var(--theme-color); box-shadow: 0 0 8px var(--theme-color);
+            opacity: 0; animation: floatUp var(--duration) ease-in infinite; animation-delay: var(--delay);
+            width: var(--size); height: var(--size); left: var(--left); bottom: -10px;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0.5) translateZ(0); opacity: 0; }
+            20% { opacity: 0.5; }
+            80% { opacity: 0.3; }
+            100% { transform: translateY(-400px) scale(1.5) translateZ(0); opacity: 0; }
+        }
+
+        .cross-star {
+            position: absolute; width: 20px; height: 20px; pointer-events: none;
+            animation: starTwinkle var(--duration) ease-in-out infinite; animation-delay: var(--delay); z-index: 3;
+            left: var(--left); top: var(--top);
+        }
+        .cross-star::before, .cross-star::after {
+            content:''; position: absolute; background: var(--theme-color);
+            top: 50%; left: 50%; transform: translate(-50%, -50%); border-radius: 50%; opacity: 0.8;
+        }
+        .cross-star::before { width: 100%; height: 1.5px; }
+        .cross-star::after { width: 1.5px; height: 100%; }
+        @keyframes starTwinkle {
+            0%, 100% { transform: scale(0.3) rotate(0deg) translateZ(0); opacity: 0.1; }
+            50% { transform: scale(1.3) rotate(45deg) translateZ(0); opacity: 0.8; filter: drop-shadow(0 0 6px var(--theme-glow));}
+        }
+
+        .adv-sprite-box {
+            width: 42%; aspect-ratio: 832 / 1216; position: relative; cursor: pointer; flex-shrink: 0;
+            background: var(--sprite-bg); z-index: 5;
+            transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94), background-color 0.5s ease;
+            transform-origin: center center; transform-style: preserve-3d;
+        }
+        .adv-sprite-box::after {
+            content: ''; position: absolute; top: -1px; right: -1px; bottom: -1px; left: 0;
+            background: linear-gradient(to right, transparent 0%, transparent 60%, var(--bg-color) 100%);
+            pointer-events: none; z-index: 10; transition: background 0.5s ease;
+        }
+
+        .flip-inner { position: relative; width: 100%; height: 100%; }
+        .flip-front, .flip-back {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%; overflow: hidden;
+            display: flex; align-items: center; justify-content: center;
+            transition: opacity 0.3s ease, background 0.5s ease;
+            background: var(--skeleton-bg); background-size: 200% 100%;
+            animation: skeletonLoading 1.5s infinite linear;
+        }
+        @keyframes skeletonLoading { to { background-position: -200% 0; } }
+        .flip-front { opacity: 1; z-index: 2; pointer-events: auto; }
+        .flip-back { opacity: 0; z-index: 1; pointer-events: none; }
+        .flip-inner.is-flipped .flip-front { opacity: 0; pointer-events: none; }
+        .flip-inner.is-flipped .flip-back { opacity: 1; pointer-events: auto; }
+
+        .adv-sprite-img {
+            width: 100%; height: 100%; object-fit: cover; object-position: center; display: block;
+            opacity: 0; transform: translateZ(0);
+            transition: opacity 0.5s ease, transform 0.7s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .adv-sprite-img.loaded { opacity: 1; }
+        .adv-sprite-box:hover .adv-sprite-img.loaded { transform: scale(1.05) translateZ(0); }
+
+        .route-flag {
+            position: absolute; top: 25px; left: -6px; background: var(--theme-color); color: #fff; font-weight: 900; font-style: italic;
+            font-size: 11px; padding: 5px 16px 5px 12px; border-radius: 0 10px 10px 0; letter-spacing: 1px;
+            box-shadow: 2px 2px 10px var(--theme-glow); z-index: 15; display: flex; flex-direction: column;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); cursor: default; overflow: hidden;
+        }
+        .route-flag::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transform: skewX(-20deg); animation: flagShimmer 4s infinite 1s; pointer-events: none;
+        }
+        @keyframes flagShimmer { 0% { left: -100%; } 20%, 100% { left: 200%; } }
+        .adv-sprite-box:hover .route-flag { transform: translateX(-120%); opacity: 0; box-shadow: none; }
+        .route-flag:hover { padding-left: 20px; box-shadow: 4px 2px 15px var(--theme-glow); }
+        .route-flag::before { content: ''; position: absolute; bottom: -6px; left: 0; border-top: 6px solid var(--theme-color); border-left: 6px solid transparent; filter: brightness(0.6); }
+        .route-flag-sub { font-size: 7px; opacity: 0.8; font-family: "SF Mono", Consolas, monospace; letter-spacing: 2px; margin-bottom: 1px; }
+
+        .adv-content { position: relative; width: 58%; z-index: 5; padding: 40px 40px 35px 10px; display: flex; flex-direction: column; justify-content: space-between; }
+        .adv-top-bar { display: flex; justify-content: flex-end; align-items: flex-start; gap: 14px; margin-right: 40px; }
+        .adv-info-col { display: flex; flex-direction: column; align-items: flex-end; gap: 8px; }
+
+        .adv-time-panel, .adv-loc-panel {
+            background: var(--panel-bg); border: 1px solid var(--border-color); border-radius: 8px; padding: 8px 16px;
+            box-shadow: 0 4px 10px var(--shadow-base); display: flex; align-items: center; gap: 10px;
+            opacity: 0; transform: translateX(20px); animation: slideInRight 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); cursor: default;
+        }
+        .adv-time-panel { animation-delay: 0.1s; }
+        .adv-loc-panel { animation-delay: 0.2s; border-bottom: 3px solid var(--theme-color); }
+
+        .adv-weather-panel {
+            background: var(--tag-bg); backdrop-filter: blur(4px); border: 1px solid var(--border-color);
+            border-radius: 6px; padding: 4px 12px; font-size: 11px; font-weight: bold; color: var(--text-sub);
+            display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 6px var(--shadow-base);
+            opacity: 0; transform: translateX(20px); animation: slideInRight 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            animation-delay: 0.25s; cursor: default; transition: all 0.3s;
+        }
+        .adv-weather-panel:hover { color: var(--theme-color); border-color: var(--theme-color); box-shadow: 0 4px 10px var(--theme-glow); }
+        .adv-weather-panel svg { opacity: 0.6; transition: opacity 0.3s, transform 0.3s, filter 0.3s; }
+        .adv-weather-panel:hover svg { opacity: 1; transform: scale(1.1); filter: drop-shadow(0 0 4px var(--theme-glow)); }
+
+        .adv-time-panel:hover, .adv-loc-panel:hover { transform: translateY(-3px); box-shadow: 0 8px 15px var(--shadow-heavy), 0 0 15px var(--theme-light); border-color: var(--theme-color); }
+        .adv-loc-panel:hover svg { filter: drop-shadow(0 0 4px var(--theme-glow)); transform: scale(1.1); transition: transform 0.2s; }
+        @keyframes slideInRight { to { opacity: 1; transform: translateX(0); } }
+
+        .adv-cal-icon { background: var(--theme-color); color: #fff; font-size: 13px; font-weight: bold; padding: 3px 8px; border-radius: 4px; display: flex; flex-direction: column; align-items: center; line-height: 1.2; box-shadow: 0 2px 5px var(--theme-glow); transition: transform 0.3s; }
+        .adv-time-panel:hover .adv-cal-icon { transform: scale(1.05); }
+        .adv-cal-icon span { font-size: 9px; background: rgba(0,0,0,0.2); width: 100%; text-align: center; border-radius: 2px 2px 0 0; padding: 2px 0; }
+        .adv-time-text { font-size: 15px; font-weight: 700; color: var(--text-main); transition: color 0.3s; }
+        .adv-loc-text { font-size: 15px; font-weight: 700; color: var(--theme-color); transition: color 0.3s; }
+
+        .adv-middle { display: flex; flex-direction: column; align-items: flex-end; margin-top: 20px; margin-bottom: auto; }
+        .adv-name-box { display: flex; align-items: baseline; gap: 12px; opacity: 0; transform: translateY(10px); animation: fadeInUp 0.5s ease forwards; animation-delay: 0.3s; }
+        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
+        .adv-name-en { font-family: "SF Mono", Consolas, monospace; font-size: 14px; color: var(--text-sub); letter-spacing: 2px; text-transform: uppercase; transition: color 0.3s; }
+        .adv-name-cn {
+            font-size: 38px; font-weight: 900; letter-spacing: 2px; text-shadow: 0 2px 10px var(--shadow-base);
+            background: linear-gradient(90deg, var(--text-main) 0%, var(--theme-color) 40%, var(--text-sub) 60%, var(--text-main) 100%);
+            background-size: 200% auto; color: transparent; -webkit-background-clip: text;
+            animation: shineText 5s linear infinite; transition: background 0.3s;
+        }
+        @keyframes shineText { to { background-position: 200% center; } }
+
+        .char-switch-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; opacity: 0; animation: fadeInUp 0.5s ease forwards; animation-delay: 0.35s; justify-content: flex-end; }
+        .char-switch-btn { background: var(--panel-bg); border: 1px solid var(--border-color); color: var(--text-sub); padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: bold; cursor: pointer; transition: all 0.3s; letter-spacing: 1px; box-shadow: 0 2px 5px var(--shadow-base); pointer-events: auto; }
+        .char-switch-btn.active { background: var(--theme-color); color: #fff; border-color: var(--theme-color); box-shadow: 0 2px 10px var(--theme-glow); }
+        .char-switch-btn:hover:not(.active) { border-color: var(--theme-color); color: var(--theme-color); }
+
+        .adv-status-tag {
+            margin-top: 10px; background: var(--panel-bg); border: 1px solid var(--theme-color); color: var(--theme-color);
+            padding: 6px 20px; border-radius: 20px; font-size: 14px; font-weight: bold; letter-spacing: 1px;
+            display: inline-flex; align-items: center; gap: 8px; box-shadow: 0 2px 8px var(--shadow-base);
+            position: relative; overflow: hidden; opacity: 0; animation: fadeInUp 0.5s ease forwards; animation-delay: 0.4s;
+            transition: all 0.3s ease; cursor: default;
+        }
+        .adv-status-tag::after { content: ''; position: absolute; top: 0; left: -100%; width: 50%; height: 100%; background: linear-gradient(90deg, transparent, var(--tag-bg), transparent); transform: skewX(-20deg); animation: shimmer 3s infinite; pointer-events: none; }
+        @keyframes shimmer { 0% { left: -100%; } 20%, 100% { left: 200%; } }
+        .adv-status-tag:hover { background: var(--theme-color); color: #fff; box-shadow: 0 0 15px var(--theme-glow); transform: scale(1.05); border-color: transparent; }
+        .adv-status-tag::before { content: '✧'; font-size: 14px; color: var(--theme-color); animation: twinkle 2s infinite; transition: color 0.3s; }
+        @keyframes twinkle { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+        .adv-status-tag:hover::before { color: #fff; }
+
+        .adv-bottom { margin-top: 20px; display: flex; flex-direction: column; gap: 8px; opacity: 0; transform: translateY(15px); animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; animation-delay: 0.5s; padding-bottom: 25px; }
+
+        .thought-container {
+            margin-bottom: 12px; background: var(--panel-bg); border: 1px dashed var(--theme-color); border-radius: 8px;
+            padding: 8px 16px; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative; overflow: hidden; width: fit-content; max-width: 90%;
+            box-shadow: inset 0 0 0 transparent, 0 2px 5px var(--shadow-base);
+        }
+        .thought-container:hover { background: var(--tag-bg); box-shadow: inset 0 0 8px var(--theme-light), 0 4px 10px var(--theme-glow); border-style: solid; }
+        .thought-title { font-size: 12px; font-weight: bold; color: var(--theme-color); display: flex; align-items: center; gap: 6px; letter-spacing: 1px; transition: color 0.3s; }
+        .thought-title svg { transition: transform 0.3s, opacity 0.3s; }
+        .thought-container:hover .thought-title svg { transform: scale(1.1); filter: drop-shadow(0 0 4px var(--theme-glow)); }
+        .thought-content { max-height: 0; opacity: 0; transition: all 0.4s ease-in-out; font-size: 13px; color: var(--text-main); margin-top: 0; font-style: italic; line-height: 1.6; }
+        .thought-container.open { width: 100%; border-style: solid; background: var(--panel-bg); }
+        .thought-container.open .thought-title { color: var(--text-sub); font-size: 11px; margin-bottom: 6px; border-bottom: 1px solid var(--border-color); padding-bottom: 4px; }
+        .thought-container.open .thought-content { max-height: 200px; opacity: 1; margin-top: 4px; }
+
+        .love-meter-title { font-size: 12px; font-weight: 900; color: var(--text-sub); letter-spacing: 2px; text-transform: uppercase; padding-left: 4px; transition: color 0.3s; }
+        .love-meter-box {
+            display: flex; align-items: center; gap: 18px; background: var(--panel-bg); padding: 10px 20px; border-radius: 50px;
+            border-left: 6px solid var(--theme-color); box-shadow: 0 4px 15px var(--shadow-base); width: fit-content;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); cursor: default;
+            border-top: 1px solid var(--border-color); border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);
+        }
+        .love-meter-box:hover { border-left-width: 10px; box-shadow: 0 8px 25px var(--shadow-heavy), 0 0 20px var(--theme-light); transform: translateX(-5px); border-color: var(--theme-color); }
+        .hearts-container { display: flex; gap: 6px; z-index: 2; }
+        .heart-icon { width: 22px; height: 22px; fill: var(--heart-empty); transition: fill 0.5s, transform 0.5s; }
+        .heart-icon.filled { fill: var(--theme-color); filter: drop-shadow(0 0 2px var(--theme-glow)); animation: heartbeat 1.5s ease-in-out infinite; }
+        @keyframes heartbeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .love-meter-box:hover .heart-icon.filled { animation-duration: 0.8s; }
+        .bond-text { font-size: 15px; font-weight: 900; color: var(--theme-color); margin-left: 20px; letter-spacing: 1px; z-index: 2; transition: transform 0.3s; }
+        .love-meter-box:hover .bond-text { transform: scale(1.05); }
+
+        .adv-chibi-box {
+            position: absolute; right: 40px; bottom: 60px; width: 85px; height: 85px;
+            border-radius: 50%; background: var(--panel-bg); border: 2px dashed var(--theme-color);
+            box-shadow: 0 4px 15px var(--shadow-base), inset 0 0 10px var(--theme-light);
+            display: flex; align-items: flex-end; justify-content: center;
+            z-index: 20; opacity: 0; overflow: hidden;
+            animation: popInChibi 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 0.6s, floatChibi 4s ease-in-out infinite 1.4s;
+            transition: all 0.3s ease; cursor: pointer;
+        }
+        .adv-chibi-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); z-index: 1; }
+        .adv-chibi-img.loaded { opacity: 0.95; }
+        .adv-chibi-text { position: relative; z-index: 2; font-size: 9px; color: var(--theme-color); font-weight: 900; letter-spacing: 1px; margin-bottom: 6px; background: var(--tag-bg); backdrop-filter: blur(2px); padding: 2px 6px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); opacity: 0.9; transition: all 0.3s ease; }
+        @keyframes popInChibi { 0% { opacity: 0; transform: scale(0.5) rotate(-15deg); } 60% { transform: scale(1.1) rotate(5deg); } 100% { opacity: 1; transform: scale(1) rotate(0deg); } }
+        @keyframes floatChibi { 0%, 100% { transform: translateY(0) translateZ(0); } 50% { transform: translateY(-8px) translateZ(0); } }
+        .adv-chibi-box:hover { animation: swingChibi 0.5s ease-in-out forwards; border-style: solid; border-width: 3px; box-shadow: 0 8px 25px var(--shadow-heavy), 0 0 20px var(--theme-glow); transform: scale(1.05); }
+        .adv-chibi-box:hover .adv-chibi-img.loaded { transform: scale(1.15) translateZ(0); opacity: 1; }
+        .adv-chibi-box:hover .adv-chibi-text { opacity: 1; transform: translateY(-2px); }
+        @keyframes swingChibi { 0% { transform: scale(1.05) rotate(0deg); } 20% { transform: scale(1.05) rotate(10deg); } 40% { transform: scale(1.05) rotate(-8deg); } 60% { transform: scale(1.05) rotate(5deg); } 80% { transform: scale(1.05) rotate(-3deg); } 100% { transform: scale(1.05) rotate(0deg); } }
+
+        .adv-sys-bar {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 4px;
+            background: linear-gradient(90deg, transparent, var(--theme-color), transparent, var(--theme-color), transparent);
+            background-size: 200% 100%; animation: slideBar 3s linear infinite; opacity: 0.8; z-index: 10;
+        }
+        @keyframes slideBar { to { background-position: 200% 0; } }
+        .adv-sys-text { position: absolute; bottom: 8px; right: 20px; font-family: "SF Mono", Consolas, monospace; font-size: 10px; color: var(--text-sub); letter-spacing: 2px; z-index: 10; opacity: 0; animation: fadeIn 1s ease forwards; animation-delay: 0.8s; display: flex; align-items: center; gap: 15px; transition: color 0.3s; }
+        @keyframes fadeIn { to { opacity: 1; } }
+        .btn-gallery { background: var(--panel-bg); border: 1px solid var(--theme-color); color: var(--theme-color); padding: 5px 14px; border-radius: 12px; font-weight: bold; cursor: pointer; transition: all 0.3s; pointer-events: auto; font-family: "SF Mono", Consolas, monospace; display: flex; align-items: center; gap: 6px; box-shadow: 0 2px 8px var(--shadow-base); }
+        .btn-gallery:hover { background: var(--theme-color); color: #fff; box-shadow: 0 4px 15px var(--theme-glow); transform: translateY(-2px); }
+
+        .gallery-modal, .calendar-modal {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh;
+            background: var(--modal-bg);
+            z-index: 9999; display: flex; flex-direction: column; align-items: center;
+            opacity: 0; visibility: hidden; pointer-events: none;
+            transition: background 0.5s ease, opacity 0.4s ease, visibility 0s linear 0.4s;
+        }
+        .gallery-modal { padding: 40px; overflow-y: auto; }
+        .calendar-modal { padding: 20px; z-index: 9998; overflow-y: auto; }
+        .gallery-modal.active, .calendar-modal.active { opacity: 1; visibility: visible; pointer-events: auto; transition: background 0.5s ease, opacity 0.4s ease; }
+
+        .gallery-close { position: fixed; top: 30px; right: 40px; width: 40px; height: 40px; background: var(--panel-bg); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; color: var(--theme-color); box-shadow: 0 4px 15px var(--shadow-base); cursor: pointer; transition: all 0.3s; z-index: 100; font-weight: bold; border: 1px solid var(--border-color); }
+        .gallery-close:hover { background: var(--danger-color); color: #fff; transform: rotate(90deg) scale(1.1); box-shadow: 0 4px 15px var(--danger-glow); border-color: transparent; }
+
+        .gallery-header { width: 100%; max-width: 1000px; display: flex; flex-direction: column; gap: 20px; margin-bottom: 20px; pointer-events: none; }
+        .gallery-header > * { pointer-events: auto; }
+        .gallery-tabs { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .mode-tab-btn { background: var(--panel-bg); border: 2px solid var(--border-color); color: var(--text-main); padding: 10px 30px; border-radius: 30px; font-size: 16px; font-weight: 900; letter-spacing: 2px; cursor: pointer; transition: all 0.3s; box-shadow: 0 4px 10px var(--shadow-base); display: flex; align-items: center; gap: 8px; }
+        .mode-tab-btn.active { background: var(--theme-color); color: #fff; border-color: var(--theme-color); box-shadow: 0 6px 20px var(--theme-glow); }
+        .mode-tab-btn:not(.active):not(.locked-pwd):hover { transform: translateY(-3px); border-color: var(--theme-color); color: var(--theme-color); }
+        .mode-tab-btn.locked-pwd { background: var(--tab-locked); border-color: transparent; color: var(--text-sub); cursor: not-allowed; box-shadow: none; }
+        .gallery-tab-btn { background: var(--panel-bg); border: 1px solid var(--border-color); color: var(--text-main); padding: 6px 18px; border-radius: 20px; font-size: 13px; font-weight: bold; cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 5px var(--shadow-base); }
+        .gallery-tab-btn:hover { border-color: var(--theme-color); color: var(--theme-color); }
+        .gallery-tab-btn.active { background: var(--theme-color); color: #fff; border-color: var(--theme-color); }
+        .gallery-pagination { display: flex; justify-content: center; gap: 8px; margin-top: 10px; width: 100%; max-width: 1000px; margin-bottom: 20px; flex-wrap: wrap; z-index: 10; position: relative; pointer-events: auto; }
+        .page-btn { background: var(--panel-bg); border: 1px solid var(--border-color); padding: 5px 12px; border-radius: 6px; cursor: pointer; font-family: monospace; font-weight: bold; color: var(--text-main); transition: all 0.2s; }
+        .page-btn.active { background: var(--theme-color); color: #fff; border-color: var(--theme-color); }
+        .page-btn:hover:not(.active) { border-color: var(--theme-color); color: var(--theme-color); }
+        .gallery-grid { width: 100%; max-width: 1000px; display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; padding-bottom: 60px; pointer-events: auto; }
+        .gallery-item { width: 100%; aspect-ratio: 2/3; border-radius: 12px; overflow: hidden; background: var(--skeleton-bg); background-size: 200% 100%; animation: skeletonLoading 1.5s infinite linear; box-shadow: 0 4px 10px var(--shadow-base); position: relative; cursor: zoom-in; transition: transform 0.3s, box-shadow 0.3s; opacity: 0; transform: translateY(20px) translateZ(0); }
+        .gallery-item.shown { animation: gridItemPop 0.5s ease forwards; }
+        @keyframes gridItemPop { to { opacity: 1; transform: translateY(0) translateZ(0); } }
+        .gallery-item:hover { transform: translateY(-5px) translateZ(0); box-shadow: 0 8px 20px var(--theme-glow); }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease; }
+        .gallery-item img.loaded { opacity: 1; }
+        .gallery-item .img-label { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(transparent, rgba(0,0,0,0.8)); color: #fff; padding: 15px 10px 8px; font-size: 11px; font-family: monospace; opacity: 0; transition: opacity 0.3s; }
+        .gallery-item:hover .img-label { opacity: 1; }
+
+        .preview-modal { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; background: rgba(0,0,0,0.85); z-index: 10000; display: flex; align-items: center; justify-content: center; opacity: 0; visibility: hidden; pointer-events: none; transition: opacity 0.3s ease, visibility 0s linear 0.3s; }
+        .preview-modal.active { opacity: 1; visibility: visible; pointer-events: auto; cursor: zoom-out; transition: opacity 0.3s ease; }
+        .preview-modal img { max-width: 90%; max-height: 90%; border-radius: 8px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); object-fit: contain; }
+
+        .calendar-container {
+            width: 100%; max-width: 480px; margin: auto; flex-shrink: 0; background: var(--panel-bg); border-radius: 16px;
+            box-shadow: 0 20px 60px var(--shadow-heavy), 0 0 30px var(--theme-light);
+            overflow: hidden; border: 1px solid var(--border-color);
+            opacity: 0; transform: scale(0.9) translateY(20px);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: auto;
+        }
+        .calendar-modal.active .calendar-container { opacity: 1; transform: scale(1) translateY(0); }
+        .calendar-header {
+            background: linear-gradient(135deg, var(--theme-color), color-mix(in srgb, var(--theme-color) 70%, #000));
+            padding: 20px 24px; display: flex; align-items: center; justify-content: space-between;
+            position: relative; overflow: hidden;
+        }
+        .calendar-header::after {
+            content: ''; position: absolute; top: -50%; right: -20%; width: 60%; height: 200%;
+            background: radial-gradient(ellipse, rgba(255,255,255,0.1) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .cal-nav-btn {
+            width: 32px; height: 32px; border-radius: 50%; border: 2px solid rgba(255,255,255,0.4);
+            background: rgba(255,255,255,0.1); color: #fff; font-size: 16px; font-weight: bold;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .cal-nav-btn:hover { background: rgba(255,255,255,0.25); border-color: #fff; transform: scale(1.1); }
+        .cal-month-title {
+            color: #fff; font-size: 20px; font-weight: 900; letter-spacing: 2px;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.2); display: flex; flex-direction: column; align-items: center; gap: 2px;
+        }
+        .cal-month-title .cal-year { font-size: 11px; font-weight: 600; opacity: 0.7; letter-spacing: 3px; }
+        .calendar-body { padding: 16px 20px 20px; }
+        .cal-weekdays { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 8px; }
+        .cal-weekday { text-align: center; font-size: 11px; font-weight: 900; color: var(--text-sub); padding: 6px 0; letter-spacing: 1px; }
+        .cal-weekday:first-child { color: var(--danger-color); }
+        .cal-weekday:last-child { color: #4a9eff; }
+        .cal-days { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .cal-day {
+            aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            border-radius: 10px; font-size: 14px; font-weight: 600; color: var(--text-main);
+            cursor: default; transition: all 0.2s; position: relative; gap: 2px;
+        }
+        .cal-day.empty { pointer-events: none; }
+        .cal-day.sunday { color: var(--danger-color); }
+        .cal-day.saturday { color: #4a9eff; }
+        .cal-day.today { background: var(--theme-color); color: #fff; font-weight: 900; box-shadow: 0 4px 12px var(--theme-glow); }
+        .cal-day.today.sunday, .cal-day.today.saturday { color: #fff; }
+        .cal-day.has-event { cursor: pointer; }
+        .cal-day.has-event:not(.today) { background: var(--theme-light); }
+        .cal-day.has-event:hover:not(.today) { background: var(--theme-glow); transform: scale(1.1); box-shadow: 0 4px 12px var(--theme-glow); }
+        .cal-day.has-event.today:hover { transform: scale(1.1); }
+        .cal-dot-row { display: flex; gap: 2px; height: 5px; align-items: center; }
+        .cal-dot { width: 5px; height: 5px; border-radius: 50%; }
+        .cal-dot.event { background: var(--theme-color); }
+        .cal-dot.birthday { background: #ffd700; box-shadow: 0 0 4px rgba(255, 215, 0, 0.6); }
+        .cal-day.today .cal-dot.event { background: rgba(255,255,255,0.7); }
+        .cal-day.today .cal-dot.birthday { background: #ffd700; }
+        .cal-event-panel {
+            margin-top: 12px; padding: 12px 16px; background: var(--bg-color); border-radius: 10px;
+            border: 1px solid var(--border-color); min-height: 60px; transition: all 0.3s ease;
+        }
+        .cal-event-panel-title {
+            font-size: 11px; font-weight: 900; color: var(--text-sub); letter-spacing: 2px;
+            margin-bottom: 8px; text-transform: uppercase; display: flex; align-items: center; gap: 6px;
+        }
+        .cal-event-list { display: flex; flex-direction: column; gap: 6px; }
+        .cal-event-item {
+            display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--text-main);
+            padding: 8px 12px; border-radius: 8px; background: var(--panel-bg);
+            border-left: 3px solid var(--theme-color); box-shadow: 0 2px 5px var(--shadow-base);
+            transition: all 0.2s;
+        }
+        .cal-event-item:hover { transform: translateX(4px); box-shadow: 0 4px 10px var(--shadow-base); }
+        .cal-event-item.birthday { border-left-color: #ffd700; }
+        .cal-event-item .event-icon { flex-shrink: 0; width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; }
+        .cal-event-item .event-icon svg { width: 16px; height: 16px; }
+        .cal-event-item .event-text { flex: 1; line-height: 1.4; }
+        .cal-event-empty { font-size: 12px; color: var(--text-sub); text-align: center; padding: 10px; font-style: italic; }
+
+        .loading { text-align: center; padding: 60px; color: var(--text-sub); font-size: 16px; width: 100%; display: flex; align-items: center; justify-content: center; }
+
+        /* =========================================================
+           移动端专属类 .mobile-view
+           仅在检测到真实手机/平板设备时通过 JS 挂载，彻底与分辨率窗口解绑。
+           电脑端拉得再窄也绝不套用此缩放尺寸，保证各自原汁原味！
+        ========================================================= */
+        .mobile-view.adv-container {
+            min-height: 220px; min-width: unset; width: 100%;
+            animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+            box-shadow: 0 4px 15px var(--shadow-heavy);
+        }
+        .mobile-view .adv-bg { animation: none; transform: none; opacity: 0.3; }
+        .mobile-view .adv-char-pattern { opacity: 0.05; }
+        .mobile-view.adv-container:hover .adv-char-pattern { opacity: 0.05; }
+        .mobile-view .adv-sprite-box { transition: none; transform: none; }
+        .mobile-view .adv-sprite-box:hover .adv-sprite-img.loaded { transform: none; }
+
+        .mobile-view .adv-content { padding: 15px 10px 15px 5px; width: 58%; }
+        .mobile-view .adv-top-bar { margin-right: 5px; gap: 6px; }
+        .mobile-view .adv-info-col { gap: 4px; }
+        .mobile-view .adv-time-panel, .mobile-view .adv-loc-panel { padding: 4px 8px; gap: 4px; border-radius: 4px; }
+        .mobile-view .adv-weather-panel { padding: 2px 6px; font-size: 8px; border-radius: 4px; gap: 3px; backdrop-filter: none; }
+        .mobile-view .adv-weather-panel svg { width: 10px; height: 10px; }
+        .mobile-view .adv-cal-icon { font-size: 9px; padding: 2px 4px; }
+        .mobile-view .adv-cal-icon span { font-size: 7px; padding: 1px 0; }
+        .mobile-view .adv-time-text { font-size: 10px; }
+        .mobile-view .adv-loc-text { font-size: 10px; }
+        .mobile-view .adv-loc-panel svg { width: 10px; height: 10px; }
+
+        .mobile-view .adv-middle { margin-top: 10px; }
+        .mobile-view .adv-name-box { gap: 6px; }
+        .mobile-view .adv-name-en { font-size: 9px; letter-spacing: 1px; }
+        .mobile-view .adv-name-cn { font-size: 18px; }
+
+        .mobile-view .char-switch-tabs { gap: 4px; margin-top: 5px; }
+        .mobile-view .char-switch-btn { padding: 2px 6px; font-size: 8px; border-radius: 10px; }
+        .mobile-view .adv-status-tag { padding: 3px 10px; font-size: 9px; border-radius: 10px; margin-top: 6px; }
+        .mobile-view .adv-status-tag::after { display: none; }
+
+        .mobile-view .adv-bottom { margin-top: 10px; gap: 4px; padding-bottom: 10px; }
+        .mobile-view .thought-container { padding: 4px 8px; border-radius: 4px; margin-bottom: 6px; max-width: 95%; }
+        .mobile-view .thought-title { font-size: 9px; gap: 4px; }
+        .mobile-view .thought-title svg { width: 10px; height: 10px; }
+        .mobile-view .thought-content { font-size: 9px; line-height: 1.4; }
+        .mobile-view .thought-container.open .thought-content { max-height: 120px; margin-top: 2px; }
+
+        .mobile-view .love-meter-title { font-size: 8px; letter-spacing: 1px; }
+        .mobile-view .love-meter-box { padding: 5px 10px; border-radius: 20px; gap: 8px; border-left-width: 4px; }
+        .mobile-view .heart-icon { width: 12px; height: 12px; }
+        .mobile-view .bond-text { font-size: 10px; margin-left: 8px; }
+
+        .mobile-view .adv-chibi-box { right: 8px; bottom: 25px; width: 40px; height: 40px; border-width: 1px; animation: popInChibi 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards 0.6s; }
+        .mobile-view .adv-chibi-text { font-size: 6px; padding: 1px 3px; margin-bottom: 2px; backdrop-filter: none; }
+
+        .mobile-view .adv-sys-bar { height: 2px; }
+        .mobile-view .adv-sys-text { right: 8px; bottom: 4px; font-size: 7px; gap: 6px; }
+        .mobile-view .btn-gallery { padding: 2px 6px; font-size: 7px; border-radius: 6px; gap: 3px; }
+        .mobile-view .btn-gallery svg { width: 8px; height: 8px; }
+        .mobile-view .route-flag { top: 10px; left: -4px; font-size: 8px; padding: 3px 10px 3px 8px; }
+        .mobile-view .route-flag-sub { font-size: 5px; }
+        .mobile-view .route-flag::after, .mobile-view .route-flag::before { display: none; }
+        .mobile-view .theme-toggle { top: 5px; right: 5px; width: 24px; height: 24px; font-size: 12px; }
+
+        /* 移动端模态框专属适配 */
+        .mobile-view-modal { padding: 15px 5px !important; backdrop-filter: none !important; }
+        .mobile-view-modal .gallery-close { top: 10px; right: 10px; width: 30px; height: 30px; font-size: 18px; }
+        .mobile-view-modal .gallery-header { gap: 10px; margin-bottom: 10px; }
+        .mobile-view-modal .mode-tab-btn { padding: 6px 12px; font-size: 12px; letter-spacing: 1px; }
+        .mobile-view-modal .gallery-tab-btn { padding: 4px 10px; font-size: 10px; }
+        .mobile-view-modal .page-btn { padding: 3px 8px; font-size: 10px; }
+        .mobile-view-modal .gallery-grid { gap: 10px; padding-bottom: 30px; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
+        .mobile-view-modal .gallery-item { transition: none; }
+        .mobile-view-modal .gallery-item:hover { transform: none; box-shadow: 0 4px 10px var(--shadow-base); }
+        .mobile-view-modal .gallery-item .img-label { font-size: 9px; padding: 8px 6px 4px; }
+        .mobile-view-modal .calendar-container { max-width: 95%; border-radius: 10px; }
+        .mobile-view-modal .calendar-header { padding: 10px 12px; }
+        .mobile-view-modal .cal-month-title { font-size: 14px; }
+        .mobile-view-modal .cal-month-title .cal-year { font-size: 9px; }
+        .mobile-view-modal .cal-nav-btn { width: 24px; height: 24px; font-size: 12px; }
+        .mobile-view-modal .calendar-body { padding: 8px 10px 12px; }
+        .mobile-view-modal .cal-weekday { font-size: 9px; padding: 4px 0; }
+        .mobile-view-modal .cal-day { font-size: 10px; border-radius: 6px; }
+        .mobile-view-modal .cal-event-panel { padding: 8px 10px; margin-top: 8px; min-height: 40px; }
+        .mobile-view-modal .cal-event-panel-title { font-size: 9px; margin-bottom: 6px; }
+        .mobile-view-modal .cal-event-panel-title svg { width: 10px; height: 10px; }
+        .mobile-view-modal .cal-event-item { padding: 6px 8px; font-size: 10px; gap: 6px; }
+        .mobile-view-modal .cal-event-item .event-icon { width: 14px; height: 14px; }
+        .mobile-view-modal .cal-event-item .event-icon svg { width: 12px; height: 12px; }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+        }
+    </style>
+</head>
+<body>
+    <div id="render-target">
+        <!-- 容器会在初始化时由 JS 自动装载 -->
+        <div class="adv-container"><div class="loading">SYSTEM LOADING...</div></div>
+    </div>
+
+    <!-- 画廊模态框，点击背景也能关闭 -->
+    <div class="gallery-modal" id="galleryModal" onclick="if(event.target === this) closeGallery()">
+        <div class="gallery-close" onclick="closeGallery()">×</div>
+        <div class="gallery-header">
+            <div class="gallery-tabs" id="modeTabs"></div>
+            <div class="gallery-tabs" id="charTabs"></div>
+            <div class="gallery-tabs" id="catTabs" style="margin-top: -5px;"></div>
+        </div>
+        <div class="gallery-pagination" id="paginationBox"></div>
+        <div class="gallery-grid" id="galleryGrid"></div>
+    </div>
+
+    <!-- 日历模态框，点击背景也能关闭 -->
+    <div class="calendar-modal" id="calendarModal" onclick="if(event.target === this) closeCalendar()">
+        <div class="gallery-close" onclick="closeCalendar()">×</div>
+        <div class="calendar-container">
+            <div class="calendar-header">
+                <div class="cal-nav-btn" onclick="calNavMonth(-1)">‹</div>
+                <div class="cal-month-title" id="calMonthTitle"><span class="cal-year">2024</span><span>5月</span></div>
+                <div class="cal-nav-btn" onclick="calNavMonth(1)">›</div>
+            </div>
+            <div class="calendar-body">
+                <div class="cal-weekdays">
+                    <div class="cal-weekday">日</div><div class="cal-weekday">月</div><div class="cal-weekday">火</div>
+                    <div class="cal-weekday">水</div><div class="cal-weekday">木</div><div class="cal-weekday">金</div><div class="cal-weekday">土</div>
+                </div>
+                <div class="cal-days" id="calDays"></div>
+                <div class="cal-event-panel" id="calEventPanel">
+                    <div class="cal-event-panel-title">Events</div>
+                    <div class="cal-event-empty">点击有标记的日期查看事件</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="preview-modal" id="previewModal" onclick="closePreview()">
+        <img id="previewImg" src="" alt="preview" decoding="async">
+    </div>
+
+    <script>
+        // 【核心优化】真实设备基因检测：只在真正的手机和平板上识别为移动端，完全抛弃分辨率探测。
+        var isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || (window.innerWidth <= 1024 && ('ontouchstart' in window));
+
+        (function() {
+            try {
+                var savedTheme = localStorage.getItem('gal_scene_theme');
+                if (savedTheme === 'dark') document.body.classList.add('dark-mode');
+            } catch (e) {}
+        })();
+
+        /* 【窄窗口适配】电脑端聊天栏比卡片窄时，把卡片整体等比缩小，
+           避免横向滚动条导致右侧被截断；宽度足够时完全保持原样。 */
+        var CARD_COMFORT_WIDTH = 880;
+        function fitSceneCardScale() {
+            var rt = document.getElementById('render-target');
+            var card = document.getElementById('adv-main-container');
+            if (!rt || !card) return;
+            if (isMobileDevice || !('zoom' in card.style)) { card.style.zoom = ''; return; }
+            var available = rt.clientWidth;
+            if (available > 0 && available < CARD_COMFORT_WIDTH) {
+                card.style.zoom = (available / CARD_COMFORT_WIDTH).toFixed(4);
+            } else {
+                card.style.zoom = '';
+            }
+        }
+        window.addEventListener('resize', fitSceneCardScale);
+        if (window.ResizeObserver) { new ResizeObserver(fitSceneCardScale).observe(document.body); }
+
+        /* SillyTavern wraps chat messages in transformed/zoomed containers, which
+           breaks position:fixed. Move the modals to <body> so they anchor to the
+           real viewport and don't get clipped/offset when zooming. */
+        function mountSceneModals() {
+            var host = document.getElementById('sceneCardModalHost');
+            if (!host) {
+                host = document.createElement('div');
+                host.id = 'sceneCardModalHost';
+                document.body.appendChild(host);
+            }
+            ['galleryModal', 'calendarModal', 'previewModal'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el && el.parentNode !== host) {
+                    var stale = host.querySelectorAll('#' + id);
+                    for (var i = 0; i < stale.length; i++) stale[i].remove();
+                    host.appendChild(el);
+                    // 为真手机设备挂载缩放样式
+                    if (isMobileDevice) {
+                        el.classList.add('mobile-view-modal');
+                    }
+                }
+            });
+        }
+        mountSceneModals();
+        document.addEventListener('DOMContentLoaded', mountSceneModals);
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            var isDark = document.body.classList.contains('dark-mode');
+            try { localStorage.setItem('gal_scene_theme', isDark ? 'dark' : 'light'); } catch(e) {}
+            var themeBtn = document.getElementById('themeBtn');
+            if (themeBtn) themeBtn.innerHTML = isDark ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"/></svg>' : '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';
+        }
+
+        window.handleTilt = function(e, el) {
+            if(isMobileDevice) return;
+            var rect = el.getBoundingClientRect();
+            var x = e.clientX - rect.left;
+            var y = e.clientY - rect.top;
+            var rx = (y / rect.height - 0.5) * -12;
+            var ry = (x / rect.width - 0.5) * 12;
+            el.style.transform = 'perspective(1200px) rotateX(' + rx + 'deg) rotateY(' + ry + 'deg)';
+        };
+        window.resetTilt = function(el) {
+            if(isMobileDevice) return;
+            el.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg)';
+        };
+        window.toggleThought = function(el) {
+            el.classList.toggle('open');
+            var title = el.querySelector('.thought-title');
+            var eyeSvg = title.getAttribute('data-eye');
+            var penSvg = title.getAttribute('data-pen');
+            if (el.classList.contains('open')) {
+                title.innerHTML = penSvg + ' 心声记录';
+            } else {
+                title.innerHTML = eyeSvg + ' 窥探内心';
+            }
+        };
+
+        /* ========== SVG图标库 ========== */
+        var SVG_ICONS = {
+            festival: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>',
+            school: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>',
+            birthday: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ffd700" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><path d="M12 3v4"/><path d="M8 7h8"/><rect x="4" y="11" width="16" height="6" rx="2"/><path d="M9 11v-1a3 3 0 016 0v1"/></svg>',
+            heart: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg>',
+            exam: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>',
+            graduation: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 10l-10-6L2 10l10 6 10-6z"/><path d="M6 12v5c0 2 3 3 6 3s6-1 6-3v-5"/><line x1="22" y1="10" x2="22" y2="16"/></svg>',
+            sports: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="5" r="3"/><path d="M6.5 8L12 14l5.5-6"/><path d="M12 14v7"/></svg>',
+            nature: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 21l6-8 6 8"/><path d="M9 17l3-4 3 4"/><line x1="12" y1="21" x2="12" y2="13"/></svg>',
+            travel: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21.5 4 21 3c-1-.5-3 0-4.5 1.5L13 8 4.8 6.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>',
+            culture: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/></svg>',
+            holiday: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="M4.93 4.93l1.41 1.41"/><path d="M17.66 17.66l1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M6.34 17.66l-1.41 1.41"/><path d="M19.07 4.93l-1.41 1.41"/></svg>',
+            christmas: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2l-4 8h8l-4-8z"/><path d="M8 10l-3 6h14l-3-6"/><path d="M5 16l-2 4h18l-2-4"/><line x1="12" y1="22" x2="12" y2="20"/></svg>',
+            snow: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="2" x2="12" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/><line x1="19.07" y1="4.93" x2="4.93" y2="19.07"/></svg>',
+            bell: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>',
+            wave: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 12c2-3 4-3 6 0s4 3 6 0 4-3 6 0 4 3 6 0"/></svg>',
+            mountain: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 21l4-10 4 10"/><path d="M2 21l7-14 3 6"/><path d="M22 21l-7-14-2 4"/></svg>',
+            lantern: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="8" y="6" width="8" height="12" rx="4"/><line x1="12" y1="2" x2="12" y2="6"/><line x1="10" y1="18" x2="10" y2="22"/><line x1="14" y1="18" x2="14" y2="22"/></svg>',
+            bamboo: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="8" y1="2" x2="8" y2="22"/><line x1="16" y1="4" x2="16" y2="22"/><path d="M8 8c3 0 5 2 8 2"/><path d="M8 14c3 0 5 2 8 2"/></svg>',
+            medal: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="14" r="6"/><path d="M8.21 3.32L7 8h10l-1.21-4.68"/><path d="M12 8v6"/></svg>',
+            flag: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>',
+            pray: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2C6.48 2 2 6 2 11c0 3 1.5 5.5 4 7v4l3-2c1 .3 2 .5 3 .5s2-.2 3-.5l3 2v-4c2.5-1.5 4-4 4-7 0-5-4.48-9-10-9z"/></svg>',
+            leaf: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 20A7 7 0 019.8 6.9C15.5 4.9 17 3.5 19 2c1 2 2 4.5 2 8 0 5.5-4.78 10-10 10z"/><path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/></svg>'
+        };
+
+        function getEventIconSvg(text) {
+            if (text.includes('生日')) return SVG_ICONS.birthday;
+            if (text.includes('情人節') || text.includes('情人节')) return SVG_ICONS.heart;
+            if (text.includes('白色情人')) return SVG_ICONS.heart;
+            if (text.includes('考试') || text.includes('期中') || text.includes('期末')) return SVG_ICONS.exam;
+            if (text.includes('开学') || text.includes('入学')) return SVG_ICONS.school;
+            if (text.includes('结业') || text.includes('放假')) return SVG_ICONS.school;
+            if (text.includes('毕业')) return SVG_ICONS.graduation;
+            if (text.includes('体育祭') || text.includes('田径') || text.includes('体育之日')) return SVG_ICONS.sports;
+            if (text.includes('运动') || text.includes('身体测量')) return SVG_ICONS.sports;
+            if (text.includes('修学旅行') || text.includes('远足')) return SVG_ICONS.travel;
+            if (text.includes('文化祭') || text.includes('文化之日')) return SVG_ICONS.culture;
+            if (text.includes('社团')) return SVG_ICONS.flag;
+            if (text.includes('圣诞') || text.includes('平安夜')) return SVG_ICONS.christmas;
+            if (text.includes('寒假') || text.includes('雪')) return SVG_ICONS.snow;
+            if (text.includes('大晦日') || text.includes('跨年')) return SVG_ICONS.bell;
+            if (text.includes('七夕')) return SVG_ICONS.bamboo;
+            if (text.includes('海之日')) return SVG_ICONS.wave;
+            if (text.includes('山之日')) return SVG_ICONS.mountain;
+            if (text.includes('盂兰盆') || text.includes('夏日祭')) return SVG_ICONS.lantern;
+            if (text.includes('暑假') || text.includes('暑期')) return SVG_ICONS.holiday;
+            if (text.includes('春假') || text.includes('春分') || text.includes('春')) return SVG_ICONS.nature;
+            if (text.includes('秋分') || text.includes('秋')) return SVG_ICONS.leaf;
+            if (text.includes('敬老')) return SVG_ICONS.pray;
+            if (text.includes('勤劳感谢')) return SVG_ICONS.pray;
+            if (text.includes('儿童') || text.includes('黄金周') || text.includes('宪法') || text.includes('绿之日')) return SVG_ICONS.flag;
+            if (text.includes('元日') || text.includes('成人') || text.includes('愚人')) return SVG_ICONS.festival;
+            if (text.includes('奖牌') || text.includes('体育')) return SVG_ICONS.medal;
+            return SVG_ICONS.festival;
+        }
+
+        /* ========== 角色专属SVG纹理图案库 ========== */
+        var CHAR_PATTERNS = {
+            'li_xu': function(color) { return '<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"><polygon points="30,5 50,17.5 50,42.5 30,55 10,42.5 10,17.5" fill="none" stroke="' + color + '" stroke-width="0.8"/><line x1="30" y1="5" x2="30" y2="55" stroke="' + color + '" stroke-width="0.4"/><line x1="10" y1="30" x2="50" y2="30" stroke="' + color + '" stroke-width="0.4"/></svg>'; },
+            'jie_yue': function(color) { return '<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"><circle cx="12" cy="12" r="4" fill="' + color + '" opacity="0.3"/><circle cx="37" cy="37" r="6" fill="' + color + '" opacity="0.2"/><circle cx="40" cy="10" r="3" fill="' + color + '" opacity="0.25"/><circle cx="8" cy="40" r="2.5" fill="' + color + '" opacity="0.35"/></svg>'; },
+            'ke_zi': function(color) { return '<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40"><line x1="0" y1="40" x2="40" y2="0" stroke="' + color + '" stroke-width="1.5" stroke-linecap="round"/><line x1="10" y1="40" x2="40" y2="10" stroke="' + color + '" stroke-width="0.8" stroke-linecap="round" stroke-dasharray="3,4"/></svg>'; },
+            'xue_nai': function(color) { return '<svg xmlns="http://www.w3.org/2000/svg" width="80" height="40"><path d="M0 20 Q20 5 40 20 Q60 35 80 20" fill="none" stroke="' + color + '" stroke-width="1" opacity="0.6"/><path d="M0 30 Q20 15 40 30 Q60 45 80 30" fill="none" stroke="' + color + '" stroke-width="0.5" opacity="0.4"/></svg>'; },
+            'qian_dong': function(color) { return '<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"><rect x="5" y="5" width="18" height="18" fill="none" stroke="' + color + '" stroke-width="0.7"/><rect x="27" y="27" width="18" height="18" fill="none" stroke="' + color + '" stroke-width="0.7"/></svg>'; },
+            'yan_ye': function(color) { return '<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"><path d="M30 10 Q35 20 30 30 Q25 20 30 10Z" fill="' + color + '" opacity="0.3"/><path d="M15 35 Q20 42 15 50 Q10 42 15 35Z" fill="' + color + '" opacity="0.2" transform="rotate(30 15 42)"/></svg>'; },
+            'chen_xing_tong': function(color) { return '<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"><rect x="23" y="10" width="4" height="4" fill="' + color + '" opacity="0.5"/><rect x="19" y="14" width="4" height="4" fill="' + color + '" opacity="0.5"/><rect x="27" y="14" width="4" height="4" fill="' + color + '" opacity="0.5"/></svg>'; },
+            'chen': function(color) { return '<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"><path d="M30 0 L32 20 L45 25 L35 30 L40 50 L28 35 L15 40 L22 28 L10 20 L28 18Z" fill="none" stroke="' + color + '" stroke-width="0.6" opacity="0.5"/></svg>'; },
+            'chun': function(color) { return '<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"><polygon points="25,5 45,20 38,45 12,45 5,20" fill="none" stroke="' + color + '" stroke-width="0.8"/></svg>'; },
+            'jing_liu': function(color) { return '<svg xmlns="http://www.w3.org/2000/svg" width="70" height="70"><path d="M10 60 Q20 45 25 30 Q28 20 35 10" fill="none" stroke="' + color + '" stroke-width="1" stroke-linecap="round" opacity="0.4"/></svg>'; },
+            'you_ye': function(color) { return '<svg xmlns="http://www.w3.org/2000/svg" width="55" height="55"><rect x="8" y="8" width="30" height="38" fill="none" stroke="' + color + '" stroke-width="0.7" rx="1"/><line x1="12" y1="16" x2="32" y2="16" stroke="' + color + '" stroke-width="0.4" opacity="0.5"/></svg>'; },
+            'you': function(color) { return '<svg xmlns="http://www.w3.org/2000/svg" width="50" height="50"><path d="M15 20 A12 12 0 0 1 35 20" fill="none" stroke="' + color + '" stroke-width="1.2" stroke-linecap="round"/></svg>'; },
+            'sha_yin': function(color) { return '<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"><polygon points="30,8 48,20 48,44 30,56 12,44 12,20" fill="none" stroke="' + color + '" stroke-width="0.5" opacity="0.4"/><circle cx="30" cy="32" r="3" fill="' + color + '" opacity="0.15"/></svg>'; },
+            'kan': function(color) { return '<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"><circle cx="30" cy="30" r="15" fill="none" stroke="' + color + '" stroke-width="0.8"/><circle cx="30" cy="30" r="5" fill="' + color + '" opacity="0.4"/></svg>'; },
+            'shi_zhi': function(color) { return '<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60"><rect x="15" y="25" width="12" height="8" fill="none" stroke="' + color + '" stroke-width="1.5" rx="2"/><rect x="33" y="25" width="12" height="8" fill="none" stroke="' + color + '" stroke-width="1.5" rx="2"/><line x1="27" y1="29" x2="33" y2="29" stroke="' + color + '" stroke-width="1.5"/></svg>'; },
+            'huan_jing': function(color) { return '<svg xmlns="http://www.w3.org/2000/svg" width="30" height="30"><circle cx="15" cy="15" r="1.5" fill="' + color + '" opacity="0.3"/></svg>'; }
+        };
+
+        function getCharPatternSvg(charId, color) { var fn = CHAR_PATTERNS[charId] || CHAR_PATTERNS['huan_jing']; return fn(color); }
+
+        /* ========== 仓库配置 ========== */
+        var REPO_BASE_URL = "https://cdn.jsdelivr.net/gh/roxysl521-droid/tian-jiang@main/";
+        var BUCHONG_REPO_URL = "https://cdn.jsdelivr.net/gh/roxysl521-droid/tianjiang-buchong-@main/";   // 第一个补充仓库（澄、雪乃、星瞳、璃绪、刻子、结月）
+        var BUCHONG_BU_REPO_URL = "https://cdn.jsdelivr.net/gh/roxysl521-droid/tianjiang_buchong_bu@main/"; // 第二个补充仓库（其他角色及栞、诗织的所有图片）
+        var BUCHONG_SUFFIXES = ['_hs', '_js', '_ltwq', '_np', '_qp', '_sqs', '_tnl', '_xn'];
+
+        // 使用第一个补充仓库的角色列表（新增二十张部分）
+        var BUCHONG_REPO1_CHARS = ['chen', 'xue_nai', 'chen_xing_tong', 'li_xu', 'ke_zi', 'jie_yue'];
+
+        function getRepoUrlForImage(charId, suffix, index) {
+            // 栞（kan）和诗织（shi_zhi）的所有图片都在第二个补充仓库
+            if (charId === 'kan' || charId === 'shi_zhi') {
+                return BUCHONG_BU_REPO_URL;
+            }
+            // 星瞳的特殊图片（非 NSFW 的编号 22）
+            if (charId === 'chen_xing_tong' && (!suffix || suffix === '') && index === 22) return BUCHONG_REPO_URL;
+            // 特殊后缀服装图片全在第一个补充仓库
+            if (suffix && BUCHONG_SUFFIXES.indexOf(suffix) !== -1) return BUCHONG_REPO_URL;
+
+            // 基础 NSFW 索引 > 10 的补充仓库分配
+            if (suffix === '_nsfw' && index > 10) {
+                if (BUCHONG_REPO1_CHARS.indexOf(charId) !== -1) {
+                    return BUCHONG_REPO_URL;
+                } else {
+                    return BUCHONG_BU_REPO_URL;
+                }
+            }
+            // 默认主仓库
+            return REPO_BASE_URL;
+        }
+
+        var CHARACTERS = [
+            { id: 'li_xu', name: '宫本 璃绪' }, { id: 'jie_yue', name: '月见里 结月' },
+            { id: 'ke_zi', name: '红林 刻子' }, { id: 'xue_nai', name: '月见里 雪乃' },
+            { id: 'qian_dong', name: '白峰 千冬' }, { id: 'yan_ye', name: '朝雾 言叶' },
+            { id: 'chen_xing_tong', name: '陈星瞳' }, { id: 'chen', name: '如月 澄' },
+            { id: 'chun', name: '式部 椿' }, { id: 'jing_liu', name: '宫本 静流' },
+            { id: 'you_ye', name: '花菱 柚叶' }, { id: 'you', name: '白峰 柚' },
+            { id: 'sha_yin', name: '久世 纱英' }, { id: 'kan', name: '神代 栞' },
+            { id: 'shi_zhi', name: '水濑 诗织' }
+        ];
+
+        var GALLERY_STRUCTURE = {
+            'SFW': [{ id: 'normal', suffix: '', count: 25, name: '日常回忆' }],
+            'NSFW': [
+                { id: 'nsfw', suffix: '_nsfw', count: 30, name: 'NSFW' },   // 基础 NSFW 总数 30
+                { id: 'kou_jiao', suffix: '_kou_jiao', count: 3, name: '口交' },
+                { id: 'ru_jiao', suffix: '_ru_jiao', count: 3, name: '乳交' },
+                { id: 'zu_jiao', suffix: '_zu_jiao', count: 3, name: '足交' },
+                { id: 'hs', suffix: '_hs', count: 3, name: '护士' },
+                { id: 'js', suffix: '_js', count: 3, name: '僵尸' },
+                { id: 'ltwq', suffix: '_ltwq', count: 3, name: '裸体围裙' },
+                { id: 'np', suffix: '_np', count: 3, name: '女仆' },
+                { id: 'qp', suffix: '_qp', count: 3, name: '旗袍' },
+                { id: 'sqs', suffix: '_sqs', count: 3, name: '死库水' },
+                { id: 'tnl', suffix: '_tnl', count: 3, name: '兔女郎' },
+                { id: 'xn', suffix: '_xn', count: 3, name: '修女' }
+            ],
+            'SPECIAL': [
+                { id: 'hun_sha', suffix: '_hun_sha', count: 3, name: '婚纱' },
+                { id: 'huai_yun', suffix: '_huai_yun', count: 3, name: '怀孕' }
+            ]
+        };
+
+        var currentMode = 'SFW'; var currentGalleryChar = 'jie_yue'; var currentGalleryCat = 'normal';
+        var sfwCurrentPage = 1; var SFW_PAGE_SIZE = 8; var isPasswordVerified = false;
+
+        /* 【核心修改】去除了所有同姓氏的模糊称呼，改用精准名字、独特称呼和代号进行匹配，彻底解决识别冲突 */
+        var ROLE_PROFILES = {
+            'li_xu': { aliases: ['璃绪', 'li_xu', '会长', 'rio'], cn: '宫本 璃绪', en: 'Miyamoto Rio', color: '#7b9eb0' },
+            'jie_yue': { aliases: ['结月', 'jie_yue', '青梅', 'yuzuki'], cn: '月见里 结月', en: 'Tsukimisato Yuzuki', color: '#d8a58b' },
+            'ke_zi': { aliases: ['刻子', 'ke_zi', '妹妹', 'koko'], cn: '红林 刻子', en: 'Kurebayashi Koko', color: '#c65b5b' },
+            'xue_nai': { aliases: ['雪乃', '阿姨', '太太', '妈妈', 'xue_nai', 'yukino'], cn: '月见里 雪乃', en: 'Tsukimisato Yukino', color: '#9b6b83' },
+            'qian_dong': { aliases: ['千冬', 'qian_dong', '母亲', 'chifuyu'], cn: '白峰 千冬', en: 'Shiramine Chifuyu', color: '#6c7a89' },
+            'yan_ye': { aliases: ['言叶', 'yan_ye', 'kotoha'], cn: '朝雾 言叶', en: 'Asagiri Kotoha', color: '#ffb6c1' },
+            'chen_xing_tong': { aliases: ['星瞳', 'stella', 'chen_xing_tong', '学妹'], cn: '陈星瞳', en: 'Chen Xingtong', color: '#ff9f43' },
+            'chen': { aliases: ['澄', '如月澄', 'chen', 'cheng'], cn: '如月 澄', en: 'Kisaragi Chen', color: '#8892b0' },
+            'chun': { aliases: ['椿', 'chun', '姐姐', 'tsubaki'], cn: '式部 椿', en: 'Shikibu Tsubaki', color: '#b5495b' },
+            'jing_liu': { aliases: ['静流', '夫人', 'jing_liu', 'shizuru'], cn: '宫本 静流', en: 'Miyamoto Shizuru', color: '#9d8d8f' },
+            'you_ye': { aliases: ['柚叶', 'you_ye', '表姐', 'yuzuha'], cn: '花菱 柚叶', en: 'Hanabishi Yuzuha', color: '#6b8296' },
+            'you': { aliases: ['柚子', '白峰柚', 'you', 'yuzu', '表妹'], cn: '白峰 柚', en: 'Shiramine Yuzu', color: '#9ba4b5' },
+            'sha_yin': { aliases: ['纱英', 'sha_yin', 'sae'], cn: '久世 纱英', en: 'Kuze Sae', color: '#e8a0b4' },
+            'kan': { aliases: ['栞', 'kan', 'shiori'], cn: '神代 栞', en: 'Kamishiro Shiori', color: '#5b7083' },
+            'shi_zhi': { aliases: ['诗织', 'shi_zhi', '风纪', '委员长', 'shiori'], cn: '水濑 诗织', en: 'Minase Shiori', color: '#8898a3' },
+            'huan_jing': { aliases: ['环境', 'unknown', 'system'], cn: 'SYSTEM', en: 'ENVIRONMENT', color: '#888888' }
+        };
+
+        window.currentImgSuffix = '';
+        window.currentSceneData = null;
+
+        function resolveCharIdByName(name) {
+            if (!name) return null;
+            var n = name.replace(/\s+/g, '');
+            for (var key in ROLE_PROFILES) {
+                if (key === 'huan_jing') continue;
+                var p = ROLE_PROFILES[key];
+                var cn = p.cn ? p.cn.replace(/\s+/g, '') : '';
+                // 完全匹配或者互相包含时优先返回
+                if (cn && (cn === n || cn.includes(n) || n.includes(cn))) return key;
+                if (p.aliases) {
+                    for (var i = 0; i < p.aliases.length; i++) {
+                        var a = p.aliases[i].replace(/\s+/g, '');
+                        // 不再宽松匹配单字，长度至少 >= 2 才会进行包含匹配
+                        if (a === n || n === a || (a.length >= 2 && (n.includes(a) || a.includes(n)))) return key;
+                    }
+                }
+            }
+            return null;
+        }
+
+        function parseData(messageText) {
+            var result = { levelRaw: "常规", isNsfw: false, timeRaw: "未知时间", location: "未知地点", atmosphere: "", image: "none", bond: "普通", thought: "", weather: "", isComplete: false, rawText: messageText, presentChars: [] };
+
+            var tagMatch = messageText.match(/<scene_card>([\s\S]*?)(?:<\/scene_card>|$)/);
+            if (tagMatch) {
+                var rawText = tagMatch[1].trim();
+                var levelMatch = rawText.match(/\[分级\|(.*?)\]/); if (levelMatch && levelMatch[1]) { result.levelRaw = levelMatch[1].trim(); if (result.levelRaw.toLowerCase().includes('nsfw') || result.levelRaw.includes('机密')) result.isNsfw = true; }
+                var timeMatch = rawText.match(/\[时间\|(.*?)\]/); if (timeMatch) result.timeRaw = timeMatch[1].trim();
+                var locMatch = rawText.match(/\[地点\|(.*?)\]/); if (locMatch) result.location = locMatch[1].trim();
+                var atmMatch = rawText.match(/\[状态\|(.*?)\]/); if (atmMatch) result.atmosphere = atmMatch[1].trim();
+                var imgMatch = rawText.match(/\[图片\|(.*?)\]/); if (imgMatch) result.image = imgMatch[1].trim();
+                var weatherMatch = rawText.match(/\[气候\|(.*?)\]/); if (weatherMatch) result.weather = weatherMatch[1].trim();
+
+                var bondMatch = rawText.match(/\[羁绊\|(.*?)\]/);
+                result.bonds = {};
+                result.bond = "普通";
+                if (bondMatch && bondMatch[1]) {
+                    var bondStr = bondMatch[1].trim();
+                    if (bondStr.includes('：') || bondStr.includes(':')) {
+                        var parts = bondStr.split('/');
+                        parts.forEach(function(p) {
+                            var splitIdx = p.indexOf('：') !== -1 ? p.indexOf('：') : p.indexOf(':');
+                            if (splitIdx !== -1) {
+                                var name = p.substring(0, splitIdx).trim();
+                                var content = p.substring(splitIdx + 1).trim();
+                                var cid = resolveCharIdByName(name);
+                                if (cid) result.bonds[cid] = content;
+                            }
+                        });
+                        var firstKey = Object.keys(result.bonds)[0];
+                        if (firstKey) result.bond = result.bonds[firstKey];
+                    } else {
+                        result.bond = bondStr;
+                    }
+                }
+
+                var thoughtMatch = rawText.match(/\[心里话\|(.*?)\]/);
+                result.thoughts = {};
+                result.thought = "";
+                if (thoughtMatch && thoughtMatch[1]) {
+                    var thoughtStr = thoughtMatch[1].trim();
+                    if (thoughtStr.includes('：') || thoughtStr.includes(':')) {
+                        var tParts = thoughtStr.split('/');
+                        tParts.forEach(function(p) {
+                            var splitIdx = p.indexOf('：') !== -1 ? p.indexOf('：') : p.indexOf(':');
+                            if (splitIdx !== -1) {
+                                var name = p.substring(0, splitIdx).trim();
+                                var content = p.substring(splitIdx + 1).trim();
+                                var cid = resolveCharIdByName(name);
+                                if (cid) result.thoughts[cid] = content;
+                            }
+                        });
+                        var firstTKey = Object.keys(result.thoughts)[0];
+                        if (firstTKey) result.thought = result.thoughts[firstTKey];
+                    } else {
+                        result.thought = thoughtStr;
+                    }
+                }
+
+                result.isComplete = true;
+            }
+
+            var sceneInfoMatch = messageText.match(/<SceneInfo>([\s\S]*?)<\/SceneInfo>/);
+            var presentChars = [];
+            if (sceneInfoMatch) {
+                var lines = sceneInfoMatch[1].split('\n');
+                lines.forEach(function(line) {
+                    var m = line.match(/-\s*(.*?)\|/);
+                    if (m) {
+                        var rawName = m[1].trim().replace(/\s+/g, '');
+                        var foundId = resolveCharIdByName(rawName);
+                        if (foundId && !presentChars.includes(foundId)) {
+                            presentChars.push(foundId);
+                        }
+                    }
+                });
+            }
+            result.presentChars = presentChars;
+            return result;
+        }
+
+        window.handleImgError = function(imgElement) {
+            if (!imgElement.getAttribute('data-retried')) {
+                imgElement.setAttribute('data-retried', 'true');
+                imgElement.src = 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+                imgElement.style.opacity = '0.05'; imgElement.parentElement.style.background = 'none';
+            }
+        };
+
+        function getHeartCount(bondText) {
+            var text = bondText || "";
+            if(text.includes('依赖') || text.includes('独占') || text.includes('爱')) return 5;
+            if(text.includes('亲近') || text.includes('恋人') || text.includes('心动')) return 4;
+            if(text.includes('好感') || text.includes('朋友') || text.includes('关心')) return 3;
+            if(text.includes('认识') || text.includes('关注')) return 2;
+            return 1;
+        }
+
+        function getThoughtForChar(data, charId) {
+            if (!data) return '';
+            if (data.thoughts && data.thoughts[charId]) return data.thoughts[charId];
+            return data.thought || '';
+        }
+        function getBondForChar(data, charId) {
+            if (!data) return '普通';
+            if (data.bonds && data.bonds[charId]) return data.bonds[charId];
+            return data.bond || '普通';
+        }
+
+        window.switchChar = function(charId) {
+            var profile = ROLE_PROFILES[charId] || ROLE_PROFILES['huan_jing'];
+
+            document.getElementById('adv-main-container').style.setProperty('--theme-color', profile.color);
+            document.getElementById('adv-name-cn-el').innerText = profile.cn;
+            document.getElementById('adv-name-en-el').innerText = profile.en;
+
+            var patternSvg = getCharPatternSvg(charId, profile.color);
+            var patternDataUrl = 'data:image/svg+xml;utf8,' + encodeURIComponent(patternSvg);
+            document.getElementById('char-pattern-el').style.backgroundImage = "url('" + patternDataUrl + "')";
+
+            var imgSuffix = window.currentImgSuffix || '';
+            var primaryUrl = getRepoUrlForImage(charId, imgSuffix, 1) + charId + imgSuffix + '_1.png';
+
+            var maxNsfwNum = 30;   // 所有角色 NSFW 总数 30
+            var randomNsfwNum = Math.floor(Math.random() * maxNsfwNum) + 1;
+            var randomNsfwUrl = getRepoUrlForImage(charId, '_nsfw', randomNsfwNum) + charId + '_nsfw_' + randomNsfwNum + '.png';
+
+            var frontImg = document.getElementById('sprite-front-img');
+            frontImg.classList.remove('loaded');
+            frontImg.removeAttribute('data-retried');
+            setTimeout(function(){ frontImg.src = primaryUrl; }, 50);
+
+            var backImg = document.getElementById('sprite-back-img');
+            backImg.classList.remove('loaded');
+            backImg.removeAttribute('data-retried');
+            setTimeout(function(){ backImg.src = randomNsfwUrl; }, 50);
+
+            var chibiUrl = getRepoUrlForImage(charId !== 'huan_jing' ? charId : 'jie_yue', '', 1) + (charId !== 'huan_jing' ? charId : 'jie_yue') + '_q.png';
+            var chibiImg = document.getElementById('chibi-img');
+            chibiImg.classList.remove('loaded');
+            setTimeout(function(){ chibiImg.src = chibiUrl; }, 50);
+
+            var thoughtEl = document.getElementById('adv-thought-el');
+            if (thoughtEl) {
+                var newThought = getThoughtForChar(window.currentSceneData, charId);
+                thoughtEl.innerText = newThought || '';
+                var thoughtContainer = thoughtEl.closest('.thought-container');
+                if (thoughtContainer) {
+                    if (!newThought) { thoughtContainer.style.display = 'none'; }
+                    else { thoughtContainer.style.display = ''; }
+                }
+            }
+
+            var bondEl = document.getElementById('adv-bond-el');
+            var heartsContainer = document.getElementById('adv-hearts-container');
+            if (bondEl && heartsContainer) {
+                var newBond = getBondForChar(window.currentSceneData, charId);
+                bondEl.innerText = newBond || '普通';
+
+                var heartCount = getHeartCount(newBond);
+                var heartsHtml = '';
+                var heartSvg = '<svg class="heart-icon [CLASS]" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
+                for(var i=1; i<=5; i++) { heartsHtml += heartSvg.replace('[CLASS]', i <= heartCount ? 'filled' : ''); }
+                heartsContainer.innerHTML = heartsHtml;
+            }
+
+            var tabs = document.querySelectorAll('.char-switch-btn');
+            tabs.forEach(function(tab) {
+                if (tab.getAttribute('data-id') === charId) {
+                    tab.classList.add('active');
+                } else {
+                    tab.classList.remove('active');
+                }
+            });
+        };
+
+        function renderPage(data) {
+            var textBody = data.rawText || "";
+            var inputImage = data.image ? data.image.trim() : '';
+            var presentChars = data.presentChars || [];
+            var hasValidImage = inputImage !== 'none' && inputImage !== '' && !inputImage.includes('liu_xia') && !inputImage.includes('lin');
+            var detectedChar = null;
+
+            if (!hasValidImage) {
+                if (presentChars.length > 0) {
+                    detectedChar = presentChars[0];
+                } else {
+                    var charKeys = ['li_xu', 'jie_yue', 'ke_zi', 'xue_nai', 'qian_dong', 'yan_ye', 'chen_xing_tong', 'chen', 'chun', 'jing_liu', 'you_ye', 'you', 'sha_yin', 'kan', 'shi_zhi'];
+
+                    /* 【核心修改】移除了盲猜里的模糊姓氏匹配，仅使用精准的“名字”或“专属称号”作为判定条件 */
+                    if (textBody.includes('璃绪') || textBody.includes('会长')) detectedChar = 'li_xu';
+                    else if (textBody.includes('雪乃') || textBody.includes('阿姨') || textBody.includes('太太')) detectedChar = 'xue_nai';
+                    else if (textBody.includes('结月') || textBody.includes('青梅')) detectedChar = 'jie_yue';
+                    else if (textBody.includes('刻子') || textBody.includes('妹妹')) detectedChar = 'ke_zi';
+                    else if (textBody.includes('千冬') || textBody.includes('母亲')) detectedChar = 'qian_dong';
+                    else if (textBody.includes('言叶')) detectedChar = 'yan_ye';
+                    else if (textBody.includes('星瞳') || textBody.includes('学妹')) detectedChar = 'chen_xing_tong';
+                    else if (textBody.includes('澄') || textBody.includes('如月澄')) detectedChar = 'chen';
+                    else if (textBody.includes('椿') || textBody.includes('姐姐')) detectedChar = 'chun';
+                    else if (textBody.includes('静流') || textBody.includes('夫人')) detectedChar = 'jing_liu';
+                    else if (textBody.includes('柚叶') || textBody.includes('表姐')) detectedChar = 'you_ye';
+                    else if (textBody.includes('纱英')) detectedChar = 'sha_yin';
+                    else if (textBody.includes('白峰柚') || textBody.includes('柚子') || textBody.includes('表妹')) detectedChar = 'you';
+                    else if (textBody.includes('栞')) detectedChar = 'kan';
+                    else if (textBody.includes('诗织') || textBody.includes('风纪委员')) detectedChar = 'shi_zhi';
+
+                    if (!detectedChar) detectedChar = charKeys[Math.floor(Math.random() * charKeys.length)];
+                }
+                var randomNum = Math.floor(Math.random() * 25) + 1;
+                inputImage = detectedChar + '_' + randomNum;
+                data.image = inputImage;
+            }
+
+            var finalImgName = inputImage; if (!finalImgName.includes('.')) finalImgName += '.png';
+            var baseNameLower = finalImgName.toLowerCase().split('.')[0].replace(/_\d+$/, '');
+            var finalRole = 'huan_jing';
+            if (ROLE_PROFILES[baseNameLower]) { finalRole = baseNameLower; }
+            else { for (var key in ROLE_PROFILES) { if (key !== 'huan_jing' && ROLE_PROFILES[key].aliases) { if (ROLE_PROFILES[key].aliases.some(function(alias) { return baseNameLower.includes(alias.toLowerCase()); })) { finalRole = key; break; } } } }
+
+            if (presentChars.length > 0) {
+                if (!presentChars.includes(finalRole)) presentChars.unshift(finalRole);
+            } else {
+                presentChars = [finalRole];
+            }
+
+            var imgSuffix = '';
+            var suffixMatch = finalImgName.match(/(_nsfw|_kou_jiao|_ru_jiao|_zu_jiao|_hun_sha|_huai_yun|_hs|_js|_ltwq|_np|_qp|_sqs|_tnl|_xn)_\d+/);
+            if (suffixMatch) imgSuffix = suffixMatch[1];
+            window.currentImgSuffix = imgSuffix;
+
+            var numMatch = finalImgName.match(/_(\d+)(?:\.png)?$/);
+            var imgIndex = numMatch ? parseInt(numMatch[1]) : 1;
+
+            var primaryUrl = getRepoUrlForImage(finalRole, imgSuffix, imgIndex) + finalImgName;
+
+            var charIdForRandom = CHARACTERS.some(function(c) { return c.id === finalRole; }) ? finalRole : 'jie_yue';
+            var maxNsfwNum = 30;   // 所有角色 NSFW 总数 30
+            var randomNsfwNum = Math.floor(Math.random() * maxNsfwNum) + 1;
+            var randomNsfwUrl = getRepoUrlForImage(charIdForRandom, '_nsfw', randomNsfwNum) + charIdForRandom + '_nsfw_' + randomNsfwNum + '.png';
+
+            if (CHARACTERS.some(function(c) { return c.id === finalRole; })) currentGalleryChar = finalRole;
+            window.currentSceneData = data;
+            var profile = ROLE_PROFILES[finalRole] || ROLE_PROFILES['huan_jing'];
+            var nsfwClass = data.isNsfw ? ' is-nsfw' : '';
+            var flipClass = data.isNsfw ? ' is-flipped' : '';
+
+            var timeStr = data.timeRaw;
+            initCalendarFromTime(timeStr || '');
+
+            var displayDate = calParseYear + '年' + calParseMonth + '月' + calParseDay + '日';
+            var displayHour = calParseHour;
+
+            var initThought = getThoughtForChar(data, finalRole);
+            var initBond = getBondForChar(data, finalRole);
+
+            var heartCount = getHeartCount(initBond);
+            var heartsHtml = '';
+            var heartSvg = '<svg class="heart-icon [CLASS]" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
+            for(var i=1; i<=5; i++) { heartsHtml += heartSvg.replace('[CLASS]', i <= heartCount ? 'filled' : ''); }
+
+            var atmHtml = data.atmosphere ? '<div class="adv-status-tag">' + data.atmosphere + '</div>' : '';
+            var weatherIconSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>';
+            var weatherHtml = data.weather ? '<div class="adv-weather-panel">' + weatherIconSvg + '<span>' + data.weather + '</span></div>' : '';
+            var eyeIconSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>';
+            var penIconSvg = '<svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>';
+
+            var thoughtHtml = initThought ?
+                '<div class="thought-container" onclick="toggleThought(this)">' +
+                    '<div class="thought-title" data-eye=\'' + eyeIconSvg + '\' data-pen=\'' + penIconSvg + '\'>' + eyeIconSvg + ' 窥探内心</div>' +
+                    '<div class="thought-content" id="adv-thought-el">' + initThought + '</div>' +
+                '</div>' :
+                '<div class="thought-container" onclick="toggleThought(this)" style="display:none;">' +
+                    '<div class="thought-title" data-eye=\'' + eyeIconSvg + '\' data-pen=\'' + penIconSvg + '\'>' + eyeIconSvg + ' 窥探内心</div>' +
+                    '<div class="thought-content" id="adv-thought-el"></div>' +
+                '</div>';
+
+            var chibiUrl = getRepoUrlForImage(finalRole !== 'huan_jing' ? finalRole : 'jie_yue', '', 1) + (finalRole !== 'huan_jing' ? finalRole : 'jie_yue') + '_q.png';
+            var defaultSvg = 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><text y="20" font-size="20">?</text></svg>';
+            var patternSvg = getCharPatternSvg(finalRole, profile.color);
+            var patternDataUrl = 'data:image/svg+xml;utf8,' + encodeURIComponent(patternSvg);
+            var particleCount = isMobileDevice ? 5 : 12; var starCount = isMobileDevice ? 2 : 5;
+
+            var particlesHtml = '';
+            for(var p=0; p<particleCount; p++) { var size = Math.random()*5+3; var left = Math.random()*100; var duration = Math.random()*4+4; var delay = Math.random()*5; particlesHtml += '<div class="adv-particle" style="--size:'+size+'px;--left:'+left+'%;--duration:'+duration+'s;--delay:'+delay+'s;"></div>'; }
+            var starsHtml = '';
+            for(var s=0; s<starCount; s++) { var sLeft = Math.random()*90+5; var sTop = Math.random()*80+10; var sDuration = Math.random()*3+2; var sDelay = Math.random()*4; starsHtml += '<div class="cross-star" style="--left:'+sLeft+'%;--top:'+sTop+'%;--duration:'+sDuration+'s;--delay:'+sDelay+'s;"></div>'; }
+
+            var isDark = document.body.classList.contains('dark-mode');
+            var btnIcon = isDark ? '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" stroke="currentColor" stroke-width="2"/></svg>' : '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>';
+
+            var calendarBtnSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>';
+            var galleryBtnSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>';
+
+            var tabsHtml = '';
+            if (presentChars.length > 1) {
+                tabsHtml = '<div class="char-switch-tabs" id="char-switch-tabs">';
+                presentChars.forEach(function(cid) {
+                    var pName = ROLE_PROFILES[cid] ? ROLE_PROFILES[cid].cn.split(' ')[0] : cid;
+                    var activeClass = (cid === finalRole) ? ' active' : '';
+                    tabsHtml += '<div class="char-switch-btn' + activeClass + '" data-id="' + cid + '" onclick="event.stopPropagation(); switchChar(\'' + cid + '\')">' + pName + '</div>';
+                });
+                tabsHtml += '</div>';
+            }
+
+            // 【关键点】在 HTML 中动态注入判定出的设备形态类名 mobile-view
+            var mobileClass = isMobileDevice ? ' mobile-view' : '';
+
+            var html =
+                '<div class="adv-container' + nsfwClass + mobileClass + '" id="adv-main-container" style="--theme-color: ' + profile.color + ';">' +
+                    '<div class="theme-toggle" onclick="toggleTheme()" id="themeBtn" title="切换暗黑模式">' + btnIcon + '</div>' +
+                    '<div class="adv-bg"></div>' +
+                    '<div class="adv-char-pattern" id="char-pattern-el" style="background-image: url(\'' + patternDataUrl + '\'); background-repeat: repeat;"></div>' +
+                    '<div class="adv-overlay"></div>' +
+                    '<div class="adv-particles">' + particlesHtml + starsHtml + '</div>' +
+                    '<div class="adv-sprite-box" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)" onclick="this.querySelector(\'.flip-inner\').classList.toggle(\'is-flipped\')">' +
+                        '<div class="route-flag"><div class="route-flag-sub">PERSONAL ROUTE</div>' + profile.en + '</div>' +
+                        '<div class="flip-inner' + flipClass + '">' +
+                            '<div class="flip-front"><img id="sprite-front-img" class="adv-sprite-img" src="' + primaryUrl + '" fetchpriority="high" decoding="async" onload="this.classList.add(\'loaded\'); this.parentElement.style.background=\'none\';" onerror="handleImgError(this)"></div>' +
+                            '<div class="flip-back"><img id="sprite-back-img" class="adv-sprite-img" src="' + randomNsfwUrl + '" loading="lazy" decoding="async" onload="this.classList.add(\'loaded\'); this.parentElement.style.background=\'none\';" onerror="handleImgError(this)"></div>' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="adv-content">' +
+                        '<div class="adv-top-bar">' +
+                            '<div class="adv-time-panel" onclick="openCalendar()" style="cursor:pointer;" title="查看日历">' +
+                                '<div class="adv-cal-icon"><span>DATE</span>' + displayDate + '</div>' +
+                                '<div class="adv-time-text">' + displayHour + '</div>' +
+                            '</div>' +
+                            '<div class="adv-info-col">' +
+                                '<div class="adv-loc-panel"><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--theme-color)"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg><div class="adv-loc-text">' + data.location + '</div></div>' +
+                                weatherHtml +
+                            '</div>' +
+                        '</div>' +
+                        '<div class="adv-middle">' +
+                            '<div class="adv-name-box">' +
+                                '<div class="adv-name-en" id="adv-name-en-el">' + profile.en + '</div>' +
+                                '<div class="adv-name-cn" id="adv-name-cn-el">' + profile.cn + '</div>' +
+                            '</div>' +
+                            tabsHtml +
+                            atmHtml +
+                        '</div>' +
+                        '<div class="adv-bottom">' + thoughtHtml +
+                            '<div class="love-meter-title">Affection Level</div><div class="love-meter-box"><div class="hearts-container" id="adv-hearts-container">' + heartsHtml + '</div><div class="bond-text" id="adv-bond-el">' + initBond + '</div></div>' +
+                        '</div>' +
+                        '<div class="adv-chibi-box"><img id="chibi-img" class="adv-chibi-img" src="' + chibiUrl + '" decoding="async" onload="this.classList.add(\'loaded\')" onerror="this.src=\'' + defaultSvg + '\'"><div class="adv-chibi-text">CHIBI</div></div>' +
+                    '</div>' +
+                    '<div class="adv-sys-bar"></div>' +
+                    '<div class="adv-sys-text">AUTO SAVE 1 // SCENE_START <div class="btn-gallery" onclick="event.stopPropagation(); openCalendar()">' + calendarBtnSvg + ' CALENDAR</div> <div class="btn-gallery" onclick="event.stopPropagation(); openGallery()">' + galleryBtnSvg + ' GALLERY</div></div>' +
+                '</div>';
+            document.getElementById('render-target').innerHTML = html;
+            fitSceneCardScale();
+        }
+
+        /* ========== 日历系统 ========== */
+        var calCurrentMonth = 5; var calCurrentYear = 2024; var calCurrentDay = 10;
+        var calParseMonth = 5; var calParseYear = 2024; var calParseDay = 10; var calParseHour = "00:00";
+
+        var SCHOOL_EVENTS = {
+            '1-1': ['元日（初诣参拜）'],
+            '1-8': ['成人之日', '第三学期开学典礼'],
+            '1-18': ['朝雾言叶 生日'],
+            '2-5': ['如月澄 生日'],
+            '2-14': ['情人节'],
+            '2-25': ['学年末期末考试开始'],
+            '3-1': ['毕业典礼'],
+            '3-3': ['宫本静流 生日'],
+            '3-12': ['陈星瞳 生日'],
+            '3-14': ['白色情人节'],
+            '3-20': ['春分之日'],
+            '3-24': ['结业式'],
+            '3-25': ['春假开始'],
+            '4-1': ['愚人节'],
+            '4-5': ['神代栞 生日'],
+            '4-7': ['入学式·第一学期开学典礼'],
+            '4-10': ['社团迎新周开始'],
+            '4-28': ['花菱柚叶 生日'],
+            '5-3': ['宪法纪念日'],
+            '5-4': ['绿之日'],
+            '5-5': ['儿童节'],
+            '5-12': ['第一学期期中考试开始'],
+            '5-22': ['式部椿 生日'],
+            '6-3': ['体育祭'],
+            '6-20': ['月见里结月 生日'],
+            '7-7': ['七夕节'],
+            '7-8': ['第一学期期末考试开始'],
+            '7-17': ['海之日'],
+            '7-20': ['第一学期结业式'],
+            '7-21': ['暑假开始'],
+            '7-29': ['白峰柚 生日'],
+            '8-10': ['红林刻子 生日'],
+            '8-11': ['山之日'],
+            '8-13': ['盂兰盆节·夏日祭'],
+            '8-25': ['暑期补习周开始'],
+            '9-1': ['第二学期开学典礼'],
+            '9-8': ['白峰千冬 生日'],
+            '9-18': ['敬老之日'],
+            '9-23': ['秋分之日'],
+            '10-9': ['体育之日'],
+            '10-15': ['第二学期期中考试开始'],
+            '10-24': ['宫本璃绪 生日'],
+            '10-28': ['文化祭开始'],
+            '11-3': ['文化之日'],
+            '11-13': ['修学旅行开始'],
+            '11-15': ['月见里雪乃 生日'],
+            '11-23': ['勤劳感谢之日'],
+            '12-4': ['第二学期期末考试开始'],
+            '12-21': ['久世纱英 生日'],
+            '12-24': ['平安夜'],
+            '12-25': ['圣诞节·第二学期结业式'],
+            '12-26': ['寒假开始'],
+            '12-31': ['大晦日']
+        };
+
+        function isBirthdayEvent(text) { return text.includes('生日'); }
+
+        function openCalendar() {
+            calCurrentMonth = calParseMonth;
+            calCurrentYear = calParseYear;
+            document.getElementById('calendarModal').classList.add('active');
+            renderCalendar();
+        }
+        function closeCalendar() { document.getElementById('calendarModal').classList.remove('active'); }
+
+        function calNavMonth(dir) {
+            calCurrentMonth += dir;
+            if (calCurrentMonth > 12) { calCurrentMonth = 1; calCurrentYear++; }
+            if (calCurrentMonth < 1) { calCurrentMonth = 12; calCurrentYear--; }
+            renderCalendar();
+        }
+
+        function renderCalendar() {
+            document.getElementById('calMonthTitle').innerHTML = '<span class="cal-year">' + calCurrentYear + '</span><span>' + calCurrentMonth + '月</span>';
+            var firstDay = new Date(calCurrentYear, calCurrentMonth - 1, 1).getDay();
+            var daysInMonth = new Date(calCurrentYear, calCurrentMonth, 0).getDate();
+            var daysHtml = '';
+            for (var e = 0; e < firstDay; e++) { daysHtml += '<div class="cal-day empty"></div>'; }
+            for (var d = 1; d <= daysInMonth; d++) {
+                var key = calCurrentMonth + '-' + d;
+                var events = SCHOOL_EVENTS[key] || [];
+                var dayOfWeek = new Date(calCurrentYear, calCurrentMonth - 1, d).getDay();
+                var classes = 'cal-day';
+                if (dayOfWeek === 0) classes += ' sunday';
+                if (dayOfWeek === 6) classes += ' saturday';
+
+                if (d === calParseDay && calCurrentMonth === calParseMonth && calCurrentYear === calParseYear) {
+                    classes += ' today';
+                }
+
+                if (events.length > 0) classes += ' has-event';
+
+                var dotsHtml = '';
+                if (events.length > 0) {
+                    dotsHtml = '<div class="cal-dot-row">';
+                    var hasBirthday = events.some(function(ev) { return isBirthdayEvent(ev); });
+                    var hasEvent = events.some(function(ev) { return !isBirthdayEvent(ev); });
+                    if (hasEvent) dotsHtml += '<div class="cal-dot event"></div>';
+                    if (hasBirthday) dotsHtml += '<div class="cal-dot birthday"></div>';
+                    dotsHtml += '</div>';
+                }
+                var clickAttr = events.length > 0 ? ' onclick="showCalEvents(' + calCurrentMonth + ',' + d + ')"' : '';
+                daysHtml += '<div class="' + classes + '"' + clickAttr + '>' + d + dotsHtml + '</div>';
+            }
+            document.getElementById('calDays').innerHTML = daysHtml;
+            document.getElementById('calEventPanel').innerHTML = '<div class="cal-event-panel-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> Events</div><div class="cal-event-empty">点击有标记的日期查看事件</div>';
+        }
+
+        function initCalendarFromTime(timeStr) {
+            var now = new Date();
+            calParseYear = now.getFullYear();
+            calParseMonth = 5;
+            calParseDay = 10;
+            calParseHour = "--:--";
+
+            if (!timeStr) return;
+
+            var mMatch = timeStr.match(/(?:(\d{4})年)?\s*(\d{1,2})月(\d{1,2})日/);
+            if (mMatch) {
+                if (mMatch[1]) calParseYear = parseInt(mMatch[1]);
+                calParseMonth = parseInt(mMatch[2]);
+                calParseDay = parseInt(mMatch[3]);
+            } else {
+                var parts = timeStr.split(' ');
+                if (parts[0]) {
+                    var slashMatch = parts[0].match(/(\d{1,2})[\/\-](\d{1,2})/);
+                    if (slashMatch) {
+                        calParseMonth = parseInt(slashMatch[1]);
+                        calParseDay = parseInt(slashMatch[2]);
+                    }
+                }
+            }
+
+            var timeMatch = timeStr.match(/(\d{1,2}:\d{2})/);
+            if (timeMatch) {
+                calParseHour = timeMatch[1];
+            }
+
+            calCurrentMonth = calParseMonth;
+            calCurrentYear = calParseYear;
+            calCurrentDay = calParseDay;
+        }
+
+        function showCalEvents(month, day) {
+            var key = month + '-' + day;
+            var events = SCHOOL_EVENTS[key] || [];
+            var panelHtml = '<div class="cal-event-panel-title"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg> ' + month + '月' + day + '日</div>';
+            if (events.length === 0) {
+                panelHtml += '<div class="cal-event-empty">这天没有特别的事件</div>';
+            } else {
+                panelHtml += '<div class="cal-event-list">';
+                events.forEach(function(ev) {
+                    var isBday = isBirthdayEvent(ev);
+                    var iconSvg = getEventIconSvg(ev);
+                    panelHtml += '<div class="cal-event-item' + (isBday ? ' birthday' : '') + '"><span class="event-icon">' + iconSvg + '</span><span class="event-text">' + ev + '</span></div>';
+                });
+                panelHtml += '</div>';
+            }
+            document.getElementById('calEventPanel').innerHTML = panelHtml;
+        }
+
+        /* ========== 高级相册系统 ========== */
+        function openGallery() { document.getElementById('galleryModal').classList.add('active'); currentMode = 'SFW'; currentGalleryCat = 'normal'; sfwCurrentPage = 1; renderGalleryTabs(); renderGalleryGrid(); }
+        function closeGallery() { document.getElementById('galleryModal').classList.remove('active'); closePreview(); }
+
+        function setGalleryMode(mode) {
+            if (mode === 'SPECIAL' && !isPasswordVerified) {
+                var pwd = prompt("请输入访问密码：");
+                if (pwd === "520") { isPasswordVerified = true; } else { if (pwd !== null) alert("密码错误"); return; }
+            }
+            currentMode = mode; currentGalleryCat = GALLERY_STRUCTURE[mode][0].id; sfwCurrentPage = 1; renderGalleryTabs(); renderGalleryGrid();
+        }
+        function setGalleryChar(id) { currentGalleryChar = id; sfwCurrentPage = 1; renderGalleryTabs(); renderGalleryGrid(); }
+        function setGalleryCat(id) { currentGalleryCat = id; sfwCurrentPage = 1; renderGalleryTabs(); renderGalleryGrid(); }
+        function setSfwPage(page) { sfwCurrentPage = page; renderGalleryGrid(); }
+
+        function renderGalleryTabs() {
+            var lockSvg = '<svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>';
+            var modeHtml = '<div class="mode-tab-btn ' + (currentMode === 'SFW' ? 'active' : '') + '" onclick="setGalleryMode(\'SFW\')">日常回忆</div>' +
+                '<div class="mode-tab-btn ' + (currentMode === 'NSFW' ? 'active' : '') + '" onclick="setGalleryMode(\'NSFW\')">私密记录</div>' +
+                '<div class="mode-tab-btn ' + (currentMode === 'SPECIAL' ? 'active' : '') + ' ' + (!isPasswordVerified ? 'locked-pwd' : '') + '" onclick="setGalleryMode(\'SPECIAL\')">特别珍藏 ' + (!isPasswordVerified ? lockSvg : '') + '</div>';
+            document.getElementById('modeTabs').innerHTML = modeHtml;
+            var charHtml = '';
+            CHARACTERS.forEach(function(c) { charHtml += '<div class="gallery-tab-btn ' + (c.id === currentGalleryChar ? 'active' : '') + '" onclick="setGalleryChar(\'' + c.id + '\')">' + c.name + '</div>'; });
+            document.getElementById('charTabs').innerHTML = charHtml;
+            var catHtml = '';
+            var currentCats = GALLERY_STRUCTURE[currentMode];
+            if (currentCats.length > 1) { currentCats.forEach(function(c) { catHtml += '<div class="gallery-tab-btn ' + (c.id === currentGalleryCat ? 'active' : '') + '" onclick="setGalleryCat(\'' + c.id + '\')">' + c.name + '</div>'; }); }
+            document.getElementById('catTabs').innerHTML = catHtml;
+        }
+
+        function renderGalleryGrid() {
+            var grid = document.getElementById('galleryGrid');
+            var pageBox = document.getElementById('paginationBox');
+            grid.innerHTML = '<div style="color:var(--text-sub);width:100%;text-align:center;grid-column:1/-1;padding:40px;">LOADING...</div>';
+            pageBox.innerHTML = '';
+            var catInfo = GALLERY_STRUCTURE[currentMode].find(function(c) { return c.id === currentGalleryCat; });
+            var suffix = catInfo.suffix; var count = catInfo.count; var charId = currentGalleryChar;
+            if (charId === 'chen' && currentGalleryCat === 'nsfw') count = 30;   // 澄的基础 NSFW 总数也改为 30
+            if (charId === 'chun' && currentGalleryCat === 'huai_yun') count = 2;
+
+            var startIndex = 1; var endIndex = count;
+            if (currentMode === 'SFW' && count > SFW_PAGE_SIZE) {
+                var totalPages = Math.ceil(count / SFW_PAGE_SIZE);
+                startIndex = (sfwCurrentPage - 1) * SFW_PAGE_SIZE + 1;
+                endIndex = Math.min(sfwCurrentPage * SFW_PAGE_SIZE, count);
+                var pageHtml = '';
+                for (var p = 1; p <= totalPages; p++) { pageHtml += '<div class="page-btn ' + (p === sfwCurrentPage ? 'active' : '') + '" onclick="setSfwPage(' + p + ')">PAGE ' + p + '</div>'; }
+                pageBox.innerHTML = pageHtml;
+            }
+            var html = ''; var animDelay = 0;
+            for (var i = startIndex; i <= endIndex; i++) {
+                var imgCharId = charId;
+                if (charId === 'chen' && suffix && BUCHONG_SUFFIXES.indexOf(suffix) !== -1) { imgCharId = 'cheng'; }
+                var imgName = suffix ? imgCharId + suffix + '_' + i + '.png' : imgCharId + '_' + i + '.png';
+                var galleryRepoUrl = getRepoUrlForImage(imgCharId, suffix, i);
+                var fullUrl = galleryRepoUrl + imgName;
+                html += '<div class="gallery-item shown" onclick="openPreview(\'' + fullUrl + '\')" style="animation-delay:' + animDelay + 's;"><img src="' + fullUrl + '" loading="lazy" decoding="async" onload="this.classList.add(\'loaded\');this.parentElement.style.background=\'transparent\';" onerror="this.parentElement.style.display=\'none\'"><div class="img-label">' + imgName + '</div></div>';
+                animDelay += 0.05;
+            }
+            grid.innerHTML = html;
+        }
+
+        function openPreview(url) { document.getElementById('previewImg').src = url; document.getElementById('previewModal').classList.add('active'); }
+        function closePreview() { document.getElementById('previewModal').classList.remove('active'); document.getElementById('previewImg').src = ''; }
+
+        /* ========== 初始化 ========== */
+        function initReal() {
+            try {
+                if (typeof getChatMessages === 'function') {
+                    var msgs = getChatMessages(getCurrentMessageId());
+                    if (msgs && msgs.length > 0) {
+                        var text = msgs[0].message;
+                        var data = parseData(text);
+                        if (data.isComplete) { renderPage(data); return; }
+                    }
+                }
+            } catch(e) {}
+            init();
+        }
+
+        function init() {
+            var fakeData = '<scene_card>\n[图片|kan_1]\n[时间|12月14日 19:30]\n[地点|公寓客厅]\n[气候|窗外大雨]\n[分级|常规]\n[心里话|神代栞：他到底有没有发现我是装的……这种感觉真是糟透了。 / 宫本璃绪：他今天居然迟到了。]\n[羁绊|生疏]\n[状态|安静观察]\n</scene_card>\n<SceneInfo>\n场景类型：SFW\n在场角色：\n- 神代栞|日常\n- 宫本璃绪|制服\n</SceneInfo>';
+            var data = parseData(fakeData);
+            renderPage(data);
+        }
+
+        document.addEventListener('DOMContentLoaded', initReal);
+        document.addEventListener('keydown', function(ev) {
+            if (ev.key === 'Escape') { closePreview(); closeGallery(); closeCalendar(); }
+        });
+    </script>
+</body>
+</html>
