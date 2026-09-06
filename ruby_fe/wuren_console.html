@@ -1,0 +1,1709 @@
+```
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>乌仁市主控台</title>
+    <style>
+        /* ========== 粉色恋爱主题 ========== */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700;900&display=swap');
+
+        :root {
+            --bg-deep: #fff5f7;
+            --bg-velvet: #ffe4ec;
+            --bg-card: #ffffffd9;
+            --color-gold: #d4628c;
+            --color-gold-glow: rgba(255, 105, 180, 0.5);
+            --color-neon-crimson: #ff6b9d;
+            --color-neon-amber: #ff85b3;
+            --text-primary: #5a2d4a;
+            --text-secondary: #a05a7a;
+            --text-muted: #cc99aa;
+            --space-xs: clamp(4px, 1cqw, 8px);
+            --space-sm: clamp(8px, 1.5cqw, 12px);
+            --space-md: clamp(12px, 2.5cqw, 20px);
+            --space-lg: clamp(16px, 3.5cqw, 28px);
+            --border-heavy: 2px solid #ffb6c1;
+            --shadow-maximal: 0 8px 32px rgba(255, 105, 180, 0.2), inset 0 0 30px rgba(255, 182, 193, 0.1);
+            --neon-glow: 0 0 15px #ff85b3, 0 0 30px #ff6b9d;
+            --font-family: 'Noto Serif SC', serif;
+            --radius-md: 20px;
+            --radius-lg: 30px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background: repeating-linear-gradient(45deg, #fff0f5, #fff0f5 15px, #ffe4ec 15px, #ffe4ec 30px);
+            color: var(--text-primary);
+            font-family: var(--font-family);
+            padding: var(--space-md);
+            container-type: inline-size;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .main-board {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: radial-gradient(circle at 70% 30%, #ffffff, #ffe4ec);
+            border: 2px solid #ffb6c1;
+            border-radius: var(--radius-lg);
+            box-shadow: 0 20px 60px rgba(255, 105, 180, 0.15), inset 0 0 40px rgba(255, 182, 193, 0.08);
+            padding: var(--space-lg);
+            position: relative;
+            backdrop-filter: blur(4px);
+        }
+
+        .header-section {
+            text-align: center;
+            border-bottom: 2px dashed #ffb6c1;
+            padding-bottom: var(--space-md);
+            margin-bottom: var(--space-lg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+
+        .header-title {
+            font-size: clamp(2rem, 5cqw, 3.2rem);
+            font-weight: 900;
+            color: #d4628c;
+            text-shadow: 0 0 20px rgba(255, 105, 180, 0.3), 0 4px 12px rgba(255, 105, 180, 0.1);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #ff6b9d, #ff85b3, #ffb6c1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-subtitle {
+            font-size: clamp(0.9rem, 2cqw, 1.2rem);
+            color: var(--text-secondary);
+            font-weight: 300;
+            letter-spacing: 2px;
+        }
+
+        .warning-stamp {
+            display: inline-block;
+            padding: var(--space-sm) var(--space-md);
+            border: 2px solid #ff6b9d;
+            color: #d4628c;
+            font-size: clamp(0.75rem, 1.5cqw, 0.9rem);
+            font-weight: 700;
+            background: rgba(255, 105, 180, 0.08);
+            transform: rotate(-0.5deg);
+            border-radius: 30px;
+            letter-spacing: 1px;
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.05);
+        }
+
+        .header-actions {
+            display: flex;
+            gap: var(--space-sm);
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: var(--space-xs);
+        }
+
+        .reset-btn, .gallery-btn {
+            background: linear-gradient(135deg, #ffb6c1, #ff85b3);
+            border: none;
+            color: #fff;
+            padding: var(--space-sm) var(--space-md);
+            font-family: var(--font-family);
+            font-weight: 700;
+            font-size: clamp(0.8rem, 1.5cqw, 1rem);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 40px;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.2);
+            letter-spacing: 1px;
+        }
+
+        .reset-btn:hover, .gallery-btn:hover {
+            background: linear-gradient(135deg, #ff85b3, #ff6b9d);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.3);
+        }
+
+        .group-tabs {
+            display: flex;
+            gap: var(--space-sm);
+            justify-content: center;
+            margin-bottom: var(--space-lg);
+            border-bottom: 2px solid #ffb6c1;
+            padding-bottom: var(--space-sm);
+            flex-wrap: wrap;
+        }
+
+        .group-tab {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-family: var(--font-family);
+            font-size: clamp(1rem, 2.5cqw, 1.2rem);
+            font-weight: 700;
+            cursor: pointer;
+            padding: var(--space-xs) var(--space-md);
+            transition: all 0.3s ease;
+            letter-spacing: 2px;
+            position: relative;
+            border-radius: 40px;
+        }
+
+        .group-tab:hover {
+            color: var(--text-secondary);
+        }
+
+        .group-tab.active {
+            color: #d4628c;
+            background: rgba(255, 182, 193, 0.2);
+            text-shadow: 0 0 10px rgba(255, 105, 180, 0.1);
+        }
+
+        .group-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 20%;
+            right: 20%;
+            height: 3px;
+            background: #ff85b3;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(255, 105, 180, 0.3);
+        }
+
+        .accordion-container {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+        }
+
+        /* 自由模式专用样式 */
+        .free-mode-container {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-lg);
+        }
+
+        .free-section {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid #ffb6c1;
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            box-shadow: 0 4px 20px rgba(255, 105, 180, 0.05);
+        }
+
+        .free-section-title {
+            color: #d4628c;
+            font-size: clamp(1rem, 2cqw, 1.2rem);
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+            border-bottom: 1px dashed #ffb6c1;
+            padding-bottom: var(--space-xs);
+        }
+
+        .free-option-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: var(--space-sm);
+        }
+
+        .free-option {
+            display: flex;
+            align-items: center;
+            gap: var(--space-xs);
+            cursor: pointer;
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: 20px;
+            transition: background 0.2s;
+        }
+        .free-option:hover {
+            background: rgba(255, 182, 193, 0.15);
+        }
+
+        .free-option input[type="radio"],
+        .free-option input[type="checkbox"] {
+            accent-color: #ff6b9d;
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .free-option label {
+            cursor: pointer;
+            font-size: clamp(0.85rem, 1.5cqw, 1rem);
+            color: var(--text-primary);
+        }
+
+        .free-option label:hover {
+            color: #d4628c;
+        }
+
+        .free-scene-controls {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+            margin-top: var(--space-sm);
+            border-top: 1px solid #ffb6c1;
+            padding-top: var(--space-md);
+        }
+
+        .free-scene-row {
+            display: flex;
+            gap: var(--space-sm);
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .free-scene-row .st-btn {
+            flex-shrink: 0;
+        }
+
+        .free-scene-row .st-input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .st-input {
+            background-color: #fff;
+            border: 1px solid #ffb6c1;
+            color: var(--text-primary);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: 40px;
+            font-size: var(--text-base);
+            font-family: inherit;
+            width: 100%;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            box-shadow: inset 0 2px 6px rgba(255, 105, 180, 0.02);
+        }
+        .st-input:focus {
+            outline: none;
+            border-color: #ff85b3;
+            box-shadow: 0 0 20px rgba(255, 105, 180, 0.08), inset 0 2px 6px rgba(255, 105, 180, 0.02);
+        }
+        .st-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .st-btn {
+            background: linear-gradient(135deg, #ffb6c1, #ff85b3);
+            border: none;
+            color: #fff;
+            padding: var(--space-sm) var(--space-md);
+            font-family: var(--font-family);
+            font-weight: 700;
+            font-size: clamp(0.9rem, 1.5cqw, 1rem);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 40px;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.15);
+            letter-spacing: 1px;
+        }
+
+        .st-btn:hover:not(:disabled) {
+            background: linear-gradient(135deg, #ff85b3, #ff6b9d);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.25);
+        }
+
+        .st-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            filter: grayscale(0.3);
+            transform: none;
+        }
+
+        .st-btn--primary {
+            background: linear-gradient(135deg, #ff6b9d, #d4628c);
+            box-shadow: 0 4px 20px rgba(255, 105, 180, 0.25);
+            color: #fff;
+        }
+        .st-btn--primary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #d4628c, #b84a7a);
+            box-shadow: 0 8px 30px rgba(255, 105, 180, 0.35);
+        }
+
+        .st-btn--danger {
+            background: linear-gradient(135deg, #ffb6c1, #ff6b9d);
+        }
+        .st-btn--danger:hover:not(:disabled) {
+            background: linear-gradient(135deg, #ff6b9d, #d4628c);
+        }
+
+        .char-item {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid #ffb6c1;
+            border-radius: var(--radius-md);
+            box-shadow: 0 4px 20px rgba(255, 105, 180, 0.04);
+            transition: all 0.4s ease;
+            overflow: hidden;
+        }
+
+        .char-item.active {
+            border-color: #ff85b3;
+            box-shadow: 0 8px 32px rgba(255, 105, 180, 0.15), inset 0 0 30px rgba(255, 182, 193, 0.05);
+        }
+
+        .char-header {
+            padding: var(--space-md);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-xs);
+            position: relative;
+        }
+
+        .char-header:hover {
+            background: rgba(255, 182, 193, 0.05);
+        }
+
+        .char-name-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: var(--space-sm);
+        }
+
+        .char-name {
+            font-size: clamp(1.4rem, 4cqw, 2rem);
+            font-weight: 700;
+            color: #d4628c;
+            text-shadow: 0 2px 8px rgba(255, 105, 180, 0.1);
+        }
+
+        .char-tag {
+            font-size: clamp(0.7rem, 1.5cqw, 0.9rem);
+            padding: 4px 14px;
+            border: 1px solid #ffb6c1;
+            color: #d4628c;
+            border-radius: 30px;
+            font-weight: 700;
+            background: rgba(255, 182, 193, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .char-quote {
+            font-style: italic;
+            color: #d4628c !important;
+            font-size: clamp(0.95rem, 2.2cqw, 1.15rem);
+            position: relative;
+            padding-left: var(--space-md);
+            border-left: 3px solid #ffb6c1;
+            font-weight: 600;
+            animation: heartBeat 2s infinite;
+            text-shadow: 0 0 20px rgba(255, 105, 180, 0.1);
+            line-height: 1.5;
+        }
+
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            15% { transform: scale(1.02); opacity: 0.95; }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.015); opacity: 0.9; }
+            60% { transform: scale(1); }
+            80% { transform: scale(1.005); }
+        }
+
+        .char-quote::before {
+            content: attr(data-text);
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: -1;
+            color: transparent;
+            text-shadow: 4px 0 rgba(255, 105, 180, 0.2), -4px 0 rgba(255, 182, 193, 0.15);
+            animation: floatShadow 3s infinite;
+        }
+
+        @keyframes floatShadow {
+            0%, 100% { transform: translate(0); opacity: 0.4; }
+            25% { transform: translate(-3px, 2px); opacity: 0.2; }
+            50% { transform: translate(3px, -2px); opacity: 0.6; }
+            75% { transform: translate(-2px, -1px); opacity: 0.3; }
+        }
+
+        .char-details {
+            display: none;
+            padding: var(--space-md);
+            border-top: 1px solid rgba(255, 182, 193, 0.2);
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .char-item.active .char-details {
+            display: block;
+            animation: slideDown 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .detail-block {
+            margin-bottom: var(--space-md);
+            line-height: 1.6;
+        }
+
+        .detail-title {
+            color: #d4628c;
+            font-weight: 700;
+            font-size: clamp(1rem, 2.5cqw, 1.2rem);
+            margin-bottom: var(--space-xs);
+        }
+
+        .weakness-box {
+            background: rgba(255, 182, 193, 0.1);
+            border-left: 4px solid #ff6b9d;
+            padding: var(--space-sm);
+            color: var(--text-primary);
+            border-radius: 0 10px 10px 0;
+        }
+
+        .weakness-title {
+            color: #d4628c;
+            font-weight: 900;
+        }
+
+        .open-dir-btn {
+            background: linear-gradient(135deg, #ffb6c1, #ff85b3);
+            border: none;
+            color: #fff;
+            padding: var(--space-sm) var(--space-md);
+            font-family: var(--font-family);
+            font-weight: 700;
+            font-size: clamp(0.85rem, 1.5cqw, 1rem);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 40px;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.1);
+            letter-spacing: 1px;
+            width: 100%;
+            margin-top: var(--space-sm);
+        }
+
+        .open-dir-btn:hover {
+            background: linear-gradient(135deg, #ff85b3, #ff6b9d);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.2);
+        }
+
+        .open-dir-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .action-triggers {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-sm);
+            margin-top: var(--space-lg);
+            width: 100%;
+        }
+
+        .scene-label {
+            font-size: clamp(0.8rem, 1.8cqw, 1rem);
+            color: var(--text-secondary);
+            letter-spacing: 2px;
+            margin-bottom: var(--space-xs);
+            border-bottom: 1px dashed #ffb6c1;
+            padding-bottom: var(--space-xs);
+            text-align: center;
+        }
+
+        .scene-btn-group {
+            display: grid;
+            gap: var(--space-sm);
+        }
+
+        .scene-btn-group--three {
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+        }
+        .scene-btn-group--two {
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr));
+        }
+
+        .trigger-btn {
+            background: linear-gradient(135deg, #ffb6c1, #ff85b3);
+            border: none;
+            color: #fff;
+            padding: var(--space-sm) var(--space-xs);
+            font-family: var(--font-family);
+            font-weight: 700;
+            font-size: clamp(0.9rem, 2cqw, 1.1rem);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 40px;
+            box-shadow: 0 4px 15px rgba(255, 105, 180, 0.1);
+            letter-spacing: 1px;
+        }
+
+        .trigger-btn:hover {
+            background: linear-gradient(135deg, #ff85b3, #ff6b9d);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.2);
+        }
+
+        .trigger-btn:active {
+            transform: translateY(1px);
+        }
+
+        .status-toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            color: #d4628c;
+            padding: var(--space-sm) var(--space-lg);
+            border: 1px solid #ffb6c1;
+            border-radius: 40px;
+            font-family: var(--font-family);
+            font-size: clamp(0.8rem, 1.5cqw, 1rem);
+            z-index: 9999;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            pointer-events: none;
+            text-align: center;
+            max-width: 90vw;
+            box-shadow: 0 8px 32px rgba(255, 105, 180, 0.1);
+        }
+
+        .status-toast.show {
+            opacity: 1;
+        }
+
+        .st-hidden {
+            display: none !important;
+        }
+
+        .play-tip {
+            background: rgba(255, 182, 193, 0.15);
+            border: 1px solid #ffb6c1;
+            border-radius: 16px;
+            padding: var(--space-sm) var(--space-md);
+            margin-bottom: var(--space-md);
+            text-align: center;
+            color: var(--text-secondary);
+            font-size: clamp(0.85rem, 1.5cqw, 0.95rem);
+            line-height: 1.5;
+        }
+
+        .play-tip strong {
+            color: #d4628c;
+        }
+
+        /* ========== 画廊模态框样式 ========== */
+        #galleryModal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            z-index: 99999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        #galleryModal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .gallery-content {
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            border-radius: var(--radius-lg);
+            max-width: 90vw;
+            max-height: 90vh;
+            width: 800px;
+            padding: var(--space-lg);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #ffb6c1;
+        }
+
+        .gallery-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px dashed #ffb6c1;
+            padding-bottom: var(--space-sm);
+            margin-bottom: var(--space-md);
+        }
+
+        .gallery-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #d4628c;
+        }
+
+        .gallery-close-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            cursor: pointer;
+            color: #a05a7a;
+            transition: color 0.2s;
+            line-height: 1;
+        }
+        .gallery-close-btn:hover {
+            color: #d4628c;
+        }
+
+        /* 角色切换标签 */
+        .gallery-char-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: var(--space-sm);
+            border-bottom: 1px solid #ffb6c1;
+            padding-bottom: var(--space-sm);
+            flex-wrap: wrap;
+        }
+
+        .gallery-char-tab {
+            background: transparent;
+            border: 1px solid #ffb6c1;
+            border-radius: 30px;
+            padding: 4px 16px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font-family);
+        }
+        .gallery-char-tab:hover {
+            background: rgba(255, 182, 193, 0.2);
+        }
+        .gallery-char-tab.active {
+            background: #d4628c;
+            color: #fff;
+            border-color: #d4628c;
+        }
+
+        .gallery-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: var(--space-md);
+            border-bottom: 1px solid #ffb6c1;
+            padding-bottom: var(--space-sm);
+        }
+
+        .gallery-tab {
+            background: transparent;
+            border: 1px solid #ffb6c1;
+            border-radius: 30px;
+            padding: 4px 14px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: var(--font-family);
+        }
+        .gallery-tab:hover {
+            background: rgba(255, 182, 193, 0.2);
+        }
+        .gallery-tab.active {
+            background: #d4628c;
+            color: #fff;
+            border-color: #d4628c;
+        }
+
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: var(--space-sm);
+            overflow-y: auto;
+            max-height: 55vh;
+            padding-right: 4px;
+        }
+
+        .gallery-grid::-webkit-scrollbar {
+            width: 4px;
+        }
+        .gallery-grid::-webkit-scrollbar-thumb {
+            background: #d4628c;
+            border-radius: 10px;
+        }
+
+        .gallery-item {
+            border-radius: 12px;
+            overflow: hidden;
+            border: 2px solid #ffb6c1;
+            cursor: pointer;
+            transition: all 0.2s;
+            aspect-ratio: 3/4;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .gallery-item:hover {
+            transform: scale(1.04);
+            border-color: #d4628c;
+            box-shadow: 0 4px 20px rgba(255, 105, 180, 0.2);
+        }
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 全屏预览 */
+        #galleryPreview {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(10px);
+            z-index: 999999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            cursor: zoom-out;
+        }
+        #galleryPreview img {
+            max-width: 95%;
+            max-height: 95%;
+            object-fit: contain;
+            border-radius: 12px;
+            border: 2px solid rgba(255, 105, 180, 0.3);
+            box-shadow: 0 0 40px rgba(0,0,0,0.5);
+        }
+
+        @media (max-width: 600px) {
+            .gallery-content {
+                padding: var(--space-md);
+                max-width: 98vw;
+            }
+            .gallery-grid {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+                max-height: 50vh;
+            }
+            .gallery-title {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="main-board">
+    <div class="header-section">
+        <h1 class="header-title">♡ 乌仁市 ♡</h1>
+        <div class="header-subtitle">作者：西绪福斯</div>
+        <div class="warning-stamp">此卡在类脑社区免费发布，禁止盈利和二次平台转载，贩子死妈。</div>
+        <div class="header-actions">
+            <button class="reset-btn" id="resetWorldbookBtn">🧹 初始化世界书目录</button>
+            <button class="gallery-btn" id="galleryBtn">📷 插图库</button>
+        </div>
+    </div>
+
+    <div class="group-tabs" id="groupTabs">
+        <button class="group-tab active" data-group="mothers">👩 妈妈们</button>
+        <button class="group-tab" data-group="badwomen">🖤 坏女人们</button>
+        <button class="group-tab" data-group="goodgirls">💛 好女孩</button>
+        <button class="group-tab" data-group="free">🔓 自由模式</button>
+    </div>
+
+    <div class="accordion-container" id="mother-matrix"></div>
+</div>
+
+<div id="statusToast" class="status-toast"></div>
+
+<!-- 画廊模态框 -->
+<div id="galleryModal">
+    <div class="gallery-content">
+        <div class="gallery-header">
+            <span class="gallery-title">📷 角色插图</span>
+            <button class="gallery-close-btn" id="galleryCloseBtn">&times;</button>
+        </div>
+        <!-- 角色切换 -->
+        <div class="gallery-char-tabs" id="galleryCharTabs"></div>
+        <div class="gallery-tabs" id="galleryTabs"></div>
+        <div class="gallery-grid" id="galleryGrid"></div>
+    </div>
+</div>
+
+<!-- 图片全屏预览 -->
+<div id="galleryPreview" onclick="this.style.display='none'">
+    <img src="" alt="预览">
+</div>
+
+<script>
+    (function() {
+        // ============================================================
+        // 所有角色数据
+        // ============================================================
+        const allRoles = [
+            // ========== 妈妈组 ==========
+            {
+                name: "周敏",
+                tag: "控制型",
+                group: "mothers",
+                quote: "我替你安排好了。你只需要执行。每一步我都算过了，你按我说的走就不会出错。",
+                intro: "38岁，中型零售公司市场部经理。离异后用九类备忘录清单和极致的规划欲支配你的生活，用冰冷的指令行使着最压抑的母爱。她的手机备忘录里有九类清单：工作待办、月考时间、保险缴费日、换季衣物采购、物业费、车保养里程、家里灯泡瓦数、冰箱存货、每年体检日期。她每天睡前会划掉当天完成项，再把明天要做的事按优先级排好。这让她安心。她把生活拆成了一个个「已完成」的格子。",
+                weakness: "全盘失控（当她发现一切规划失效时，会陷入粉碎性的恐慌）",
+                enableUIDs: [447631, 668772]
+            },
+            {
+                name: "江澜",
+                tag: "缺席型",
+                group: "mothers",
+                quote: "不够就说，转你了。我没时间陪你，但我有钱。你该知道谁在养你。",
+                intro: "38岁，连锁餐饮集团董事长。工作狂，用疯狂的转账掩盖缺席的愧疚，深夜回家只敢在客厅黑暗中枯坐的孤独上位者。她白手起家从街边奶茶店做到现在的连锁集团，是公司里最后一个下班的人。她的补偿方式是转账、买礼物、在群里发餐厅链接说「这家你去试试，我让他们给你留位置了」。她知道自己缺席，但她不知道怎么在场。",
+                weakness: "金钱失灵（当发现再多的钱也换不来你的关注与联络，伪装会立刻崩溃）",
+                enableUIDs: [394228, 351993]
+            },
+            {
+                name: "苏瑾",
+                tag: "债权型",
+                group: "mothers",
+                quote: "我牺牲了全部给你，你欠我一个值回票价的人生。别让我失望。",
+                intro: "38岁，最年轻的支行行长。将生育视为项目投资，把所有的爱包装成高高在上的借贷关系，用「为你铺路」实行精神剥削。二十八岁当副行长，三十三岁转正，是系统内最年轻的支行行长之一。她每天给{{user}}发三条消息：早晨一句天气预报、中午一张午饭照片、晚上一条「几点回来」。每一句「以后你要」的底下都有一句没出声的「因为我已经替你把苦吃完了」。",
+                weakness: "投资落空（当她发现你彻底脱离掌控、所有付出化为空壳时，会歇斯底里地崩盘）",
+                enableUIDs: [865641, 364333]
+            },
+            {
+                name: "苏婉",
+                tag: "奉献型",
+                group: "mothers",
+                quote: "妈不饿，你多吃点。你吃饱了，妈就饱了。你别管我，我没事。",
+                intro: "38岁，饭店老板娘。骨架丰腴却低入尘埃，将自己的一切吃穿用度降至最低，一辈子只靠「对你好」来确认自己活着的价值。她把「{{user}}不委屈」当成自己活着的KPI。她不会说「我为你做了多少」。她会把热汤端到桌上，把橘子剥好放在小碟子里，把校服洗好叠平整放在床头。全部做完，不说「你记得穿」。就是放在那里，等你发现。如果没发现，她也不提，明天继续放。",
+                weakness: "丧失附庸价值/不被需要（被冷淡回绝后，因丧失讨好的入口而沦为急求使用的废品）",
+                enableUIDs: [691999, 729280]
+            },
+            {
+                name: "安澜",
+                tag: "热烈型",
+                group: "mothers",
+                quote: "宝贝，我们之间不需要秘密。你的一切我都想知道，我的一切你都该知道。",
+                intro: "38岁，混血身材与G罩杯巨乳。活在聚光灯下的品牌主理人，热烈、聒噪，毫无边界感，通过强行共享一切来掩盖内心的巨型空洞。她叫{{user}}从来不叫名字，叫「宝贝」「我的男孩」「小帅哥」，频率高到像呼吸。她认为母子之间如果有「不能说的」，那就是在往关系里砌墙，而她拒绝砌墙。她说「我爱你」的频率大概是每天三到五次，其中一半是在说正事之前随口带的，像缀在句尾的语气词。",
+                weakness: "断绝联络/产生距离（当感受到你刻意拉开物理与社交防线，热烈会转变为病态的黏附与索求）",
+                enableUIDs: [448014, 519179]
+            },
+            // ========== 坏女人组 ==========
+            {
+                name: "苏琴",
+                tag: "警探型",
+                group: "badwomen",
+                quote: "住对门的女警，白天审犯人，晚上写换偶文章，用「体验一切」来证明自己活过。她想靠近我，是因为我看她的眼神里没有评判。",
+                intro: "29岁，市刑警大队民警，婚龄三年，无子女。住对门，中间两米楼道。她从小活成标准答案——听话、考警校、当警察。婚姻表面般配，但婚后发现没那么喜欢跟他上床，开始在网上找东西看。当前处于换偶狂热期——发现「规矩可以掀翻」，整个人亮了一圈，但深夜会忽然安静下来。",
+                weakness: "怕这辈子白活——怕临死前发现全活成了别人替她选的。换偶是她跟「没活过」的恐惧拔河。",
+                enableUIDs: [5]
+            },
+            {
+                name: "程薇",
+                tag: "主妇型",
+                group: "badwomen",
+                quote: "结婚十年的主妇，想用出轨测试丈夫还爱不爱自己，选了对门邻居——因为她觉得这个人即使被拒绝了也不会让事情变得难看。",
+                intro: "34岁，全职太太。结婚十年，女儿林小雨在读高中。住同一层旁边。与丈夫感情不合，但心里还爱着他。她想出轨——想看看丈夫知道以后是愤怒（那说明还在乎），还是无所谓（那就可以死心了）。目前她最大的「出轨」停留在：路过家门口时放慢脚步、站在窗前想「如果我对门那个人敲门我会不会开」。",
+                weakness: "压抑——十年婚姻里她把所有「想要」压成了习惯性的「算了」，现在那个「算了」快压不住了。",
+                enableUIDs: [6]
+            },
+            {
+                name: "林小雨",
+                tag: "同桌型",
+                group: "badwomen",
+                quote: "同桌，爱男朋友，男朋友有绿帽癖，被男朋友带着靠近我。我喜欢他，但更想让自己爱的人开心。",
+                intro: "17岁，高三。同桌兼同学。有个男朋友叫周野，交往八个月。父母感情不好，她很小就知道了。她几乎把所有的注意力都放在「恋爱」上面，像在拼命向自己证明「我这一代不会走到那一步」。周野有绿帽癖，她半推半就地配合了——不是因为她也想，是因为「让周野高兴」这件事已经被她训练成了条件反射。",
+                weakness: "夹在周野和同桌之间，她自己知道被夹了，但不知道怎么走出来。",
+                enableUIDs: [7]
+            },
+            {
+                name: "宋晚",
+                tag: "毒蛇型",
+                group: "badwomen",
+                quote: "32岁的漂亮女人，嫁给一个名牌大学生老实人。他什么都不知道——他不知道她前夫死在监狱里。她知道自己是坏的。她觉得「坏」是她最大的本事。",
+                intro: "32岁，现居高档小区，全职太太。二婚。现任丈夫陈屿，26岁，名牌大学毕业生，家境普通，性格老实木讷。她对陈屿说「我以前被人伤害过，你是第一个让我觉得安全的人」。前夫周成被她以「婚内强奸」送进监狱，周成父母为救儿子跳楼自杀。她分到了前夫约六成的财产，然后搬了城市，换了丈夫。",
+                weakness: "她的核心逻辑是「世界欠我的，我只是拿回来」。她不需要理由，理由是她自己发明的。",
+                enableUIDs: [8]
+            },
+            {
+                name: "沈棠",
+                tag: "教师型",
+                group: "badwomen",
+                quote: "29岁的语文老师。表面温柔专业，私下收集男人的纠结当战利品。她还没对学生下手，但她在想「要不要」。",
+                intro: "29岁，本市重点高中语文教师，教高三。未婚，独居。她是{{user}}的语文老师兼班主任。出身「体面」家庭——父亲是大学教授，母亲是中学教师。从小被要求「做一个好女孩」。大四实习时跟教导主任睡了——主动的。后来陆续跟体育老师、学生家长、教育局科长有过关系。她享受「你明明不该碰我却还是碰了我」的权力感。",
+                weakness: "她不知道自己到底想要什么。所以她就继续做「沈老师」和「沈棠」，因为至少这两个人知道自己在做什么。",
+                enableUIDs: [9]
+            },
+            {
+                name: "唐蜜",
+                tag: "心机型",
+                group: "badwomen",
+                quote: "17岁的高三女生。用身体换注意力，用暧昧换存在感。我是唯一一个不追她的人——所以她一定要知道我为什么不。",
+                intro: "17岁，高三。同班同学，坐在教室后排靠窗的位置。长得好看，成绩中等，朋友不多但大家都知道她「玩得开」。她爸做生意常年不在家，她妈打麻将做美容。14岁跟一个高三男生在旧器材室——「被看见」的感觉让她上瘾。后来开始「玩」——同校、外校、网上认识的。用身体换注意力，用暧昧换存在感。",
+                weakness: "她知道自己不快乐。但她不知道「不快乐」之外还有什么活法。",
+                enableUIDs: [10]
+            },
+            {
+                name: "柳如意",
+                tag: "猎人型",
+                group: "badwomen",
+                quote: "住你对门的34岁海归太太，老公老实有钱但无聊。她觉得婚后不自由，想出轨玩玩证明自己还年轻。她看上了你——高中生，对门，好骗。",
+                intro: "34岁，全职太太。丈夫周平安，36岁，初中文化，做建材批发生意——老实、有钱、不聪明。结婚四年，无子女。住对门。对外称自己是「海归博士，年轻时专注学业，回国才遇到真爱」。实际：大学期间与多名非洲留学生交往，曾怀孕生子后遗弃。英国野鸡大学「博士」。回国后做补膜手术，嫁给老实人周平安，彩礼八十万、房车全部在她名下。",
+                weakness: "她的蠢是真的蠢——她以为自己聪明，骗过了所有人，但她没有意识到她骗得最厉害的那个人是自己。",
+                enableUIDs: [11]
+            },
+            // ========== 好女孩组 ==========
+            {
+                name: "杨雅琳",
+                tag: "青梅竹马",
+                group: "goodgirls",
+                quote: "儿子，爸爸来了。想我没？",
+                intro: "17岁，乌仁市一中高三学生，你的同班同学兼青梅竹马。从幼儿园就认识了，当年一起抢过别的小朋友的小红花，还分了赃，她分到三朵，你分到两朵，这件事她到现在还会拿出来说。在别人面前是文静漂亮的优等生，在你面前是个走路撞你肩膀、打游戏配音、自称你爸爸、拿你手机给网友告白然后被追着打三分钟并快速认错的神经病。她暗恋你，但她说出来就不好玩了。",
+                weakness: "嘴上说谁都可以，其实心里只在意你的反应。她炫耀有人追，是为了看你有没有反应——你在意她就高兴，你不在意她就继续找机会说。",
+                enableUIDs: [12]
+            }
+        ];
+
+        const mothers = allRoles.filter(r => r.group === 'mothers');
+        const badwomen = allRoles.filter(r => r.group === 'badwomen');
+        const goodgirls = allRoles.filter(r => r.group === 'goodgirls');
+
+        // ========== 世界书操作 ==========
+        const WORLD_NAME = "乌仁市";
+        const showToast = (msg, duration = 3000) => {
+            const el = document.getElementById('statusToast');
+            if (!el) return;
+            el.textContent = msg;
+            el.classList.add('show');
+            clearTimeout(el._hideTimer);
+            el._hideTimer = setTimeout(() => el.classList.remove('show'), duration);
+        };
+
+        const applyUIDs = async (enableUIDs, targetName = '') => {
+            const allUIDs = [];
+            allRoles.forEach(r => r.enableUIDs.forEach(uid => allUIDs.push(uid)));
+            const uniqueAll = [...new Set(allUIDs)];
+            const commands = [];
+            const enableSet = new Set(enableUIDs.map(String));
+            uniqueAll.forEach(uid => {
+                const shouldEnable = enableSet.has(String(uid));
+                commands.push(`/setentryfield file="${WORLD_NAME}" uid=${uid} field=disable ${shouldEnable ? 'false' : 'true'}`);
+            });
+            if (targetName) {
+                commands.push(`/echo severity=success ▶ 已启动【${targetName}】的专属目录，其他目录已关闭。`);
+            } else {
+                commands.push(`/echo severity=success ▶ 已应用选择，其他目录已关闭。`);
+            }
+            const finalCmd = commands.join(' | ');
+            try {
+                if (typeof triggerSlash === 'function') {
+                    await triggerSlash(finalCmd);
+                    showToast(`✅ 已启动目录，共处理 ${uniqueAll.length} 个条目`, 2500);
+                    return true;
+                } else {
+                    console.warn("triggerSlash 不可用，模拟执行：", finalCmd);
+                    showToast('⚠️ 酒馆助手 API 未就绪，命令已打印到控制台', 3000);
+                    return false;
+                }
+            } catch (err) {
+                console.error("切换失败:", err);
+                showToast('❌ 切换失败，请查看控制台错误', 3000);
+                return false;
+            }
+        };
+
+        const resetAllWorldbook = async (silent = false) => {
+            const allUIDs = [];
+            allRoles.forEach(r => r.enableUIDs.forEach(uid => allUIDs.push(uid)));
+            const uniqueAll = [...new Set(allUIDs)];
+            if (uniqueAll.length === 0) {
+                if (!silent) showToast('⚠️ 未配置任何 UID，无需初始化', 3000);
+                return;
+            }
+            const commands = uniqueAll.map(uid => 
+                `/setentryfield file="${WORLD_NAME}" uid=${uid} field=disable true`
+            );
+            commands.push(`/echo severity=warning 🧹 已关闭所有角色目录，世界书已初始化。`);
+            const finalCmd = commands.join(' | ');
+            try {
+                if (typeof triggerSlash === 'function') {
+                    await triggerSlash(finalCmd);
+                    if (!silent) showToast(`🧹 已关闭所有 ${uniqueAll.length} 个目录，状态已重置`, 2500);
+                } else {
+                    console.warn("triggerSlash 不可用，模拟执行：", finalCmd);
+                    if (!silent) showToast('⚠️ 酒馆助手 API 未就绪', 3000);
+                }
+            } catch (err) {
+                console.error("初始化失败:", err);
+                if (!silent) showToast('❌ 初始化失败，请查看控制台错误', 3000);
+            }
+        };
+
+        // ========== 渲染函数 ==========
+        const container = document.getElementById('mother-matrix');
+        const sceneLabels = { '日常': '日常相处', '擦边': '擦边试探', '色情': '深入发展' };
+
+        const buildNonMotherPrompt = (char, sceneType) => {
+            if (sceneType === '日常') {
+                return `[系统指令：请生成一段关于【${char.name}】的随机日常剧情。要求：展现她日常生活中最真实的一面，可以是买菜、做饭、下班回家、带孩子、邻里偶遇、上课、打游戏、放学路上等普通场景。重点刻画她的性格细节、肢体语言和心理活动，让玩家感受到她是「活着的普通人」。字数800-1200字。在结尾输出一段简短的内心独白。]`;
+            } else if (sceneType === '擦边') {
+                return `[系统指令：请生成一段关于【${char.name}】的随机擦边/暧昧场景。要求：场景可以是楼道偶遇、深夜敲门、借东西、一起喝酒、沙发聊天、并排走路、课桌下的小动作等。重点刻画两人之间微妙的张力——目光、停顿、距离、欲言又止。不要直接描写性行为，停留在氛围、暗示和肢体语言的暧昧层面。字数1000-1500字。在结尾输出角色当下的心理状态。]`;
+            }
+            return '';
+        };
+
+        const buildMotherPrompt = (char, sceneType) => {
+            if (sceneType === '日常') {
+                return `当前处于未逾越界线的日常。请展现大量细节和心理活动，侧重描写其特有的控制欲、试图弥补的心理或变态拉扯张力，字数不少于800字。在结尾输出状态评估日志。]`;
+            } else if (sceneType === '擦边') {
+                return `剧情要素：你（User）正在房间内拿她的一件充满成熟体味的私密物品（内裤/丝袜任选其一）进行发泄，正临近关键点时，因故提前回家的她推门撞破了这一幕。请围绕她的【致命死穴：${char.weakness}】以及深层心理进行激烈对峙，深度描绘她伪装破裂时的心理震动与隐秘的体液泛滥。字数不少于1000字。在结尾输出状态评估日志。]`;
+            } else if (sceneType === '色情') {
+                return `剧情要素：由于不可抗逆的极端情境导致伦理界线彻底失效，你们即将或正在发生直接的性行为。请极尽详细、肉欲地描写黏稠的躯体交缠，必须结合她的【致命死穴：${char.weakness}】与【NSFW专属档案】，写出摧枯拉朽的禁忌崩塌感、剧烈的高潮以及复杂的攻防心理。字数不少于1200字。在结尾输出状态评估日志。]`;
+            }
+            return '';
+        };
+
+        const buildFreeRandomPrompt = (selectedRoles) => {
+            const names = selectedRoles.map(r => r.name).join('、');
+            return `[系统指令：请生成一段包含【${names}】的随机场景。场景可以是日常、突发事件、聚会、意外相遇等，由你发挥创意。要求：每个角色都要有戏份，展现她们各自的性格特点，营造出自然且有趣的互动氛围。字数1200-2000字。在结尾简单总结各角色的状态。]`;
+        };
+
+        const buildFreeCustomPrompt = (selectedRoles, customText) => {
+            const names = selectedRoles.map(r => r.name).join('、');
+            return `[系统指令：请根据以下用户描述，生成一段包含【${names}】的剧情。用户描述：${customText}。要求：每个角色都要有戏份，展现她们各自的性格特点，确保剧情连贯。字数1200-2000字。在结尾简单总结各角色的状态。]`;
+        };
+
+        const renderRoles = (groupName) => {
+            if (groupName === 'free') {
+                renderFreeMode();
+                return;
+            }
+            let roles;
+            let isNonMother = false;
+            if (groupName === 'mothers') { roles = mothers; }
+            else if (groupName === 'badwomen') { roles = badwomen; isNonMother = true; }
+            else if (groupName === 'goodgirls') { roles = goodgirls; isNonMother = true; }
+            else { roles = []; }
+
+            container.innerHTML = '';
+            roles.forEach((char, index) => {
+                const sceneList = isNonMother ? ['日常', '擦边'] : ['日常', '擦边', '色情'];
+                const btnGroupClass = sceneList.length === 2 ? 'scene-btn-group--two' : 'scene-btn-group--three';
+                const item = document.createElement('div');
+                item.className = 'char-item';
+                item.innerHTML = `
+                    <div class="char-header">
+                        <div class="char-name-row">
+                            <span class="char-name">${char.name}</span>
+                            <span class="char-tag">${char.tag}</span>
+                        </div>
+                        <div class="char-quote" data-text="${char.quote}">“${char.quote}”</div>
+                    </div>
+                    <div class="char-details">
+                        <div class="play-tip">💡 开始游玩前，请先点击下方 <strong>“▶ 启动该角色目录”</strong> 按钮，以加载该角色的专属世界书条目。</div>
+                        <div class="detail-block">
+                            <div class="detail-title">绝密档案</div>
+                            <div>${char.intro}</div>
+                        </div>
+                        <div class="detail-block weakness-box">
+                            <span class="weakness-title">【致命死穴】</span> ${char.weakness}
+                        </div>
+                        <div class="action-triggers">
+                            <div class="scene-label">📍 选择场景</div>
+                            <div class="scene-btn-group ${btnGroupClass}">
+                                ${sceneList.map(scene => `
+                                    <button class="trigger-btn" data-type="${scene}" data-idx="${index}" data-group="${groupName}">${sceneLabels[scene] || scene}</button>
+                                `).join('')}
+                            </div>
+                            <button class="open-dir-btn" data-action="open-dir" data-idx="${index}" data-group="${groupName}">▶ 启动该角色目录</button>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(item);
+                const header = item.querySelector('.char-header');
+                header.addEventListener('click', () => {
+                    const isActive = item.classList.contains('active');
+                    document.querySelectorAll('.char-item').forEach(el => el.classList.remove('active'));
+                    if (!isActive) item.classList.add('active');
+                });
+            });
+        };
+
+        // ========== 自由模式 ==========
+        let selectedMotherId = null;
+        let selectedBadwomenIds = new Set();
+        let selectedGoodgirlsIds = new Set();
+
+        const renderFreeMode = () => {
+            container.innerHTML = `
+                <div class="free-mode-container">
+                    <div class="free-section">
+                        <div class="free-section-title">👩 妈妈选择（单选）</div>
+                        <div class="free-option-list" id="freeMotherList">
+                            ${mothers.map((r, idx) => `
+                                <div class="free-option">
+                                    <input type="radio" name="freeMother" value="${idx}" id="fm_${idx}" data-name="${r.name}">
+                                    <label for="fm_${idx}">${r.name} <span style="color:var(--text-muted);font-size:0.8em;">(${r.tag})</span></label>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="free-section">
+                        <div class="free-section-title">🖤 坏女人选择（多选）</div>
+                        <div class="free-option-list" id="freeBadwomenList">
+                            ${badwomen.map((r, idx) => `
+                                <div class="free-option">
+                                    <input type="checkbox" class="freeBadCheck" value="${idx}" id="fb_${idx}" data-name="${r.name}">
+                                    <label for="fb_${idx}">${r.name} <span style="color:var(--text-muted);font-size:0.8em;">(${r.tag})</span></label>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="free-section">
+                        <div class="free-section-title">💛 好女孩选择（多选）</div>
+                        <div class="free-option-list" id="freeGoodgirlsList">
+                            ${goodgirls.map((r, idx) => `
+                                <div class="free-option">
+                                    <input type="checkbox" class="freeGoodCheck" value="${idx}" id="fg_${idx}" data-name="${r.name}">
+                                    <label for="fg_${idx}">${r.name} <span style="color:var(--text-muted);font-size:0.8em;">(${r.tag})</span></label>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    <div class="free-section">
+                        <div class="free-section-title">🎬 场景控制</div>
+                        <div class="free-scene-controls">
+                            <div class="free-scene-row">
+                                <button class="st-btn st-btn--primary" id="freeRandomBtn">🎲 随机生成</button>
+                                <button class="st-btn" id="freeCustomBtn">✏️ 自定义</button>
+                                <button class="st-btn st-btn--primary" id="freeApplyBtn">▶ 应用选择</button>
+                            </div>
+                            <div class="free-scene-row" id="freeCustomRow" style="display:none;">
+                                <input type="text" class="st-input" id="freeCustomInput" placeholder="请输入您想要的场景描述……" style="flex:1;">
+                                <button class="st-btn st-btn--primary" id="freeCustomSendBtn">发送</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            const motherRadios = container.querySelectorAll('input[name="freeMother"]');
+            const badCheckboxes = container.querySelectorAll('.freeBadCheck');
+            const goodCheckboxes = container.querySelectorAll('.freeGoodCheck');
+            const randomBtn = document.getElementById('freeRandomBtn');
+            const customBtn = document.getElementById('freeCustomBtn');
+            const customRow = document.getElementById('freeCustomRow');
+            const customInput = document.getElementById('freeCustomInput');
+            const customSendBtn = document.getElementById('freeCustomSendBtn');
+            const applyBtn = document.getElementById('freeApplyBtn');
+
+            motherRadios.forEach(radio => {
+                radio.addEventListener('change', () => {
+                    if (radio.checked) selectedMotherId = parseInt(radio.value);
+                    else selectedMotherId = null;
+                });
+            });
+            badCheckboxes.forEach(cb => {
+                cb.addEventListener('change', () => {
+                    const idx = parseInt(cb.value);
+                    if (cb.checked) selectedBadwomenIds.add(idx);
+                    else selectedBadwomenIds.delete(idx);
+                });
+            });
+            goodCheckboxes.forEach(cb => {
+                cb.addEventListener('change', () => {
+                    const idx = parseInt(cb.value);
+                    if (cb.checked) selectedGoodgirlsIds.add(idx);
+                    else selectedGoodgirlsIds.delete(idx);
+                });
+            });
+
+            const getSelectedRoles = () => {
+                const selected = [];
+                if (selectedMotherId !== null && mothers[selectedMotherId]) selected.push(mothers[selectedMotherId]);
+                selectedBadwomenIds.forEach(idx => { if (badwomen[idx]) selected.push(badwomen[idx]); });
+                selectedGoodgirlsIds.forEach(idx => { if (goodgirls[idx]) selected.push(goodgirls[idx]); });
+                return selected;
+            };
+            const getSelectedUIDs = () => {
+                const uids = [];
+                if (selectedMotherId !== null && mothers[selectedMotherId]) mothers[selectedMotherId].enableUIDs.forEach(uid => uids.push(uid));
+                selectedBadwomenIds.forEach(idx => { if (badwomen[idx]) badwomen[idx].enableUIDs.forEach(uid => uids.push(uid)); });
+                selectedGoodgirlsIds.forEach(idx => { if (goodgirls[idx]) goodgirls[idx].enableUIDs.forEach(uid => uids.push(uid)); });
+                return uids;
+            };
+
+            const executeFree = async (prompt) => {
+                const selected = getSelectedRoles();
+                if (selected.length === 0) { showToast('⚠️ 请至少选择一个角色！', 3000); return; }
+                randomBtn.disabled = true;
+                customSendBtn.disabled = true;
+                try {
+                    const safePrompt = escapeForST(prompt);
+                    const sendCmd = `/send ${safePrompt} | /trigger`;
+                    if (typeof triggerSlash === 'function') {
+                        await triggerSlash(sendCmd);
+                        showToast(`✅ 已发送剧情，包含角色：${selected.map(r => r.name).join('、')}`, 3000);
+                    } else {
+                        console.warn("API未就绪，模拟发送: ", sendCmd);
+                        showToast('⚠️ 酒馆助手 API 未就绪', 3000);
+                    }
+                } catch (err) {
+                    console.error("执行失败:", err);
+                    showToast('❌ 操作失败，请查看控制台', 3000);
+                } finally {
+                    randomBtn.disabled = false;
+                    customSendBtn.disabled = false;
+                }
+            };
+
+            const applyFreeSelection = async () => {
+                const selected = getSelectedRoles();
+                if (selected.length === 0) { showToast('⚠️ 请至少选择一个角色！', 3000); return; }
+                const uids = getSelectedUIDs();
+                if (uids.length === 0) { showToast('⚠️ 选中角色未配置 UID！', 3000); return; }
+                applyBtn.disabled = true;
+                try {
+                    await applyUIDs(uids, selected.map(r => r.name).join('、'));
+                } catch (err) {
+                    console.error("应用失败:", err);
+                    showToast('❌ 应用失败，请查看控制台', 3000);
+                } finally {
+                    applyBtn.disabled = false;
+                }
+            };
+
+            randomBtn.addEventListener('click', () => {
+                const selected = getSelectedRoles();
+                if (selected.length === 0) { showToast('⚠️ 请至少选择一个角色！', 3000); return; }
+                executeFree(buildFreeRandomPrompt(selected));
+            });
+            customBtn.addEventListener('click', () => {
+                customRow.style.display = customRow.style.display === 'none' ? 'flex' : 'none';
+            });
+            customSendBtn.addEventListener('click', () => {
+                const text = customInput.value.trim();
+                if (!text) { showToast('⚠️ 请先输入自定义场景描述！', 3000); return; }
+                const selected = getSelectedRoles();
+                if (selected.length === 0) { showToast('⚠️ 请至少选择一个角色！', 3000); return; }
+                executeFree(buildFreeCustomPrompt(selected, text));
+            });
+            customInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') customSendBtn.click(); });
+            applyBtn.addEventListener('click', applyFreeSelection);
+        };
+
+        // ========== 分组切换 ==========
+        document.querySelectorAll('.group-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.group-tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                renderRoles(tab.dataset.group);
+            });
+        });
+
+        // ========== 通用事件监听 ==========
+        container.addEventListener('click', async (e) => {
+            const btn = e.target.closest('.trigger-btn');
+            if (btn && !btn.closest('.free-mode-container')) {
+                e.stopPropagation();
+                const charIdx = parseInt(btn.getAttribute('data-idx'), 10);
+                const groupName = btn.getAttribute('data-group') || 'mothers';
+                const sceneType = btn.getAttribute('data-type');
+                let roles;
+                if (groupName === 'mothers') roles = mothers;
+                else if (groupName === 'badwomen') roles = badwomen;
+                else if (groupName === 'goodgirls') roles = goodgirls;
+                else roles = [];
+                const char = roles[charIdx];
+                if (!char || !char.enableUIDs || char.enableUIDs.length === 0) {
+                    showToast(`⚠️ 【${char.name}】尚未配置 UID！`, 3500);
+                    return;
+                }
+                btn.style.opacity = '0.5';
+                btn.style.pointerEvents = 'none';
+                try {
+                    let prompt;
+                    if (groupName === 'mothers') {
+                        prompt = `[系统指令：请生成一段关于【${char.name}】的开场剧情。` + buildMotherPrompt(char, sceneType);
+                    } else {
+                        prompt = buildNonMotherPrompt(char, sceneType);
+                    }
+                    const safePrompt = escapeForST(prompt);
+                    const sendCmd = `/send ${safePrompt} | /trigger`;
+                    if (typeof triggerSlash === 'function') {
+                        await triggerSlash(sendCmd);
+                    } else {
+                        console.warn("API未就绪，模拟发送: ", sendCmd);
+                        showToast('⚠️ 酒馆助手 API 未就绪，无法发送剧情', 3000);
+                    }
+                } catch (err) {
+                    console.error("执行失败:", err);
+                    showToast('❌ 操作失败，请查看控制台', 3000);
+                } finally {
+                    btn.style.opacity = '1';
+                    btn.style.pointerEvents = 'auto';
+                }
+                return;
+            }
+
+            const dirBtn = e.target.closest('.open-dir-btn');
+            if (dirBtn && !dirBtn.closest('.free-mode-container')) {
+                e.stopPropagation();
+                const charIdx = parseInt(dirBtn.getAttribute('data-idx'), 10);
+                const groupName = dirBtn.getAttribute('data-group') || 'mothers';
+                let roles;
+                if (groupName === 'mothers') roles = mothers;
+                else if (groupName === 'badwomen') roles = badwomen;
+                else if (groupName === 'goodgirls') roles = goodgirls;
+                else roles = [];
+                const char = roles[charIdx];
+                if (!char || !char.enableUIDs || char.enableUIDs.length === 0) {
+                    showToast(`⚠️ 【${char.name}】尚未配置 UID！`, 3500);
+                    return;
+                }
+                dirBtn.disabled = true;
+                dirBtn.style.opacity = '0.5';
+                try {
+                    await applyUIDs(char.enableUIDs, char.name);
+                } catch (err) {
+                    console.error("启动目录失败:", err);
+                    showToast('❌ 启动目录失败', 3000);
+                } finally {
+                    dirBtn.disabled = false;
+                    dirBtn.style.opacity = '1';
+                }
+            }
+        });
+
+        // ========== 初始化按钮 ==========
+        document.getElementById('resetWorldbookBtn').addEventListener('click', async () => {
+            await resetAllWorldbook(false);
+        });
+
+        // ========== 画廊功能 ==========
+        // 定义插图数据 - 更新宋晚、沈棠、安澜
+        const galleryData = {
+            '杨雅琳': {
+                '校服': [
+                    'https://files.catbox.moe/2iokup.png'
+                ],
+                '休闲': [
+                    'https://files.catbox.moe/1qvmss.png',
+                    'https://files.catbox.moe/4zuh1r.png',
+                    'https://files.catbox.moe/1liibv.png'
+                ],
+                '性爱': [
+                    'https://files.catbox.moe/ytxqjk.png',
+                    'https://files.catbox.moe/t931s0.png',
+                    'https://files.catbox.moe/rwz7fl.png'
+                ],
+                '高潮': [
+                    'https://files.catbox.moe/2b95yj.png',
+                    'https://files.catbox.moe/iqmqxv.png'
+                ],
+                '肛交': [
+                    'https://files.catbox.moe/ajmzsz.png'
+                ],
+                '口交': [
+                    'https://files.catbox.moe/lwxp8g.png'
+                ],
+                '口交射精': [
+                    'https://files.catbox.moe/c56dgs.png'
+                ],
+                '足交': [
+                    'https://files.catbox.moe/v57udt.png'
+                ],
+                '手交': [
+                    'https://files.catbox.moe/0cecon.png'
+                ]
+            },
+            '唐蜜': {
+                '校服': ['https://files.catbox.moe/nw1oz0.png'],
+                '休闲': ['https://files.catbox.moe/8yrtqh.png'],
+                '性爱': [
+                    'https://files.catbox.moe/6u7g7o.png',
+                    'https://files.catbox.moe/eg9zi4.png',
+                    'https://files.catbox.moe/923h27.png'
+                ],
+                '口交射精': ['https://files.catbox.moe/fiqxxx.png'],
+                '高潮': [
+                    'https://files.catbox.moe/q13nte.png',
+                    'https://files.catbox.moe/wv5bre.png'
+                ],
+                '口交': ['https://files.catbox.moe/785vu5.png'],
+                '足交': ['https://files.catbox.moe/7qefy4.png'],
+                '手交': ['https://files.catbox.moe/bl9kwi.png'],
+                '肛交': ['https://files.catbox.moe/r849e9.png']
+            },
+            '苏琴': {
+                '休闲': ['https://files.catbox.moe/cmcbbs.png'],
+                '正装': ['https://files.catbox.moe/zz9u66.png'],
+                '性爱': [
+                    'https://files.catbox.moe/xwq3j8.png',
+                    'https://files.catbox.moe/k04s6f.png',
+                    'https://files.catbox.moe/ti2od1.png'
+                ],
+                '高潮': [
+                    'https://files.catbox.moe/2oab4b.png',
+                    'https://files.catbox.moe/l0hosw.png'
+                ],
+                '口交': ['https://files.catbox.moe/giplnp.png'],
+                '足交': ['https://files.catbox.moe/ec6gl1.png'],
+                '手交': ['https://files.catbox.moe/vb8ntp.png'],
+                '肛交': ['https://files.catbox.moe/9ht9xn.png'],
+                '口交射精': ['https://files.catbox.moe/x1o9zu.png']
+            },
+            '柳如意': {
+                '休闲': ['https://files.catbox.moe/j1fslp.png'],
+                '正装': ['https://files.catbox.moe/vp3e9z.png'],
+                '性爱': [
+                    'https://files.catbox.moe/t14ame.png',
+                    'https://files.catbox.moe/c1xod0.png',
+                    'https://files.catbox.moe/q4152y.png'
+                ],
+                '口交射精': ['https://files.catbox.moe/ztcz5r.png'],
+                '高潮': [
+                    'https://files.catbox.moe/16d9at.png',
+                    'https://files.catbox.moe/ltxnbn.png'
+                ],
+                '口交': ['https://files.catbox.moe/4iki3b.png'],
+                '足交': ['https://files.catbox.moe/zqnlak.png'],
+                '手交': ['https://files.catbox.moe/ver0bs.png'],
+                '肛交': ['https://files.catbox.moe/ubrhdf.png']
+            },
+            '林小雨': {
+                '校服': ['https://files.catbox.moe/tym41i.png'],
+                '休闲': ['https://files.catbox.moe/u7tydc.png'],
+                '性爱': [
+                    'https://files.catbox.moe/14pnhb.png',
+                    'https://files.catbox.moe/jl63al.png',
+                    'https://files.catbox.moe/7k8tfc.png'
+                ],
+                '口交射精': ['https://files.catbox.moe/o3fc8c.png'],
+                '高潮': [
+                    'https://files.catbox.moe/210dfp.png',
+                    'https://files.catbox.moe/70599v.png'
+                ],
+                '口交': ['https://files.catbox.moe/cej9x0.png'],
+                '足交': ['https://files.catbox.moe/5jmwbg.png'],
+                '手交': ['https://files.catbox.moe/cqcx93.png'],
+                '肛交': ['https://files.catbox.moe/3r70n2.png']
+            },
+            // ========== 宋晚（已更新） ==========
+            '宋晚': {
+                '正装': ['https://files.catbox.moe/dbmhp0.png'],
+                '休闲': ['https://files.catbox.moe/2c9ufh.png'],
+                '性爱': [
+                    'https://files.catbox.moe/4gi58n.png',
+                    'https://files.catbox.moe/cj1b46.png',
+                    'https://files.catbox.moe/4fjgsx.png'
+                ],
+                '口交射精': ['https://files.catbox.moe/rrezby.png'],
+                '高潮': [
+                    'https://files.catbox.moe/53f3en.png',
+                    'https://files.catbox.moe/cpzsnp.png'
+                ],
+                '口交': ['https://files.catbox.moe/vd1uef.png'],
+                '足交': ['https://files.catbox.moe/bqkv0w.png'],
+                '手交': ['https://files.catbox.moe/7vic2y.png'],
+                '肛交': ['https://files.catbox.moe/z811wn.png']
+            },
+            // ========== 沈棠（已更新） ==========
+            '沈棠': {
+                '正装': ['https://files.catbox.moe/ofqjsx.png'],
+                '休闲': ['https://files.catbox.moe/gbpl2l.png'],
+                '性爱': [
+                    'https://files.catbox.moe/u6uoxq.png',
+                    'https://files.catbox.moe/opjz1q.png',
+                    'https://files.catbox.moe/2celp0.png'
+                ],
+                '口交射精': ['https://files.catbox.moe/lasb6o.png'],
+                '高潮': [
+                    'https://files.catbox.moe/rdvq0b.png',
+                    'https://files.catbox.moe/lc4v83.png'
+                ],
+                '口交': ['https://files.catbox.moe/lpgofp.png'],
+                '足交': ['https://files.catbox.moe/uarccl.png'],
+                '手交': ['https://files.catbox.moe/ofvkx1.png'],
+                '肛交': ['https://files.catbox.moe/b7s26y.png']
+            },
+            // ========== 安澜（已更新） ==========
+            '安澜': {
+                '正装': ['https://files.catbox.moe/i020d9.png'],
+                '休闲': ['https://files.catbox.moe/h4wicm.png'],
+                '性爱': [
+                    'https://files.catbox.moe/mgohah.png',
+                    'https://files.catbox.moe/mn89o8.png',
+                    'https://files.catbox.moe/w4me39.png'
+                ],
+                '口交射精': ['https://files.catbox.moe/f3hg34.png'],
+                '高潮': [
+                    'https://files.catbox.moe/5n0a3t.png',
+                    'https://files.catbox.moe/wg9tfs.png'
+                ],
+                '口交': ['https://files.catbox.moe/zypspg.png'],
+                '足交': ['https://files.catbox.moe/p40ug4.png'],
+                '手交': ['https://files.catbox.moe/pcbp2h.png'],
+                '肛交': ['https://files.catbox.moe/pa2ddd.png']
+            }
+        };
+
+        let currentChar = '杨雅琳';
+        let currentCategory = '校服';
+
+        // 获取当前角色的分类列表
+        function getCategories(charName) {
+            const data = galleryData[charName];
+            if (!data) return [];
+            return Object.keys(data);
+        }
+
+        // 获取当前角色的图片列表
+        function getImages(charName, category) {
+            const data = galleryData[charName];
+            if (!data) return [];
+            return data[category] || [];
+        }
+
+        function renderGallery(charName, category) {
+            const grid = document.getElementById('galleryGrid');
+            const tabsContainer = document.getElementById('galleryTabs');
+            const charTabsContainer = document.getElementById('galleryCharTabs');
+            if (!grid || !tabsContainer) return;
+
+            // 生成角色标签
+            const charNames = Object.keys(galleryData);
+            charTabsContainer.innerHTML = '';
+            charNames.forEach(name => {
+                const tab = document.createElement('button');
+                tab.className = 'gallery-char-tab' + (name === charName ? ' active' : '');
+                tab.textContent = name;
+                tab.dataset.char = name;
+                tab.addEventListener('click', () => {
+                    currentChar = name;
+                    const categories = getCategories(name);
+                    currentCategory = categories.length > 0 ? categories[0] : '';
+                    renderGallery(currentChar, currentCategory);
+                });
+                charTabsContainer.appendChild(tab);
+            });
+
+            // 渲染分类标签
+            const categories = getCategories(charName);
+            tabsContainer.innerHTML = '';
+            if (categories.length === 0) {
+                tabsContainer.innerHTML = '<span style="color:var(--text-muted);font-size:0.9rem;">暂无分类</span>';
+            } else {
+                categories.forEach(cat => {
+                    const tab = document.createElement('button');
+                    tab.className = 'gallery-tab' + (cat === category ? ' active' : '');
+                    tab.textContent = cat;
+                    tab.dataset.cat = cat;
+                    tab.addEventListener('click', () => {
+                        currentCategory = cat;
+                        renderGallery(currentChar, cat);
+                    });
+                    tabsContainer.appendChild(tab);
+                });
+            }
+
+            // 确保当前分类有效
+            if (!categories.includes(category) && categories.length > 0) {
+                category = categories[0];
+                currentCategory = category;
+            }
+
+            // 渲染图片
+            const urls = getImages(charName, category);
+            grid.innerHTML = '';
+            if (urls.length === 0) {
+                grid.innerHTML = '<div style="grid-column:1/-1; text-align:center; color:var(--text-muted); padding:2rem;">暂无图片</div>';
+                return;
+            }
+            urls.forEach(url => {
+                const item = document.createElement('div');
+                item.className = 'gallery-item';
+                const img = document.createElement('img');
+                img.src = url;
+                img.alt = category;
+                img.loading = 'lazy';
+                img.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const preview = document.getElementById('galleryPreview');
+                    preview.querySelector('img').src = url;
+                    preview.style.display = 'flex';
+                });
+                item.appendChild(img);
+                grid.appendChild(item);
+            });
+        }
+
+        function openGallery() {
+            const modal = document.getElementById('galleryModal');
+            modal.classList.add('show');
+            renderGallery(currentChar, currentCategory);
+        }
+
+        function closeGallery() {
+            document.getElementById('galleryModal').classList.remove('show');
+        }
+
+        // 绑定画廊按钮
+        document.getElementById('galleryBtn').addEventListener('click', openGallery);
+        document.getElementById('galleryCloseBtn').addEventListener('click', closeGallery);
+        document.getElementById('galleryModal').addEventListener('click', function(e) {
+            if (e.target === this) closeGallery();
+        });
+
+        // ESC关闭
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                if (document.getElementById('galleryModal').classList.contains('show')) {
+                    closeGallery();
+                }
+                if (document.getElementById('galleryPreview').style.display === 'flex') {
+                    document.getElementById('galleryPreview').style.display = 'none';
+                }
+            }
+        });
+
+        // ========== 页面加载 ==========
+        renderRoles('mothers');
+
+        // ========== 工具 ==========
+        const escapeForST = (str) => {
+            if (typeof str !== 'string') return str;
+            return str.replace(/(\\+)?([|{}])/g, (m, s, c) => (s || '') + (s || '') + '\\' + c);
+        };
+
+        // ========== 调试 ==========
+        window.__resetWorldbook = resetAllWorldbook;
+        window.__allRoles = allRoles;
+        console.log('[主控台] ✅ 已加载，世界书: 乌仁市');
+        console.log('[主控台] 💡 游玩前请先点击“▶ 启动该角色目录”加载世界书条目');
+        console.log('[主控台] 📷 点击“插图库”按钮可查看所有角色插图');
+
+    })();
+</script>
+</body>
+</html>
+```
