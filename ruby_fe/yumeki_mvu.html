@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- 异步加载图标库: 防止 CDN 挂起时阻塞下方脚本执行 (此前面板假死的元凶) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
+</head>
+<body>
+    <style>
+        :root {
+            /* 极繁主义基础变量 */
+            --vn-text-main: #ffffff;
+            --vn-text-sub: rgba(255, 255, 255, 0.8);
+            --vn-text-dark: #1a1a24;
+            --vn-glass-bg: rgba(15, 15, 25, 0.75);
+            --vn-glass-blur: 20px;
+
+            /* 默认主题 (普利凯特 - 神圣白金) */
+            --vn-theme-primary: #f8f9fa;
+            --vn-theme-secondary: #c3cfe2;
+            --vn-theme-accent: #ffd700;
+            --vn-gradient-bg: radial-gradient(circle at top right, rgba(255, 215, 0, 0.15), transparent 50%),
+                              linear-gradient(135deg, rgba(248, 249, 250, 0.1) 0%, rgba(195, 207, 226, 0.2) 100%);
+            --vn-border-glow: 0 0 15px rgba(255, 215, 0, 0.3);
+            --vn-frame-border: linear-gradient(45deg, #ffd700, #f8f9fa, #ffd700);
+
+            /* 排版与间距 */
+            --vn-radius-xl: 30px;
+            --vn-radius-lg: 20px;
+            --vn-radius-md: 12px;
+            --vn-spacing-xl: clamp(20px, 5cqw, 30px);
+            --vn-spacing-lg: clamp(16px, 4cqw, 24px);
+            --vn-spacing-md: clamp(12px, 3cqw, 16px);
+            --vn-spacing-sm: 8px;
+
+            /* 字体大小 */
+            --vn-font-title: clamp(20px, 5cqw, 28px);
+            --vn-font-body: clamp(14px, 3.5cqw, 16px);
+            --vn-font-small: clamp(12px, 3cqw, 14px);
+
+            --vn-transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        /* 乔千攻主题 (慵懒星空紫) */
+        .theme-qiao {
+            --vn-theme-primary: #e0c3fc;
+            --vn-theme-secondary: #8ec5fc;
+            --vn-theme-accent: #b19cd9;
+            --vn-gradient-bg: radial-gradient(circle at top left, rgba(177, 156, 217, 0.2), transparent 60%),
+                              linear-gradient(135deg, rgba(20, 10, 30, 0.8) 0%, rgba(40, 20, 60, 0.6) 100%);
+            --vn-border-glow: 0 0 20px rgba(177, 156, 217, 0.4);
+            --vn-frame-border: linear-gradient(45deg, #b19cd9, #e0c3fc, #8ec5fc);
+        }
+
+        /* 伊卡洛斯主题 (魔王暗红金) */
+        .theme-icarus {
+            --vn-theme-primary: #ff4b2b;
+            --vn-theme-secondary: #ff416c;
+            --vn-theme-accent: #ff0000;
+            --vn-gradient-bg: radial-gradient(circle at bottom right, rgba(255, 0, 0, 0.2), transparent 50%),
+                              linear-gradient(135deg, rgba(30, 5, 5, 0.85) 0%, rgba(60, 10, 10, 0.7) 100%);
+            --vn-border-glow: 0 0 25px rgba(255, 0, 0, 0.5);
+            --vn-frame-border: linear-gradient(45deg, #ff0000, #ff4b2b, #2a0800);
+        }
+
+        /* 路西法主题 (堕魔冷银) */
+        .theme-lucifer {
+            --vn-theme-primary: #e8edf5;
+            --vn-theme-secondary: #9fb3c8;
+            --vn-theme-accent: #aab8cc;
+            --vn-gradient-bg: radial-gradient(circle at bottom left, rgba(170, 184, 204, 0.18), transparent 55%),
+                              linear-gradient(135deg, rgba(10, 12, 18, 0.85) 0%, rgba(30, 38, 52, 0.65) 100%);
+            --vn-border-glow: 0 0 18px rgba(159, 179, 200, 0.4);
+            --vn-frame-border: linear-gradient(45deg, #9fb3c8, #e8edf5, #5a6b80);
+        }
+
+        /* Nova主题 (冷酷暗影) */
+        .theme-nova {
+            --vn-theme-primary: #e0e0e0;
+            --vn-theme-secondary: #707070;
+            --vn-theme-accent: #c0392b;
+            --vn-gradient-bg: radial-gradient(circle at top right, rgba(192, 57, 43, 0.15), transparent 60%),
+                              linear-gradient(135deg, rgba(15, 15, 15, 0.9) 0%, rgba(35, 35, 35, 0.75) 100%);
+            --vn-border-glow: 0 0 18px rgba(192, 57, 43, 0.4);
+            --vn-frame-border: linear-gradient(45deg, #c0392b, #707070, #2c3e50);
+        }
+
+        /* 艾露迪主题 (社畜牛皮纸) */
+        .theme-eludi {
+            --vn-theme-primary: #ffb347;
+            --vn-theme-secondary: #d4a373;
+            --vn-theme-accent: #ffcc00;
+            --vn-gradient-bg: radial-gradient(circle at bottom left, rgba(255, 179, 71, 0.2), transparent 55%),
+                              linear-gradient(135deg, rgba(40, 30, 20, 0.85) 0%, rgba(70, 50, 30, 0.7) 100%);
+            --vn-border-glow: 0 0 15px rgba(255, 179, 71, 0.3);
+            --vn-frame-border: linear-gradient(45deg, #ffcc00, #ffb347, #8b5a2b);
+        }
+
+        /* 容器与入场动画 */
+        .vn-container {
+            container-type: inline-size;
+            width: 100%;
+            max-width: 850px;
+            margin: 20px auto;
+            font-family: 'Georgia', 'Times New Roman', serif; /* 极繁复古感 */
+            color: var(--vn-text-main);
+            animation: slideUpFade 0.8s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+        }
+
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 主卡片极繁装饰 */
+        .vn-card {
+            background: var(--vn-gradient-bg);
+            background-color: var(--vn-glass-bg);
+            backdrop-filter: blur(var(--vn-glass-blur));
+            -webkit-backdrop-filter: blur(var(--vn-glass-blur));
+            border-radius: var(--vn-radius-xl);
+            position: relative;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5), inset 0 2px 5px rgba(255, 255, 255, 0.2);
+            transition: var(--vn-transition);
+            overflow: hidden;
+        }
+
+        .vn-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            border-radius: var(--vn-radius-xl);
+            padding: 2px;
+            background: var(--vn-frame-border);
+            -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+            -webkit-mask-composite: xor;
+            mask-composite: exclude;
+            pointer-events: none;
+        }
+
+        /* 顶部控制条 */
+        .vn-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--vn-spacing-md) var(--vn-spacing-xl);
+            background: linear-gradient(to bottom, rgba(0,0,0,0.4), transparent);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            z-index: 10;
+            position: relative;
+        }
+
+        .vn-title {
+            font-size: var(--vn-font-title);
+            font-weight: bold;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .vn-title i {
+            color: var(--vn-theme-accent);
+            filter: drop-shadow(0 0 5px var(--vn-theme-accent));
+        }
+
+        .vn-controls {
+            display: flex;
+            gap: 15px;
+        }
+
+        .vn-icon-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: var(--vn-transition);
+            color: var(--vn-text-main);
+        }
+
+        .vn-icon-btn:hover {
+            background: var(--vn-theme-accent);
+            color: var(--vn-text-dark);
+            transform: scale(1.1);
+            box-shadow: var(--vn-border-glow);
+        }
+
+        .vn-card.collapsed .vn-toggle-btn i {
+            transform: rotate(-180deg);
+        }
+
+        /* 折叠人物栏 */
+        .vn-char-panel {
+            background: rgba(0, 0, 0, 0.2);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            z-index: 9;
+        }
+
+        .vn-char-header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 0;
+            font-size: var(--vn-font-small);
+            color: var(--vn-theme-secondary);
+            cursor: pointer;
+            transition: color 0.3s, background 0.3s;
+            user-select: none;
+        }
+
+        .vn-char-header:hover {
+            color: var(--vn-theme-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .vn-char-header i {
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .vn-char-content {
+            max-height: 200px;
+            opacity: 1;
+            padding: 0 var(--vn-spacing-xl) var(--vn-spacing-md);
+            transition: max-height 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease, padding 0.3s ease;
+            overflow: hidden;
+        }
+
+        .vn-char-panel.collapsed-chars .vn-char-content {
+            max-height: 0;
+            opacity: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+        }
+
+        .vn-char-panel.collapsed-chars .vn-char-header i {
+            transform: rotate(-180deg);
+        }
+
+        /* 角色切换胶囊 */
+        .vn-chip-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding-top: var(--vn-spacing-sm);
+        }
+
+        .vn-chip {
+            padding: 4px 14px;
+            border-radius: 14px;
+            font-size: var(--vn-font-small);
+            letter-spacing: 1px;
+            border: 1px solid rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.06);
+            cursor: pointer;
+            transition: var(--vn-transition);
+            color: var(--vn-text-sub);
+            user-select: none;
+        }
+
+        .vn-chip:hover {
+            color: var(--vn-text-main);
+            border-color: var(--vn-theme-accent);
+            transform: translateY(-1px);
+        }
+
+        .vn-chip.active {
+            background: var(--vn-theme-accent);
+            color: var(--vn-text-dark);
+            border-color: var(--vn-theme-accent);
+            box-shadow: var(--vn-border-glow);
+            font-weight: bold;
+        }
+
+        .vn-chip.vn-chip-auto {
+            border-style: dashed;
+        }
+
+        /* 主体内容区 */
+        .vn-body {
+            display: grid;
+            grid-template-columns: minmax(200px, 1fr) 2fr;
+            gap: var(--vn-spacing-xl);
+            padding: var(--vn-spacing-xl);
+            transition: max-height 0.6s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease, padding 0.4s ease;
+            max-height: 1200px;
+            opacity: 1;
+            position: relative;
+        }
+
+        .vn-card.collapsed .vn-body {
+            max-height: 0;
+            padding-top: 0;
+            padding-bottom: 0;
+            opacity: 0;
+            overflow: hidden;
+        }
+
+        @container (max-width: 600px) {
+            .vn-body {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* 极繁画框立绘区 */
+        .vn-portrait-wrapper {
+            position: relative;
+            align-self: start; /* 不随右列拉伸, 避免图下出现黑色空档 */
+            padding: 10px;
+            background: linear-gradient(135deg, #2a2a35, #101015);
+            border-radius: var(--vn-radius-lg);
+            box-shadow: 10px 10px 20px rgba(0,0,0,0.6), inset 0 0 15px rgba(0,0,0,0.8);
+        }
+
+        .vn-portrait-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 5px; left: 5px; right: 5px; bottom: 5px;
+            border: 2px solid var(--vn-theme-accent);
+            border-radius: calc(var(--vn-radius-lg) - 5px);
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .vn-portrait-area {
+            position: relative;
+            border-radius: var(--vn-radius-md);
+            overflow: hidden;
+            aspect-ratio: 3/4;
+            background: #000;
+        }
+
+        .vn-portrait-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center top;
+            transition: opacity 0.8s ease, transform 0.5s ease;
+        }
+
+        .vn-portrait-wrapper:hover .vn-portrait-img {
+            transform: scale(1.05);
+        }
+
+        /* 无立绘时的兜底图腾 */
+        .vn-portrait-fallback {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 64px;
+            color: var(--vn-theme-accent);
+            opacity: 0.25;
+        }
+
+        .vn-name-tag {
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 5px 20px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 1px solid var(--vn-theme-accent);
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: var(--vn-font-body);
+            letter-spacing: 3px;
+            white-space: nowrap;
+            box-shadow: var(--vn-border-glow);
+        }
+
+        /* 信息网格区 */
+        .vn-info-area {
+            display: flex;
+            flex-direction: column;
+            gap: var(--vn-spacing-lg);
+            z-index: 2;
+        }
+
+        .vn-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 150px), 1fr));
+            gap: var(--vn-spacing-md);
+        }
+
+        /* 整行通栏项 (衣着等长文本) */
+        .vn-span-full {
+            grid-column: 1 / -1;
+        }
+
+        .vn-info-item {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(0,0,0,0.2));
+            padding: var(--vn-spacing-md);
+            border-radius: var(--vn-radius-md);
+            border-left: 3px solid var(--vn-theme-accent);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .vn-info-item::after {
+            content: '';
+            position: absolute;
+            top: 0; right: 0; width: 50px; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.03));
+            transform: skewX(-20deg) translateX(20px);
+        }
+
+        .vn-info-label {
+            font-size: var(--vn-font-small);
+            color: var(--vn-theme-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .vn-info-value {
+            font-size: var(--vn-font-body);
+            font-weight: bold;
+            color: var(--vn-text-main);
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        /* 强调项 (好感度) */
+        .vn-info-highlight {
+            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.02));
+            border: 1px solid rgba(255,255,255,0.2);
+            border-left: 4px solid var(--vn-theme-accent);
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+        }
+
+        .vn-info-highlight .vn-info-value {
+            color: var(--vn-theme-accent);
+            font-size: calc(var(--vn-font-body) + 2px);
+        }
+
+        /* 沉浸式内心想法 */
+        .vn-thought-box {
+            position: relative;
+            background: rgba(0, 0, 0, 0.4);
+            padding: var(--vn-spacing-xl);
+            border-radius: var(--vn-radius-lg);
+            border: 1px solid rgba(255,255,255,0.1);
+            margin-top: auto;
+            font-style: italic;
+            font-size: var(--vn-font-body);
+            line-height: 1.6;
+            color: var(--vn-theme-primary);
+            box-shadow: inset 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        .vn-thought-box::before, .vn-thought-box::after {
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            color: var(--vn-theme-accent);
+            opacity: 0.3;
+            font-size: 24px;
+        }
+
+        .vn-thought-box::before { content: '\f10d'; top: 10px; left: 15px; }
+        .vn-thought-box::after { content: '\f10e'; bottom: 10px; right: 15px; }
+
+        /* 可视化天气动画容器 */
+        .vn-weather-anim {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 40px;
+            height: 40px;
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        /* 晴天动画 */
+        .weather-sunny {
+            background: radial-gradient(circle, #ffd700 30%, transparent 70%);
+            border-radius: 50%;
+            box-shadow: 0 0 20px #ffd700;
+            animation: spinSun 10s linear infinite;
+        }
+        @keyframes spinSun { 100% { transform: rotate(360deg); } }
+
+        /* 雨天动画 */
+        .weather-rainy {
+            background: linear-gradient(to bottom, transparent, rgba(150,200,255,0.8));
+            width: 2px; height: 20px;
+            box-shadow: 10px -10px 0 rgba(150,200,255,0.6), -10px -20px 0 rgba(150,200,255,0.5);
+            animation: rainDrop 1s linear infinite;
+        }
+        @keyframes rainDrop { 0% { transform: translateY(-10px) rotate(15deg); opacity: 0;} 50% {opacity: 1;} 100% { transform: translateY(30px) rotate(15deg); opacity: 0;} }
+
+        /* 阴/云天动画 */
+        .weather-cloudy {
+            background: #bdc3c7;
+            border-radius: 20px;
+            width: 30px; height: 15px;
+            box-shadow: 15px 5px 0 -2px #bdc3c7, -10px 5px 0 -5px #bdc3c7;
+            animation: floatCloud 4s ease-in-out infinite alternate;
+        }
+        @keyframes floatCloud { 0% { transform: translateX(-5px); } 100% { transform: translateX(5px); } }
+
+        /* 雪天动画 */
+        .weather-snowy {
+            background: #fff;
+            border-radius: 50%;
+            width: 4px; height: 4px;
+            box-shadow: 15px 10px 0 #fff, -10px 20px 0 #fff, 5px 30px 0 #fff;
+            animation: snowFall 3s linear infinite;
+        }
+        @keyframes snowFall { 0% { transform: translateY(-10px); opacity: 0;} 50% {opacity: 1;} 100% { transform: translateY(30px); opacity: 0;} }
+
+
+        /* 日历模态框 */
+        .vn-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s ease;
+        }
+
+        .vn-modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .vn-calendar-modal {
+            background: var(--vn-gradient-bg);
+            background-color: var(--vn-glass-bg);
+            border: 1px solid var(--vn-theme-accent);
+            border-radius: var(--vn-radius-lg);
+            width: 90%;
+            max-width: 400px;
+            padding: var(--vn-spacing-lg);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.8), var(--vn-border-glow);
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            color: var(--vn-text-main);
+        }
+
+        .vn-modal-overlay.active .vn-calendar-modal {
+            transform: scale(1) translateY(0);
+        }
+
+        .vn-cal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--vn-spacing-md);
+            padding-bottom: var(--vn-spacing-sm);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .vn-cal-title {
+            font-size: var(--vn-font-title);
+            font-weight: bold;
+            color: var(--vn-theme-primary);
+        }
+
+        .vn-cal-close {
+            cursor: pointer;
+            font-size: 20px;
+            color: var(--vn-text-sub);
+            transition: color 0.2s;
+        }
+        .vn-cal-close:hover { color: #ff4b2b; }
+
+        /* 日历网格 */
+        .vn-cal-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            text-align: center;
+            margin-bottom: var(--vn-spacing-lg);
+        }
+
+        .vn-cal-day-name {
+            font-size: var(--vn-font-small);
+            color: var(--vn-theme-secondary);
+            font-weight: bold;
+            padding-bottom: 5px;
+        }
+
+        .vn-cal-cell {
+            aspect-ratio: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            font-size: var(--vn-font-body);
+            background: rgba(255,255,255,0.05);
+            transition: background 0.2s;
+        }
+
+        .vn-cal-cell.empty { background: transparent; }
+
+        .vn-cal-cell.today {
+            background: var(--vn-theme-accent);
+            color: var(--vn-text-dark);
+            font-weight: bold;
+            box-shadow: 0 0 10px var(--vn-theme-accent);
+        }
+
+        .vn-cal-cell.festival {
+            border: 2px solid var(--vn-theme-accent);
+            position: relative;
+        }
+        .vn-cal-cell.festival::after {
+            content: '';
+            position: absolute;
+            top: 2px; right: 2px;
+            width: 6px; height: 6px;
+            background: #ff4b2b;
+            border-radius: 50%;
+        }
+
+        /* 日程与节日展示区 */
+        .vn-schedule-area {
+            background: rgba(0,0,0,0.3);
+            padding: var(--vn-spacing-md);
+            border-radius: var(--vn-radius-md);
+            border-left: 3px solid var(--vn-theme-secondary);
+        }
+
+        .vn-schedule-item {
+            margin-bottom: 10px;
+        }
+        .vn-schedule-item:last-child { margin-bottom: 0; }
+
+        .vn-schedule-label {
+            font-size: var(--vn-font-small);
+            color: var(--vn-theme-secondary);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .vn-schedule-text {
+            font-size: var(--vn-font-body);
+            line-height: 1.4;
+        }
+
+        .vn-fest-text {
+            color: var(--vn-theme-accent);
+            font-weight: bold;
+        }
+
+        /* ═══ 契约录（反转面） ═══ */
+        .vn-card.view-contracts .vn-body { display: none; }
+        .vn-contracts { display: none; padding: var(--vn-spacing-xl); }
+        .vn-card.view-contracts .vn-contracts { display: block; }
+        .vn-card.collapsed .vn-contracts {
+            max-height: 0; padding-top: 0; padding-bottom: 0; opacity: 0; overflow: hidden;
+        }
+
+        @keyframes vnFlipIn {
+            0%   { transform: rotateY(88deg); opacity: .35; }
+            100% { transform: rotateY(0deg);  opacity: 1; }
+        }
+        .vn-card.flip-anim { animation: vnFlipIn .55s cubic-bezier(.23, 1, .32, 1); }
+
+        .vn-contract-count {
+            font-size: var(--vn-font-small);
+            color: var(--vn-theme-secondary);
+            letter-spacing: 2px;
+            margin-bottom: var(--vn-spacing-md);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .vn-contract-item {
+            position: relative;
+            background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(0,0,0,0.28));
+            border: 1px solid rgba(255,255,255,0.15);
+            border-left: 3px solid var(--vn-theme-accent);
+            border-radius: var(--vn-radius-md);
+            padding: var(--vn-spacing-md);
+            margin-bottom: var(--vn-spacing-md);
+            box-shadow: inset 0 0 18px rgba(0,0,0,0.3);
+        }
+        .vn-contract-item:last-child { margin-bottom: 0; }
+
+        .vn-contract-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 8px;
+            padding-bottom: 6px;
+            border-bottom: 1px dashed rgba(255,255,255,0.2);
+        }
+
+        .vn-contract-name {
+            font-weight: bold;
+            font-size: var(--vn-font-body);
+            letter-spacing: 2px;
+            color: var(--vn-theme-primary);
+        }
+
+        .vn-contract-status {
+            font-size: var(--vn-font-small);
+            padding: 2px 12px;
+            border-radius: 10px;
+            border: 1px solid currentColor;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .st-proposed  { color: #9fb3c8; border-style: dashed; }
+        .st-signed    { color: var(--vn-theme-accent); }
+        .st-critical  { color: #ff4b2b; animation: vnPulse 1.6s ease-in-out infinite; }
+        .st-collected { color: #b088f9; }
+        .st-dissolved { color: rgba(255,255,255,0.45); border-style: dashed; }
+        .st-breach    { color: #ff416c; }
+
+        @keyframes vnPulse {
+            0%, 100% { box-shadow: 0 0 4px rgba(255, 75, 43, .55); }
+            50%      { box-shadow: 0 0 16px rgba(255, 75, 43, .95); }
+        }
+
+        .vn-contract-row {
+            font-size: var(--vn-font-small);
+            line-height: 1.7;
+            color: var(--vn-text-sub);
+        }
+        .vn-contract-row b { color: var(--vn-text-main); }
+        .vn-contract-row .vn-cost { color: var(--vn-theme-accent); }
+
+        .vn-contract-empty {
+            text-align: center;
+            padding: var(--vn-spacing-xl);
+            color: var(--vn-text-sub);
+            font-style: italic;
+        }
+
+        /* ═══ 背面账本分区 ═══ */
+        .vn-back-section { margin-bottom: var(--vn-spacing-lg); }
+        .vn-back-section:last-child { margin-bottom: 0; }
+        .vn-back-title {
+            display: flex; align-items: center; gap: 8px;
+            font-size: var(--vn-font-body); font-weight: bold; letter-spacing: 2px;
+            color: var(--vn-theme-primary);
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            padding-bottom: 6px; margin-bottom: var(--vn-spacing-md);
+        }
+        .vn-back-title i { color: var(--vn-theme-accent); }
+        .vn-contract-count-inline {
+            margin-left: auto; font-size: var(--vn-font-small);
+            color: var(--vn-theme-secondary); font-weight: normal; letter-spacing: 0;
+        }
+        .vn-filter-bar { padding: 0 0 var(--vn-spacing-md); }
+
+        /* 键值行 */
+        .vn-xrow {
+            display: flex; justify-content: space-between; align-items: center; gap: 10px;
+            font-size: var(--vn-font-small); line-height: 1.7; color: var(--vn-text-sub);
+        }
+        .vn-xlabel { display: flex; align-items: center; gap: 5px; }
+        .vn-xval { color: var(--vn-text-main); font-weight: bold; text-align: right; }
+        .vn-xval.lit { color: var(--vn-theme-accent); }
+
+        /* 专属情报块 */
+        .vn-exclusive-rows { display: flex; flex-direction: column; gap: 6px; }
+        .vn-bar {
+            position: relative; flex: 1; height: 10px; min-width: 80px;
+            background: rgba(255,255,255,0.12); border-radius: 6px; overflow: hidden;
+        }
+        .vn-bar-fill { height: 100%; border-radius: 6px; background: var(--vn-theme-accent); transition: width .6s ease; }
+        .vn-bar-fill.warn { background: #ffb020; }
+        .vn-bar-fill.danger { background: #ff4b2b; box-shadow: 0 0 8px rgba(255,75,43,.7); }
+
+        /* 记忆碎片 */
+        .vn-memory-item {
+            background: rgba(0,0,0,0.25);
+            border-left: 3px solid var(--vn-theme-secondary);
+            border-radius: var(--vn-radius-md);
+            padding: var(--vn-spacing-sm) var(--vn-spacing-md);
+            margin-bottom: var(--vn-spacing-sm);
+        }
+        .vn-memory-name { font-weight: bold; color: var(--vn-theme-primary); font-size: var(--vn-font-small); margin-bottom: 2px; }
+        .vn-memory-text { font-size: var(--vn-font-small); color: var(--vn-text-sub); line-height: 1.6; }
+
+        .vn-item-row { font-size: var(--vn-font-small); color: var(--vn-text-sub); line-height: 1.7; }
+        .vn-item-row b { color: var(--vn-text-main); }
+
+    </style>
+
+    <div class="vn-container" id="vn-status-container">
+        <div class="vn-card" id="vn-main-card">
+            <!-- 顶部控制条 -->
+            <div class="vn-header">
+                <div class="vn-title">
+                    <i class="fas fa-chess-queen" id="vn-title-icon"></i> <span id="vn-title-text">状态断章</span>
+                </div>
+                <div class="vn-controls">
+                    <div class="vn-icon-btn" onclick="toggleContracts()" title="反转 · 契约录">
+                        <i class="fas fa-arrows-rotate"></i>
+                    </div>
+                    <div class="vn-icon-btn" onclick="openCalendar()" title="查看日历">
+                        <i class="far fa-calendar-alt"></i>
+                    </div>
+                    <div class="vn-icon-btn vn-toggle-btn" onclick="toggleStatusCard()" title="折叠/展开">
+                        <i class="fas fa-chevron-up"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 折叠人物栏 -->
+            <div class="vn-char-panel" id="vn-char-panel">
+                <div class="vn-char-header" onclick="toggleCharPanel()">
+                    <span>观测目标</span>
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+                <div class="vn-char-content">
+                    <!-- 角色切换 (数据来自 MVU 变量) -->
+                    <div class="vn-chip-bar" id="vn-char-chips"></div>
+                </div>
+            </div>
+
+            <!-- 主体内容 -->
+            <div class="vn-body">
+                <!-- 立绘区 -->
+                <div class="vn-portrait-wrapper">
+                    <div class="vn-portrait-area">
+                        <img id="vn-portrait" class="vn-portrait-img" src="" alt="角色立绘" style="opacity: 0;">
+                        <div class="vn-portrait-fallback" id="vn-portrait-fallback" style="display: none;">
+                            <i class="fas fa-feather-pointed"></i>
+                        </div>
+                        <div class="vn-name-tag" id="vn-char-name-display">未知角色</div>
+                    </div>
+                </div>
+
+                <!-- 信息区 -->
+                <div class="vn-info-area">
+                    <div class="vn-info-grid">
+                        <div class="vn-info-item">
+                            <div class="vn-info-label"><i class="far fa-clock"></i> 时间</div>
+                            <div class="vn-info-value" id="vn-val-time">--</div>
+                        </div>
+                        <div class="vn-info-item">
+                            <div class="vn-info-label"><i class="fas fa-map-marker-alt"></i> 位置</div>
+                            <div class="vn-info-value" id="vn-val-location">--</div>
+                        </div>
+                        <div class="vn-info-item">
+                            <div class="vn-info-label"><i class="fas fa-cloud-sun"></i> 天气</div>
+                            <div class="vn-info-value" id="vn-val-weather">--</div>
+                            <div id="vn-weather-icon" class="vn-weather-anim"></div>
+                        </div>
+                        <div class="vn-info-item vn-span-full">
+                            <div class="vn-info-label"><i class="fas fa-tshirt"></i> 衣着</div>
+                            <div class="vn-info-value" id="vn-val-outfit">--</div>
+                        </div>
+                    </div>
+
+                    <div class="vn-info-item vn-info-highlight">
+                        <div class="vn-info-label"><i class="fas fa-heart"></i> 羁绊回响</div>
+                        <div class="vn-info-value" id="vn-val-favor">--</div>
+                    </div>
+
+                    <div class="vn-info-item">
+                        <div class="vn-info-label"><i class="fas fa-id-card"></i> 专属情报</div>
+                        <div class="vn-exclusive-rows" id="vn-exclusive-rows"></div>
+                    </div>
+
+                    <div class="vn-thought-box" id="vn-thought-box">
+                        ……
+                    </div>
+                </div>
+            </div>
+
+            <!-- 账本（反转面） -->
+            <div class="vn-contracts" id="vn-contracts">
+                <div class="vn-back-section">
+                    <div class="vn-back-title"><i class="fas fa-user"></i> 主角</div>
+                    <div id="vn-player-rows"></div>
+                </div>
+                <div class="vn-back-section">
+                    <div class="vn-back-title"><i class="fas fa-brain"></i> 主线 · 记忆碎片</div>
+                    <div id="vn-memory-list"></div>
+                </div>
+                <div class="vn-back-section">
+                    <div class="vn-back-title"><i class="fas fa-file-signature"></i> 契约录 <span class="vn-contract-count-inline" id="vn-contract-count"></span></div>
+                    <div class="vn-chip-bar vn-filter-bar" id="vn-contract-filter"></div>
+                    <div id="vn-contract-list"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 日历模态框 -->
+    <div class="vn-modal-overlay" id="vn-calendar-overlay" onclick="closeCalendar(event)">
+        <div class="vn-calendar-modal" onclick="event.stopPropagation()">
+            <div class="vn-cal-header">
+                <div class="vn-cal-title" id="vn-cal-month-title">……年……月</div>
+                <div class="vn-cal-close" onclick="closeCalendar()"><i class="fas fa-times"></i></div>
+            </div>
+
+            <div class="vn-cal-grid" id="vn-cal-grid">
+                <!-- 星期表头 -->
+                <div class="vn-cal-day-name">日</div><div class="vn-cal-day-name">一</div><div class="vn-cal-day-name">二</div>
+                <div class="vn-cal-day-name">三</div><div class="vn-cal-day-name">四</div><div class="vn-cal-day-name">五</div><div class="vn-cal-day-name">六</div>
+                <!-- 动态生成的日期格子将插入这里 -->
+            </div>
+
+            <div class="vn-schedule-area">
+                <div class="vn-schedule-item" id="vn-fest-container" style="display: none;">
+                    <div class="vn-schedule-label"><i class="fas fa-star"></i> 纪念日</div>
+                    <div class="vn-schedule-text vn-fest-text" id="vn-fest-text"></div>
+                </div>
+                <div class="vn-schedule-item">
+                    <div class="vn-schedule-label"><i class="fas fa-clipboard-list"></i> 近期事务</div>
+                    <div class="vn-schedule-text" id="vn-schedule-text">--</div>
+                </div>
+                <div class="vn-schedule-item">
+                    <div class="vn-schedule-label"><i class="fas fa-eye"></i> 天堂动向</div>
+                    <div class="vn-schedule-text" id="vn-heaven-text">--</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ══════════ 静态配置 ══════════
+        const IMAGE_LIBRARY = {
+            '普利凯特': [
+                'https://www.xieka.icu/media/f1c02d10d4e36a0b6f6a7f77/%E6%99%AE%E5%88%A9%E5%87%AF%E7%89%B91%20(2).webp',
+                'https://www.xieka.icu/media/a6c4d373cfc7ff1aa188ee3f/%E6%99%AE%E5%88%A9%E5%87%AF%E7%89%B91%20(4).webp',
+                'https://www.xieka.icu/media/cbc60fd3e259b07305b031a2/%E6%99%AE%E5%88%A9%E5%87%AF%E7%89%B91%20(6).webp',
+                'https://www.xieka.icu/media/5516687e1bee125cd7e1c4db/%E6%99%AE%E5%88%A9%E5%87%AF%E7%89%B91%20(5).webp',
+                'https://www.xieka.icu/media/0cbedf94e14428e666d6ded7/%E6%99%AE%E5%88%A9%E5%87%AF%E7%89%B91%20(3).webp',
+                'https://www.xieka.icu/media/068ab7e381f124e4310928a3/%E6%99%AE%E5%88%A9%E5%87%AF%E7%89%B91%20(1).webp'
+            ],
+            '乔千攻': [
+                'https://www.xieka.icu/media/2b0e7bbbc73c595ce59b39e5/%E4%B9%94%E5%8D%83%E6%94%BB.webp',
+                'https://www.xieka.icu/media/95437109afe4598bfad154c5/%E4%B9%94%E5%8D%83%E6%94%BB1.webp',
+                'https://www.xieka.icu/media/cc61797a47012a4a85a84bdf/%E4%B9%94%E5%8D%83%E6%94%BB2.webp',
+                'https://www.xieka.icu/media/21c3ab127fadeecca8c82534/%E4%B9%94%E5%8D%83%E6%94%BB3.webp',
+                'https://www.xieka.icu/media/6e4a4ad2ae1b75aa9d53647b/penguin-draw-1787895697315.webp',
+                'https://www.xieka.icu/media/248528d923c8ff773786af60/%E4%B9%94%E5%8D%83%E6%94%BB5.webp'
+            ],
+            '伊卡洛斯_常规': [
+                'https://www.xieka.icu/media/1fd1a92e67cc4af13a9cef20/%E4%BC%8A%E5%8D%A1%E6%B4%9B%E6%96%AF2.webp',
+                'https://www.xieka.icu/media/fb83b49fc95a5a7035ce8070/%E4%BC%8A%E5%8D%A1%E6%B4%9B%E6%96%AF3.webp',
+                'https://www.xieka.icu/media/1cccfb88da6ed44a0ed53840/%E4%BC%8A%E5%8D%A1%E6%B4%9B%E6%96%AF.webp'
+            ],
+            '伊卡洛斯_娇小': [
+                'https://www.xieka.icu/media/714a57ad0efe2b93fde5e43d/%E5%A8%87%E5%B0%8F%E4%BC%8A%E5%8D%A1%E6%B4%9B%E6%96%AF3.webp',
+                'https://www.xieka.icu/media/95e9af76fe4576558b68867d/%E5%A8%87%E5%B0%8F%E4%BC%8A%E5%8D%A1%E6%B4%9B%E6%96%AF.webp',
+                'https://www.xieka.icu/media/64dfe3bdb93a0ac5e5c67b2d/%E5%A8%87%E5%B0%8F%E4%BC%8A%E5%8D%A1%E6%B4%9B%E6%96%AF2.webp'
+            ],
+            '艾露迪': [
+                'https://www.xieka.icu/media/cd86326c4f490d5b1444676b/%E8%89%BE%E9%9C%B2%E8%BF%AA%20(2).webp',
+                'https://www.xieka.icu/media/8f2c3f8dfcb9a43e1f067cf3/%E8%89%BE%E9%9C%B2%E8%BF%AA%20(1).webp',
+                'https://www.xieka.icu/media/eef3cd7d736dfa7a8dae99c0/%E8%89%BE%E9%9C%B2%E8%BF%AA%20(3).webp',
+                'https://www.xieka.icu/media/36f8ce3c4f82f596b403da6c/%E8%89%BE%E9%9C%B2%E8%BF%AA%20(4).webp',
+                'https://www.xieka.icu/media/dd0dc54c897df74f082e263b/%E8%89%BE%E9%9C%B2%E8%BF%AA%20(5).webp',
+                'https://www.xieka.icu/media/c5c4d45e2ce2fa2f342ebe01/%E8%89%BE%E9%9C%B2%E8%BF%AA%20(6).webp'
+            ],
+            'Nova': [
+                'https://www.xieka.icu/media/fab9b0bf9f0ddd0919d2a7ca/Nova.webp',
+                'https://www.xieka.icu/media/0cd961b8cc70d56aca692745/Nova%20(6).webp',
+                'https://www.xieka.icu/media/75f0d0fe0028731d33f96a60/Nova%20(5).webp',
+                'https://www.xieka.icu/media/c9545ce080c7f763ed90e0fc/Nova%20(4).webp',
+                'https://www.xieka.icu/media/85fc21a1d94d7e52650fb406/Nova%20(3).webp',
+                'https://www.xieka.icu/media/34ceedeb742b7b1d41b68ea0/Nova%20(2).webp'
+            ],
+            '路西法': [
+                'https://www.xieka.icu/media/8a38a5664c9be39dfa50ed54/%E8%B7%AF%E8%A5%BF%E6%B3%95%20(6).webp',
+                'https://www.xieka.icu/media/8f8fbf4ab21b06d7448802e6/%E8%B7%AF%E8%A5%BF%E6%B3%95%20(5).webp',
+                'https://www.xieka.icu/media/4fc1b94b5104e447249af4cc/%E8%B7%AF%E8%A5%BF%E6%B3%95%20(4).webp',
+                'https://www.xieka.icu/media/e714c269c8bd03be10c93f49/%E8%B7%AF%E8%A5%BF%E6%B3%95%20(3).webp',
+                'https://www.xieka.icu/media/b7da42e384372fdc3f721658/%E8%B7%AF%E8%A5%BF%E6%B3%95%20(2).webp',
+                'https://www.xieka.icu/media/e0972447370f9fed9dd068f4/%E8%B7%AF%E8%A5%BF%E6%B3%95%20(1).webp'
+            ],
+            '米勒': [
+                'https://www.xieka.icu/media/418df726957c17132ab6421a/%E7%B1%B3%E5%8B%92%20(6).webp',
+                'https://www.xieka.icu/media/d6db9e70e85cf2468bc39179/%E7%B1%B3%E5%8B%92%20(5).webp',
+                'https://www.xieka.icu/media/67f019bf026b613a6d4ac73d/%E7%B1%B3%E5%8B%92%20(4).webp',
+                'https://www.xieka.icu/media/cb65a3425b1d6c919963f37b/%E7%B1%B3%E5%8B%92%20(3).webp',
+                'https://www.xieka.icu/media/be0a5f11bb15ffeb5373fb1b/%E7%B1%B3%E5%8B%92%20(2).webp',
+                'https://www.xieka.icu/media/e80ed1abe211a9dbb8562eba/%E7%B1%B3%E5%8B%92%20(1).webp'
+            ],
+            '嘉丽安': [
+                'https://www.xieka.icu/media/8ccc4ea685b277a338c6a836/%E5%98%89%E4%B8%BD%E5%AE%89%20(3).webp',
+                'https://www.xieka.icu/media/b712bb4d0c42cdc567b86727/%E5%98%89%E4%B8%BD%E5%AE%89%20(4).webp',
+                'https://www.xieka.icu/media/f14a563da20af1b60c25a381/%E5%98%89%E4%B8%BD%E5%AE%89%20(1).webp',
+                'https://www.xieka.icu/media/c07e64341c8cede25f054f16/%E5%98%89%E4%B8%BD%E5%AE%89%20(2).webp'
+            ],
+            '爱丽丝': [
+                'https://www.xieka.icu/media/a2fc3762eed2c7e12b2bd1fa/%E7%88%B1%E4%B8%BD%E4%B8%9D%20(1).webp',
+                'https://www.xieka.icu/media/6b579065c0074e2b0759f8fb/%E7%88%B1%E4%B8%BD%E4%B8%9D%20(2).webp',
+                'https://www.xieka.icu/media/f1b23a1b5d924b432617f154/%E7%88%B1%E4%B8%BD%E4%B8%9D%20(4).webp',
+                'https://www.xieka.icu/media/4f32959dc50dcbb53c609cde/%E7%88%B1%E4%B8%BD%E4%B8%9D%20(3).webp'
+            ]
+        };
+
+        const CHARACTERS = ['乔千攻', '普利凯特', '伊卡洛斯', '路西法', 'Nova', '艾露迪', '米勒', '嘉丽安', '爱丽丝'];
+        const CHAR_ALIASES = { '攻爷': '乔千攻', '凯特': '普利凯特', '诺亚': 'Nova', 'Eludi': '艾露迪' };
+        const THEME_BY_CHAR = { 
+            '乔千攻': 'theme-qiao', 
+            '伊卡洛斯': 'theme-icarus', 
+            '路西法': 'theme-lucifer',
+            'Nova': 'theme-nova',
+            '艾露迪': 'theme-eludi'
+        };
+
+        // 公历节日表 (农历节日无法简单推算)
+        const FESTIVALS = {
+            '01-01': '元旦', '02-14': '情人节', '03-08': '妇女节', '04-01': '愚人节',
+            '05-01': '劳动节', '06-01': '儿童节', '08-01': '建军节', '10-01': '国庆节',
+            '10-31': '万圣夜', '12-24': '平安夜', '12-25': '圣诞节', '12-31': '跨年夜'
+        };
+
+        const FAVOR_STAGES = [[80, '羁绊至深'], [60, '眷恋'], [40, '深交'], [20, '熟稔'], [0, '初识']];
+
+        // ══════════ 状态 ══════════
+        let selectedChar = null;   // null = 跟随剧情 (stat_data.御木市世界.当前焦点角色)
+        let lastPortrait = { key: '', src: '' };
+
+        // ══════════ 折叠/展开功能 ══════════
+        function toggleStatusCard() {
+            document.getElementById('vn-main-card').classList.toggle('collapsed');
+        }
+
+        function toggleCharPanel() {
+            document.getElementById('vn-char-panel').classList.toggle('collapsed-chars');
+        }
+
+        // ══════════ 反转 · 契约录 ══════════
+        function toggleContracts() {
+            const card = document.getElementById('vn-main-card');
+            card.classList.toggle('view-contracts');
+            const flipped = card.classList.contains('view-contracts');
+            card.classList.remove('flip-anim');
+            void card.offsetWidth; /* 重新触发翻转动画 */
+            card.classList.add('flip-anim');
+            setViewTitle(flipped);
+        }
+
+        function setViewTitle(flipped) {
+            document.getElementById('vn-title-icon').className = flipped ? 'fas fa-book' : 'fas fa-chess-queen';
+            document.getElementById('vn-title-text').textContent = flipped ? '主线账本' : '状态断章';
+        }
+
+        // ══════════ 日历模态框控制 ══════════
+        function openCalendar() {
+            document.getElementById('vn-calendar-overlay').classList.add('active');
+        }
+
+        function closeCalendar(e) {
+            if (e && e.target !== document.getElementById('vn-calendar-overlay')) return;
+            document.getElementById('vn-calendar-overlay').classList.remove('active');
+        }
+
+        // 解析日期字符串并生成日历网格
+        function generateCalendar(dateStr, hasFestival) {
+            const match = (dateStr || '').match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+            let year = new Date().getFullYear();
+            let month = new Date().getMonth();
+            let day = new Date().getDate();
+
+            if (match) {
+                year = parseInt(match[1]);
+                month = parseInt(match[2]) - 1; // JS月份0-11
+                day = parseInt(match[3]);
+            }
+
+            document.getElementById('vn-cal-month-title').textContent = year + '年' + (month + 1) + '月';
+
+            const grid = document.getElementById('vn-cal-grid');
+            const headers = Array.from(grid.querySelectorAll('.vn-cal-day-name'));
+            grid.innerHTML = '';
+            headers.forEach(h => grid.appendChild(h));
+
+            const firstDay = new Date(year, month, 1).getDay();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            for (let i = 0; i < firstDay; i++) {
+                const emptyCell = document.createElement('div');
+                emptyCell.className = 'vn-cal-cell empty';
+                grid.appendChild(emptyCell);
+            }
+
+            for (let i = 1; i <= daysInMonth; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'vn-cal-cell';
+                cell.textContent = i;
+                if (i === day) {
+                    cell.classList.add('today');
+                    if (hasFestival) cell.classList.add('festival');
+                }
+                grid.appendChild(cell);
+            }
+        }
+
+        // ══════════ MVU 变量读取 ══════════
+        function readVariables() {
+            // 优先读当前楼层的变量 (每个楼层的面板显示该楼层当时的状态)
+            try {
+                if (typeof getCurrentMessageVariables === 'function') {
+                    const v = getCurrentMessageVariables();
+                    if (v && v.stat_data) return v;
+                }
+            } catch (e) { /* ignore */ }
+            try {
+                if (typeof getVariables === 'function' && typeof getCurrentMessageId === 'function') {
+                    const v = getVariables({ type: 'message', message_id: getCurrentMessageId() });
+                    if (v && v.stat_data) return v;
+                }
+            } catch (e) { /* ignore */ }
+            try {
+                if (typeof getAllVariables === 'function') {
+                    const v = getAllVariables();
+                    if (v && v.stat_data) return v;
+                }
+            } catch (e) { /* ignore */ }
+            return {};
+        }
+
+        function pickCharacter(vars) {
+            if (selectedChar) return selectedChar;
+            const focus = String(_.get(vars, 'stat_data.御木市世界.当前焦点角色', '') || '');
+            // 全名优先, 再匹配别名 (攻爷/凯特)
+            for (const c of CHARACTERS) {
+                if (focus.includes(c)) return c;
+            }
+            for (const [alias, full] of Object.entries(CHAR_ALIASES)) {
+                if (focus.includes(alias)) return full;
+            }
+            // 无焦点信息时, 选第一个已登场的角色
+            for (const c of CHARACTERS) {
+                const status = String(_.get(vars, 'stat_data.' + c + '.现状', '') || '');
+                if (status && status !== '待登场') return c;
+            }
+            return '乔千攻';
+        }
+
+        function favorStage(favor) {
+            for (const [min, label] of FAVOR_STAGES) {
+                if (favor >= min) return label;
+            }
+            return '初识';
+        }
+
+        function festivalFor(dateStr) {
+            const m = (dateStr || '').match(/(\d{1,2})月(\d{1,2})日/);
+            if (!m) return '';
+            return FESTIVALS[m[1].padStart(2, '0') + '-' + m[2].padStart(2, '0')] || '';
+        }
+
+        // ══════════ 账本渲染（主角 / 记忆碎片 / 契约录，纯 DOM API） ══════════
+        const CONTRACT_STYLES = {
+            '提议中': 'st-proposed', '已签订': 'st-signed', '濒临收取': 'st-critical',
+            '已收取': 'st-collected', '已解除': 'st-dissolved', '已毁约': 'st-breach'
+        };
+
+        let contractFilter = 'char'; /* 'char'=只看当前角色  'all'=全部契约 */
+
+        function rowEl(label, value, lit) {
+            const row = document.createElement('div');
+            row.className = 'vn-xrow';
+            const l = document.createElement('div');
+            l.className = 'vn-xlabel';
+            l.textContent = label;
+            const v = document.createElement('div');
+            v.className = 'vn-xval' + (lit ? ' lit' : '');
+            v.textContent = value;
+            row.append(l, v);
+            return row;
+        }
+
+        function renderExclusive(vars, char) {
+            const box = document.getElementById('vn-exclusive-rows');
+            if (!box) return;
+            box.textContent = '';
+            const get = path => _.get(vars, 'stat_data.' + path, undefined);
+            if (char === '乔千攻') {
+                box.appendChild(rowEl('攻爷身份', get('乔千攻.攻爷身份暴露') ? '已揭露' : '未知', get('乔千攻.攻爷身份暴露')));
+                const fan = Number(_.get(vars, 'stat_data.乔千攻.反噬程度', 0)) || 0;
+                const row = document.createElement('div');
+                row.className = 'vn-xrow';
+                const l = document.createElement('div');
+                l.className = 'vn-xlabel';
+                l.textContent = '契约反噬';
+                const bar = document.createElement('div');
+                bar.className = 'vn-bar';
+                const fill = document.createElement('div');
+                fill.className = 'vn-bar-fill' + (fan >= 70 ? ' danger' : fan >= 40 ? ' warn' : '');
+                fill.style.width = Math.max(0, Math.min(100, fan)) + '%';
+                bar.appendChild(fill);
+                const v = document.createElement('div');
+                v.className = 'vn-xval';
+                v.textContent = fan + ' / 100';
+                row.append(l, bar, v);
+                box.appendChild(row);
+            } else if (char === '伊卡洛斯') {
+                box.appendChild(rowEl('真实身份', get('伊卡洛斯.真实身份暴露') ? '已揭露' : '未知', get('伊卡洛斯.真实身份暴露')));
+                box.appendChild(rowEl('当前形态', get('伊卡洛斯.当前形态', '常规形态')));
+                box.appendChild(rowEl('收取意向', get('伊卡洛斯.收取意向', '冷酷执行'), get('伊卡洛斯.收取意向') !== '冷酷执行'));
+            } else if (char === '路西法') {
+                box.appendChild(rowEl('真实身份', get('路西法.真实身份暴露') ? '已揭露' : '未知', get('路西法.真实身份暴露')));
+                box.appendChild(rowEl('真名 · 凯特', get('路西法.真名知晓') ? '已知晓' : '未知', get('路西法.真名知晓')));
+            } else if (char === '普利凯特') {
+                box.appendChild(rowEl('真实身份', get('普利凯特.真实身份暴露') ? '已揭露' : '未知', get('普利凯特.真实身份暴露')));
+            } else if (char === 'Nova') {
+                box.appendChild(rowEl('身份', get('其他角色.Nova.身份', '爱丽丝的秘书与贴身护卫')));
+                // 尝试从近期事务中提取相关任务，若无则显示默认
+                const affairs = get('世界.近期事务', {});
+                let task = '待命';
+                for (const [k, v] of Object.entries(affairs)) {
+                    if (v.includes('Nova') || v.includes('爱丽丝')) { task = k; break; }
+                }
+                box.appendChild(rowEl('当前任务', task));
+            } else if (char === '艾露迪') {
+                box.appendChild(rowEl('身份', get('其他角色.艾露迪.身份', '凄惨的小恶魔打工人')));
+                box.appendChild(rowEl('KPI状态', '严重滞后', true)); // 契合人设的固定展示
+            }
+        }
+
+        function renderPlayer(vars) {
+            const box = document.getElementById('vn-player-rows');
+            if (!box) return;
+            box.textContent = '';
+            box.appendChild(rowEl('身份', _.get(vars, 'stat_data.主角.身份', '——') || '——'));
+            box.appendChild(rowEl('就业状态', _.get(vars, 'stat_data.主角.就业状态', '——') || '——'));
+            const inv = _.get(vars, 'stat_data.主角.物品栏', {}) || {};
+            const names = Object.keys(inv);
+            if (!names.length) {
+                box.appendChild(rowEl('物品栏', '空空如也'));
+                return;
+            }
+            const label = document.createElement('div');
+            label.className = 'vn-xlabel';
+            label.style.marginTop = '4px';
+            label.textContent = '物品栏';
+            box.appendChild(label);
+            names.forEach(n => {
+                const it = inv[n] || {};
+                const row = document.createElement('div');
+                row.className = 'vn-item-row';
+                const qty = it.数量 != null ? ' ×' + it.数量 : '';
+                const b = document.createElement('b');
+                b.textContent = n + qty;
+                row.append('· ', b, '：' + (it.描述 || ''));
+                box.appendChild(row);
+            });
+        }
+
+        function renderMemory(vars) {
+            const list = document.getElementById('vn-memory-list');
+            if (!list) return;
+            const frags = _.get(vars, 'stat_data.主线.记忆碎片', {}) || {};
+            const entries = Object.entries(frags);
+            list.textContent = '';
+            if (!entries.length) {
+                const empty = document.createElement('div');
+                empty.className = 'vn-contract-empty';
+                empty.textContent = '记忆封印完好，尚无碎片浮现。';
+                list.appendChild(empty);
+                return;
+            }
+            entries.forEach(entry => {
+                const name = entry[0];
+                const f = entry[1] || {};
+                const item = document.createElement('div');
+                item.className = 'vn-memory-item';
+                const nm = document.createElement('div');
+                nm.className = 'vn-memory-name';
+                nm.textContent = '❖ ' + name;
+                const tx = document.createElement('div');
+                tx.className = 'vn-memory-text';
+                tx.textContent = (f.内容 || '') + (f.来源 ? '（' + f.来源 + '）' : '');
+                item.appendChild(nm);
+                item.appendChild(tx);
+                list.appendChild(item);
+            });
+        }
+
+        function buildContractFilter() {
+            const bar = document.getElementById('vn-contract-filter');
+            if (!bar) return;
+            bar.textContent = '';
+            const mk = (label, key) => {
+                const chip = document.createElement('div');
+                chip.className = 'vn-chip' + (contractFilter === key ? ' active' : '');
+                chip.textContent = label;
+                chip.onclick = () => {
+                    contractFilter = key;
+                    buildContractFilter();
+                    renderContracts(readVariables());
+                };
+                bar.appendChild(chip);
+            };
+            mk('该角色', 'char');
+            mk('全部契约', 'all');
+        }
+
+        function renderContracts(vars) {
+            const list = document.getElementById('vn-contract-list');
+            if (!list) return;
+            const contracts = _.get(vars, 'stat_data.契约', {}) || {};
+            const entries = Object.entries(contracts);
+            let shown = entries;
+            if (contractFilter === 'char') {
+                const char = pickCharacter(vars);
+                shown = entries.filter(e => {
+                    const c = e[1] || {};
+                    return String(c.立约人 || '').includes(char) || String(c.恶魔 || '').includes(char) || String(e[0]).includes(char);
+                });
+            }
+            const countEl = document.getElementById('vn-contract-count');
+            if (countEl) countEl.textContent = '共 ' + shown.length + ' / ' + entries.length + ' 份';
+            list.textContent = '';
+            if (!shown.length) {
+                const empty = document.createElement('div');
+                empty.className = 'vn-contract-empty';
+                empty.textContent = entries.length ? '该角色名下暂无契约。' : '羊皮纸还是空白的——目前没有任何契约。';
+                list.appendChild(empty);
+                return;
+            }
+            shown.forEach(entry => {
+                const name = entry[0];
+                const c = entry[1] || {};
+                const status = c.状态 || '已签订';
+                const item = document.createElement('div');
+                item.className = 'vn-contract-item';
+                const head = document.createElement('div');
+                head.className = 'vn-contract-head';
+                const nm = document.createElement('div');
+                nm.className = 'vn-contract-name';
+                nm.textContent = name;
+                const st = document.createElement('div');
+                st.className = 'vn-contract-status ' + (CONTRACT_STYLES[status] || 'st-signed');
+                st.textContent = status;
+                head.appendChild(nm);
+                head.appendChild(st);
+                const row1 = document.createElement('div');
+                row1.className = 'vn-contract-row';
+                const p1 = document.createElement('b');
+                p1.textContent = c.立约人 || '未知';
+                const p2 = document.createElement('b');
+                p2.textContent = c.恶魔 || '未知';
+                row1.append('立约人 ', p1, ' ⇄ 恶魔 ', p2);
+                const row2 = document.createElement('div');
+                row2.className = 'vn-contract-row';
+                row2.textContent = '愿望：' + (c.愿望 || '——');
+                const row3 = document.createElement('div');
+                row3.className = 'vn-contract-row';
+                row3.append('代价：');
+                const cost = document.createElement('span');
+                cost.className = 'vn-cost';
+                cost.textContent = c.代价 || '待收取';
+                row3.appendChild(cost);
+                item.appendChild(head);
+                item.appendChild(row1);
+                item.appendChild(row2);
+                item.appendChild(row3);
+                list.appendChild(item);
+            });
+        }
+
+        // ══════════ 角色胶囊 ══════════
+        function buildChips() {
+            const bar = document.getElementById('vn-char-chips');
+            bar.innerHTML = '';
+            for (const c of CHARACTERS) {
+                const chip = document.createElement('div');
+                chip.className = 'vn-chip';
+                chip.textContent = c;
+                chip.onclick = () => { selectedChar = (selectedChar === c ? null : c); renderChips(); render(); };
+                bar.appendChild(chip);
+            }
+            const auto = document.createElement('div');
+            auto.className = 'vn-chip vn-chip-auto';
+            auto.textContent = '跟随剧情';
+            auto.title = '跟随变量"世界.当前焦点角色"自动切换';
+            auto.onclick = () => { selectedChar = null; renderChips(); render(); };
+            bar.appendChild(auto);
+        }
+
+        function renderChips() {
+            const bar = document.getElementById('vn-char-chips');
+            const chips = bar.querySelectorAll('.vn-chip');
+            chips.forEach(chip => {
+                if (chip.classList.contains('vn-chip-auto')) {
+                    chip.classList.toggle('active', selectedChar === null);
+                } else {
+                    chip.classList.toggle('active', selectedChar === chip.textContent);
+                }
+            });
+        }
+
+        // ══════════ 主渲染 ══════════
+        function render() {
+            const vars = readVariables();
+            const char = pickCharacter(vars);
+            const container = document.getElementById('vn-status-container');
+            const portraitImg = document.getElementById('vn-portrait');
+            const fallback = document.getElementById('vn-portrait-fallback');
+
+            // 1. 主题应用
+            container.classList.remove('theme-qiao', 'theme-icarus', 'theme-lucifer', 'theme-nova', 'theme-eludi');
+            if (THEME_BY_CHAR[char]) container.classList.add(THEME_BY_CHAR[char]);
+            document.getElementById('vn-char-name-display').textContent = char;
+
+            // 2. 立绘 (同角色保持同一张, 避免重渲染时闪烁)
+            let key = null;
+            if (char === '伊卡洛斯') {
+                const form = String(_.get(vars, 'stat_data.伊卡洛斯.当前形态', '常规形态') || '');
+                key = form.includes('娇小') ? '伊卡洛斯_娇小' : '伊卡洛斯_常规';
+            } else if (IMAGE_LIBRARY[char]) {
+                key = char;
+            }
+
+            if (key && IMAGE_LIBRARY[key]) {
+                fallback.style.display = 'none';
+                portraitImg.style.display = '';
+                if (lastPortrait.key !== key) {
+                    const images = IMAGE_LIBRARY[key];
+                    const randomImg = images[Math.floor(Math.random() * images.length)];
+                    lastPortrait = { key, src: randomImg };
+                    portraitImg.onload = () => { portraitImg.style.opacity = '1'; };
+                    portraitImg.src = randomImg;
+                }
+            } else {
+                lastPortrait = { key: '', src: '' };
+                portraitImg.style.display = 'none';
+                portraitImg.style.opacity = '0';
+                fallback.style.display = 'flex';
+            }
+
+            // 3. 世界信息
+            const date = String(_.get(vars, 'stat_data.御木市世界.当前日期', '') || '');
+            const weather = String(_.get(vars, 'stat_data.御木市世界.当前天气', '') || '');
+            document.getElementById('vn-val-time').textContent = String(_.get(vars, 'stat_data.御木市世界.当前时间', '--') || '--');
+            document.getElementById('vn-val-time').title = date;
+            document.getElementById('vn-val-location').textContent = String(_.get(vars, 'stat_data.御木市世界.当前地点', '--') || '--');
+
+            document.getElementById('vn-val-weather').textContent = weather || '--';
+            const weatherIcon = document.getElementById('vn-weather-icon');
+            if (weather.includes('晴')) {
+                weatherIcon.className = 'vn-weather-anim weather-sunny';
+            } else if (weather.includes('雨')) {
+                weatherIcon.className = 'vn-weather-anim weather-rainy';
+            } else if (weather.includes('雪')) {
+                weatherIcon.className = 'vn-weather-anim weather-snowy';
+            } else if (weather.includes('阴') || weather.includes('云')) {
+                weatherIcon.className = 'vn-weather-anim weather-cloudy';
+            } else {
+                weatherIcon.className = 'vn-weather-anim';
+            }
+
+            // 4. 角色信息
+            let outfit = '';
+            let favor = null;
+            let status = '';
+            
+            // Nova 和 艾露迪 的数据在 "其他角色" 中
+            if (char === 'Nova' || char === '艾露迪') {
+                outfit = '——'; // 预设无特殊换装
+                favor = _.get(vars, `stat_data.其他角色.${char}.好感度`, null);
+                status = String(_.get(vars, `stat_data.其他角色.${char}.现状`, '') || '');
+            } else {
+                outfit = String(_.get(vars, 'stat_data.' + char + '.着装', '') || '');
+                favor = _.get(vars, 'stat_data.' + char + '.好感度', null);
+                status = String(_.get(vars, 'stat_data.' + char + '.现状', '') || '');
+            }
+
+            document.getElementById('vn-val-outfit').textContent = outfit && outfit !== '——' ? outfit : '--';
+
+            const favorEl = document.getElementById('vn-val-favor');
+            if (status === '待登场') {
+                favorEl.textContent = '尚未相逢';
+            } else if (typeof favor === 'number' || /^\d+$/.test(String(favor))) {
+                favorEl.textContent = favor + ' / 100 · ' + favorStage(Number(favor));
+            } else {
+                favorEl.textContent = '--';
+            }
+
+            document.getElementById('vn-thought-box').textContent =
+                status && status !== '待登场' ? status : (char + '还没在这段故事里登场。');
+
+            // 5. 日历 / 节日 / 事务
+            const fest = festivalFor(date);
+            const hasFestival = fest !== '';
+            if (hasFestival) {
+                document.getElementById('vn-fest-container').style.display = 'flex';
+                document.getElementById('vn-fest-text').textContent = fest;
+            } else {
+                document.getElementById('vn-fest-container').style.display = 'none';
+            }
+            generateCalendar(date, hasFestival);
+
+            const affairs = _.get(vars, 'stat_data.御木市世界.近期事务', {}) || {};
+            const lines = Object.entries(affairs).slice(0, 4).map(([name, desc]) => name + '：' + desc);
+            document.getElementById('vn-schedule-text').textContent = lines.length ? lines.join('\n') : '暂无待办，岁月静好。';
+            document.getElementById('vn-heaven-text').textContent = String(_.get(vars, 'stat_data.主线.天堂动向', '--') || '--');
+
+            renderChips();
+            renderExclusive(vars, char);
+            renderPlayer(vars);
+            renderMemory(vars);
+            renderContracts(vars);
+        }
+
+        // ══════════ 初始化 ══════════
+        async function initStatusUI() {
+            // 先把骨架填活: 胶囊/占位值立即可见, 不依赖任何外部条件
+            buildChips();
+            buildContractFilter();
+            render();
+            // 等 MVU 就绪后重读变量 (最多等3秒, 防止全局缺失时面板假死)
+            try {
+                if (typeof waitGlobalInitialized === 'function') {
+                    await Promise.race([waitGlobalInitialized('Mvu'), new Promise(r => setTimeout(r, 3000))]);
+                }
+            } catch (e) { /* 忽略, 走事件刷新兜底 */ }
+            render();
+
+            // 变量更新 / 楼层变化时自动刷新
+            const events = [
+                'mag_variable_updated', 'mag_variable_update_ended', 'mag_variable_update_ended_for_zod',
+                'message_received', 'message_updated', 'message_edited', 'message_deleted', 'chat_changed'
+            ];
+            events.forEach(name => {
+                try { eventOn(name, () => render()); } catch (e) { /* 事件不存在则忽略 */ }
+            });
+        }
+
+        function boot() {
+            if (typeof errorCatched === 'function' && typeof $ === 'function') {
+                $(errorCatched(initStatusUI));
+            } else {
+                initStatusUI();
+            }
+        }
+
+        // 脚本位于 body 末尾, DOM 已就绪, 直接启动
+        try {
+            boot();
+        } catch (e) { /* 静默 */ }
+    </script>
+</body>
+</html>
