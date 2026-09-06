@@ -1,0 +1,610 @@
+```html
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <style>
+    /* 引入外部字体 */
+    @import url("https://fontsapi.zeoseven.com/230/main/result.css");
+    @import url("https://fontsapi.zeoseven.com/323/main/result.css");
+    @import url("https://fontsapi.zeoseven.com/556/main/result.css");
+
+    :root {
+      --sb-text-scale: 1;
+
+      /* 基础色彩 */
+      --c-bg: hsl(42, 26%, 93%);
+      --c-surface: hsl(40, 14%, 88%);
+      --c-surface-alt: hsl(225, 14%, 86%);
+      --c-navy: hsl(225, 34%, 28%);
+      --c-navy-light: hsl(225, 24%, 46%);
+      --c-navy-pale: hsl(225, 18%, 64%);
+      --c-blood: hsl(355, 46%, 36%);
+      --c-blood-dim: hsl(355, 36%, 28%);
+      --c-wine: hsl(350, 30%, 32%);
+      --c-warm: hsl(5, 40%, 40%);
+      --c-warm-dim: hsl(5, 32%, 30%);
+      --c-yellow: hsl(42, 72%, 38%);
+      --c-text: hsl(30, 6%, 6%);
+      --c-text-muted: hsl(30, 4%, 14%);
+      --c-text-dim: hsl(30, 4%, 22%);
+      --c-border: hsl(225, 16%, 74%);
+      --c-divider: hsl(225, 10%, 82%);
+      --c-fatal: hsl(355, 50%, 38%);
+      --c-track: hsl(225, 10%, 82%);
+
+      --c-card-default: hsl(42, 20%, 92%);
+      --c-card-victim: hsl(210, 28%, 91%);
+      --c-mod-bg: hsl(40, 6%, 91%);
+      --c-mod-border: hsl(40, 5%, 82%);
+      --c-evt-bg: hsl(35, 22%, 92%);
+      --c-shadow-light: hsla(0,0%,100%,0.4);
+      --c-shadow-dark: hsla(0,0%,0%,0.08);
+      --c-evt-label: hsl(35, 42%, 40%);
+      --c-tbl-label: hsl(195, 22%, 32%);
+      --c-secret: hsl(280, 58%, 36%);
+      --c-secret-val: hsl(280, 55%, 30%);
+      --c-purp: hsl(270, 30%, 36%);
+      --c-tear: hsl(210, 24%, 48%);
+
+      /* 新增：高饱和度/加深的重点文字颜色 */
+      --c-inner: hsl(35, 95%, 32%); /* 暖橙色，用于内心话和孤立度描述 */
+
+      --font-body: "linja waso", 'LXGW WenKai Mono', 'Sarasa Mono UI', monospace;
+      --font-label: "NanoWoodHei", 'JiangChengYueHuTi 400W', serif;
+      --font-inner: "The Peak Font Plus", 'PING FANG ZHUI FENG', serif;
+      --font-isolation: "The Peak Font Plus", 'PING FANG CHANG AN', serif;
+
+      --gap-xs: 4px;
+      --gap-sm: 8px;
+      --gap-md: 12px;
+      --gap-lg: 16px;
+    }
+
+    :root[data-sb-theme="dark"] .sb-frame {
+      --c-bg: hsl(220, 10%, 12%);
+      --c-surface: hsl(220, 10%, 16%);
+      --c-surface-alt: hsl(220, 10%, 16%);
+      --c-text: hsl(40, 10%, 85%);
+      --c-text-muted: hsl(40, 10%, 65%);
+      --c-text-dim: hsl(40, 10%, 50%);
+      --c-border: hsla(225, 16%, 74%, 0.2);
+      --c-divider: hsla(225, 10%, 82%, 0.15);
+      --c-track: hsla(225, 10%, 82%, 0.1);
+      --c-card-default: hsl(220, 12%, 16%);
+      --c-card-victim: hsl(215, 16%, 18%);
+      --c-mod-bg: hsl(220, 10%, 20%);
+      --c-mod-border: hsl(220, 10%, 26%);
+      --c-evt-bg: hsl(35, 15%, 18%);
+      --c-shadow-light: hsla(0,0%,100%,0.03);
+      --c-shadow-dark: hsla(0,0%,0%,0.4);
+      --c-evt-label: hsl(35, 50%, 65%);
+      --c-tbl-label: hsl(195, 40%, 60%);
+      --c-secret: hsl(280, 50%, 65%);
+      --c-secret-val: hsl(280, 45%, 60%);
+      --c-purp: hsl(270, 40%, 65%);
+      --c-tear: hsl(210, 40%, 60%);
+      --c-navy: hsl(225, 50%, 75%);
+      --c-navy-light: hsl(225, 40%, 65%);
+      --c-navy-pale: hsl(225, 20%, 50%);
+      --c-blood: hsl(355, 60%, 65%);
+      --c-fatal: hsl(355, 70%, 60%);
+      --c-warm: hsl(15, 60%, 65%);
+      --c-yellow: hsl(42, 70%, 60%);
+
+      /* 暗色模式下提亮保证可读性 */
+      --c-inner: hsl(35, 95%, 65%);
+    }
+
+    body { margin: 0; padding: 0; }
+
+    .sb-container {
+      margin: 0 auto; padding: 16px; background: transparent; max-width: 640px; font-family: var(--font-body); font-weight: normal; box-sizing: border-box;
+    }
+
+    @keyframes pulse { 0%, 100% { box-shadow: none; } 50% { box-shadow: 0 0 6px hsla(355,48%,38%,0.22); } }
+    @keyframes tp { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+
+    .sb-frame { width: 100%; background: var(--c-bg); border: 2px solid var(--c-navy-light); border-radius: 12px; overflow: hidden; margin-bottom: var(--gap-lg); transition: background 0.3s, border-color 0.3s; box-sizing: border-box; }
+    .sb-bar { display: flex; flex-direction: column; align-items: stretch; padding: 10px var(--gap-md); gap: 10px; background: var(--c-surface-alt); user-select: none; cursor: pointer; transition: background 0.3s; }
+    .sb-bar.is-expanded { border-bottom: 1px solid var(--c-divider); }
+    .sb-bar-row { display: flex; justify-content: space-between; width: 100%; flex-wrap: wrap; gap: 8px; }
+    .sb-bar-l { display: flex; flex-shrink: 0; gap: 4px; align-items: baseline; flex-wrap: wrap; }
+    .sb-bar-m { display: flex; flex: 1; align-items: flex-start; min-width: 0; gap: 8px; }
+    .sb-bar-r { display: flex; flex-shrink: 0; gap: 8px; align-items: center; }
+
+    .sb-controls { display: flex; gap: 4px; flex-wrap: wrap; }
+    .sb-btn { padding: 4px 8px; border-radius: 4px; border: 1px solid var(--c-border); font-size: 13px; cursor: pointer; color: var(--c-text); background: var(--c-bg); font-family: sans-serif; font-weight: bold; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .sb-btn:hover { background: var(--c-surface); }
+
+    .sb-time { font-family: var(--font-body); font-size: calc(18px * var(--sb-text-scale)); font-weight: 700; color: var(--c-text); line-height: 1.2; }
+    .sb-sep { font-size: calc(12px * var(--sb-text-scale)); color: var(--c-navy-pale); }
+    .sb-loc { font-family: var(--font-body); font-size: calc(15px * var(--sb-text-scale)); color: var(--c-text-muted); line-height: 1.3; }
+
+    .sb-badge { width: calc(26px * var(--sb-text-scale)); height: calc(26px * var(--sb-text-scale)); border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: calc(13px * var(--sb-text-scale)); font-family: var(--font-body); border: 1px solid; flex-shrink: 0; margin-top: 2px; }
+    .sb-badge[data-level="D"] { background: hsl(225,10%,84%); color: var(--c-text-dim); border-color: var(--c-border); }
+    .sb-badge[data-level="C"] { background: hsl(200,20%,84%); color: hsl(200,40%,32%); border-color: hsl(200,24%,64%); }
+    .sb-badge[data-level="B"] { background: hsl(35,28%,84%); color: hsl(35,50%,34%); border-color: hsl(35,28%,58%); }
+    .sb-badge[data-level="A"] { background: hsl(355,20%,82%); color: var(--c-blood); border-color: hsl(355,28%,64%); animation: pulse 1.4s infinite; }
+    .sb-badge[data-level="S"] { background: hsl(280,20%,82%); color: hsl(280,40%,34%); border-color: hsl(280,28%,58%); animation: pulse 0.7s infinite; }
+
+    .sb-desc { font-family: var(--font-isolation); font-size: calc(15px * var(--sb-text-scale)); color: var(--c-text-dim); word-break: break-word; white-space: pre-wrap; line-height: 1.4; padding-top: 3px; }
+
+    .sb-ustat { display: flex; align-items: center; gap: 3px; padding: 2px 8px; font-family: var(--font-body); font-size: calc(14px * var(--sb-text-scale)); font-weight: 600; letter-spacing: 0.5px; border-radius: 4px; border: 1px solid; }
+    .sb-ustat[data-status="保护中"] { color: var(--c-navy-light); border-color: hsla(225,22%,54%,0.25); background: hsla(225,22%,54%,0.06); }
+    .sb-ustat[data-status="霸凌中"] { color: var(--c-blood); border-color: hsla(355,38%,48%,0.3); background: hsla(355,38%,48%,0.05); }
+
+    .sb-body { padding: var(--gap-md); display: flex; flex-direction: column; gap: var(--gap-md); }
+
+    .sb-evt { padding: 6px var(--gap-md); background: var(--c-evt-bg); border-left: 3px solid var(--c-evt-label); border-radius: 0 4px 4px 0; font-family: var(--font-body); color: var(--c-text); font-weight: 500; display: flex; align-items: flex-start; transition: background 0.3s; }
+    .sb-evt-label { font-family: var(--font-label); font-size: calc(13px * var(--sb-text-scale)); font-weight: 700; color: var(--c-evt-label); letter-spacing: 0.5px; margin-right: 6px; flex-shrink: 0; padding-top: 1px; }
+    .sb-evt-content { flex: 1; font-size: calc(13px * var(--sb-text-scale)); word-break: break-word; white-space: pre-wrap; line-height: 1.4; }
+
+    .sb-avatar-bar { display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 8px; border-bottom: 1px dashed var(--c-divider); }
+    .sb-avatar { padding: 6px 14px; border-radius: 8px; font-size: calc(14px * var(--sb-text-scale)); font-weight: 700; font-family: var(--font-body); cursor: pointer; border: 1px solid; opacity: 0.5; transition: all 0.2s ease; user-select: none; display: flex; align-items: center; justify-content: center; }
+    .sb-avatar:hover { opacity: 0.8; }
+    .sb-avatar.is-active { opacity: 1; transform: scale(1.05); }
+
+    .sb-avatar-victim { background: hsla(225,24%,48%,.1); color: var(--c-navy-light); border-color: hsla(225,24%,48%,.3); }
+    .sb-avatar-victim.is-active { background: var(--c-navy-light); color: #fff; border-color: var(--c-navy-light); box-shadow: 0 2px 6px hsla(225,24%,48%,.3); }
+
+    .sb-avatar-bully { background: hsla(355,46%,36%,.1); color: var(--c-blood); border-color: hsla(355,46%,36%,.3); }
+    .sb-avatar-bully.is-active { background: var(--c-blood); color: #fff; border-color: var(--c-blood); box-shadow: 0 2px 6px hsla(355,46%,36%,.3); }
+
+    .sb-card { background: var(--c-card-default); border: 1px solid var(--c-border); border-radius: 8px; padding: var(--gap-md); animation: fadeIn 0.3s ease; transition: background 0.3s, border-color 0.3s; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+    .sb-card.sb-victim { background: var(--c-card-victim); border-color: hsla(210,22%,55%,0.25); }
+    .sb-card.sb-bully { border-color: hsl(355,14%,70%); }
+
+    /* ========== 布局样式 ========== */
+    .sb-head { display: flex; align-items: center; gap: var(--gap-xs); flex-wrap: wrap; margin-bottom: 8px; }
+    .sb-name { font-family: var(--font-body); font-size: calc(18px * var(--sb-text-scale)); font-weight: 700; color: var(--c-text); }
+    .sb-grade { font-family: var(--font-body); font-size: calc(12px * var(--sb-text-scale)); padding: 1px 7px; border-radius: 4px; border: 1px solid; font-weight: 500; }
+
+    .sb-victim .sb-grade { color: var(--c-navy-light); background: hsla(225,24%,48%,.06); border-color: hsla(225,20%,52%,.15); }
+    .sb-bully .sb-grade { color: var(--c-blood); background: hsla(355,32%,48%,.05); border-color: hsla(355,32%,48%,.2); }
+
+    .sb-tear-dot { margin-left: auto; color: var(--c-tear); font-size: calc(13px * var(--sb-text-scale)); animation: tp 2s infinite; }
+    .sb-prey { margin-left: auto; font-family: var(--font-body); font-size: calc(11px * var(--sb-text-scale)); color: var(--c-fatal); background: hsla(355,32%,48%,.05); border: 1px solid hsla(355,32%,48%,.2); border-radius: 4px; padding: 1px 7px; font-weight: 500; }
+
+    .sb-card-top { display: flex; gap: var(--gap-md); align-items: flex-start; }
+    .sb-card-left { flex: 0 0 160px; /* 固定图片列宽度 */ }
+    .sb-card-right { flex: 1; display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+    .sb-card-bottom { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+
+    .sb-portrait-box { width: 100%; border-radius: 6px; overflow: hidden; border: 1px solid var(--c-border); background: var(--c-surface-alt); display: flex; justify-content: center; }
+    .sb-portrait { width: 100%; object-fit: cover; display: block; cursor: zoom-in; transition: transform 0.2s ease; }
+    .sb-portrait:hover { transform: scale(1.02); }
+
+    #sb-lightbox {
+      display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0,0,0,0.85); z-index: 999999; justify-content: center; align-items: center;
+      cursor: zoom-out; backdrop-filter: blur(2px);
+    }
+    #sb-lightbox-img {
+      max-width: 90vw; max-height: 90vh; object-fit: contain; border-radius: 8px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.6);
+    }
+
+    .sb-mod { border-radius: 6px; padding: 9px; border: 1px solid var(--c-mod-border); background: var(--c-mod-bg); box-shadow: 0 1px 0 var(--c-shadow-light), 0 2px 6px var(--c-shadow-dark); transition: background 0.3s, border-color 0.3s; }
+    .sb-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; }
+    .sb-grid-tight { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 10px; }
+
+    @media (max-width: 480px) {
+      .sb-container { padding: 4px; }
+      .sb-grid, .sb-grid-tight { grid-template-columns: 1fr; }
+      .sb-body { padding: 10px; }
+      .sb-card { padding: 10px; }
+      .sb-bar { padding: 8px 10px; }
+      .sb-card-top { flex-direction: column; align-items: stretch; }
+      .sb-card-left { flex: none; width: 100%; max-width: 200px; margin: 0 auto; }
+    }
+
+    .sb-cell { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+    .sb-cell-full { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 1px; min-width: 0; }
+    .sb-label { font-family: var(--font-label); font-size: calc(13px * var(--sb-text-scale)); font-weight: 600; letter-spacing: 0.5px; display: flex; align-items: center; gap: 3px; }
+    .sb-label-navy { color: var(--c-navy); }
+    .sb-label-warm { color: var(--c-warm); }
+    .sb-label-purp { color: var(--c-purp); }
+    .sb-label-teal { color: var(--c-tbl-label); }
+    .sb-label-blood { color: var(--c-blood); }
+    .sb-label-secret { color: var(--c-secret); }
+
+    .sb-inj-toggle { cursor: pointer; user-select: none; display: flex; justify-content: space-between; align-items: center; }
+    .sb-inj-toggle:hover { opacity: 0.8; }
+    .sb-inj-icon { font-size: 12px; transition: transform 0.2s; }
+    .sb-inj-icon.is-collapsed { transform: rotate(-90deg); }
+
+    .sb-val { font-family: var(--font-body); font-size: calc(14px * var(--sb-text-scale)); font-weight: 500; color: var(--c-text); line-height: 1.4; word-break: break-word; white-space: pre-wrap; }
+    .sb-val-muted { color: var(--c-text-muted); }
+    .sb-val-warn { color: var(--c-warm); font-weight: 600; }
+    .sb-val-tear { color: var(--c-tear); font-weight: 600; }
+
+    /* ========== 修改处：颜色与内心话统一 ========== */
+    .sb-val-inner { font-family: var(--font-inner); font-size: calc(16px * var(--sb-text-scale)); font-weight: bold; color: var(--c-inner); font-style: italic; letter-spacing: 0.5px; }
+    .sb-iso-desc { font-family: var(--font-isolation); font-size: calc(15px * var(--sb-text-scale)); font-weight: bold; color: var(--c-inner); word-break: break-word; white-space: pre-wrap; flex: 1; min-width: 100px; letter-spacing: 0.5px; }
+
+    .sb-val-secret { color: var(--c-secret-val); font-weight: 600; }
+    .sb-val-hist { font-style: italic; white-space: pre-wrap; font-size: calc(13px * var(--sb-text-scale)); font-weight: 500; color: var(--c-text); word-break: break-word; }
+
+    .sb-inj { display: flex; flex-direction: column; gap: 4px; margin-top: 4px; }
+    .sb-inj-item { display: flex; flex-direction: column; gap: 2px; padding: 6px 10px; border-left: 3px solid var(--c-fatal); background: hsla(355, 20%, 55%, 0.1); border-radius: 0 4px 4px 0; }
+    .sb-inj-head { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+    .sb-inj-part { font-family: var(--font-label); font-size: calc(13px * var(--sb-text-scale)); font-weight: 600; color: var(--c-blood); }
+    .sb-inj-perp { font-family: var(--font-body); font-size: calc(12px * var(--sb-text-scale)); font-weight: 500; color: var(--c-text-muted); background: hsla(0,0%,0%,0.08); padding: 1px 6px; border-radius: 3px; }
+    .sb-inj-detail { font-family: var(--font-body); font-size: calc(13px * var(--sb-text-scale)); font-weight: 500; color: var(--c-text); line-height: 1.4; word-break: break-word; white-space: pre-wrap; }
+
+    .sb-pg { display: flex; align-items: center; gap: var(--gap-sm); font-size: calc(13px * var(--sb-text-scale)); width: 100%; }
+    .sb-pg-label { font-family: var(--font-label); font-size: calc(13px * var(--sb-text-scale)); text-align: left; min-width: 45px; letter-spacing: 1px; color: var(--c-text-muted); flex-shrink: 0; }
+    .sb-pg-track { flex: 1; height: 6px; background: var(--c-track); border: 1px solid var(--c-border); overflow: hidden; border-radius: 3px; min-width: 50px; }
+    .sb-pg-fill { height: 100%; transition: width 0.3s; border-radius: 3px; }
+    .sb-pg-fill-warm { background: var(--c-warm); }
+    .sb-pg-fill-danger { background: var(--c-blood); }
+    .sb-pg-fill-fatal { background: var(--c-fatal); }
+    .sb-pg-fill-muted { background: var(--c-text-dim); }
+    .sb-pg-val { font-family: var(--font-body); font-size: calc(14px * var(--sb-text-scale)); font-weight: 500; flex-shrink: 0; min-width: 22px; text-align: right; color: var(--c-text); }
+
+    .sb-row { display: flex; align-items: flex-start; gap: 8px; flex-wrap: wrap; }
+    .sb-iso { padding: 1px 6px; border: 1px solid; font-size: calc(13px * var(--sb-text-scale)); font-weight: 700; letter-spacing: 1px; flex-shrink: 0; font-family: var(--font-isolation); border-radius: 4px; }
+    .sb-iso[data-stage="一阶"] { color: hsl(42,40%,38%); border-color: hsla(42,30%,44%,0.18); background: hsla(42,30%,44%,0.04); }
+    .sb-iso[data-stage="二阶"] { color: hsl(40,48%,36%); border-color: hsla(40,34%,44%,0.2); background: hsla(40,34%,44%,0.04); }
+    .sb-iso[data-stage="三阶"] { color: hsl(38,56%,34%); border-color: hsla(38,40%,42%,0.22); background: hsla(38,40%,42%,0.06); }
+    .sb-iso[data-stage="四阶"] { color: hsl(36,62%,32%); border-color: hsla(36,44%,40%,0.22); background: hsla(36,44%,40%,0.06); }
+    .sb-iso[data-stage="五阶"] { color: hsl(34,66%,30%); border-color: hsla(34,48%,38%,0.28); background: hsla(34,48%,38%,0.08); }
+
+    .sb-tbl { width: 100%; border-collapse: collapse; }
+    .sb-tbl td { padding: 4px 0; vertical-align: top; line-height: 1.5; border-bottom: 1px dashed var(--c-divider); }
+    .sb-tbl tr:last-child td { border-bottom: none; }
+    .sb-tbl-label { font-family: var(--font-label); font-size: calc(13px * var(--sb-text-scale)); font-weight: 600; color: var(--c-tbl-label); letter-spacing: 0.5px; width: 45px; white-space: nowrap; padding-right: 10px; }
+    .sb-tbl-val { font-family: var(--font-body); font-size: calc(14px * var(--sb-text-scale)); font-weight: 500; color: var(--c-text-muted); word-break: break-word; white-space: pre-wrap; }
+  </style>
+  <script type="module">
+    // ==========================================
+    // 【立绘图床配置区】
+    // ==========================================
+    const IMAGE_POOL = {
+        '贺清寒': 'https://files.catbox.moe/hm2rw8.png',
+        '陈麦': 'https://files.catbox.moe/fhovvc.png',
+        '孙梦婷': 'https://files.catbox.moe/89j0zr.png',
+        '林佳琪': 'https://files.catbox.moe/y00qgy.png',
+        '林夏': 'https://files.catbox.moe/f2zt1t.png',
+        '叶轻': 'https://files.catbox.moe/lqj7k6.png',
+        '许知言': 'https://files.catbox.moe/su7miq.png',
+        '彭小狸': 'https://files.catbox.moe/ghhhkd.png',
+        '陆燃': 'https://files.catbox.moe/fxe9en.png'
+    };
+
+    if (typeof window.mvuSbConfig === 'undefined') {
+        window.mvuSbConfig = {
+            scale: parseFloat(localStorage.getItem('mvu_sb_scale')) || 1,
+            theme: localStorage.getItem('mvu_sb_theme') || 'light',
+            isExpanded: localStorage.getItem('mvu_sb_expanded') !== 'false',
+            selectedChar: null,
+            injExpanded: true // 默认展开伤痕记录
+        };
+
+        window.mvuSbApplyTheme = function() {
+            document.documentElement.style.setProperty('--sb-text-scale', window.mvuSbConfig.scale);
+            if (window.mvuSbConfig.theme === 'dark') {
+                document.documentElement.setAttribute('data-sb-theme', 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-sb-theme');
+            }
+        };
+
+        window.mvuSbApplyTheme();
+
+        $(document).on('click', '.sb-btn-zoom-in', function(e) {
+            e.stopPropagation();
+            window.mvuSbConfig.scale = Math.min(2.0, window.mvuSbConfig.scale + 0.15);
+            localStorage.setItem('mvu_sb_scale', window.mvuSbConfig.scale);
+            window.mvuSbApplyTheme();
+        });
+
+        $(document).on('click', '.sb-btn-zoom-out', function(e) {
+            e.stopPropagation();
+            window.mvuSbConfig.scale = Math.max(0.6, window.mvuSbConfig.scale - 0.15);
+            localStorage.setItem('mvu_sb_scale', window.mvuSbConfig.scale);
+            window.mvuSbApplyTheme();
+        });
+
+        $(document).on('click', '.sb-btn-theme', function(e) {
+            e.stopPropagation();
+            window.mvuSbConfig.theme = window.mvuSbConfig.theme === 'dark' ? 'light' : 'dark';
+            localStorage.setItem('mvu_sb_theme', window.mvuSbConfig.theme);
+            window.mvuSbApplyTheme();
+        });
+
+        $(document).on('click', '.sb-bar', function(e) {
+            if($(e.target).closest('.sb-controls').length) return;
+            window.mvuSbConfig.isExpanded = !window.mvuSbConfig.isExpanded;
+            localStorage.setItem('mvu_sb_expanded', window.mvuSbConfig.isExpanded);
+            window.mvuSbRenderAll();
+        });
+
+        $(document).on('click', '.sb-avatar', function(e) {
+            e.stopPropagation();
+            window.mvuSbConfig.selectedChar = $(this).attr('data-name');
+            window.mvuSbRenderAll();
+        });
+
+        $(document).on('click', '.sb-inj-toggle', function(e) {
+            e.stopPropagation();
+            window.mvuSbConfig.injExpanded = !window.mvuSbConfig.injExpanded;
+            const $icon = $(this).find('.sb-inj-icon');
+            const $list = $(this).next('.sb-inj');
+            if (window.mvuSbConfig.injExpanded) {
+                $icon.removeClass('is-collapsed');
+                $list.slideDown(200);
+            } else {
+                $icon.addClass('is-collapsed');
+                $list.slideUp(200);
+            }
+        });
+
+        $(document).on('click', '.sb-portrait', function(e) {
+            e.stopPropagation();
+            const imgSrc = $(this).attr('src');
+            $('#sb-lightbox-img').attr('src', imgSrc);
+            $('#sb-lightbox').css('display', 'flex').hide().fadeIn(200);
+        });
+
+        $(document).on('click', '#sb-lightbox', function(e) {
+            e.stopPropagation();
+            $(this).fadeOut(200);
+        });
+    } else {
+        window.mvuSbApplyTheme();
+    }
+
+    function getPortraitHtml(name) {
+        const imgUrl = IMAGE_POOL[name];
+        if (imgUrl) {
+            return `<div class="sb-card-left"><div class="sb-portrait-box"><img class="sb-portrait" src="${imgUrl}" alt="${name}的立绘" title="点击放大查看原图"></div></div>`;
+        }
+        return '';
+    }
+
+    function renderVictimCard(name, data) {
+      let injModHtml = '';
+      if (data.伤痕 && typeof data.伤痕 === 'object' && Object.keys(data.伤痕).length > 0) {
+          let items = '';
+          for (const [part, detail] of Object.entries(data.伤痕)) {
+              items += `<div class="sb-inj-item"><div class="sb-inj-head"><div class="sb-inj-part">${part}</div><div class="sb-inj-perp">${detail.施暴者 || '未知'}</div></div><div class="sb-inj-detail">${detail.成因 || ''}</div></div>`;
+          }
+
+          const iconClass = window.mvuSbConfig.injExpanded ? '' : 'is-collapsed';
+          const listStyle = window.mvuSbConfig.injExpanded ? '' : 'display: none;';
+
+          injModHtml = `
+          <div class="sb-mod" style="margin-top: 8px;">
+            <div class="sb-label sb-label-blood sb-inj-toggle" style="margin-bottom: 4px;">
+              <span>伤痕记录</span>
+              <span class="sb-inj-icon ${iconClass}">▼</span>
+            </div>
+            <div class="sb-inj" style="${listStyle}">${items}</div>
+          </div>`;
+      }
+
+      const headHtml = `
+        <div class="sb-head">
+          <div class="sb-name">${name}</div>
+          <div class="sb-grade">${data.年级 || '未知'}</div>
+          <div class="sb-tear-dot">💧</div>
+        </div>
+      `;
+
+      const topContentHtml = `
+        <div class="sb-card-right">
+          <div class="sb-mod">
+            <div class="sb-grid">
+              <div class="sb-cell"><div class="sb-label sb-label-navy">当前情绪</div><div class="sb-val sb-val-tear">${data.当前情绪 || '未知'}</div></div>
+              <div class="sb-cell"><div class="sb-label sb-label-navy">当前地点</div><div class="sb-val sb-val-muted">${data.当前地点 || '未知'}</div></div>
+              <div class="sb-cell-full"><div class="sb-label sb-label-navy">当前动作</div><div class="sb-val sb-val-muted">${data.当前动作 || '未知'}</div></div>
+              <div class="sb-cell-full"><div class="sb-label sb-label-navy">性格</div><div class="sb-val sb-val-muted">${data.性格 || '未知'}</div></div>
+              ${data.身体条件 && data.身体条件 !== '正常' ? `<div class="sb-cell-full"><div class="sb-label sb-label-navy">身体条件</div><div class="sb-val sb-val-warn">${data.身体条件}</div></div>` : ''}
+              <div class="sb-cell-full"><div class="sb-label sb-label-navy">内心话</div><div class="sb-val sb-val-inner">${data.内心话 || '...'}</div></div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const bottomContentHtml = `
+        <div class="sb-card-bottom">
+          <div class="sb-mod">
+            <div class="sb-grid-tight">
+              <div class="sb-pg"><div class="sb-pg-label">好感</div><div class="sb-pg-track"><div class="sb-pg-fill sb-pg-fill-warm" style="width: ${data.对User的好感 || 0}%"></div></div><div class="sb-pg-val">${data.对User的好感 || 0}</div></div>
+              <div class="sb-pg"><div class="sb-pg-label">恐惧</div><div class="sb-pg-track"><div class="sb-pg-fill sb-pg-fill-danger" style="width: ${data.对User的恐惧 || 0}%"></div></div><div class="sb-pg-val">${data.对User的恐惧 || 0}</div></div>
+            </div>
+          </div>
+
+          <div class="sb-mod">
+            <div class="sb-grid">
+              <div class="sb-cell-full"><div class="sb-label sb-label-purp">班级孤立度</div><div class="sb-row"><div class="sb-iso" data-stage="${data.班级孤立度?.阶段 || '一阶'}">${data.班级孤立度?.阶段 || '未知'}</div><div class="sb-iso-desc">${data.班级孤立度?.描述 || '暂无'}</div></div></div>
+              <div class="sb-cell"><div class="sb-label sb-label-purp">名声</div><div class="sb-val sb-val-muted">${data.名声 || '未知'}</div></div>
+              <div class="sb-cell-full"><div class="sb-label sb-label-secret">秘密</div><div class="sb-val sb-val-secret">${data.秘密 || '未知'}</div></div>
+              <div class="sb-cell-full"><div class="sb-label sb-label-purp">自我评价</div><div class="sb-val sb-val-muted">${data.自我评价 || '未知'}</div></div>
+            </div>
+          </div>
+
+          <div class="sb-mod">
+            <table class="sb-tbl">
+              <tr><td class="sb-tbl-label">服装</td><td class="sb-tbl-val">${data.服装 || '未知'}</td></tr>
+              <tr><td class="sb-tbl-label">外貌</td><td class="sb-tbl-val">${data.外貌 || '未知'}</td></tr>
+              ${data.性器官描写 && data.性器官描写 !== '待初始化' ? `<tr><td class="sb-tbl-label">私密</td><td class="sb-tbl-val">${data.性器官描写}</td></tr>` : ''}
+            </table>
+          </div>
+        </div>
+      `;
+
+      return `
+      <div class="sb-card sb-victim">
+        ${headHtml}
+        <div class="sb-card-top">
+          ${getPortraitHtml(name)}
+          ${topContentHtml}
+        </div>
+        ${injModHtml}
+        ${bottomContentHtml}
+      </div>`;
+    }
+
+    function renderBullyCard(name, data) {
+      const headHtml = `
+        <div class="sb-head">
+          <div class="sb-name">${name}</div>
+          <div class="sb-grade">${data.年级 || '未知'}</div>
+          ${data.当前猎物 ? `<div class="sb-prey">🎯 猎物: ${data.当前猎物}</div>` : ''}
+        </div>
+      `;
+
+      const topContentHtml = `
+        <div class="sb-card-right">
+          <div class="sb-mod">
+            <div class="sb-grid">
+              <div class="sb-cell"><div class="sb-label sb-label-blood">当前情绪</div><div class="sb-val sb-val-muted">${data.当前情绪 || '未知'}</div></div>
+              <div class="sb-cell"><div class="sb-label sb-label-blood">当前地点</div><div class="sb-val sb-val-muted">${data.当前地点 || '未知'}</div></div>
+              <div class="sb-cell-full"><div class="sb-label sb-label-blood">当前动作</div><div class="sb-val sb-val-muted">${data.当前动作 || '未知'}</div></div>
+              <div class="sb-cell-full"><div class="sb-label sb-label-blood">性格</div><div class="sb-val sb-val-muted">${data.性格 || '未知'}</div></div>
+              <div class="sb-cell-full"><div class="sb-label sb-label-blood">内心话</div><div class="sb-val sb-val-inner">${data.内心话 || '...'}</div></div>
+            </div>
+          </div>
+        </div>
+      `;
+
+      const bottomContentHtml = `
+        <div class="sb-card-bottom">
+          <div class="sb-mod">
+            <div class="sb-grid">
+              <div class="sb-cell-full"><div class="sb-label sb-label-purp">🕰 历史欺凌事件</div><div class="sb-val sb-val-hist">${data.历史欺凌事件 || '无'}</div></div>
+              <div class="sb-cell-full" style="margin-top: 6px;"><div class="sb-label sb-label-secret">秘密</div><div class="sb-val sb-val-secret">${data.秘密 || '未知'}</div></div>
+            </div>
+          </div>
+
+          <div class="sb-mod">
+            <table class="sb-tbl">
+              <tr><td class="sb-tbl-label">服装</td><td class="sb-tbl-val">${data.服装 || '未知'}</td></tr>
+              <tr><td class="sb-tbl-label">外貌</td><td class="sb-tbl-val">${data.外貌 || '未知'}</td></tr>
+              ${data.性器官描写 && data.性器官描写 !== '待初始化' ? `<tr><td class="sb-tbl-label">私密</td><td class="sb-tbl-val">${data.性器官描写}</td></tr>` : ''}
+            </table>
+          </div>
+        </div>
+      `;
+
+      return `
+      <div class="sb-card sb-bully">
+        ${headHtml}
+        <div class="sb-card-top">
+          ${getPortraitHtml(name)}
+          ${topContentHtml}
+        </div>
+        ${bottomContentHtml}
+      </div>`;
+    }
+
+    window.mvuSbRenderAll = function() {
+      const all_variables = getAllVariables();
+      const stat_data = _.get(all_variables, 'stat_data', {});
+
+      const sys = stat_data.系统 || {};
+      const user = stat_data.User || {};
+      const victims = stat_data.被欺凌者 || {};
+      const bullies = stat_data.欺凌者 || {};
+
+      const allChars = [];
+      Object.entries(victims).forEach(([name, data]) => { allChars.push({ name, type: 'victim', data }); });
+      Object.entries(bullies).forEach(([name, data]) => { allChars.push({ name, type: 'bully', data }); });
+
+      if (allChars.length > 0 && (!window.mvuSbConfig.selectedChar || !allChars.find(c => c.name === window.mvuSbConfig.selectedChar))) {
+          window.mvuSbConfig.selectedChar = allChars[0].name;
+      }
+
+      $('.sb-frame').each(function() {
+          const frame = $(this);
+
+          frame.find('.sb-time').text(sys.时间 || '未知时间');
+          frame.find('.sb-loc').text(sys.地点 || '未知地点');
+
+          const vLvl = sys.校园暴力严重程度?.等级 || 'D';
+          frame.find('.sb-badge').text(vLvl).attr('data-level', vLvl);
+          frame.find('.sb-desc').text(sys.校园暴力严重程度?.描述 || '和平');
+
+          const uStat = user.状态 || '保护中';
+          frame.find('.sb-ustat').text(uStat).attr('data-status', uStat);
+
+          const bar = frame.find('.sb-bar');
+          const bodyContainer = frame.find('.sb-body');
+
+          if (window.mvuSbConfig.isExpanded) {
+              let avatarHtml = '';
+              if (allChars.length > 0) {
+                  avatarHtml = `<div class="sb-avatar-bar">`;
+                  allChars.forEach(c => {
+                      const isActive = c.name === window.mvuSbConfig.selectedChar ? 'is-active' : '';
+                      const cls = c.type === 'victim' ? 'sb-avatar-victim' : 'sb-avatar-bully';
+                      avatarHtml += `<div class="sb-avatar ${cls} ${isActive}" data-name="${c.name}">${c.name}</div>`;
+                  });
+                  avatarHtml += `</div>`;
+              }
+
+              let cardHtml = '';
+              const selectedChar = allChars.find(c => c.name === window.mvuSbConfig.selectedChar);
+              if (selectedChar) {
+                  cardHtml = selectedChar.type === 'victim' ? renderVictimCard(selectedChar.name, selectedChar.data) : renderBullyCard(selectedChar.name, selectedChar.data);
+              }
+
+              bodyContainer.html(`
+                  <div class="sb-evt">
+                      <div class="sb-evt-label">当前事件</div>
+                      <div class="sb-evt-content">${sys.事件 || '无'}</div>
+                  </div>
+                  ${avatarHtml}
+                  ${cardHtml}
+              `).show();
+              bar.addClass('is-expanded');
+          } else {
+              bodyContainer.hide();
+              bar.removeClass('is-expanded');
+          }
+      });
+    };
+
+    async function init() {
+      await waitGlobalInitialized('Mvu');
+      window.mvuSbRenderAll();
+
+      if (!window.mvuSbUpdateBound) {
+          window.mvuSbUpdateBound = true;
+          eventOn(Mvu.events.VARIABLE_UPDATE_ENDED, () => {
+              window.mvuSbRenderAll();
+          });
+      }
+    }
+
+    $(errorCatched(init));
+  </script>
+</head>
+<body>
+  <div class="sb-container">
+    <div class="sb-frame">
+      <div class="sb-bar is-expanded">
+        <div class="sb-bar-row" style="align-items: center;">
+          <div class="sb-bar-l"><div class="sb-time"></div><div class="sb-sep">·</div><div class="sb-loc"></div></div>
+          <div class="sb-bar-r"><div class="sb-controls"><div class="sb-btn sb-btn-zoom-out" title="缩小字体">A-</div><div class="sb-btn sb-btn-zoom-in" title="放大字体">A+</div><div class="sb-btn sb-btn-theme" title="切换黑夜/白天">🌓</div></div></div>
+        </div>
+        <div class="sb-bar-row" style="align-items: flex-start;">
+          <div class="sb-bar-m"><div class="sb-badge" data-level="D"></div><div class="sb-desc"></div></div>
+          <div class="sb-bar-r" style="margin-top: 2px;"><div class="sb-ustat" data-status="保护中"></div></div>
+        </div>
+      </div>
+      <div class="sb-body"></div>
+    </div>
+  </div>
+
+  <div id="sb-lightbox">
+    <img id="sb-lightbox-img" src="" alt="放大查看的图片">
+  </div>
+</body>
+</html>
+```
