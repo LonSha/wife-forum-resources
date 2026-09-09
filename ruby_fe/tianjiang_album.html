@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Galgame风 - 信件与独立相册 (终极整合库)</title>
+    <style>
+        :root {
+            --primary: #ff8e9d;
+            --primary-hover: #ff758c;
+            --primary-light: rgba(255, 142, 157, 0.1);
+            --bg-base: #fcfcfd;
+            --bg-panel: rgba(255, 255, 255, 0.85);
+            --text-main: #333333;
+            --text-sub: #888888;
+            --border-light: rgba(0, 0, 0, 0.06);
+            --shadow-sm: 0 4px 15px rgba(0,0,0,0.03);
+            --shadow-md: 0 8px 30px rgba(0,0,0,0.06);
+            --shadow-glow: 0 8px 25px rgba(255, 142, 157, 0.25);
+            --radius-lg: 20px;
+            --radius-md: 12px;
+            --envelope-color: #faf5f0;
+            --nav-bg: #f0f2f5;
+            --nav-btn-active-bg: #fff;
+            --gallery-item-bg: #f5f5f5;
+            --pwd-modal-bg: rgba(252, 252, 253, 0.85);
+            --pwd-box-bg: #fff;
+            --pwd-close-color: #ccc;
+            --lightbox-bg: rgba(252, 252, 253, 0.95);
+            --lightbox-close-bg: #fff;
+            --envelope-bg1: rgba(216, 165, 139, 0.15);
+            --envelope-bg2: rgba(200, 230, 255, 0.15);
+            --letter-title-color: #5a4b45;
+            --letter-sub-color: #8a7b75;
+            --gallery-decor2: rgba(200, 230, 255, 0.2);
+            --header-shadow: 0 4px 15px rgba(0,0,0,0.02);
+            --footer-shadow: 0 -4px 15px rgba(0,0,0,0.02);
+            --wax-seal-color: #c65b5b;
+            --wax-seal-border: #b54a4a;
+            --stamp-border: #ccc;
+            --stamp-bg: #fff;
+            --stamp-inner-bg: rgba(255, 142, 157, 0.1);
+            --mode-btn-active-shadow: rgba(0,0,0,0.03);
+        }
+
+        /* ========== 夜间模式主题 ========== */
+        [data-theme="dark"] {
+            --primary: #ff8e9d;
+            --primary-hover: #ff758c;
+            --primary-light: rgba(255, 142, 157, 0.15);
+            --bg-base: #1a1a2e;
+            --bg-panel: rgba(30, 30, 50, 0.85);
+            --text-main: #e0e0e8;
+            --text-sub: #8888aa;
+            --border-light: rgba(255, 255, 255, 0.08);
+            --shadow-sm: 0 4px 15px rgba(0,0,0,0.2);
+            --shadow-md: 0 8px 30px rgba(0,0,0,0.3);
+            --shadow-glow: 0 8px 25px rgba(255, 142, 157, 0.2);
+            --envelope-color: #252535;
+            --nav-bg: #2a2a3e;
+            --nav-btn-active-bg: #3a3a52;
+            --gallery-item-bg: #252535;
+            --pwd-modal-bg: rgba(15, 15, 25, 0.85);
+            --pwd-box-bg: #2a2a3e;
+            --pwd-close-color: #666;
+            --lightbox-bg: rgba(10, 10, 18, 0.95);
+            --lightbox-close-bg: #2a2a3e;
+            --envelope-bg1: rgba(216, 165, 139, 0.08);
+            --envelope-bg2: rgba(100, 150, 200, 0.08);
+            --letter-title-color: #c0b0a8;
+            --letter-sub-color: #8a8aaa;
+            --gallery-decor2: rgba(100, 150, 200, 0.08);
+            --header-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            --footer-shadow: 0 -4px 15px rgba(0,0,0,0.3);
+            --wax-seal-color: #a04545;
+            --wax-seal-border: #8a3838;
+            --stamp-border: #555;
+            --stamp-bg: #2a2a3e;
+            --stamp-inner-bg: rgba(255, 142, 157, 0.15);
+            --mode-btn-active-shadow: rgba(255,255,255,0.05);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, "Microsoft YaHei", "Noto Sans JP", sans-serif; }
+
+        body { background: transparent; padding: 20px; }
+
+        /* ========== 主容器 (视窗化限制) ========== */
+        .app-wrapper {
+            max-width: 1100px;
+            margin: 0 auto;
+            position: relative;
+            height: 80vh;
+            min-height: 700px;
+            max-height: 950px;
+        }
+
+        /* ========== 信件封面系统 ========== */
+        .envelope-container {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            background: var(--bg-base); border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md); z-index: 100;
+            transition: opacity 0.8s ease, transform 0.8s ease, visibility 0.8s;
+            overflow: hidden;
+        }
+        .envelope-container.hidden {
+            opacity: 0; transform: scale(1.05); visibility: hidden;
+        }
+
+        /* 装饰背景 */
+        .envelope-bg {
+            position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at 30% 30%, var(--envelope-bg1) 0%, transparent 40%),
+                        radial-gradient(circle at 70% 70%, var(--envelope-bg2) 0%, transparent 40%);
+            z-index: 0; pointer-events: none; animation: bgRotate 30s linear infinite;
+        }
+
+        .letter-wrapper {
+            position: relative; z-index: 10;
+            width: 600px; height: 400px; max-width: 90%;
+            background: var(--envelope-color);
+            border-radius: 4px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1), inset 0 0 40px rgba(0,0,0,0.02);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .letter-wrapper:hover { transform: translateY(-5px); box-shadow: 0 20px 45px rgba(0,0,0,0.12); }
+
+        /* 信封折痕 */
+        .letter-wrapper::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(135deg, transparent 49%, rgba(0,0,0,0.03) 50%, transparent 51%),
+                        linear-gradient(-135deg, transparent 49%, rgba(0,0,0,0.03) 50%, transparent 51%);
+            pointer-events: none;
+        }
+        .letter-wrapper::after {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 50%;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.02), transparent);
+            clip-path: polygon(0 0, 100% 0, 50% 100%); pointer-events: none;
+        }
+
+        .stamp-box {
+            position: absolute; top: 20px; right: 30px;
+            width: 60px; height: 75px; background: var(--stamp-bg);
+            padding: 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            border: 1px dashed var(--stamp-border); transform: rotate(5deg);
+        }
+        .stamp-img { width: 100%; height: 100%; background: var(--primary-light); display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--primary); }
+
+        .letter-title { font-size: 24px; font-weight: bold; color: var(--letter-title-color); letter-spacing: 4px; margin-bottom: 10px; font-family: "Georgia", serif; text-shadow: 1px 1px 0 rgba(255,255,255,0.8); text-align: center; padding: 0 10px; }
+        .letter-sub { font-size: 13px; color: var(--letter-sub-color); letter-spacing: 2px; margin-bottom: 40px; font-family: monospace; text-align: center; }
+
+        /* 火漆印/打开按钮 */
+        .wax-seal {
+            width: 70px; height: 70px; background: var(--wax-seal-color);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            color: #fff; font-size: 24px; font-family: "Georgia", serif; cursor: pointer;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.3), 0 5px 15px rgba(198, 91, 91, 0.4);
+            border: 3px solid var(--wax-seal-border); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative; z-index: 5;
+        }
+        .wax-seal::after {
+            content: ''; position: absolute; top: 5px; left: 5px; right: 5px; bottom: 5px;
+            border: 1px solid rgba(255,255,255,0.3); border-radius: 50%; pointer-events: none;
+        }
+        .wax-seal:hover { transform: scale(1.1) rotate(5deg); box-shadow: inset 0 0 10px rgba(0,0,0,0.3), 0 8px 25px rgba(198, 91, 91, 0.6); }
+        .seal-text { position: absolute; bottom: -30px; font-size: 12px; color: var(--letter-sub-color); letter-spacing: 1px; font-weight: bold; white-space: nowrap; pointer-events: none; opacity: 0; transition: opacity 0.3s; }
+        .wax-seal:hover .seal-text { opacity: 1; }
+
+        /* ========== 内部主相册面板 ========== */
+        .gallery-app {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-base); border-radius: var(--radius-lg);
+            box-shadow: var(--shadow-md); overflow: hidden;
+            display: none;
+            flex-direction: column; opacity: 0; visibility: hidden;
+            transform: scale(0.95); transition: opacity 0.8s ease, transform 0.8s ease, visibility 0.8s;
+            z-index: 50;
+        }
+        .gallery-app.active { opacity: 1; visibility: visible; transform: scale(1); }
+
+        .gallery-app::before {
+            content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: radial-gradient(circle at 30% 30%, var(--primary-light) 0%, transparent 40%),
+                        radial-gradient(circle at 70% 70%, var(--gallery-decor2) 0%, transparent 40%);
+            z-index: 0; pointer-events: none; animation: bgRotate 30s linear infinite;
+        }
+
+        /* 头部导航栏 */
+        .header {
+            position: relative; z-index: 20; padding: 25px 40px;
+            background: var(--bg-panel); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border-light);
+            display: flex; flex-direction: column; gap: 15px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+        }
+        .header-top { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .app-title { font-size: 24px; font-weight: 900; color: var(--text-main); letter-spacing: 2px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+        .app-title span { font-size: 12px; color: var(--primary); font-family: monospace; font-weight: bold; padding: 4px 10px; background: var(--primary-light); border-radius: 20px; letter-spacing: 1px;}
+
+        /* 夜间模式切换按钮 */
+        .theme-toggle {
+            width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border-light);
+            background: var(--nav-btn-active-bg); cursor: pointer; display: flex; align-items: center; justify-content: center;
+            font-size: 18px; transition: all 0.3s; box-shadow: var(--shadow-sm); flex-shrink: 0; position: relative; z-index: 20;
+        }
+        .theme-toggle:hover { transform: scale(1.1); box-shadow: var(--shadow-glow); }
+        .theme-toggle .sun-icon, .theme-toggle .moon-icon { position: absolute; transition: opacity 0.3s, transform 0.4s; }
+        .theme-toggle .sun-icon { opacity: 1; transform: rotate(0deg); }
+        .theme-toggle .moon-icon { opacity: 0; transform: rotate(-90deg); }
+        [data-theme="dark"] .theme-toggle .sun-icon { opacity: 0; transform: rotate(90deg); }
+        [data-theme="dark"] .theme-toggle .moon-icon { opacity: 1; transform: rotate(0deg); }
+
+        /* 一级导航 */
+        .mode-nav { display: flex; gap: 15px; background: var(--nav-bg); padding: 6px; border-radius: 30px; flex-wrap: wrap; justify-content: center; }
+        .mode-btn {
+            padding: 8px 24px; font-size: 14px; font-weight: bold; color: var(--text-sub);
+            border-radius: 24px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 6px;
+        }
+        .mode-btn:hover:not(.locked) { color: var(--text-main); }
+        .mode-btn.active { background: var(--nav-btn-active-bg); color: var(--primary); box-shadow: var(--shadow-sm); }
+        .mode-btn.locked { opacity: 0.8; }
+        .lock-icon { font-size: 12px; }
+
+        /* 二级导航区 */
+        .filter-section { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; }
+        .char-nav, .cat-nav { display: flex; gap: 10px; flex-wrap: wrap; }
+        .filter-btn {
+            padding: 6px 18px; font-size: 13px; font-weight: bold; color: var(--text-sub);
+            background: transparent; border: 1px solid var(--border-light);
+            border-radius: 20px; cursor: pointer; transition: all 0.3s;
+        }
+        .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .filter-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: var(--shadow-glow); }
+
+        /* 主体内容区 - 内建滚动窗 */
+        .main-body {
+            position: relative; z-index: 10; padding: 30px 40px;
+            flex: 1;
+            min-height: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .main-body::-webkit-scrollbar { width: 8px; }
+        .main-body::-webkit-scrollbar-track { background: rgba(0,0,0,0.02); border-radius: 10px; margin: 10px 0;}
+        .main-body::-webkit-scrollbar-thumb { background: rgba(255, 142, 157, 0.4); border-radius: 10px; }
+        .main-body::-webkit-scrollbar-thumb:hover { background: rgba(255, 142, 157, 0.8); }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px; flex: 1; align-content: start;
+        }
+
+        .gallery-item {
+            width: 100%;
+            /* 修正缩略图比例，保证图片清晰并一致 */
+            aspect-ratio: 2 / 3;
+            border-radius: var(--radius-md);
+            overflow: hidden;
+            position: relative;
+            background: var(--gallery-item-bg);
+            box-shadow: var(--shadow-sm);
+            cursor: zoom-in;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.4s;
+        }
+        .gallery-item.landscape {
+            aspect-ratio: 1612 / 832;
+            grid-column: span 2; /* 约会宽图占两列 */
+        }
+        @media (max-width: 768px) {
+             .gallery-item.landscape { grid-column: span 1; }
+        }
+        .gallery-item.show { opacity: 1; transform: translateY(0); }
+        .gallery-item:hover { transform: translateY(-8px); box-shadow: var(--shadow-glow); }
+
+        .gallery-item img {
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%; object-fit: cover;
+            opacity: 0; transition: opacity 0.5s ease;
+        }
+        .gallery-item img.loaded { opacity: 1; }
+
+        .item-overlay {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8)); padding: 20px 15px 12px;
+            color: #fff; font-family: monospace; font-size: 11px; opacity: 0; transition: opacity 0.3s;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 2;
+        }
+        .gallery-item:hover .item-overlay { opacity: 1; }
+        .item-overlay svg { width: 14px; height: 14px; fill: rgba(255,255,255,0.5); transition: fill 0.2s;}
+        .item-overlay svg:hover { fill: var(--primary); }
+        .status-msg { grid-column: 1 / -1; text-align: center; color: var(--text-sub); font-size: 15px; padding: 60px 0; font-weight: bold; letter-spacing: 1px;}
+
+        /* 底栏 */
+        .footer-bar {
+            position: relative; z-index: 20; padding: 15px 40px;
+            background: var(--bg-panel); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border-light);
+            display: flex; justify-content: center; align-items: center;
+            flex-shrink: 0;
+            box-shadow: var(--footer-shadow);
+        }
+
+        .pagination { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .page-btn {
+            width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+            border-radius: 50%; font-size: 14px; font-weight: bold; font-family: monospace;
+            color: var(--text-sub); background: var(--nav-btn-active-bg); border: 1px solid var(--border-light);
+            cursor: pointer; transition: all 0.3s; box-shadow: var(--shadow-sm);
+        }
+        .page-btn:hover:not(.active) { color: var(--primary); border-color: var(--primary); transform: translateY(-2px); }
+        .page-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: var(--shadow-glow); }
+
+        /* ========== 密码弹窗 ========== */
+        .password-modal {
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--pwd-modal-bg); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            z-index: 200; display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.3s ease; padding: 20px;
+        }
+        .password-modal.active { opacity: 1; pointer-events: auto; }
+        .pwd-box {
+            background: var(--pwd-box-bg); padding: 40px 50px; border-radius: var(--radius-md);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.1), 0 0 20px var(--primary-light);
+            text-align: center; transform: translateY(20px); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative; width: 350px; max-width: 100%;
+        }
+        .password-modal.active .pwd-box { transform: translateY(0); }
+        .pwd-close { position: absolute; top: 15px; right: 20px; font-size: 20px; color: var(--pwd-close-color); cursor: pointer; transition: color 0.2s; }
+        .pwd-close:hover { color: var(--danger-color, #ff4757); }
+        .pwd-title { font-size: 18px; font-weight: bold; color: var(--text-main); margin-bottom: 10px; letter-spacing: 1px; }
+        .pwd-sub { font-size: 12px; color: var(--text-sub); margin-bottom: 25px; }
+        .pwd-input-wrapper { position: relative; margin-bottom: 20px; }
+        .pwd-input {
+            width: 100%; padding: 12px 15px; border: 2px solid var(--border-light);
+            border-radius: 8px; font-size: 16px; text-align: center; letter-spacing: 4px;
+            outline: none; transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .pwd-input:focus { border-color: var(--primary); box-shadow: 0 0 10px var(--primary-light); }
+        .pwd-input.error { border-color: #ff4757; animation: shake 0.4s; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+        .pwd-btn {
+            background: var(--primary); color: #fff; border: none; padding: 10px 30px;
+            border-radius: 20px; font-size: 14px; font-weight: bold; letter-spacing: 1px;
+            cursor: pointer; transition: all 0.3s; box-shadow: var(--shadow-sm); width: 100%;
+        }
+        .pwd-btn:hover { background: var(--primary-hover); box-shadow: var(--shadow-glow); transform: translateY(-2px); }
+
+        /* ========== 全屏灯箱 ========== */
+        .lightbox {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--lightbox-bg); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            z-index: 9999; display: flex; align-items: center; justify-content: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s ease; padding: 20px;
+        }
+        .lightbox.active { opacity: 1; pointer-events: auto; }
+        .lightbox-img {
+            max-width: 95%; max-height: 90vh; border-radius: var(--radius-md);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.15); object-fit: contain;
+            transform: scale(0.95); transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+        .lightbox.active .lightbox-img { transform: scale(1); }
+        .lightbox-close {
+            position: absolute; top: 40px; right: 50px; width: 50px; height: 50px; border-radius: 50%; background: var(--lightbox-close-bg);
+            display: flex; align-items: center; justify-content: center; font-size: 28px; color: var(--text-main); font-weight: 300; cursor: pointer;
+            box-shadow: var(--shadow-md); transition: all 0.3s;
+        }
+        .lightbox-close:hover { background: var(--primary); color: #fff; transform: rotate(90deg) scale(1.1); }
+        .lightbox-info {
+            position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%); background: var(--bg-panel); padding: 10px 24px; border-radius: 30px;
+            font-family: monospace; font-size: 13px; font-weight: bold; color: var(--text-sub); box-shadow: var(--shadow-sm); letter-spacing: 1px; white-space: nowrap;
+        }
+
+        /* 响应式 */
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .app-wrapper { height: 90vh; min-height: 600px; }
+            .letter-wrapper { height: 320px; }
+            .letter-title { font-size: 20px; letter-spacing: 2px; }
+            .letter-sub { font-size: 11px; margin-bottom: 30px; }
+            .stamp-box { right: 15px; top: 15px; width: 50px; height: 62px; }
+            .wax-seal { width: 60px; height: 60px; font-size: 20px; }
+            .header { padding: 15px 20px; gap: 12px; }
+            .header-top { flex-direction: column; align-items: flex-start; }
+            .app-title { font-size: 18px; }
+            .app-title span { font-size: 10px; padding: 2px 8px; }
+            .theme-toggle { width: 34px; height: 34px; font-size: 16px; align-self: flex-end; margin-top: -40px; }
+            .mode-nav { width: 100%; justify-content: space-around; padding: 4px; border-radius: 12px;}
+            .mode-btn { padding: 6px 12px; font-size: 12px; flex: 1; justify-content: center;}
+            .filter-section { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .char-nav, .cat-nav { width: 100%; justify-content: flex-start; }
+            .filter-btn { padding: 4px 12px; font-size: 11px; }
+            .main-body { padding: 15px 20px; }
+            .grid-container { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
+            .item-overlay { padding: 15px 10px 8px; font-size: 10px; }
+            .footer-bar { padding: 12px 20px; }
+            .page-btn { width: 30px; height: 30px; font-size: 12px; }
+            .pagination { gap: 6px; }
+            .pwd-box { padding: 30px 20px; }
+            .pwd-title { font-size: 16px; }
+            .lightbox-close { top: 20px; right: 20px; width: 40px; height: 40px; font-size: 24px; }
+            .lightbox-info { bottom: 20px; font-size: 11px; padding: 8px 16px; }
+            .lightbox-img { max-height: 80vh; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-wrapper">
+        <!-- 信件封面 -->
+        <div class="envelope-container" id="envelope">
+            <div class="envelope-bg"></div>
+            <div class="letter-wrapper">
+                <div class="stamp-box"><div class="stamp-img">✿</div></div>
+                <div class="letter-title">Memory Archive</div>
+                <div class="letter-sub">A letter from the past</div>
+
+                <div class="wax-seal" onclick="openArchive()">
+                    R
+                    <div class="seal-text">CLICK TO OPEN</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 主相册系统 -->
+        <div class="gallery-app" id="app">
+            <!-- 头部区域 -->
+            <div class="header">
+                <div class="header-top">
+                    <div class="app-title">MEMORY ARCHIVE <span>MEMORIES SYS V5.0(ULTIMATE)</span></div>
+                    <div class="mode-nav" id="modeNav"></div>
+                    <div class="theme-toggle" id="themeToggle" onclick="toggleTheme()">
+                        <span class="sun-icon">☀</span>
+                        <span class="moon-icon">☾</span>
+                    </div>
+                </div>
+                <div class="filter-section">
+                    <div class="char-nav" id="charNav"></div>
+                    <div class="cat-nav" id="catNav"></div>
+                </div>
+            </div>
+
+            <!-- 主体内容 -->
+            <div class="main-body" id="mainBody">
+                <div class="grid-container" id="gridContainer">
+                    <div class="status-msg">初始化数据中...</div>
+                </div>
+            </div>
+
+            <!-- 底部分页栏 -->
+            <div class="footer-bar">
+                <div class="pagination" id="pagination"></div>
+            </div>
+
+            <!-- 密码输入层 -->
+            <div class="password-modal" id="pwdModal">
+                <div class="pwd-box">
+                    <div class="pwd-close" onclick="closePwdModal()">×</div>
+                    <div class="pwd-title">权限验证</div>
+                    <div class="pwd-sub">请输入密码解锁「特别珍藏」档案</div>
+                    <div class="pwd-input-wrapper">
+                        <input type="password" id="pwdInput" class="pwd-input" placeholder="PASSWORD" maxlength="10" onkeypress="if(event.key === 'Enter') verifyPwd()">
+                    </div>
+                    <button class="pwd-btn" onclick="verifyPwd()">VERIFY</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 全屏灯箱 -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox()">
+        <div class="lightbox-close" onclick="closeLightbox(event)">×</div>
+        <img class="lightbox-img" id="lightboxImg" src="" alt="preview" onclick="event.stopPropagation()">
+        <div class="lightbox-info" id="lightboxInfo">IMAGE_INFO</div>
+    </div>
+
+    <script>
+        /* ========== 夜间模式 ========== */
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+            }
+        }
+        window.toggleTheme = function() {
+            var current = document.documentElement.getAttribute('data-theme');
+            var next = current === 'dark' ? 'light' : 'dark';
+            applyTheme(next);
+            try { localStorage.setItem('album-theme', next); } catch(e) {}
+        };
+        /* 初始化主题 - 从 localStorage 读取或跟随系统偏好 */
+        (function initTheme() {
+            var saved;
+            try { saved = localStorage.getItem('album-theme'); } catch(e) {}
+            if (saved === 'dark' || saved === 'light') {
+                applyTheme(saved);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                applyTheme('dark');
+            }
+        })();
+
+        /* ========== 三级仓库架构 ========== */
+        const REPO_BASE_URL = "https://cdn.jsdelivr.net/gh/roxysl521-droid/tian-jiang@main/";
+        const BUCHONG_REPO_URL = "https://cdn.jsdelivr.net/gh/roxysl521-droid/tianjiang-buchong-@main/";
+        const BUCHONG_BU_REPO_URL = "https://cdn.jsdelivr.net/gh/roxysl521-droid/tianjiang_buchong_bu@main/";
+
+        const PAGE_SIZE = 8;
+        const SPECIAL_PWD = "520";
+
+        /* 特定后缀识别集合 */
+        const BUCHONG_SUFFIXES = ['hs', 'js', 'ltwq', 'np', 'qp', 'sqs', 'tnl', 'xn'];
+        const DATE_SUFFIXES = ['dyy', 'gy', 'gj', 'hb', 'jj', 'xrj', 'yly', 'gb'];
+        const BUCHONG_REPO1_CHARS = ['chen', 'xue_nai', 'chen_xing_tong', 'li_xu', 'ke_zi', 'jie_yue'];
+
+        const CHARACTERS = [
+            { id: 'li_xu', name: '宫本 璃绪' },
+            { id: 'jie_yue', name: '月见里 结月' },
+            { id: 'ke_zi', name: '红林 刻子' },
+            { id: 'xue_nai', name: '月见里 雪乃' },
+            { id: 'qian_dong', name: '白峰 千冬' },
+            { id: 'yan_ye', name: '朝雾 言叶' },
+            { id: 'chen_xing_tong', name: '陈星瞳' },
+            { id: 'chen', name: '如月 澄' },
+            { id: 'chun', name: '式部 椿' },
+            { id: 'jing_liu', name: '宫本 静流' },
+            { id: 'you_ye', name: '花菱 柚叶' },
+            { id: 'you', name: '白峰 柚' },
+            { id: 'sha_yin', name: '久世 纱英' },
+            { id: 'kan', name: '神代 栞' },
+            { id: 'shi_zhi', name: '水濑 诗织' }
+        ];
+
+        /* 全部分类集成 */
+        const DB_STRUCTURE = {
+            'SFW': [
+                { id: 'normal', suffix: '', count: 25, name: '日常回忆' }
+            ],
+            'NSFW': [
+                { id: 'nsfw', suffix: '_nsfw', count: 30, name: '私密记录' },
+                { id: 'kou_jiao', suffix: '_kou_jiao', count: 3, name: '口交' },
+                { id: 'ru_jiao', suffix: '_ru_jiao', count: 3, name: '乳交' },
+                { id: 'zu_jiao', suffix: '_zu_jiao', count: 3, name: '足交' },
+                { id: 'hs', suffix: '_hs', count: 3, name: '护士' },
+                { id: 'js', suffix: '_js', count: 3, name: '僵尸' },
+                { id: 'ltwq', suffix: '_ltwq', count: 3, name: '裸体围裙' },
+                { id: 'np', suffix: '_np', count: 3, name: '女仆' },
+                { id: 'qp', suffix: '_qp', count: 3, name: '旗袍' },
+                { id: 'sqs', suffix: '_sqs', count: 3, name: '死库水' },
+                { id: 'tnl', suffix: '_tnl', count: 3, name: '兔女郎' },
+                { id: 'xn', suffix: '_xn', count: 3, name: '修女' }
+            ],
+            'DATE': [
+                { id: 'dyy', suffix: '_dyy', count: 3, name: '电影院' },
+                { id: 'gy', suffix: '_gy', count: 3, name: '公园' },
+                { id: 'gj', suffix: '_gj', count: 3, name: '逛街' },
+                { id: 'hb', suffix: '_hb', count: 3, name: '海边' },
+                { id: 'jj', suffix: '_jj', count: 3, name: '居家' },
+                { id: 'xrj', suffix: '_xrj', count: 3, name: '夏日祭' },
+                { id: 'yly', suffix: '_yly', count: 3, name: '游乐园' },
+                { id: 'gb', suffix: '_gb', count: 1, name: '告白' }
+            ],
+            'SPECIAL': [
+                { id: 'hun_sha', suffix: '_hun_sha', count: 3, name: '婚纱' },
+                { id: 'huai_yun', suffix: '_huai_yun', count: 3, name: '怀孕' }
+            ]
+        };
+
+        const MODE_NAMES = {
+            'SFW': '日常 (SFW)',
+            'NSFW': '私密 (NSFW)',
+            'DATE': '约会 (DATE)',
+            'SPECIAL': '珍藏 (SPECIAL)'
+        };
+
+        let state = { mode: 'SFW', char: 'jie_yue', cat: 'normal', page: 1, specialUnlocked: false };
+
+        /* ========== 仓库判定与智能路由 ========== */
+        function getRepoUrl(charId, catId, index) {
+            /* 栞和诗织全部强制路由到补充库二 */
+            if (charId === 'kan' || charId === 'shi_zhi') return BUCHONG_BU_REPO_URL;
+
+            /* 星瞳日常特殊索引修复 */
+            if (charId === 'chen_xing_tong' && catId === 'normal' && index === 22) return BUCHONG_REPO_URL;
+
+            /* 所有八套服装特殊后缀，走补充库一 */
+            if (BUCHONG_SUFFIXES.includes(catId)) return BUCHONG_REPO_URL;
+
+            /* 所有约会场景，原约会系统走补充库一 */
+            if (DATE_SUFFIXES.includes(catId)) return BUCHONG_REPO_URL;
+
+            /* 基础 NSFW 扩充图片智能分流 */
+            if (catId === 'nsfw' && index > 10) {
+                if (BUCHONG_REPO1_CHARS.includes(charId)) {
+                    return BUCHONG_REPO_URL;
+                } else {
+                    return BUCHONG_BU_REPO_URL;
+                }
+            }
+
+            /* 其余情况统一回归主库 */
+            return REPO_BASE_URL;
+        }
+
+        /* ========== 交互与渲染 ========== */
+        window.openArchive = function() {
+            var env = document.getElementById('envelope');
+            var app = document.getElementById('app');
+            env.classList.add('hidden');
+            app.style.display = 'flex';
+            void app.offsetWidth;
+            app.classList.add('active');
+            setTimeout(function() { env.style.display = 'none'; renderAll(); }, 600);
+        };
+
+        window.openPwdModal = function() {
+            var input = document.getElementById('pwdInput');
+            input.value = ''; input.classList.remove('error');
+            document.getElementById('pwdModal').classList.add('active');
+            setTimeout(function() { input.focus(); }, 100);
+        };
+
+        window.closePwdModal = function() { document.getElementById('pwdModal').classList.remove('active'); };
+
+        window.verifyPwd = function() {
+            var input = document.getElementById('pwdInput');
+            if (input.value === SPECIAL_PWD) {
+                state.specialUnlocked = true; closePwdModal();
+                state.mode = 'SPECIAL'; state.cat = DB_STRUCTURE['SPECIAL'][0].id; state.page = 1;
+                renderAll();
+            } else {
+                input.classList.remove('error'); void input.offsetWidth;
+                input.classList.add('error'); input.value = ''; input.placeholder = 'PASSWORD ERROR';
+            }
+        };
+
+        function resetScroll() {
+            const bodyEl = document.getElementById('mainBody');
+            if(bodyEl) bodyEl.scrollTop = 0;
+        }
+
+        function renderNav() {
+            let modeHtml = '';
+            ['SFW', 'NSFW', 'DATE', 'SPECIAL'].forEach(mode => {
+                let isActive = state.mode === mode ? 'active' : '';
+                let isLocked = mode === 'SPECIAL' && !state.specialUnlocked;
+                let lockIcon = isLocked ? '<span class="lock-icon">🔒</span>' : '';
+                modeHtml += `<div class="mode-btn ${isActive} ${isLocked ? 'locked' : ''}" onclick="handleModeClick('${mode}')">${MODE_NAMES[mode]} ${lockIcon}</div>`;
+            });
+            document.getElementById('modeNav').innerHTML = modeHtml;
+
+            let charHtml = '';
+            CHARACTERS.forEach(c => {
+                charHtml += `<button class="filter-btn ${state.char === c.id ? 'active' : ''}" onclick="changeChar('${c.id}')">${c.name}</button>`;
+            });
+            document.getElementById('charNav').innerHTML = charHtml;
+
+            let catHtml = '';
+            let currentCats = DB_STRUCTURE[state.mode];
+            if (currentCats && currentCats.length > 1) {
+                currentCats.forEach(c => {
+                    catHtml += `<button class="filter-btn ${state.cat === c.id ? 'active' : ''}" onclick="changeCat('${c.id}')">${c.name}</button>`;
+                });
+            }
+            document.getElementById('catNav').innerHTML = catHtml;
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('gridContainer');
+            const paginator = document.getElementById('pagination');
+            grid.innerHTML = ''; paginator.innerHTML = '';
+
+            const currentCats = DB_STRUCTURE[state.mode];
+            const catInfo = currentCats ? currentCats.find(c => c.id === state.cat) : null;
+
+            if (!catInfo) { grid.innerHTML = '<div class="status-msg">暂无该分类数据</div>'; return; }
+
+            let totalCount = catInfo.count;
+            /* 特殊情况修复覆盖 */
+            if (state.char === 'chun' && state.cat === 'huai_yun') totalCount = 2;
+
+            if (totalCount === 0) { grid.innerHTML = '<div class="status-msg">该分类下没有照片哦</div>'; return; }
+
+            const totalPages = Math.ceil(totalCount / PAGE_SIZE);
+            if (state.page > totalPages) state.page = 1;
+
+            const startIndex = (state.page - 1) * PAGE_SIZE + 1;
+            const endIndex = Math.min(state.page * PAGE_SIZE, totalCount);
+
+            if (totalPages > 1) {
+                let pageHtml = '';
+                for (let p = 1; p <= totalPages; p++) {
+                    pageHtml += `<div class="page-btn ${state.page === p ? 'active' : ''}" onclick="changePage(${p})">${p}</div>`;
+                }
+                paginator.innerHTML = pageHtml;
+            }
+
+            let html = '';
+            let animDelay = 0;
+            const heartSvg = '<svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
+
+            /* 澄的基础字符修复，八套衣服走 cheng 前缀 */
+            let imgCharId = state.char;
+            if (state.char === 'chen' && BUCHONG_SUFFIXES.includes(catInfo.id)) {
+                imgCharId = 'cheng';
+            }
+
+            for (let i = startIndex; i <= endIndex; i++) {
+                let imgName = '';
+                /* 针对告白场景无序号特征特殊处理 */
+                if (catInfo.id === 'gb') {
+                    imgName = `${imgCharId}_gb.png`;
+                } else {
+                    imgName = catInfo.suffix ? `${imgCharId}${catInfo.suffix}_${i}.png` : `${imgCharId}_${i}.png`;
+                }
+
+                /* 纱英足交和NSFW第5张的特殊调换映射 */
+                let realImgName = imgName;
+                if (imgCharId === 'sha_yin') {
+                    if (imgName === 'sha_yin_zu_jiao_3.png') realImgName = 'sha_yin_nsfw_5.png';
+                    else if (imgName === 'sha_yin_nsfw_5.png') realImgName = 'sha_yin_zu_jiao_3.png';
+                }
+
+                let repoUrl = getRepoUrl(state.char, catInfo.id, i);
+                let fullUrl = repoUrl + realImgName;
+
+                /* 若是 DATE 模式且非 gb (可能为宽图)，加入 landscape 宽幅排版标记 */
+                let isLandscape = (state.mode === 'DATE' && catInfo.id !== 'gb') ? 'landscape' : '';
+
+                html += `
+                    <div class="gallery-item ${isLandscape}" id="item-${i}" onclick="openLightbox('${fullUrl}', '${imgName}')" style="transition-delay: ${animDelay}s;">
+                        <img src="${fullUrl}" loading="lazy" onload="this.classList.add('loaded')" onerror="this.parentElement.style.display='none'">
+                        <div class="item-overlay">
+                            <span>ID: ${catInfo.id === 'gb' ? '01' : (i < 10 ? '0'+i : i)}</span>
+                            ${heartSvg}
+                        </div>
+                    </div>
+                `;
+                animDelay += 0.05;
+            }
+            grid.innerHTML = html;
+
+            setTimeout(() => {
+                document.querySelectorAll('.gallery-item').forEach(item => item.classList.add('show'));
+            }, 50);
+        }
+
+        window.handleModeClick = function(mode) {
+            if (state.mode === mode) return;
+            if (mode === 'SPECIAL' && !state.specialUnlocked) { openPwdModal(); return; }
+            state.mode = mode; state.cat = DB_STRUCTURE[mode][0].id; state.page = 1; renderAll();
+        };
+
+        window.changeChar = function(charId) {
+            if (state.char === charId) return;
+            state.char = charId; state.page = 1; renderAll();
+        };
+
+        window.changeCat = function(catId) {
+            if (state.cat === catId) return;
+            state.cat = catId; state.page = 1; renderAll();
+        };
+
+        window.changePage = function(page) {
+            if (state.page === page) return;
+            state.page = page; renderGrid(); resetScroll();
+        };
+
+        function renderAll() { renderNav(); renderGrid(); resetScroll(); }
+
+        window.openLightbox = function(url, name) {
+            document.getElementById('lightboxImg').src = url;
+            document.getElementById('lightboxInfo').innerText = `FILE: ${name}`;
+            document.getElementById('lightbox').classList.add('active');
+        };
+
+        window.closeLightbox = function(e) {
+            if(e) e.stopPropagation();
+            document.getElementById('lightbox').classList.remove('active');
+            setTimeout(() => { document.getElementById('lightboxImg').src = ''; }, 400);
+        };
+    </script>
+</body>
+</html>
