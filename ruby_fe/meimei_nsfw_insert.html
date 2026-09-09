@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>NSFW 插图美化</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: transparent;
+            padding: 8px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* 简约浅色系画框风格 */
+        .cg-container {
+            max-width: 600px;
+            width: 100%;
+            background-color: #fcfcfc;
+            border: 1px solid #eaeaea;
+            border-radius: 8px;
+            padding: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        .cg-image-wrapper {
+            width: 100%;
+            border-radius: 4px;
+            overflow: hidden;
+            background-color: #f5f5f5;
+            min-height: 200px; /* 骨架屏高度 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .cg-image {
+            width: 100%;
+            height: auto;
+            display: block;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .cg-image.loaded {
+            opacity: 1;
+        }
+
+        .loading-text {
+            position: absolute;
+            color: #a0a0a0;
+            font-size: 13px;
+            letter-spacing: 1px;
+        }
+
+        .cg-caption {
+            margin-top: 10px;
+            font-size: 12px;
+            color: #999;
+            letter-spacing: 2px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="cg-container" id="content">
+        <div class="cg-image-wrapper">
+            <div class="loading-text" id="loading-tip">正在加载插图...</div>
+        </div>
+    </div>
+
+    <script>
+        /* ========== 设置区 ========== */
+
+        /* 角色拼音映射表（包含全名和常用简称以防漏匹） */
+        var ROLE_MAP = {
+            "凛": "lin", "神宫寺凛": "lin",
+            "瑠夏": "liu_xia", "星野瑠夏": "liu_xia",
+            "夕凪": "xi_zhi", "绫濑夕凪": "xi_zhi",
+            "幽": "you", "咲夜幽": "you",
+            "堇": "jin", "雪宫堇": "jin",
+            "光": "guang", "时雨光": "guang",
+            "玲奈": "ling_nai", "神圆玲奈": "ling_nai",
+            "雫": "ka", "黒澤雫": "ka", "猫羽雫": "ka",
+            "千夏": "qian_xia", "朝雾千夏": "qian_xia",
+            "零": "ling", "月読零": "ling",
+            "结衣": "jie_yi", "白鸟结衣": "jie_yi"
+        };
+
+        /* 体位拼音映射表 */
+        var POS_MAP = {
+            "口交": "kj",
+            "足交": "zj",
+            "乳交": "rj",
+            "女上位": "nsw",
+            "正常位": "zcw",
+            "后入位": "hrw"
+        };
+
+        /* ========== 智能路由获取基础链接 ========== */
+        function getBaseUrl(rolePinyin) {
+            var newRoles = ['ka', 'qian_xia', 'ling', 'jie_yi'];
+            if (newRoles.indexOf(rolePinyin) !== -1) {
+                /* 新角色使用新仓库 */
+                return 'https://cdn.jsdelivr.net/gh/roxysl521-droid/meimei-nsf@main/';
+            }
+            /* 老角色使用旧仓库 */
+            return 'https://cdn.jsdelivr.net/gh/roxysl521-droid/meimei-wo-buheping@main/';
+        }
+
+        /* ========== 获取消息内容 ========== */
+        function getMessageData() {
+            var chatMessages = getChatMessages(getCurrentMessageId());
+            if (!chatMessages || chatMessages.length === 0) {
+                console.error("无法获取消息内容");
+                return null;
+            }
+            return chatMessages[0].message;
+        }
+
+        /* ========== 解析数据 ========== */
+        function parseData(messageText) {
+            var result = { role: "", position: "" };
+            var tagMatch = messageText.match(/<nsfw_cg>([\s\S]*?)<\/nsfw_cg>/);
+            if (!tagMatch || !tagMatch[1]) {
+                return result;
+            }
+
+            var content = tagMatch[1];
+
+            /* 解析 [字段|值] 格式 */
+            var roleMatch = content.match(/\[角色\|([^\]]+)\]/);
+            var posMatch = content.match(/\[体位\|([^\]]+)\]/);
+
+            if (roleMatch && roleMatch[1]) result.role = roleMatch[1].trim();
+            if (posMatch && posMatch[1]) result.position = posMatch[1].trim();
+
+            return result;
+        }
+
+        /* ========== 构建图片URL组合 ========== */
+        function getImageUrlData(roleName, posName) {
+            var rolePinyin = ROLE_MAP[roleName];
+            var posPinyin = POS_MAP[posName];
+
+            if (!rolePinyin || !posPinyin) {
+                return null; /* 找不到映射则返回空 */
+            }
+
+            /* 生成 1~5 的随机数 */
+            var randomNum = Math.floor(Math.random() * 5) + 1;
+
+            /* 智能路由获取对应的仓库前缀 */
+            var baseUrl = getBaseUrl(rolePinyin);
+            var baseFileName = baseUrl + rolePinyin + "_" + posPinyin + "_" + randomNum;
+
+            return {
+                jpg: baseFileName + ".jpg",
+                png: baseFileName + ".png"
+            };
+        }
+
+        /* ========== 渲染界面 ========== */
+        function renderPage(data) {
+            var container = document.getElementById('content');
+
+            if (!data.role || !data.position) {
+                container.innerHTML = '<div class="cg-image-wrapper"><div class="loading-text">⚠️ 标签信息不完整</div></div>';
+                return;
+            }
+
+            var imgData = getImageUrlData(data.role, data.position);
+
+            if (!imgData) {
+                container.innerHTML = '<div class="cg-image-wrapper"><div class="loading-text">⚠️ 无法识别角色或体位</div></div>';
+                return;
+            }
+
+            /* 构建渲染HTML，包含失败自动加载png的容错逻辑 */
+            var html = '<div class="cg-image-wrapper">' +
+                       '<div class="loading-text" id="loading-tip">正在加载插图...</div>' +
+                       '<img src="' + imgData.jpg + '" class="cg-image" id="cg-img" alt="CG" onerror="this.onerror=null; this.src=\'' + imgData.png + '\'; this.onerror=function(){this.parentElement.innerHTML=\'<div class=\\\'loading-text\\\'>⚠️ 图片加载失败</div>\';}">' +
+                       '</div>' +
+                       '<div class="cg-caption">- ' + data.role + ' · ' + data.position + ' -</div>';
+
+            container.innerHTML = html;
+
+            /* 处理图片加载动画 */
+            var imgElement = document.getElementById('cg-img');
+            if (imgElement) {
+                imgElement.onload = function() {
+                    this.classList.add('loaded');
+                    var tip = document.getElementById('loading-tip');
+                    if(tip) tip.style.display = 'none';
+                };
+            }
+        }
+
+        /* ========== 主函数 ========== */
+        function init() {
+            try {
+                var messageText = getMessageData();
+                if (!messageText) {
+                    document.getElementById('content').innerHTML =
+                        '<div class="cg-image-wrapper"><div class="loading-text">❌ 无法获取消息内容</div></div>';
+                    return;
+                }
+                var data = parseData(messageText);
+                renderPage(data);
+            } catch (error) {
+                console.error("错误:", error);
+                document.getElementById('content').innerHTML =
+                    '<div class="cg-image-wrapper"><div class="loading-text">❌ 加载失败：' + error.message + '</div></div>';
+            }
+        }
+
+        $(function() { init(); });
+    </script>
+</body>
+</html>
