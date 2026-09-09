@@ -1,0 +1,1241 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>与病弱妹妹的三十日生活 · 开幕!</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+            background: #9cc8e8;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* ══════════ BA风网格蓝天 ══════════ */
+        .tk-world {
+            position: relative;
+            width: 100%;
+            max-width: 900px;
+            background-color: #cfe8f8;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.65) 1.5px, transparent 1.5px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.65) 1.5px, transparent 1.5px);
+            background-size: 26px 26px;
+            overflow: hidden;
+        }
+
+        .tk-world::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 90% 42% at 50% 30%, rgba(255, 255, 255, 0.55), transparent 70%);
+            pointer-events: none;
+        }
+
+        .tk-pages {
+            position: relative;
+            z-index: 1;
+            padding: 20px 14px 24px;
+        }
+
+        .tk-page { display: none; }
+
+        .tk-page--active {
+            display: block;
+            animation: tk-page-in 0.45s ease both;
+        }
+
+        @keyframes tk-page-in {
+            from { opacity: 0; transform: translateY(14px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ══════════ 封面主 LOGO ══════════ */
+        .tk-hero {
+            position: relative;
+            text-align: center;
+            padding: 14px 0 4px;
+        }
+
+        .tk-hero-kicker {
+            display: inline-block;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 5px;
+            color: #fff;
+            background: #2b2b3a;
+            border-radius: 20px;
+            padding: 4px 16px;
+            transform: rotate(-2deg);
+        }
+
+        .tk-hero-title {
+            margin-top: 6px;
+            font-size: 58px;
+            font-weight: 900;
+            letter-spacing: 6px;
+            line-height: 1.15;
+            color: #5eb8f0;
+            -webkit-text-stroke: 2.5px #2b2b3a;
+            paint-order: stroke fill;
+            text-shadow:
+                -3px 0 0 #fff, 3px 0 0 #fff, 0 -3px 0 #fff, 0 3px 0 #fff,
+                -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff,
+                7px 7px 0 #2b2b3a;
+            transform: rotate(-2deg);
+        }
+
+        .tk-hero-title em {
+            font-style: normal;
+            color: #ff8fb3;
+        }
+
+        /* 开场hero打字机：全区按序欢快弹出（同步拆分+CSS延迟，无定时器，可重入） */
+        .tk-hero .tk-type-char {
+            display: inline-block;
+            opacity: 0;
+            animation: tk-type-in 0.34s cubic-bezier(0.2, 0.9, 0.3, 1.25) forwards;
+        }
+
+        @keyframes tk-type-in {
+            0% { opacity: 0; transform: translateY(22px) scale(0.4) rotate(-10deg); }
+            55% { opacity: 1; transform: translateY(-5px) scale(1.14) rotate(4deg); }
+            75% { transform: translateY(2px) scale(0.96) rotate(-2deg); }
+            100% { opacity: 1; transform: none; }
+        }
+
+        @keyframes tk-type-fade {
+            from { opacity: 0; transform: scale(0.6); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .tk-hero .tk-type-char { animation: none; opacity: 1; }
+        }
+
+        .tk-hero-sub {
+            margin-top: 10px;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            color: #5a6a7d;
+        }
+
+        .tk-hero-book {
+            position: absolute;
+            top: 6px;
+            right: 2px;
+            width: 74px;
+            height: 92px;
+            background: linear-gradient(135deg, #3a90d8 0%, #2b6cb0 100%);
+            border: 3px solid #2b2b3a;
+            border-radius: 4px 10px 10px 4px;
+            transform: rotate(9deg);
+            box-shadow: 4px 4px 0 #2b2b3a;
+            color: #fff;
+            font-size: 8px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            line-height: 1.6;
+            pointer-events: none;
+        }
+
+        .tk-hero-book::before {
+            content: '';
+            position: absolute;
+            left: 8px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: rgba(255, 255, 255, 0.45);
+        }
+
+        .tk-premise {
+            margin: 14px 6px 0;
+            padding: 12px 14px;
+            font-size: 12.5px;
+            font-weight: 600;
+            line-height: 2;
+            color: #3d4657;
+            background: rgba(255, 253, 246, 0.94);
+            border: 2.5px solid #2b2b3a;
+            border-radius: 12px;
+            box-shadow: 4px 4px 0 #2b2b3a;
+        }
+
+        .tk-premise b { color: #1f5f8f; }
+
+        .tk-pickhead {
+            margin: 20px 0 4px;
+            text-align: center;
+            font-size: 16px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            color: #2b2b3a;
+            text-shadow: 2px 2px 0 #fff;
+        }
+
+        .tk-pickhead i { font-style: normal; color: #ffb02e; }
+
+        /* ══════════ 路线 LOGO 锁 ══════════ */
+        .tk-stubs {
+            display: flex;
+            flex-direction: row;
+            gap: 16px;
+            align-items: stretch;
+            padding: 6px 2px 8px;
+        }
+
+        .tk-stub {
+            flex: 1;
+            min-width: 0;
+        }
+
+        @media (max-width: 560px) {
+            .tk-stubs {
+                flex-direction: column;
+            }
+        }
+
+        .tk-stub {
+            position: relative;
+            display: block;
+            padding: 26px 10px 12px;
+            cursor: pointer;
+            font-family: inherit;
+            text-align: left;
+            border-radius: 14px;
+            transition: transform 0.18s ease, background 0.18s ease;
+        }
+
+        .tk-stub:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.28); }
+        .tk-stub:active { transform: translateY(-2px); }
+
+        .tk-stub:focus-visible {
+            outline: 3px dashed #2b2b3a;
+            outline-offset: 4px;
+            border-radius: 12px;
+        }
+
+        .tk-logo-orbit {
+            position: absolute;
+            z-index: 0;
+            left: -6px;
+            right: -6px;
+            top: 44%;
+            height: 84px;
+            transform: translateY(-50%) rotate(-6deg);
+            pointer-events: none;
+        }
+
+        .tk-logo-star {
+            position: absolute;
+            z-index: 2;
+            color: #ffd66e;
+            font-size: 34px;
+            line-height: 1;
+            -webkit-text-stroke: 2px #2b2b3a;
+            paint-order: stroke fill;
+            text-shadow: 3px 3px 0 #2b2b3a;
+            pointer-events: none;
+        }
+
+        .tk-logo-star--1 { top: -6px; left: 4%; transform: rotate(-16deg); }
+        .tk-logo-star--2 { top: 6px; right: 5%; font-size: 26px; transform: rotate(14deg); }
+        .tk-logo-star--3 { bottom: 30px; right: 12%; font-size: 19px; transform: rotate(-8deg); }
+
+        .tk-logo-plus {
+            position: absolute;
+            z-index: 2;
+            color: #ff8a5e;
+            font-size: 30px;
+            font-weight: 900;
+            line-height: 1;
+            -webkit-text-stroke: 1.5px #2b2b3a;
+            paint-order: stroke fill;
+            text-shadow: 2px 2px 0 #2b2b3a;
+            pointer-events: none;
+        }
+
+        .tk-logo-plus--1 { bottom: 34px; left: 3%; transform: rotate(-12deg); }
+
+        .tk-logo-row {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* 放大镜头像 */
+        .tk-mag {
+            position: relative;
+            flex: none;
+            width: 118px;
+            height: 132px;
+            margin-left: -4px;
+        }
+
+        .tk-mag-ring {
+            position: absolute;
+            top: 0;
+            left: 6px;
+            width: 96px;
+            height: 96px;
+            border-radius: 50%;
+            border: 7px solid #8a93a7;
+            outline: 3px solid #2b2b3a;
+            background: #dfe9f2;
+            overflow: hidden;
+            box-shadow: 4px 4px 0 #2b2b3a;
+        }
+
+        .tk-stub--mio .tk-mag-ring { border-color: #8a93a7; }
+        .tk-stub--tsuru .tk-mag-ring { border-color: #8a93a7; }
+
+        .tk-mag-ring img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center 22%;
+            pointer-events: none;
+        }
+
+        .tk-mag-handle {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 20px;
+            height: 44px;
+            background: #2b2b3a;
+            border-radius: 8px;
+            transform: rotate(-38deg);
+        }
+
+        .tk-logo-name {
+            flex: 1;
+            min-width: 0;
+            font-size: 64px;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: 2px;
+            margin-left: -14px;
+            transform: rotate(-2deg);
+            color: #8fd0f7;
+            -webkit-text-stroke: 2.5px #2b2b3a;
+            paint-order: stroke fill;
+            text-shadow:
+                -3px 0 0 #fff, 3px 0 0 #fff, 0 -3px 0 #fff, 0 3px 0 #fff,
+                -2px -2px 0 #fff, 2px -2px 0 #fff, -2px 2px 0 #fff, 2px 2px 0 #fff,
+                7px 7px 0 #2b2b3a;
+        }
+
+        .tk-stub--tsuru .tk-logo-name { color: #ffc46e; transform: rotate(2deg); }
+
+        .tk-logo-name small {
+            display: block;
+            font-size: 12px;
+            letter-spacing: 3px;
+            margin-top: 8px;
+            color: #2b2b3a;
+            -webkit-text-stroke: 0;
+            text-shadow: 1px 1px 0 #fff;
+        }
+
+        .tk-stub-gate {
+            position: relative;
+            z-index: 1;
+            display: inline-block;
+            margin: 8px 0 0 8px;
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #fff;
+            background: #2b2b3a;
+            border-radius: 20px;
+            padding: 3px 12px;
+            transform: rotate(-1deg);
+        }
+
+        .tk-tags {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin: 8px 0 0 8px;
+        }
+
+        .tk-tags i {
+            font-style: normal;
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            padding: 2px 9px;
+            border-radius: 20px;
+            border: 2px solid #2b2b3a;
+            background: #fff;
+            box-shadow: 2px 2px 0 #2b2b3a;
+        }
+
+        .tk-stub--mio .tk-tags i { background: #e3f2fd; }
+        .tk-stub--tsuru .tk-tags i { background: #fff1de; }
+
+        .tk-stub-hook {
+            display: block;
+            position: relative;
+            z-index: 1;
+            margin: 8px 8px 0;
+            font-size: 12px;
+            font-weight: 700;
+            color: #2b2b3a;
+            line-height: 1.8;
+            background: #ffffff;
+            border: 2px solid #2b2b3a;
+            border-radius: 10px;
+            box-shadow: 3px 3px 0 rgba(43, 43, 58, 0.9);
+            padding: 6px 12px;
+        }
+
+        .tk-stub-btn {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 10px 8px 0;
+            font-size: 15px;
+            font-weight: 900;
+            letter-spacing: 4px;
+            color: #fff;
+            border: 3px solid #2b2b3a;
+            border-radius: 14px;
+            padding: 11px 8px;
+            box-shadow: 4px 4px 0 #2b2b3a;
+        }
+
+        .tk-stub-btn::before { content: '★'; color: #ffd66e; }
+        .tk-stub-btn::after {
+            content: '';
+            width: 0;
+            height: 0;
+            border-top: 7px solid transparent;
+            border-bottom: 7px solid transparent;
+            border-left: 11px solid #fff;
+        }
+
+        .tk-stub--mio .tk-stub-btn { background: linear-gradient(180deg, #3a92cc, #2373ab); }
+        .tk-stub--tsuru .tk-stub-btn { background: linear-gradient(180deg, #ef9234, #d9731a); }
+
+        .tk-stub-stamp2 { display: none; }
+
+        /* ══════════ 加料：贴纸/彩旗/跑马灯/编号/档案/预告 ══════════ */
+        .tk-stickers {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .tk-sticker {
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 2.5px solid #2b2b3a;
+            box-shadow: 2.5px 2.5px 0 #2b2b3a;
+        }
+
+        .tk-sticker--a { background: #ffd66e; transform: rotate(-4deg); }
+        .tk-sticker--b { background: #fff; transform: rotate(2deg); }
+        .tk-sticker--c { background: #ff9ebb; color: #fff; transform: rotate(-2deg); }
+
+        .tk-bunting {
+            display: flex;
+            justify-content: space-between;
+            margin: 14px 4px 0;
+            height: 20px;
+        }
+
+        .tk-bunting span {
+            width: 22px;
+            height: 20px;
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+        }
+
+        .tk-bunting span:nth-child(4n+1) { background: #ff5e78; }
+        .tk-bunting span:nth-child(4n+2) { background: #ffd66e; }
+        .tk-bunting span:nth-child(4n+3) { background: #5eb8f0; }
+        .tk-bunting span:nth-child(4n) { background: #8fe08a; }
+        .tk-bunting span:nth-child(odd) { transform: rotate(4deg); }
+        .tk-bunting span:nth-child(even) { transform: rotate(-4deg); }
+
+        .tk-marquee {
+            margin: 12px -2px 0;
+            overflow: hidden;
+            white-space: nowrap;
+            background: #2b2b3a;
+            border-radius: 8px;
+            padding: 5px 0;
+        }
+
+        .tk-marquee-in { display: inline-block; animation: tk-marquee-run 14s linear infinite; }
+
+        .tk-marquee-in span {
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            color: #ffd66e;
+            padding-right: 8px;
+        }
+
+        @keyframes tk-marquee-run {
+            from { transform: translateX(0); }
+            to { transform: translateX(-50%); }
+        }
+
+        .tk-route-no {
+            position: absolute;
+            z-index: 0;
+            top: 2px;
+            right: 10px;
+            font-size: 64px;
+            font-weight: 900;
+            letter-spacing: 0;
+            color: transparent;
+            -webkit-text-stroke: 2px rgba(43, 43, 58, 0.28);
+            pointer-events: none;
+            line-height: 1;
+        }
+
+        .tk-file {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin: 10px 8px 0;
+            padding: 10px 12px;
+            background: rgba(255, 253, 246, 0.9);
+            border: 2px dashed rgba(43, 43, 58, 0.4);
+            border-radius: 10px;
+        }
+
+        .tk-file span { display: flex; gap: 6px; font-size: 11px; align-items: baseline; }
+
+        .tk-file i {
+            flex: none;
+            font-style: normal;
+            font-weight: 900;
+            font-size: 10px;
+            letter-spacing: 1px;
+            color: #fff;
+            background: #2b2b3a;
+            border-radius: 4px;
+            padding: 1px 6px;
+        }
+
+        .tk-file b { font-weight: 800; color: #2b2b3a; }
+
+        .tk-forecast {
+            position: relative;
+            z-index: 1;
+            margin: 8px 8px 0;
+            padding: 10px 12px;
+            background: #2b2b3a;
+            border-radius: 10px;
+            color: #ffe9a8;
+            font-size: 11.5px;
+            font-weight: 700;
+            line-height: 1.9;
+        }
+
+        .tk-forecast b {
+            display: block;
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: #ffd66e;
+            margin-bottom: 2px;
+        }
+
+        .tk-forecast span { display: block; }
+
+        /* ══════════ 动效层（星闪/轨道行军/按钮扫光/贴纸摇摆/入场） ══════════ */
+        .tk-hero { position: relative; }
+
+        .tk-tw {
+            position: absolute;
+            color: #fff;
+            line-height: 1;
+            pointer-events: none;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.95);
+            animation: tk-tw 2.8s ease-in-out infinite alternate;
+        }
+
+        .tk-tw--1 { top: 2px; left: 5%; font-size: 16px; }
+        .tk-tw--2 { top: 26px; right: 22%; font-size: 12px; animation-delay: -1.4s; }
+        .tk-tw--3 { bottom: 6px; left: 11%; font-size: 11px; animation-delay: -2s; }
+
+        @keyframes tk-tw {
+            from { opacity: 0.25; }
+            to { opacity: 1; }
+        }
+
+        .tk-logo-orbit ellipse { animation: tk-dash 7s linear infinite; }
+
+        @keyframes tk-dash {
+            to { stroke-dashoffset: -40; }
+        }
+
+        .tk-stub-btn { overflow: hidden; }
+
+        .tk-stub-btn::after {
+            content: '';
+            position: absolute;
+            top: -40%;
+            bottom: -40%;
+            left: -30%;
+            width: 34%;
+            background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+            transform: skewX(-18deg);
+            animation: tk-shine 3.8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes tk-shine {
+            0% { left: -30%; }
+            55%, 100% { left: 130%; }
+        }
+
+        .tk-sticker { animation: tk-wig 3.4s ease-in-out infinite; }
+        .tk-sticker--b { animation-delay: -1.1s; }
+        .tk-sticker--c { animation-delay: -2.2s; }
+
+        @keyframes tk-wig {
+            0%, 100% { rotate: -4deg; }
+            50% { rotate: 0deg; }
+        }
+
+        .tk-page--active .tk-stub { animation: tk-rise 0.5s ease both; }
+        .tk-page--active .tk-stub:nth-child(2) { animation-delay: 0.12s; }
+
+        @keyframes tk-rise {
+            from { opacity: 0; transform: translateY(16px); }
+            to { opacity: 1; transform: none; }
+        }
+
+        /* ══════════ hover 反馈（鼠标放上来就动） ══════════ */
+        .tk-mag-ring { transition: transform 0.22s ease; }
+        .tk-stub:hover .tk-mag-ring { transform: rotate(7deg) scale(1.06); }
+
+        .tk-logo-name { transition: transform 0.22s ease; }
+        .tk-stub:hover .tk-logo-name { transform: rotate(0deg) scale(1.02); }
+
+        .tk-logo-star { transition: transform 0.2s ease; }
+        .tk-stub:hover .tk-logo-star { transform: scale(1.35) rotate(10deg); }
+
+        .tk-logo-plus { transition: transform 0.2s ease; }
+        .tk-stub:hover .tk-logo-plus { transform: rotate(100deg) scale(1.2); }
+
+        .tk-logo-orbit { transition: opacity 0.2s ease; }
+        .tk-stub:hover .tk-logo-orbit { opacity: 1; }
+
+        .tk-stub-btn { transition: filter 0.15s ease, transform 0.15s ease; }
+        .tk-stub-btn:hover { filter: brightness(1.1); transform: translateY(-1px); }
+        .tk-stub-btn::after { transition: transform 0.15s ease; }
+        .tk-stub-btn:hover::after { transform: translateX(4px); }
+
+        .tk-sticker { transition: transform 0.15s ease; cursor: default; }
+        .tk-sticker:hover { transform: scale(1.15) rotate(0deg); }
+
+        .tk-tags i { transition: transform 0.15s ease; }
+        .tk-tags i:hover { transform: translateY(-2px) rotate(-2deg); }
+
+        .tk-marquee:hover .tk-marquee-in { animation-play-state: paused; }
+
+        .tk-scene-go { transition: filter 0.15s ease, transform 0.15s ease; }
+        .tk-scene-go:hover { filter: brightness(1.12); transform: translateY(-2px); }
+        .tk-scene-go:active { transform: translateY(0); }
+
+        /* ══════════ 场景页（第二/第三开场白） ══════════ */
+        .tk-scene {
+            position: relative;
+            background: #fffdf6;
+            border: 3px solid #2b2b3a;
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 6px 6px 0 #2b2b3a;
+        }
+
+        .tk-scene-strip {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 8px 14px;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #fff;
+        }
+
+        .tk-scene--mio .tk-scene-strip { background: #2b7bb5; }
+        .tk-scene--tsuru .tk-scene-strip { background: #e07b1f; }
+
+        .tk-scene-back {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-family: inherit;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            color: inherit;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            opacity: 0.9;
+            padding: 2px 4px;
+        }
+
+        .tk-scene-back:hover { opacity: 1; }
+        .tk-scene-body { padding: 18px 18px 16px; }
+
+        .tk-scene-day {
+            display: inline-block;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            color: #fff;
+            background: #2b2b3a;
+            border-radius: 20px;
+            padding: 3px 12px;
+            transform: rotate(-1deg);
+        }
+
+        .tk-scene-title {
+            margin-top: 10px;
+            font-size: 26px;
+            font-weight: 900;
+            letter-spacing: 3px;
+            color: #2b2b3a;
+        }
+
+        .tk-scene-title small {
+            display: block;
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: #8a93a7;
+            margin-top: 4px;
+        }
+
+        .tk-scene-text {
+            margin-top: 10px;
+            font-size: 13.5px;
+            font-weight: 600;
+            line-height: 2.05;
+            color: #4a4a5a;
+        }
+
+        .tk-scene-text .tk-say {
+            display: block;
+            margin-top: 8px;
+            font-weight: 900;
+            color: #2b2b3a;
+            background: #fff7e2;
+            border: 2px dashed #e0b34e;
+            border-radius: 10px;
+            padding: 8px 12px;
+        }
+
+        .tk-scene-text .tk-say b {
+            font-size: 12px;
+            color: #fff;
+            border-radius: 6px;
+            padding: 1px 7px;
+            margin-right: 6px;
+        }
+
+        .tk-scene--mio .tk-say b { background: #2b7bb5; }
+        .tk-scene--tsuru .tk-say b { background: #e07b1f; }
+
+        .tk-scene-go {
+            margin-top: 14px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 7px;
+            font-family: inherit;
+            font-size: 14px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #fff;
+            border: 2.5px solid #2b2b3a;
+            border-radius: 12px;
+            padding: 11px 8px;
+            cursor: pointer;
+            box-shadow: 3px 3px 0 rgba(43, 43, 58, 0.9);
+        }
+
+        .tk-scene-go svg { width: 15px; height: 15px; }
+        .tk-scene--mio .tk-scene-go { background: linear-gradient(180deg, #3a92cc, #2b7bb5); }
+        .tk-scene--tsuru .tk-scene-go { background: linear-gradient(180deg, #ef9234, #e07b1f); }
+
+        .tk-scene-busy {
+            margin-top: 8px;
+            text-align: center;
+            font-size: 11px;
+            font-weight: 800;
+            color: #8a93a7;
+            min-height: 16px;
+        }
+
+        
+        .tk-notes {
+            margin-top: 14px;
+            padding: 10px 14px;
+            font-size: 11px;
+            font-weight: 700;
+            line-height: 1.9;
+            color: #2b2b3a;
+            background: rgba(255, 253, 246, 0.94);
+            border: 2px dashed rgba(43, 43, 58, 0.45);
+            border-radius: 10px;
+        }
+        .tk-author {
+            margin: 10px 6px 0;
+            padding: 12px 14px;
+            background: #2b2b3a;
+            border: 2.5px solid #ffd66e;
+            border-radius: 12px;
+            box-shadow: 4px 4px 0 rgba(43, 43, 58, 0.35);
+            color: #ffe9a8;
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 1.9;
+        }
+
+        .tk-author b {
+            display: block;
+            font-size: 11px;
+            letter-spacing: 3px;
+            color: #ffd66e;
+            margin-bottom: 4px;
+        }
+
+        .tk-author > span { display: block; }
+
+        .tk-author .tk-author-name { display: inline; }
+
+        .tk-author .tk-author-name {
+            color: #ff8fb3;
+            font-weight: 900;
+        }
+
+        .tk-toast {
+            position: fixed;
+            left: 50%;
+            bottom: 22px;
+            transform: translateX(-50%) translateY(8px);
+            background: rgba(43, 43, 58, 0.94);
+            color: #fff;
+            font-size: 13px;
+            font-weight: 800;
+            padding: 9px 18px;
+            border-radius: 20px;
+            opacity: 0;
+            transition: opacity 0.25s ease, transform 0.25s ease;
+            pointer-events: none;
+            z-index: 50;
+        }
+
+        .tk-toast--show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        @media (max-width: 420px) {
+            .tk-hero-title { font-size: 44px; }
+            .tk-logo-name { font-size: 52px; }
+            .tk-mag { width: 100px; height: 116px; }
+            .tk-mag-ring { width: 82px; height: 82px; }
+            .tk-stub-hook { font-size: 11px; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .tk-marquee-in { animation: none !important; }
+            .tk-tw, .tk-logo-orbit ellipse, .tk-stub-btn::after, .tk-sticker, .tk-page--active .tk-stub { animation: none !important; }
+            .tk-page--active { animation: none !important; }
+        }
+    html,body{overflow-x:hidden;}
+        .tk-stub,.tk-scene-go,.tk-scene-back,.tk-galgo-btn{-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+        </style>
+</head>
+<body>
+    <div class="tk-world">
+        <div class="tk-pages">
+            <!-- ═══ 第一页：封面检票 ═══ -->
+            <section class="tk-page tk-page--active" id="tk-page-ticket">
+                <div class="tk-hero">
+                    <span class="tk-hero-kicker">海鸣町 · 盛夏限定开幕!</span>
+                    <h1 class="tk-hero-title">三十日<em>生活</em></h1>
+                    <div class="tk-hero-book">海鸣町<br>归乡<br>记录</div>
+                    <span class="tk-tw tk-tw--1">✦</span>
+                    <span class="tk-tw tk-tw--2">✦</span>
+                    <span class="tk-tw tk-tw--3">✦</span>
+                    <div class="tk-hero-sub">与病弱妹妹的 · UMINARI-CHŌ · VOL.1</div>
+                    <div class="tk-stickers" aria-hidden="true">
+                        <span class="tk-sticker tk-sticker--a">盛夏!</span>
+                        <span class="tk-sticker tk-sticker--b">30 DAYS</span>
+                        <span class="tk-sticker tk-sticker--c">海鸣町</span>
+                    </div>
+                </div>
+
+                <div class="tk-bunting" aria-hidden="true"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
+
+                <div class="tk-premise">盛夏,蝉鸣,海风——在外求学的<b>你</b>回到了地图边缘的渔村<b>海鸣町</b>。姐姐<b>鹤</b>一个人撑着老宅,病弱的妹妹<b>澪</b>在二楼窗边等你。村里流传着集齐七种食材的<b>「七生汤」</b>传说,而代价只有这座小镇知道。<b>三十天,够把失去的夏天找回来吗?</b></div>
+
+                <div class="tk-author">
+                <b>作者的话 · AUTHOR</b>
+                <span>我是平胸师匠—<span class="tk-author-name">ℜ𝔬𝔵𝔶</span>，谢谢你来玩我的卡。</span>
+                <span>请注意，卡纯免费且只在DC发布，任何其它地方发现都是贩子在盗取售卖，发现后请联系我，谢谢你喵。</span>
+            </div>
+
+            <div class="tk-marquee" aria-hidden="true"><div class="tk-marquee-in"><span>UMINARI SUMMER ★ 30 DAYS ★ 海鸣町 ★ 盛夏限定 ★ </span><span>UMINARI SUMMER ★ 30 DAYS ★ 海鸣町 ★ 盛夏限定 ★ </span></div></div>
+
+                <div class="tk-pickhead"><i>★</i> 選べ! 同行者 <i>★</i></div>
+
+                <div class="tk-stubs">
+                    <div class="tk-stub tk-stub--mio" role="button" tabindex="0" aria-label="撕下澪的存根，前往第二张开场白">
+                        <span class="tk-route-no" aria-hidden="true">01</span>
+                        <svg class="tk-logo-orbit" viewBox="0 0 220 70" aria-hidden="true"><ellipse cx="110" cy="35" rx="103" ry="27" fill="none" stroke="#ff5e78" stroke-width="5" stroke-dasharray="11 9" stroke-linecap="round"/></svg>
+                        <span class="tk-logo-star tk-logo-star--1">★</span>
+                        <span class="tk-logo-star tk-logo-star--2">★</span>
+                        <span class="tk-logo-star tk-logo-star--3">★</span>
+                        <span class="tk-logo-plus tk-logo-plus--1">+</span>
+                        <div class="tk-logo-row">
+                            <span class="tk-mag" aria-hidden="true">
+                                <span class="tk-mag-ring"><img decoding="async" data-tk-avatar="mio" src="https://raw.githubusercontent.com/roxysl521-droid/bingruo-li-hui/main/%E6%BE%AA_%E5%A4%B4%E5%83%8F_1.png" alt="" crossorigin="anonymous"></span>
+                                <span class="tk-mag-handle"></span>
+                            </span>
+                            <span class="tk-logo-name">澪<small>潮見 澪 · 14岁 · 窗边文学少女</small></span>
+                        </div>
+                        <span class="tk-stub-gate">第二月台 · 往病房的窗边</span>
+                        <span class="tk-tags"><i>毒舌</i><i>窗边族</i><i>小熊猫党</i></span>
+                        <span class="tk-stub-hook">白化病加小心脏,晒不得也跑不得,偏偏嘴上全村第一不饶人——耳根一红就露馅。想进她房间?先对上三短一长的暗号。</span>
+                        <div class="tk-file" aria-label="澪的小档案">
+                            <span><i>年龄</i><b>14岁</b></span>
+                            <span><i>据点</i><b>二楼窗边</b></span>
+                            <span><i>喜欢</i><b>收音机·漫画</b></span>
+                            <span><i>口头禅</i><b>“……回来啦。”</b></span>
+                        </div>
+                        <div class="tk-forecast" aria-label="澪线第一日预告">
+                            <b>第一日预告 · 午后</b>
+                            <span>✦ 风铃响,半掩的窗帘与淡蓝色午后</span>
+                            <span>✦ 药袋、小熊猫,与红了的耳朵尖</span>
+                            <span>✦ 尘封两年的敲门暗号,还管用吗</span>
+                        </div>
+                        <span class="tk-stub-btn">撕下存根 · 进入澪线</span>
+                        <span class="tk-stub-stamp2">片道</span>
+                    </div>
+
+                    <div class="tk-stub tk-stub--tsuru" role="button" tabindex="0" aria-label="撕下鹤的存根，前往第三张开场白">
+                        <span class="tk-route-no" aria-hidden="true">02</span>
+                        <svg class="tk-logo-orbit" viewBox="0 0 220 70" aria-hidden="true"><ellipse cx="110" cy="35" rx="103" ry="27" fill="none" stroke="#ff5e78" stroke-width="5" stroke-dasharray="11 9" stroke-linecap="round"/></svg>
+                        <span class="tk-logo-star tk-logo-star--1">★</span>
+                        <span class="tk-logo-star tk-logo-star--2">★</span>
+                        <span class="tk-logo-star tk-logo-star--3">★</span>
+                        <span class="tk-logo-plus tk-logo-plus--1">+</span>
+                        <div class="tk-logo-row">
+                            <span class="tk-mag" aria-hidden="true">
+                                <span class="tk-mag-ring"><img decoding="async" data-tk-avatar="tsuru" src="https://raw.githubusercontent.com/roxysl521-droid/bingruo-li-hui/main/%E9%B9%A4_%E5%A4%B4%E5%83%8F_1.png" alt="" crossorigin="anonymous"></span>
+                                <span class="tk-mag-handle"></span>
+                            </span>
+                            <span class="tk-logo-name">鶴<small>潮見 鶴 · 姐姐 · 老宅太阳</small></span>
+                        </div>
+                        <span class="tk-stub-gate">第一月台 · 往厨房与院子</span>
+                        <span class="tk-tags"><i>元气</i><i>围裙战士</i><i>弹珠汽水供应商</i></span>
+                        <span class="tk-stub-hook">老宅的太阳,行走的唠叨,围裙一系全家吃香。院子里那缸衣服,指名要你一起晾。</span>
+                        <div class="tk-file" aria-label="鹤的小档案">
+                            <span><i>身份</i><b>姐姐</b></span>
+                            <span><i>据点</i><b>院子·厨房</b></span>
+                            <span><i>喜欢</i><b>弹珠汽水·向日葵</b></span>
+                            <span><i>口头禅</i><b>“搭把手啦。”</b></span>
+                        </div>
+                        <div class="tk-forecast" aria-label="鹤线第一日预告">
+                            <b>第一日预告 · 上午</b>
+                            <span>✦ 被单、洗衣粉香与点头的向日葵</span>
+                            <span>✦ 飞来的一件衬衫,接住了吗</span>
+                            <span>✦ 冰箱里最后一瓶弹珠汽水归谁</span>
+                        </div>
+                        <span class="tk-stub-btn">撕下存根 · 进入鹤线</span>
+                        <span class="tk-stub-stamp2">片道</span>
+                    </div>
+                </div>
+            </section>
+            <!-- ═══ 第二页：澪 ═══ -->
+            <section class="tk-page" id="tk-page-mio">
+                <div class="tk-scene tk-scene--mio">
+                    <div class="tk-scene-strip">
+                        <button type="button" class="tk-scene-back" data-back="1">
+                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="14 6 8 12 14 18"></polyline></svg>
+                            回到检票口
+                        </button>
+                        <span>第二开场白 · 其ノ一</span>
+                    </div>
+                    <div class="tk-scene-body">
+                        <span class="tk-scene-day">第一日 · 晴 · 午后</span>
+                        <h2 class="tk-scene-title">病房的窗边<small>第二月台 · 潮見 澪 · 毒舌但耳根软</small></h2>
+                        <div class="tk-scene-text">
+                            推开纱门时，风铃轻轻响了一声。<br>
+                            房间里拉着半边的窗帘，把下午的光滤成了淡蓝色，晒好的被褥叠在床角，药袋摆在床头柜最顺手的位置。<br>
+                            澪靠在窗边看书，听见动静，抬起眼看了你一下，又慢慢把目光放回书页——只是耳朵，明显红了一点。
+                            <span class="tk-say"><b>潮见澪</b>"……回来啦。站门口做什么，进来就是了。"</span>
+                        </div>
+                        <button type="button" class="tk-scene-go" data-start="1">
+                            在床边坐下，开始这个夏天
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="19" y2="12"></line><polyline points="13 6 19 12 13 18"></polyline></svg>
+                        </button>
+                        <div class="tk-scene-busy"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- ═══ 第三页：鹤 ═══ -->
+            <section class="tk-page" id="tk-page-tsuru">
+                <div class="tk-scene tk-scene--tsuru">
+                    <div class="tk-scene-strip">
+                        <button type="button" class="tk-scene-back" data-back="1">
+                            <svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="14 6 8 12 14 18"></polyline></svg>
+                            回到检票口
+                        </button>
+                        <span>第三开场白 · 其ノ二</span>
+                    </div>
+                    <div class="tk-scene-body">
+                        <span class="tk-scene-day">第一日 · 晴 · 上午</span>
+                        <h2 class="tk-scene-title">院子的晾衣绳<small>第一月台 · 潮見 鶴 · 元气老妈子</small></h2>
+                        <div class="tk-scene-text">
+                            院子里晒着被单，太阳的味道混着洗衣粉的香，向日葵朝着一侧点头。<br>
+                            鹤踩在小凳上够晾衣绳，听见你出来，头也不回，回手把一件衬衫扔进你怀里。
+                            <span class="tk-say"><b>潮见鹤</b>"愣着干什么，搭把手啦。晾完这缸，请你喝冰箱里最后一瓶弹珠汽水。"</span>
+                        </div>
+                        <button type="button" class="tk-scene-go" data-start="2">
+                            接过衬衫，开始这个夏天
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="19" y2="12"></line><polyline points="13 6 19 12 13 18"></polyline></svg>
+                        </button>
+                        <div class="tk-scene-busy"></div>
+                    </div>
+                </div>
+            </section>
+
+
+            <div class="tk-notes">
+                <b>乘车须知</b>：本票不记名、不挂失；撕下存根即跳转到对应开场白（请新开聊天后检票）；右上角的 Q版小人保管着<b>音乐盒</b>；
+                「町内案内图」可随时带你走遍海鸣町——迷路的时候，就去看地图。
+            </div>
+        </div>
+
+        <div class="tk-toast"></div>
+    </div>
+<script>
+        (function() {
+/* 满血API纯文字降级：API/模型名含“满血”时只留纯文字（fail-open：异常则正常渲染） */
+function uwIsFullBlood(msgObj){
+  try{
+    var budget={n:0};
+    function scan(v,depth){
+      if(v==null||depth>4||budget.n>300)return false;
+      if(typeof v==='string'){budget.n++;return v.indexOf('满血')!==-1;}
+      if(typeof v!=='object')return false;
+      if(Object.prototype.toString.call(v)==='[object Array]'){for(var i=0;i<v.length&&i<12;i++){try{if(scan(v[i],depth+1))return true;}catch(e){}}return false;}
+      var skip={message:1,raw:1,mes:1,chat:1,messages:1,characters:1,character:1,lorebook:1,lorebooks:1,worldbook:1,prompt:1,prompts:1,data:1,html:1,innerHTML:1};
+      for(var k in v){
+        if(!Object.prototype.hasOwnProperty.call(v,k))continue;
+        if(skip[k])continue;
+        var val=null;
+        try{val=v[k];}catch(e){continue;}
+        try{if(scan(val,depth+1))return true;}catch(e){}
+      }
+      return false;
+    }
+    try{if(msgObj&&scan(msgObj,0))return true;}catch(e){}
+    var ctx=null;
+    try{if(window.SillyTavern&&window.SillyTavern.getContext)ctx=window.SillyTavern.getContext();}catch(e){ctx=null;}
+    if(!ctx){try{if(window.parent&&window.parent.SillyTavern&&window.parent.SillyTavern.getContext)ctx=window.parent.SillyTavern.getContext();}catch(e){ctx=null;}}
+    try{if(ctx&&scan(ctx,0))return true;}catch(e){}
+  }catch(e){}
+  return false;
+}
+function uwCurMsg(){
+  try{if(typeof getChatMessages==='function'&&typeof getCurrentMessageId==='function'){var m=getChatMessages(getCurrentMessageId());if(m&&m.length)return m[0];}}catch(e){}
+  return null;
+}
+            try{
+              var _tkM=uwCurMsg();var _tkT='检票口·三十日乘車券（撕下澪或鹤的存根）';
+              try{var _tm=_tkM&&_tkM.message||'';var _tmm=_tm.match(/<ticket>([\s\S]*?)<\/ticket>/);if(_tmm&&_tmm[1]&&_tmm[1].trim())_tkT=_tmm[1].trim();}catch(e){}
+              if(uwIsFullBlood(_tkM)){try{if(document.body)document.body.textContent=_tkT;}catch(e){}return;}
+            }catch(e){}
+            function uwJump(swipeId) {
+                try {
+                    var ctx = window.SillyTavern && window.SillyTavern.getContext && window.SillyTavern.getContext();
+                    if (ctx && ctx.swipe && typeof ctx.swipe.to === 'function') {
+                        ctx.swipe.to(null, 'right', { forceMesId: 0, forceSwipeId: swipeId, source: 'slash_command' });
+                        return true;
+                    }
+                } catch (e) { }
+                return false;
+            }
+
+            /* 存根/场景头像：仓库直链随机（静态 _1 为兜底） */
+            var UW_TK_AVATARS = {
+                mio: ['https://raw.githubusercontent.com/roxysl521-droid/bingruo-li-hui/main/%E6%BE%AA_%E5%A4%B4%E5%83%8F_1.png', 'https://raw.githubusercontent.com/roxysl521-droid/bingruo-li-hui/main/%E6%BE%AA_%E5%A4%B4%E5%83%8F_2.png'],
+                tsuru: ['https://raw.githubusercontent.com/roxysl521-droid/bingruo-li-hui/main/%E9%B9%A4_%E5%A4%B4%E5%83%8F_1.png', 'https://raw.githubusercontent.com/roxysl521-droid/bingruo-li-hui/main/%E9%B9%A4_%E5%A4%B4%E5%83%8F_2.png']
+            };
+            /* 头像预加载：先内存解码再上屏，永远不显示半解码的 mush（随机 _1/_2，静态 _1 兜底） */
+            document.querySelectorAll('img[data-tk-avatar]').forEach(function(img) {
+                var key = img.getAttribute('data-tk-avatar');
+                var list = UW_TK_AVATARS[key] || [];
+                if (list.length) {
+                    var pick = list[Math.floor(Math.random() * list.length)];
+                    try {
+                        var im = new Image();
+                        im.onload = (function(el, url) { return function() { el.src = url; }; })(img, pick);
+                        im.src = pick;
+                    } catch (e) { img.src = pick; }
+                }
+            });
+            var pages = document.querySelectorAll('.tk-page');
+            var toast = document.querySelector('.tk-toast');
+            var toastTimer = 0;
+
+            function showToast(msg) {
+                toast.textContent = msg;
+                toast.classList.add('tk-toast--show');
+                clearTimeout(toastTimer);
+                toastTimer = setTimeout(function() { toast.classList.remove('tk-toast--show'); }, 2400);
+            }
+
+            function uwGoto(n) {
+                pages.forEach(function(p, idx) {
+                    p.classList.toggle('tk-page--active', idx === n);
+                });
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                if (n === 0) tkTicketBlocks();
+            }
+
+            function tkTicketBlocks() {
+                var page = null;
+                try { page = document.querySelector('#tk-page-ticket'); } catch (e) {}
+                if (!page) return;
+                var reduce = false;
+                try { reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+                if (reduce) return;
+                var order = ['.tk-premise', '.tk-author', '.tk-marquee', '.tk-pickhead', '.tk-stub--mio', '.tk-stub--tsuru', '.tk-notes'];
+                var t = 900, GAP = 120;
+                order.forEach(function(sel) {
+                    var el = null;
+                    try { el = page.querySelector(sel); } catch (e) {}
+                    if (!el || !el.animate) return;
+                    try {
+                        el.animate(
+                            [{ opacity: 0, transform: 'translateY(18px)' }, { opacity: 1, transform: 'translateY(0)' }],
+                            { duration: 420, delay: t, easing: 'cubic-bezier(.2,.9,.3,1.15)', fill: 'backwards' }
+                        );
+                    } catch (e) {}
+                    t += GAP;
+                });
+            }
+            /* 撕存根 → 跳转对应开场白 */
+            document.querySelectorAll('.tk-stub').forEach(function(stub) {
+                function go() {
+                    uwGoto(stub.classList.contains('tk-stub--mio') ? 1 : 2);
+                }
+                stub.addEventListener('click', go);
+                stub.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); }
+                });
+            });
+
+            /* 返回检票口 */
+            document.querySelectorAll('.tk-scene-back').forEach(function(btn) {
+                btn.addEventListener('click', function() { uwGoto(0); });
+            });
+
+            /* 场景页「开始」→ 跳转到对应开场白（切换第 0 楼消息页，不发新消息、不续写） */
+            document.querySelectorAll('.tk-scene-go').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    var swipeId = parseInt(btn.dataset.start, 10);
+                    var busy = btn.parentElement.querySelector('.tk-scene-busy');
+                    if (uwJump(swipeId)) {
+                        if (busy) busy.textContent = '检票完毕——故事从这里开始。';
+                        showToast('检票完毕。海鸣町的三十日，开始了——');
+                    } else {
+                        showToast('切换失败：请在酒馆内点击，或重开聊天再试');
+                    }
+                });
+            });
+
+            /* 开场hero打字机：kicker→标题→副标题逐字欢快弹出，贴纸随后淡入（同步执行，无定时器，重复执行自动跳过） */
+            (function() {
+                var hero = document.querySelector('.tk-hero');
+                if (!hero) return;
+                try { if (hero.getAttribute('data-typed') === '1') return; } catch (e) {}
+                try { hero.setAttribute('data-typed', '1'); } catch (e) {}
+                var reduce = false;
+                try { reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+                var t = 150;
+                function typeInto(el, step) {
+                    if (!el || (el.querySelector && el.querySelector('.tk-type-char'))) return;
+                    var parts = [];
+                    Array.prototype.forEach.call(el.childNodes, function(nd) {
+                        if (nd.nodeType !== 3 && nd.nodeName !== 'EM') return;
+                        var txt = nd.textContent || '';
+                        var inEm = nd.nodeName === 'EM';
+                        for (var i = 0; i < txt.length; i++) parts.push({ ch: txt[i], em: inEm });
+                    });
+                    if (!parts.length) return;
+                    try { el.setAttribute('aria-label', el.textContent); } catch (e) {}
+                    el.textContent = '';
+                    parts.forEach(function(p, idx) {
+                        var sp = document.createElement('span');
+                        sp.className = 'tk-type-char';
+                        try { sp.setAttribute('aria-hidden', 'true'); } catch (e) {}
+                        if (p.em) {
+                            var em = document.createElement('em');
+                            em.textContent = p.ch;
+                            sp.appendChild(em);
+                        } else {
+                            sp.textContent = p.ch;
+                        }
+                        if (!reduce) sp.style.animationDelay = (t + idx * step) + 'ms';
+                        el.appendChild(sp);
+                    });
+                    t += parts.length * step + 90;
+                }
+                typeInto(document.querySelector('.tk-hero-kicker'), 40);
+                typeInto(document.querySelector('.tk-hero-title'), 55);
+                typeInto(document.querySelector('.tk-hero-sub'), 22);
+                if (reduce) return;
+                var stickers = hero.querySelectorAll ? hero.querySelectorAll('.tk-sticker') : [];
+                Array.prototype.forEach.call(stickers, function(st, idx) {
+                    var at = t + idx * 120;
+                    try {
+                        if (st.animate) st.animate(
+                            [{ opacity: 0, transform: 'scale(0.6)' }, { opacity: 1, transform: 'scale(1)' }],
+                            { duration: 450, delay: at, easing: 'cubic-bezier(.2,.9,.3,1.2)', fill: 'backwards' }
+                        );
+                    } catch (e) {}
+                });
+            })();
+            try { tkTicketBlocks(); } catch (e) {}
+        })();
+    </script>
+</body>
+</html>
