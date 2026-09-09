@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>毛玻璃导航页</title>
+    <style>
+        /* 引入指定字体 */
+        @import url("https://fontsapi.zeoseven.com/2173/main/result.css"); /* 宋骨黑体 Medium */
+        @import url("https://fontsapi.zeoseven.com/556/main/result.css");  /* The Peak Font Plus */
+        @import url("https://fontsapi.zeoseven.com/582/main/result.css");  /* gkai00mp */
+        @import url("https://fontsapi.zeoseven.com/500/main/result.css");  /* PING FANG SAI BEI */
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: transparent;
+            padding: 10px;
+            color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        /* 动画定义 */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 扫光动画 */
+        @keyframes shine {
+            0% { left: -100%; opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { left: 200%; opacity: 0; }
+        }
+
+        /* 主容器：毛玻璃材质 + 反光 */
+        .glass-container {
+            width: 100%;
+            max-width: 650px;
+            background: rgba(15, 16, 20, 0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.02);
+            animation: fadeUp 0.6s ease-out forwards;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .glass-container::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 100%);
+            pointer-events: none;
+            border-radius: 16px;
+        }
+
+        .glass-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.08), transparent);
+            transform: skewX(-25deg);
+            animation: shine 6s infinite cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* 标头区域 */
+        .header-box {
+            text-align: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 2;
+        }
+
+        .main-title {
+            font-family: "宋骨黑体 Medium", serif;
+            font-size: 28px;
+            color: #f3f4f6;
+            letter-spacing: 4px;
+            margin-bottom: 12px;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+        }
+
+        .author-tag {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 2px 10px;
+            border-radius: 4px;
+            color: #d1d5db;
+            margin-bottom: 15px;
+            font-size: 14px;
+            backdrop-filter: blur(4px);
+        }
+
+        .sub-info {
+            font-family: "PING FANG SAI BEI", sans-serif;
+            font-size: 18px;
+            color: #9ca3af;
+            line-height: 1.8;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        }
+
+        /* 独立板块样式 */
+        .module-card {
+            background: rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            padding: 16px 20px;
+            margin-bottom: 18px;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            animation: fadeUp 0.6s ease-out both;
+            position: relative;
+            z-index: 2;
+            cursor: grab;
+        }
+
+        .module-card:nth-child(2) { animation-delay: 0.1s; }
+        .module-card:nth-child(3) { animation-delay: 0.2s; }
+        .module-card:nth-child(4) { animation-delay: 0.3s; }
+        .module-card:nth-child(5) { animation-delay: 0.4s; }
+
+        .module-card:hover {
+            background: rgba(0, 0, 0, 0.35);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4), 0 0 10px rgba(255,255,255,0.05);
+        }
+
+        .module-card:active {
+            cursor: grabbing;
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5), 0 0 15px rgba(212, 163, 115, 0.2);
+            border-color: rgba(212, 163, 115, 0.4);
+            background: rgba(20, 20, 25, 0.45);
+        }
+
+        .mod-title {
+            font-family: "The Peak Font Plus", sans-serif;
+            font-size: 20px;
+            color: #d4a373;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            pointer-events: none;
+        }
+
+        .mod-content {
+            font-family: "gkai00mp", serif;
+            font-size: 18px;
+            color: #d1d5db;
+            line-height: 1.7;
+            text-align: justify;
+            pointer-events: none;
+        }
+
+        .copyright-text { color: #fca5a5; font-size: 16px; }
+
+        .swipe-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            margin-top: 12px;
+            pointer-events: auto;
+        }
+
+        .swipe-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-left: 3px solid #d4a373;
+            border-radius: 8px;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .swipe-btn::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.05), transparent);
+            transform: skewX(-20deg);
+            transition: 0.5s;
+        }
+
+        .swipe-btn:hover {
+            background: rgba(212, 163, 115, 0.08);
+            border-color: rgba(212, 163, 115, 0.3);
+            transform: translateX(5px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .swipe-btn:hover::before { left: 200%; }
+
+        .btn-title {
+            font-family: "The Peak Font Plus", sans-serif;
+            font-size: 18px;
+            color: #e5e7eb;
+            margin-bottom: 6px;
+        }
+
+        .btn-desc {
+            font-family: "gkai00mp", serif;
+            font-size: 16px;
+            color: #9ca3af;
+        }
+
+        .loading { text-align: center; padding: 20px; color: #9ca3af; font-family: "gkai00mp", serif; font-size: 18px; }
+
+        @media (max-width: 600px) {
+            body { padding: 5px; }
+            .glass-container { padding: 20px 15px; border-radius: 12px; }
+            .main-title { font-size: 24px; letter-spacing: 2px; }
+            .sub-info { font-size: 16px; }
+            .module-card { padding: 14px 15px; margin-bottom: 15px; }
+            .mod-title { font-size: 18px; }
+            .mod-content { font-size: 16px; }
+            .btn-title { font-size: 16px; }
+            .btn-desc { font-size: 14px; }
+            .copyright-text { font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="glass-container" id="content">
+        <div class="loading">正在加载卡片信息...</div>
+    </div>
+
+    <script>
+        /* ========== 获取消息内容 ========== */
+        function getMessageData() {
+            var chatMessages = getChatMessages(getCurrentMessageId());
+            if (!chatMessages || chatMessages.length === 0) return null;
+            return chatMessages[0];
+        }
+
+        /* ========== 解析开场白数据 ========== */
+        function parseData(messageText) {
+            var result = { 开场白: [] };
+            var tagMatch = messageText.match(/<intro_menu>([\s\S]*?)<\/intro_menu>/);
+            if (!tagMatch || !tagMatch[1]) return result;
+
+            var lines = tagMatch[1].trim().split('\n');
+            lines.forEach(function(line) {
+                var match = line.match(/\[([^\]]+)\]/);
+                if (match && match[1]) {
+                    var parts = match[1].split('|');
+                    var key = parts[0].trim();
+                    if (key.startsWith('开场白')) {
+                        result.开场白.push({
+                            index: parseInt(key.replace('开场白', '')),
+                            title: parts[1] || '未知开场',
+                            desc: parts[2] || ''
+                        });
+                    }
+                }
+            });
+            return result;
+        }
+
+        /* ========== 渲染界面 ========== */
+        function renderPage(msgObj, data) {
+            var charName = msgObj.name || "未知角色";
+
+            var html = `
+                <!-- 标头 -->
+                <div class="header-box">
+                    <div class="main-title">县城，孤独与爱</div>
+                    <div class="author-tag">作者：undersky</div>
+                    <div class="sub-info">这里没有大反派，只有错位与生病的人。<br>没有人会救她们，除了你。</div>
+                </div>
+
+                <!-- 模块1：版权声明 -->
+                <div class="module-card">
+                    <div class="mod-title">⚠ 版权声明</div>
+                    <div class="mod-content copyright-text">禁止任何商业化形式。本卡仅在discord上完全免费发布，如果您以任何形式付费购买，请立即向购买平台退款并举报。</div>
+                </div>
+
+                <!-- 模块2：开场白选择 -->
+                <div class="module-card">
+                    <div class="mod-title">🎬 开场白选择</div>
+                    <div class="mod-content">当前角色卡：<span style="color:#d4a373; font-weight:bold;">${charName}</span><br>请点击下方选项跳转至对应的剧情分支：</div>
+            `;
+
+            // 渲染动态开场白按钮
+            if (data.开场白.length > 0) {
+                html += '<div class="swipe-grid">';
+                data.开场白.forEach(function(item) {
+                    html += `
+                        <div class="swipe-btn" onclick="switchSwipe(${item.index}, this)">
+                            <div class="btn-title">▶ ${item.title}</div>
+                            <div class="btn-desc">${item.desc}</div>
+                        </div>
+                    `;
+                });
+                html += '</div>';
+            } else {
+                html += '<div class="mod-content" style="margin-top:10px; color:#9ca3af;">（未检测到多开场白数据）</div>';
+            }
+
+            html += `
+                </div>
+
+                <!-- 模块3：碎碎念 -->
+                <div class="module-card">
+                    <div class="mod-title">💭 碎碎念</div>
+                    <div class="mod-content">写这张卡的时候惊讶的发现社区里似乎并没有关于校园暴力的题材，当然大概率是我没找到（），因此萌发了这个点子。</div>
+                </div>
+
+                <!-- 模块4：结语 -->
+                <div class="module-card">
+                    <div class="mod-title">✨ 结语</div>
+                    <div class="mod-content">很高兴您能游玩本卡！如果有任何意见/批评/想法/点子，请您不要吝啬口舌，在discord中尽情和作者讨论吧！我衷心感谢每个人的意见与支持！你们的点赞和建议是我持续更新的最大动力~</div>
+                </div>
+            `;
+
+            document.getElementById('content').innerHTML = html;
+        }
+
+        /* ========== 核心交互：基于原生API精准切换 Swipe ========== */
+        async function switchSwipe(targetIndex, btnElement) {
+            if (btnElement) {
+                btnElement.style.opacity = '0.6';
+                btnElement.style.pointerEvents = 'none';
+            }
+            try {
+                // 动态获取当前消息ID，避免硬编码0
+                var mesId = getCurrentMessageId() || '0';
+
+                // 拉取当前消息的全部 swipe 数据
+                const messages = await getChatMessages(mesId, { include_swipe: true });
+
+                if (messages && messages[0].swipes && messages[0].swipes[targetIndex]) {
+                    // 调用原生API切换swipe并立刻触发渲染
+                    await setChatMessage(messages[0].swipes[targetIndex], mesId, {
+                        swipe_id: targetIndex,
+                        refresh: 'display_and_render_current'
+                    });
+                } else {
+                    throw new Error("开场白 " + targetIndex + " 未找到，请确保已在卡片中添加对应的开场白。");
+                }
+            } catch(e) {
+                console.error("切换 Swipe 失败", e);
+                alert("切换失败：" + e.message);
+                if (btnElement) {
+                    btnElement.style.opacity = '1';
+                    btnElement.style.pointerEvents = 'auto';
+                }
+            }
+        }
+
+        /* ========== 主函数 ========== */
+        function init() {
+            try {
+                var msgObj = getMessageData();
+                if (!msgObj) {
+                    document.getElementById('content').innerHTML = '<div class="loading">❌ 无法获取内容</div>';
+                    return;
+                }
+                var data = parseData(msgObj.message);
+                renderPage(msgObj, data);
+            } catch (error) {
+                document.getElementById('content').innerHTML = '<div class="loading">❌ 加载失败：' + error.message + '</div>';
+            }
+        }
+
+        $(function() { init(); });
+    </script>
+</body>
+</html>
