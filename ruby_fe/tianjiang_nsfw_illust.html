@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NSFW正文插图组件 (全角色+全服装)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, "Microsoft YaHei", sans-serif;
+            background: transparent;
+            padding: 10px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        .illust-container {
+            width: 100%;
+            max-width: 500px;
+            background: #1a1516;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #332b2c;
+            opacity: 0;
+            transform: translateY(15px);
+            animation: fadeIn 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+            margin: 10px 0;
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .illust-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 0 4px;
+        }
+
+        .tag-danger {
+            background: rgba(220, 53, 69, 0.15);
+            color: #ff6b81;
+            border: 1px solid rgba(255, 107, 129, 0.3);
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            font-family: "SF Mono", Consolas, monospace;
+        }
+
+        .tag-info {
+            color: #887a7c;
+            font-size: 11px;
+            font-family: "SF Mono", Consolas, monospace;
+            letter-spacing: 1px;
+        }
+
+        .img-wrapper {
+            position: relative;
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #2a2223;
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .main-img {
+            width: 100%;
+            height: auto;
+            max-height: 600px;
+            object-fit: cover;
+            display: block;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .main-img.loaded {
+            opacity: 1;
+        }
+
+        .loading-text {
+            position: absolute;
+            color: #55494b;
+            font-size: 12px;
+            font-family: monospace;
+            letter-spacing: 2px;
+            animation: pulse 1.5s infinite;
+            z-index: 1;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+
+        .pagination-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 10px;
+            padding: 4px 4px 0 4px;
+        }
+
+        .nav-btn {
+            background: rgba(255, 107, 129, 0.12);
+            color: #ff6b81;
+            border: 1px solid rgba(255, 107, 129, 0.3);
+            padding: 6px 14px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-family: "SF Mono", Consolas, monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            user-select: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 107, 129, 0.25);
+            border-color: rgba(255, 107, 129, 0.6);
+            color: #ffffff;
+            box-shadow: 0 0 10px rgba(255, 107, 129, 0.25);
+        }
+
+        .nav-btn:active {
+            transform: scale(0.95);
+        }
+
+        .page-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+        }
+
+        .page-num {
+            color: #ff6b81;
+            font-size: 12px;
+            font-weight: bold;
+            font-family: "SF Mono", Consolas, monospace;
+            letter-spacing: 1px;
+        }
+
+        .page-hint {
+            color: #665759;
+            font-size: 10px;
+            font-family: "SF Mono", Consolas, monospace;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="illust-container" id="content">
+        <div class="img-wrapper">
+            <div class="loading-text">LOADING IMAGE...</div>
+        </div>
+    </div>
+
+    <script>
+        /* ========== 仓库配置 ========== */
+        var REPO_BASE_URL = "https://cdn.jsdelivr.net/gh/roxysl521-droid/tian-jiang@main/";
+        var BUCHONG_REPO_URL = "https://cdn.jsdelivr.net/gh/roxysl521-droid/tianjiang-buchong-@main/";
+        var BUCHONG_BU_REPO_URL = "https://cdn.jsdelivr.net/gh/roxysl521-droid/tianjiang_buchong_bu@main/";
+
+        var BUCHONG_SUFFIXES = ['hs', 'js', 'ltwq', 'np', 'qp', 'sqs', 'tnl', 'xn'];
+        var BUCHONG_REPO1_CHARS = ['chen', 'xue_nai', 'chen_xing_tong', 'li_xu', 'ke_zi', 'jie_yue'];
+
+        var MAX_COUNTS = {
+            'nsfw': 30,
+            'kou_jiao': 3,
+            'ru_jiao': 3,
+            'zu_jiao': 3,
+            'huai_yun': 3,
+            'hun_sha': 3,
+            'hs': 3,
+            'js': 3,
+            'ltwq': 3,
+            'np': 3,
+            'qp': 3,
+            'sqs': 3,
+            'tnl': 3,
+            'xn': 3
+        };
+
+        var currentChar = 'jie_yue';
+        var currentType = 'nsfw';
+        var currentIndex = 1;
+        var maxNum = 3;
+
+        function getMessageData() {
+            try {
+                if (typeof getChatMessages === 'function' && typeof getCurrentMessageId === 'function') {
+                    var chatMessages = getChatMessages(getCurrentMessageId());
+                    if (chatMessages && chatMessages.length > 0) {
+                        var latestMsg = chatMessages.slice(0, 1).shift();
+                        if (latestMsg && latestMsg.message) {
+                            return latestMsg.message;
+                        }
+                    }
+                }
+            } catch (e) {}
+            return null;
+        }
+
+        function hashStr(str) {
+            var hash = 0;
+            if (!str || str.length === 0) return hash;
+            for (var i = 0; i < str.length; i++) {
+                var char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return Math.abs(hash);
+        }
+
+        function getRepoUrl(charId, type, index) {
+            if (charId === 'kan' || charId === 'shi_zhi') return BUCHONG_BU_REPO_URL;
+            if (charId === 'chen_xing_tong' && (!type || type === 'normal' || type === '') && index === 22) return BUCHONG_REPO_URL;
+            if (BUCHONG_SUFFIXES.indexOf(type) !== -1) return BUCHONG_REPO_URL;
+            if (type === 'nsfw' && index > 10) {
+                if (BUCHONG_REPO1_CHARS.indexOf(charId) !== -1) {
+                    return BUCHONG_REPO_URL;
+                } else {
+                    return BUCHONG_BU_REPO_URL;
+                }
+            }
+            return REPO_BASE_URL;
+        }
+
+        function getImageUrl(charId, type, index) {
+            var imgCharId = charId;
+            if (charId === 'chen' && BUCHONG_SUFFIXES.indexOf(type) !== -1) {
+                imgCharId = 'cheng';
+            }
+            var imgName = type ? (imgCharId + '_' + type + '_' + index + '.png') : (imgCharId + '_' + index + '.png');
+            var realImgName = imgName;
+            if (imgCharId === 'sha_yin') {
+                if (imgName === 'sha_yin_zu_jiao_3.png') realImgName = 'sha_yin_nsfw_5.png';
+                else if (imgName === 'sha_yin_nsfw_5.png') realImgName = 'sha_yin_zu_jiao_3.png';
+            }
+            var repoUrl = getRepoUrl(charId, type, index);
+            return repoUrl + realImgName;
+        }
+
+        function parseData(messageText) {
+            var result = { char: 'jie_yue', type: 'nsfw', isValid: false, rawText: messageText || '' };
+            if (!messageText) return result;
+
+            var tagMatch = messageText.match(/<nsfw_illust>([\s\S]*?)<\/nsfw_illust>/);
+            if (!tagMatch) return result;
+            var content = tagMatch.slice(1).shift() || '';
+            if (!content) return result;
+
+            var charMatch = content.match(/\[角色\|(.*?)\]/);
+            if (charMatch && charMatch.length > 1) {
+                result.char = charMatch.slice(1).shift().trim();
+            }
+
+            var typeMatch = content.match(/\[类型\|(.*?)\]/);
+            if (typeMatch && typeMatch.length > 1) {
+                result.type = typeMatch.slice(1).shift().trim();
+            }
+
+            result.isValid = true;
+            return result;
+        }
+
+        window.handleImgError = function(imgElement) {
+            if (!imgElement.getAttribute('data-retried')) {
+                imgElement.setAttribute('data-retried', 'true');
+                imgElement.style.opacity = '0.1';
+            }
+        };
+
+        window.changePage = function(delta) {
+            var nextIndex = currentIndex + delta;
+            if (nextIndex < 1) nextIndex = maxNum;
+            if (nextIndex > maxNum) nextIndex = 1;
+            currentIndex = nextIndex;
+
+            var imgEl = document.getElementById('mainImage');
+            var pageNumEl = document.getElementById('pageNum');
+
+            if (pageNumEl) {
+                var curStr = currentIndex < 10 ? '0' + currentIndex : String(currentIndex);
+                var maxStr = maxNum < 10 ? '0' + maxNum : String(maxNum);
+                pageNumEl.textContent = curStr + ' / ' + maxStr;
+            }
+
+            if (imgEl) {
+                imgEl.classList.remove('loaded');
+                imgEl.removeAttribute('data-retried');
+                imgEl.src = getImageUrl(currentChar, currentType, currentIndex);
+            }
+        };
+
+        function renderPage(data) {
+            if (!data) return;
+
+            currentChar = data.char || 'jie_yue';
+            currentType = data.type || 'nsfw';
+
+            maxNum = MAX_COUNTS[currentType] || 3;
+            if (currentChar === 'chun' && currentType === 'huai_yun') maxNum = 2;
+
+            var seed = hashStr(data.rawText || '');
+            currentIndex = (seed % maxNum) + 1;
+
+            var fullUrl = getImageUrl(currentChar, currentType, currentIndex);
+            var curStr = currentIndex < 10 ? '0' + currentIndex : String(currentIndex);
+            var maxStr = maxNum < 10 ? '0' + maxNum : String(maxNum);
+
+            var html = '<div class="illust-header">' +
+                '<div class="tag-danger">EXPLICIT_CONTENT</div>' +
+                '<div class="tag-info">ARCHIVE // ' + currentChar.toUpperCase() + '</div>' +
+                '</div>' +
+                '<div class="img-wrapper">' +
+                '<div class="loading-text">DECRYPTING...</div>' +
+                '<img id="mainImage" class="main-img" src="' + fullUrl + '" onload="this.classList.add(\'loaded\')" onerror="handleImgError(this)">' +
+                '</div>' +
+                '<div class="pagination-bar">' +
+                '<button class="nav-btn" onclick="changePage(-1)">◀ 上一张</button>' +
+                '<div class="page-info">' +
+                '<span class="page-num" id="pageNum">' + curStr + ' / ' + maxStr + '</span>' +
+                '<span class="page-hint">PAGE</span>' +
+                '</div>' +
+                '<button class="nav-btn" onclick="changePage(1)">下一张 ▶</button>' +
+                '</div>';
+
+            document.getElementById('content').innerHTML = html;
+        }
+
+        function init() {
+            var messageText = getMessageData();
+            var data = parseData(messageText);
+            renderPage(data);
+        }
+
+        setTimeout(init, 50);
+    </script>
+</body>
+</html>
