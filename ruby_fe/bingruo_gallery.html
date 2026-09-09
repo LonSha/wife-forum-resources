@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>海鸣町全图鉴</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: "Helvetica Neue", "Comic Sans MS", "PingFang SC", "Microsoft YaHei", sans-serif; background: transparent; padding: 20px 15px; display: flex; justify-content: center; }
+        @keyframes float { 0% { transform: translateY(0px); } 50% { transform: translateY(-4px); } 100% { transform: translateY(0px); } }
+        @keyframes pulse { 0% { transform: scale(1) rotate(15deg); } 50% { transform: scale(1.1) rotate(15deg); } 100% { transform: scale(1) rotate(15deg); } }
+        .gx-world { position: relative; width: 100%; max-width: 480px; border-radius: 24px; padding: 24px 20px; background: #fff; display: flex; flex-direction: column; gap: 18px; border: 3px solid #333; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15), inset 0 0 0 8px rgba(255, 255, 255, 0.5); overflow: hidden; z-index: 1; transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .gx-world:hover { transform: translateY(-5px); }
+        .card-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background-color: #fafafa; background-image: radial-gradient(#ddd 2px, transparent 2px), linear-gradient(45deg, transparent 45%, rgba(0,0,0,0.03) 45%, rgba(0,0,0,0.03) 55%, transparent 55%); background-size: 16px 16px, 30px 30px; }
+        .gx-hero { text-align: center; padding: 18px 14px 6px; position: relative; }
+        .gx-kicker { display: inline-block; font-size: 12px; font-weight: 900; letter-spacing: 4px; color: #fff; background: #333; border-radius: 20px; padding: 4px 16px; transform: rotate(-2deg); }
+        .gx-tab { animation: float 4.5s ease-in-out infinite; }
+        .gx-chbtn { box-shadow: 3px 3px 0 #ccc; }
+        .gx-chbtn--active { box-shadow: 3px 3px 0 #333; }
+        .gx-thumb:hover { transform: translateY(-3px); }
+        .gx-title { margin-top: 8px; font-size: 32px; font-weight: 900; line-height: 1.1; letter-spacing: 1px; color: #333; text-shadow: 2px 2px 0 #fff, 4px 4px 0 #ccc; }
+        .gx-sub { margin-top: 8px; font-size: 11px; font-weight: 900; letter-spacing: 2px; color: #5a6a7d; }
+        .gx-ver { display: inline-block; font-size: 10px; font-weight: 900; letter-spacing: 1px; color: #fff; background: #16a34a; border-radius: 8px; padding: 1px 8px; margin-left: 4px; vertical-align: 1px; }
+        .gx-tabs { display: flex; gap: 6px; padding: 12px 12px 0; }
+        .gx-tab { flex: 1; min-width: 0; font-family: inherit; font-size: 12px; font-weight: 900; letter-spacing: 1px; padding: 8px 2px; border-radius: 10px 10px 0 0; border: 2px solid #333; border-bottom: none; background: #eee; color: #777; cursor: pointer; touch-action: manipulation; }
+        .gx-tab--active { background: #fffdf6; color: #333; }
+        .gx-tab small { display: block; font-size: 10px; font-weight: 700; color: #999; }
+        .gx-tab--active small { color: #888; }
+        .gx-passrow { display: flex; gap: 8px; padding: 8px 12px 0; background: #fffdf6; border-top: 2px solid #333; }
+        .gx-pass { flex: 1; min-width: 0; font-family: inherit; font-size: 12px; padding: 8px 10px; border-radius: 8px; border: 2px solid #333; background: #fff; color: #333; }
+        .gx-go { flex: none; font-family: inherit; font-size: 12px; font-weight: 900; letter-spacing: 1px; padding: 8px 14px; border-radius: 8px; border: 2px solid #333; background: #ffd66e; color: #333; cursor: pointer; box-shadow: 2px 2px 0 #333; touch-action: manipulation; }
+        .gx-go:active { transform: translateY(1px); box-shadow: 1px 1px 0 #333; }
+        .gx-pane { display: none; background: #fffdf6; border-top: 2px solid #333; padding: 12px; }
+        .gx-pane--open { display: block; }
+        .gx-group { margin-bottom: 6px; }
+        .gx-scene { display: flex; align-items: center; gap: 8px; width: 100%; padding: 9px 6px; background: transparent; border: none; border-bottom: 2px dashed rgba(43,43,58,0.25); font-family: inherit; font-size: 13.5px; font-weight: 900; letter-spacing: 1px; color: #333; cursor: pointer; touch-action: manipulation; }
+        .gx-arrow { margin-left: auto; font-size: 11px; color: #888; }
+        .gx-body { display: none; padding: 4px 0 10px; }
+        .gx-body--open { display: block; }
+        .gx-ch { font-size: 11px; font-weight: 900; letter-spacing: 2px; color: #fff; background: #333; border-radius: 8px; padding: 2px 10px; margin: 10px 0 4px; display: inline-block; }
+        .gx-pager { background: #fff; border: 2.5px solid #333; border-radius: 14px; padding: 10px; box-shadow: 4px 4px 0 rgba(43,43,58,0.3); margin: 6px 0 12px; }
+        .gx-stage { position: relative; border: 2px solid #333; border-radius: 9px; overflow: hidden; background: #f0f7fd; }
+        .gx-photo { width: 100%; aspect-ratio: 832 / 1216; max-height: 38vh; margin: 0 auto; object-fit: cover; display: block; cursor: zoom-in; background: #f0f7fd; }
+        .gx-lockface { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; background: #2b2f3a; color: #8b93a7; cursor: pointer; font-size: 34px; }
+        .gx-lockface span { font-size: 12px; font-weight: 900; letter-spacing: 3px; color: #ffd66e; }
+        .gx-nav { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; border: 2.5px solid #333; background: rgba(255,255,255,0.92); color: #333; font-size: 20px; font-weight: 900; cursor: pointer; box-shadow: 2px 2px 0 #333; touch-action: manipulation; }
+        .gx-prev { left: 8px; }
+        .gx-next { right: 8px; }
+        .gx-meta { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+        .gx-count { flex: none; font-size: 11px; font-weight: 900; color: #fff; background: #333; border-radius: 10px; padding: 2px 10px; letter-spacing: 1px; font-variant-numeric: tabular-nums; }
+        .gx-cap { flex: 1; min-width: 0; font-size: 11.5px; font-weight: 800; color: #555; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .gx-chrow { display: flex; gap: 8px; padding: 4px 0 8px; }
+        .gx-chbtn { flex: 1; font-family: inherit; font-size: 12px; font-weight: 900; letter-spacing: 6px; padding: 6px; border-radius: 8px; border: 2px solid #333; background: #fff; color: #777; cursor: pointer; touch-action: manipulation; }
+        .gx-chbtn--active { background: #333; color: #fff; }
+        .gx-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(64px, 1fr)); gap: 8px; }
+        .gx-thumb { background: #fff; border: 2px solid #333; border-radius: 10px; padding: 4px; cursor: zoom-in; font-family: inherit; min-height: 76px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; touch-action: manipulation; }
+        .gx-thumb img { width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; display: block; background: #f0f7fd; }
+        .gx-thumb.gx-locked { cursor: pointer; background: #2b2f3a; border-style: dashed; border-color: #4a5162; }
+        .gx-lock { font-size: 18px; color: #8b93a7; }
+        .gx-pager-title { font-size: 12px; font-weight: 900; letter-spacing: 1px; color: #333; background: #eef6fd; border: 2px solid #333; border-radius: 8px; padding: 4px 10px; margin-bottom: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .gx-thumbcap { font-size: 9px; font-weight: 800; color: #555; text-align: center; max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .gx-thumb.gx-locked .gx-thumbcap { color: #8b93a7; }
+        .gx-pagerbar { display: flex; align-items: center; justify-content: center; gap: 12px; margin-top: 8px; }
+        .gx-pagerbar .gx-nav { position: static; transform: none; width: 40px; height: 40px; font-size: 18px; }
+        .gx-pagerbar .gx-count { font-size: 11px; font-weight: 900; color: #fff; background: #333; border-radius: 10px; padding: 2px 10px; letter-spacing: 1px; font-variant-numeric: tabular-nums; }
+        @media (max-width: 420px) { .gx-grid { grid-template-columns: repeat(auto-fill, minmax(56px, 1fr)); gap: 6px; } }
+        .gx-world.gx-f-mio [data-ch="he"]:not(.gx-chbtn) { display: none; }
+        .gx-world.gx-f-he [data-ch="mio"]:not(.gx-chbtn) { display: none; }
+        .gx-viewer { display: none; position: absolute; inset: 0; z-index: 50; background: rgba(15,23,42,0.93); align-items: center; justify-content: flex-start; padding: 18px 14px; flex-direction: column; gap: 10px; overflow-y: auto; }
+        .gx-viewer--open { display: flex; }
+        .gx-viewer img { width: 100%; max-width: 480px; max-height: 62vh; object-fit: contain; border-radius: 12px; border: 3px solid #fff; background: #0b1220; }
+        .gx-viewer-cap { color: #fff; font-size: 13px; font-weight: 800; letter-spacing: 2px; }
+        .gx-close { font-family: inherit; font-size: 13px; font-weight: 900; letter-spacing: 2px; color: #333; background: #ffd66e; border: 2px solid #333; border-radius: 10px; padding: 7px 22px; cursor: pointer; box-shadow: 2px 2px 0 rgba(0,0,0,0.4); }
+        @media (max-width: 420px) { .gx-title { font-size: 36px; } .gx-nav { width: 40px; height: 40px; } }
+        @media (prefers-reduced-motion: reduce) { .gx-world * { animation: none !important; transition: none !important; } }
+    </style>
+</head>
+<body>
+    <div class="gx-world">
+        <div class="card-bg"></div>
+        <div class="gx-hero">
+            <span class="gx-kicker">海鸣町 · 全图鉴</span>
+            <div class="gx-title">全图鉴</div>
+            <div class="gx-sub">日常 · 亲密 · 心情 · 换装 · 特别 ★ 点锁解锁，和状态卡一样慢慢翻 <span class="gx-ver">FIX3·点图放大</span></div>
+        </div>
+        <div class="gx-chrow gx-chrow--global" role="group" aria-label="角色筛选"><button type="button" class="gx-chbtn gx-chbtn--active" data-ch="all">全部</button><button type="button" class="gx-chbtn" data-ch="mio">澪</button><button type="button" class="gx-chbtn" data-ch="he">鹤</button></div>
+        <div class="gx-tabs" role="tablist"></div>
+        <div class="gx-passrow">
+            <input type="text" class="gx-pass" placeholder="输入密码，一次性解锁全部">
+            <button type="button" class="gx-go">解锁全部</button>
+        </div>
+        <div class="gx-panes"></div>
+        <div class="gx-viewer" role="dialog" aria-label="大图预览">
+            <img class="gx-viewer-img" alt="">
+            <div class="gx-viewer-cap"></div>
+            <button type="button" class="gx-close">关闭</button>
+        </div>
+    </div>
+<script>
+(function() {
+    var TU_BASE = 'https://raw.githubusercontent.com/roxysl521-droid/bingruo-tu-1/main/';
+    var NS_BASE = 'https://raw.githubusercontent.com/roxysl521-droid/bingruo-nsf/main/';
+    var CHA_BASE = 'https://raw.githubusercontent.com/roxysl521-droid/bingruo-cha-ru/main/';
+    var LI_BASE = 'https://raw.githubusercontent.com/roxysl521-droid/bingruo-li-hui/main/';
+    var TU_TR = {'商店':'大熊商店','离岸提':'离岸堤'};
+    var TU_MIO = {"人工海水浴场|休息":5,"人工海水浴场|吃刨冰":5,"人工海水浴场|游泳":5,"人工海水浴场|闲逛":5,"体育馆|休息":5,"体育馆|闲逛":5,"古本屋|休息":5,"古本屋|看书":5,"商店|购物":5,"婚纱|婚纱":3,"家|一起洗澡":5,"家|写作业":5,"家|吃冰棍":5,"家|吃刨冰":5,"家|吃汉堡肉":5,"家|吃饭":5,"家|听收音机":5,"家|吹风扇":5,"家|怀里写作业":5,"家|怀里睡觉":5,"家|暖炉休息":5,"家|沙发睡觉":5,"家|洗漱":5,"家|玄关出门":5,"家|看电视":5,"家|睡醒":5,"家门口|逛街":8,"怀孕|怀孕":3,"杉木林道|休息":5,"杉木林道|寻宝":5,"杉木林道|闲逛":5,"村内|逛街":8,"村口|逛街":8,"海边|泳装":5,"海边|赶海":5,"海边|非泳装":5,"海鸣小学旧址|休息":5,"海鸣小学旧址|玩乐":5,"海鸣小学旧址|闲逛":5,"海鸣神社|休息":5,"海鸣神社|参拜":5,"海鸣神社|闲逛":5,"潮汤|喝牛奶":5,"潮汤|泡温泉":5,"潮汤|清洗身体":5,"炭窑遗址|休息":5,"炭窑遗址|寻宝":5,"炭窑遗址|闲逛":5,"生子|生子":3,"离岸提|看星星":5,"离岸提|闲逛":5,"肉的坂本|买可乐饼":5,"肉的坂本|挑猪肉":5,"车站|等车":5,"龙王崎展望台|休息":5,"龙王崎展望台|钓鱼":5,"龙王崎展望台|闲逛":5};
+    var TU_HE = {"人工海水浴场|休息":5,"人工海水浴场|吃刨冰":5,"人工海水浴场|游泳":5,"人工海水浴场|闲逛":5,"体育馆|休息":5,"体育馆|闲逛":5,"古本屋|休息":5,"古本屋|看书":5,"商店|购物":5,"婚纱|婚纱":3,"家|一起洗澡":5,"家|做饭":5,"家|午睡":5,"家|吃冰棍":5,"家|吃刨冰":5,"家|吃汉堡肉":5,"家|吃饭":5,"家|吹风扇":5,"家|晒衣服":5,"家|暖炉休息":5,"家|洗漱":5,"家|玄关出门":5,"家|看电视":5,"家|睡醒":5,"家门口|逛街":8,"怀孕|怀孕":3,"杉木林道|休息":5,"杉木林道|寻宝":5,"杉木林道|闲逛":5,"村内|逛街":8,"村口|逛街":8,"海边|泳装":5,"海边|赶海":5,"海边|非泳装":5,"海鸣小学旧址|休息":5,"海鸣小学旧址|玩乐":5,"海鸣小学旧址|闲逛":5,"海鸣神社|休息":5,"海鸣神社|参拜":5,"海鸣神社|闲逛":5,"潮汤|喝牛奶":5,"潮汤|泡温泉":5,"潮汤|清洗身体":5,"炭窑遗址|休息":5,"炭窑遗址|寻宝":5,"炭窑遗址|闲逛":5,"生子|生子":3,"离岸提|看星星":5,"离岸提|闲逛":5,"肉的坂本|买可乐饼":5,"肉的坂本|挑猪肉":5,"车站|等车":5,"龙王崎展望台|休息":5,"龙王崎展望台|钓鱼":5,"龙王崎展望台|闲逛":5};
+    var TU_ORDER = ["家","家门口","村口","村内","商店","古本屋","肉的坂本","车站","潮汤","海鸣神社","海鸣小学旧址","体育馆","人工海水浴场","海边","离岸提","龙王崎展望台","杉木林道","炭窑遗址","婚纱","怀孕","生子"];
+    var NS_SCENES = ['厕所','客厅','房间','浴室','海边','温泉','野外'];
+    var NS_ACTS = {'乳交':3,'口交':3,'后入位':5,'后入位_高潮':5,'正常位':5,'正常位_高潮':5,'足交':3,'骑乘位':5,'骑乘位_高潮':5};
+    var CHA = {"澪|室外|委屈":10,"澪|室外|嫌弃":10,"澪|室外|害羞":10,"澪|室外|平淡":10,"澪|室外|开心":10,"澪|室外|生气":10,"澪|房间|委屈":10,"澪|房间|嫌弃":10,"澪|房间|害羞":10,"澪|房间|平淡":10,"澪|房间|开心":10,"澪|房间|生气":10,"鹤|室外|委屈":10,"鹤|室外|嫌弃":10,"鹤|室外|害羞":10,"鹤|室外|平淡":10,"鹤|室外|开心":10,"鹤|室外|生气":10,"鹤|房间|委屈":10,"鹤|房间|嫌弃":10,"鹤|房间|害羞":10,"鹤|房间|平淡":10,"鹤|房间|开心":10,"鹤|房间|生气":10};
+    var OUTFITS = [["常服","cf"],["冬服","df"],["泳装","yz"],["浴衣","yy"],["赤裸","cl"],["睡衣","sy"],["校服","xf"]];
+    var OUTFIT_CHARS = [["澪","ling"],["鹤","he"]];
+    var SPECIAL = [["Q版小人",[["https://raw.githubusercontent.com/roxysl521-droid/bingruo-li-hui/main/%E6%BE%AA_%E5%BC%80%E5%BF%83_q.png","澪_开心_q.png"],["https://raw.githubusercontent.com/roxysl521-droid/bingruo-li-hui/main/%E6%BE%AA_%E7%94%9F%E6%B0%94_q.png","澪_生气_q.png"],["https://raw.githubusercontent.com/roxysl521-droid/bingruo-li-hui/main/%E6%BE%AA_%E5%AB%8C%E5%BC%83_q.png","澪_嫌弃_q.png"],["https://raw.githubusercontent.com/roxysl521-droid/bingruo-li-hui/main/%E6%BE%AA_%E5%B9%B3%E6%B7%A1_q.png","澪_平淡_q.png"],["https://raw.githubusercontent.com/roxysl521-droid/bingruo-li-hui/main/%E6%BE%AA_%E6%8A%93%E8%B5%B7_q.png","澪_抓起_q.png"],["https://raw.githubusercontent.com/roxysl521-droid/bingruo-li-hui/main/%E9%B9%A4_%E5%BC%80%E5%BF%83_q.png","鹤_开心_q.png"],["https://raw.githubusercontent.com/roxysl521-droid/bingruo-li-hui/main/%E9%B9%A4_%E7%94%9F%E6%B0%94_q.png","鹤_生气_q.png"],["https://raw.githubusercontent.com/roxysl521-droid/bingruo-li-hui/main/%E9%B9%A4_%E5%AB%8C%E5%BC%83_q.png","鹤_嫌弃_q.png"],["https://raw.githubusercontent.com/roxysl521-droid/bingruo-li-hui/main/%E9%B9%A4_%E5%B9%B3%E6%B7%A1_q.png","鹤_平淡_q.png"],["https://raw.githubusercontent.com/roxysl521-droid/bingruo-li-hui/main/%E9%B9%A4_%E6%8A%93%E8%B5%B7_q.png","鹤_抓起_q.png"]]],["票券头像",[["https://raw.githubusercontent.com/roxysl521-droid/bingruo-li-hui/main/%E6%BE%AA_%E5%A4%B4%E5%83%8F_1.png","澪_头像_1.png"],["https://raw.githubusercontent.com/roxysl521-droid/bingruo-li-hui/main/%E6%BE%AA_%E5%A4%B4%E5%83%8F_2.png","澪_头像_2.png"],["https://raw.githubusercontent.com/roxysl521-droid/bingruo-li-hui/main/%E9%B9%A4_%E5%A4%B4%E5%83%8F_1.png","鹤_头像_1.png"],["https://raw.githubusercontent.com/roxysl521-droid/bingruo-li-hui/main/%E9%B9%A4_%E5%A4%B4%E5%83%8F_2.png","鹤_头像_2.png"]]]];
+    var GX_PASS = '与病弱妹妹的三十日生活';
+    var GX_KEY = 'gxGallery:v1';
+    var GX_mem = { unlocked: {}, all: false };
+    var GX_IDX = {};
+    var GX_REG = {};
+    function U(base, name) { return base + encodeURIComponent(name); }
+    function gxLoad() {
+        try {
+            var raw = null;
+            try { raw = localStorage.getItem(GX_KEY); } catch (e) { return; }
+            var o = raw ? JSON.parse(raw) : null;
+            if (o && typeof o === 'object') {
+                if (o.unlocked && typeof o.unlocked === 'object') GX_mem.unlocked = o.unlocked;
+                GX_mem.all = !!o.all;
+            }
+        } catch (e) {}
+    }
+    function gxSave() {
+        try { localStorage.setItem(GX_KEY, JSON.stringify(GX_mem)); } catch (e) {}
+    }
+    function gxKey(url) {
+        try {
+            var name = decodeURIComponent(String(url).split('/').pop().split('?')[0]);
+            if (/^(澪|鹤)_/.test(name)) return name;
+        } catch (e) {}
+        return String(url);
+    }
+    function gxOpen(key) { return GX_mem.all || !!GX_mem.unlocked[key]; }
+    function escCap(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
+    function tuFiles(ch, sc, act, n) {
+        var nm = (ch === '鹤') ? (TU_TR[sc] || sc) : ((sc === '离岸提') ? '离岸堤' : sc);
+        var arr = [];
+        for (var i = 1; i <= n; i++) {
+            var fn = (act === sc) ? (ch + '_' + nm + '_' + i + '.png') : (ch + '_' + nm + '_' + act + '_' + i + '.png');
+            arr.push([U(TU_BASE, fn), ch + ' · ' + sc + ' · ' + act + ' ' + i]);
+        }
+        return arr;
+    }
+    function nsFiles(ch, sc, act, n) {
+        var arr = [];
+        for (var i = 1; i <= n; i++) {
+            var fn = ch + '_' + sc + '_' + act + '_' + i + '.png';
+            arr.push([U(NS_BASE, fn), ch + ' · ' + sc + ' · ' + act + ' ' + i]);
+        }
+        return arr;
+    }
+    var TABS = [
+        { id: 'daily', label: '日常', build: buildDaily },
+        { id: 'nsfw', label: '亲密', build: buildNsfw },
+        { id: 'mood', label: '心情', build: buildMood },
+        { id: 'outfit', label: '换装', build: buildOutfit },
+        { id: 'extra', label: '特别', build: buildExtra }
+    ];
+    function pagerCh(gk) {
+        var p = String(gk || '').split('|');
+        for (var i = 0; i < p.length; i++) {
+            if (p[i] === '澪') return 'mio';
+            if (p[i] === '鹤') return 'he';
+        }
+        return 'all';
+    }
+    function pagerShell(gk) {
+        var _lbl = (typeof GX_LBL !== 'undefined' && GX_LBL[gk]) ? GX_LBL[gk] : gk;
+        return '<div class="gx-pager" data-ch="' + pagerCh(gk) + '" data-gk="' + escCap(gk) + '">'
+            + '<div class="gx-pager-title">' + escCap(_lbl) + '</div>'
+            + '<div class="gx-grid"></div>'
+            + '<div class="gx-pagerbar"><button type="button" class="gx-nav gx-prev" aria-label="上一页">‹</button>'
+            + '<span class="gx-count"></span>'
+            + '<button type="button" class="gx-nav gx-next" aria-label="下一页">›</button></div>'
+            + '</div>';
+    }
+    function groupHtml(title, inner, open, ch) {
+        return '<div class="gx-group"' + (ch ? ' data-ch="' + ch + '"' : '') + '>'
+            + '<button type="button" class="gx-scene"><span>' + escCap(title) + '</span><span class="gx-arrow">▸</span></button>'
+            + '<div class="gx-body' + (open ? ' gx-body--open' : '') + '">' + inner + '</div></div>';
+    }
+    function openOf(files) {
+        var n = 0;
+        for (var i = 0; i < files.length; i++) if (gxOpen(gxKey(files[i][0]))) n++;
+        return n;
+    }
+    function regFiles(gk, files, label) {
+        GX_REG[gk] = files;
+        GX_LBL[gk] = label;
+    }
+    var GX_LBL = {};
+    function buildDaily() {
+        var html = '';
+        TU_ORDER.forEach(function(sc, si) {
+            var inner = '', total = 0, opened = 0;
+            [['澪', TU_MIO], ['鹤', TU_HE]].forEach(function(pair) {
+                var ch = pair[0], tbl = pair[1];
+                var acts = Object.keys(tbl).filter(function(k) { return k.split('|')[0] === sc; });
+                if (!acts.length) return;
+                inner += '<div class="gx-ch" data-ch="' + (ch === '鹤' ? 'he' : 'mio') + '">' + ch + '</div>';
+                acts.forEach(function(k) {
+                    var act = k.split('|')[1];
+                    var gk = 'daily|' + sc + '|' + ch + '|' + act;
+                    var fl = tuFiles(ch, sc, act, tbl[k]);
+                    regFiles(gk, fl, ch + ' · ' + sc + ' · ' + act);
+                    total += fl.length;
+                    opened += openOf(fl);
+                    inner += pagerShell(gk);
+                });
+            });
+            if (total) html += groupHtml(sc + ' · ' + opened + '/' + total, inner, false);
+        });
+        return html;
+    }
+    function buildNsfw() {
+        var html = '';
+        NS_SCENES.forEach(function(sc, si) {
+            var inner = '', total = 0, opened = 0;
+            [['澪', false], ['鹤', true]].forEach(function(pair) {
+                var ch = pair[0], isHe = pair[1];
+                var acts = Object.keys(NS_ACTS).concat((isHe && sc === '房间') ? ['手交'] : []);
+                inner += '<div class="gx-ch" data-ch="' + (ch === '鹤' ? 'he' : 'mio') + '">' + ch + '</div>';
+                acts.forEach(function(act) {
+                    var n = (isHe && act === '手交') ? 3 : NS_ACTS[act];
+                    var gk = 'nsfw|' + sc + '|' + ch + '|' + act;
+                    var fl = nsFiles(ch, sc, act, n);
+                    regFiles(gk, fl, ch + ' · ' + sc + ' · ' + act);
+                    total += fl.length;
+                    opened += openOf(fl);
+                    inner += pagerShell(gk);
+                });
+            });
+            html += groupHtml(sc + ' · ' + opened + '/' + total, inner, false);
+        });
+        return html;
+    }
+    function buildMood() {
+        var html = '';
+        [['澪'], ['鹤']].forEach(function(pair, pi) {
+            var ch = pair[0];
+            var inner = '', total = 0, opened = 0;
+            Object.keys(CHA).forEach(function(k) {
+                var p = k.split('|');
+                if (p[0] !== ch) return;
+                var files = [];
+                for (var i = 1; i <= CHA[k]; i++) {
+                    var fn = ch + '_' + p[1] + '_' + p[2] + '_' + i + '.png';
+                    files.push([U(CHA_BASE, fn), ch + ' · ' + p[1] + ' · ' + p[2] + ' ' + i]);
+                }
+                var gk = 'mood|' + p[1] + '|' + ch + '|' + p[2];
+                regFiles(gk, files, ch + ' · ' + p[1] + ' · ' + p[2]);
+                total += files.length;
+                opened += openOf(files);
+                inner += pagerShell(gk);
+            });
+            if (total) html += groupHtml(ch + ' · 心情 · ' + opened + '/' + total, inner, false, (ch === '鹤' ? 'he' : 'mio'));
+        });
+        return html;
+    }
+    function chRowHtml() {
+        return '<div class="gx-chrow" role="group" aria-label="角色切换">'
+            + '<button type="button" class="gx-chbtn gx-chbtn--active" data-ch="mio">澪</button>'
+            + '<button type="button" class="gx-chbtn" data-ch="he">鹤</button></div>';
+    }
+    function buildOutfit() {
+        return chRowHtml()
+            + '<div class="gx-outfits" data-ch="mio">' + renderOutfits('mio') + '</div>'
+            + '<div class="gx-outfits" data-ch="he">' + renderOutfits('he') + '</div>';
+    }
+    function renderOutfits(ch) {
+        var code = (ch === 'he') ? 'he' : 'ling';
+        var cname = (ch === 'he') ? '鹤' : '澪';
+        var html = '';
+        OUTFITS.forEach(function(oa, oi) {
+            var files = [];
+            for (var i = 1; i <= 6; i++) {
+                var fn = code + '_' + oa[1] + '_' + i + '.png';
+                files.push([U(LI_BASE, fn), cname + ' · ' + oa[0] + ' ' + i]);
+            }
+            var gk = 'outfit|' + oa[0] + '|' + cname;
+            regFiles(gk, files, cname + ' · ' + oa[0]);
+            html += groupHtml(oa[0] + ' · ' + openOf(files) + '/' + files.length, pagerShell(gk), false);
+        });
+        return html;
+    }
+    function buildExtra() {
+        var html = '';
+        SPECIAL.forEach(function(sp) {
+            [['澪', 'mio'], ['鹤', 'he']].forEach(function(pair) {
+                var ch = pair[0], code = pair[1];
+                var fl = sp[1].filter(function(f) {
+                    var nm = '';
+                    try { nm = decodeURIComponent(f[0].split('/').pop()); } catch (e) { nm = f[0]; }
+                    return nm.indexOf(ch + '_') === 0;
+                });
+                if (!fl.length) return;
+                var gk = 'extra|' + sp[0] + '|' + ch;
+                regFiles(gk, fl, ch + ' · ' + sp[0]);
+                html += groupHtml(sp[0] + ' · ' + ch + ' · ' + openOf(fl) + '/' + fl.length, pagerShell(gk), false, code);
+            });
+        });
+        return html;
+    }
+    var GX_PAGE = 6;
+    function paintPager(pager) {
+        var gk = pager.getAttribute('data-gk');
+        var files = GX_REG[gk] || [];
+        var gp = String(gk || '').split('|');
+        var gact = gp[0] === 'outfit' ? gp[1] : (gp[0] === 'extra' ? gp[1] : (gp[3] || gp[gp.length - 1] || ''));
+        var fullLbl = (GX_LBL[gk] || gk || gact || '图鉴');
+        var grid = pager.querySelector('.gx-grid');
+        var count = pager.querySelector('.gx-count');
+        var titleEl = pager.querySelector('.gx-pager-title');
+        if (titleEl && !titleEl.textContent) titleEl.textContent = fullLbl;
+        if (titleEl && titleEl.textContent !== fullLbl) titleEl.textContent = fullLbl;
+        if (!grid) return;
+        var pages = Math.max(1, Math.ceil(files.length / GX_PAGE));
+        var pg = GX_IDX[gk] || 0;
+        if (pg < 0) pg = 0;
+        if (pg >= pages) pg = 0;
+        GX_IDX[gk] = pg;
+        var html = '';
+        var start = pg * GX_PAGE, end = Math.min(files.length, start + GX_PAGE);
+        for (var i = start; i < end; i++) {
+            (function(idx) {
+                var url = files[idx][0], label = files[idx][1];
+                var key = gxKey(url);
+                if (gxOpen(key)) {
+                    html += '<button type="button" class="gx-thumb" data-full="' + url + '" title="' + escCap(label) + '">'
+                        + '<img loading="lazy" decoding="async" src="' + url + '" alt="">'
+                        + '<div class="gx-thumbcap">' + escCap(fullLbl + ' ' + (idx + 1)) + '</div></button>';
+                } else {
+                    html += '<button type="button" class="gx-thumb gx-locked" data-key="' + escCap(key) + '" title="点击解锁：' + escCap(fullLbl) + '">'
+                        + '<span class="gx-lock">🔒</span><div class="gx-thumbcap">' + escCap(fullLbl) + '</div></button>';
+                }
+            })(i);
+        }
+        grid.innerHTML = html;
+        try {
+            var btns = grid.querySelectorAll('.gx-thumb');
+            for (var bi = 0; bi < btns.length; bi++) {
+                (function(b) {
+                    b.addEventListener('click', function(ev) {
+                        try { if (ev && ev.stopPropagation) ev.stopPropagation(); } catch (e) {}
+                        if (b.classList.contains('gx-locked')) {
+                            var kk = b.getAttribute('data-key') || '';
+                            if (kk) {
+                                unlockFile(kk);
+                                var hit = gxFileByKey(kk);
+                                if (hit && hit[0]) gxShowViewer(b, hit[0], hit[1] || '');
+                            }
+                        } else {
+                            var full = b.getAttribute('data-full') || '';
+                            if (full) gxShowViewer(b, full, b.getAttribute('title') || '');
+                        }
+                    });
+                })(btns[bi]);
+            }
+        } catch (e) {}
+        var prev = pager.querySelector('.gx-prev'), next = pager.querySelector('.gx-next');
+        var multi = pages > 1;
+        if (prev) prev.style.display = multi ? '' : 'none';
+        if (next) next.style.display = multi ? '' : 'none';
+        if (count) count.textContent = files.length ? ((pg + 1) + '/' + pages + '页') : '空';
+        paintCounts(pager);
+    }
+    function paintCounts(pager) {
+        var gk = pager.getAttribute('data-gk');
+        var files = GX_REG[gk] || [];
+        var n = 0;
+        for (var i = 0; i < files.length; i++) if (gxOpen(gxKey(files[i][0]))) n++;
+        var node = pager;
+        while (node && !(node.classList && node.classList.contains('gx-group'))) node = node.parentElement;
+        var btn = node ? node.querySelector('.gx-scene > span') : null;
+        if (btn) {
+            var t = btn.textContent || '';
+            btn.textContent = t.replace(/\d+\/\d+$/, '') + n + '/' + files.length;
+        }
+    }
+    function paintPagers(root) {
+        var pagers = root.querySelectorAll ? root.querySelectorAll('.gx-pager') : [];
+        for (var i = 0; i < pagers.length; i++) {
+            (function(pg) {
+                var body = pg;
+                while (body && !(body.classList && body.classList.contains('gx-body'))) body = body.parentElement;
+                if (body && !body.classList.contains('gx-body--open')) return;
+                if (typeof pg.offsetParent !== 'undefined' && pg.offsetParent === null) return;
+                paintPager(pg);
+            })(pagers[i]);
+        }
+    }
+    function unlockFile(key) {
+        GX_mem.unlocked[key] = 1;
+        gxSave();
+        renderActive();
+    }
+    function gxFileByKey(key) {
+        for (var gk in GX_REG) {
+            var fl = GX_REG[gk] || [];
+            for (var i = 0; i < fl.length; i++) {
+                if (gxKey(fl[i][0]) === key) return fl[i];
+            }
+        }
+        return null;
+    }
+    function gxScopeOf(el) {
+        try { if (el && el.closest) { var w = el.closest('.gx-world'); if (w) return w; } } catch (e) {}
+        try { return document.querySelector('.gx-world'); } catch (e) { return null; }
+    }
+    function gxShowViewer(scopeEl, url, cap) {
+        var scope = gxScopeOf(scopeEl);
+        var viewer = scope ? scope.querySelector('.gx-viewer') : null;
+        if (!viewer) { try { viewer = document.querySelector('.gx-viewer'); } catch (e) {} }
+        if (!viewer) return false;
+        var vimg = viewer.querySelector('.gx-viewer-img');
+        var vcap = viewer.querySelector('.gx-viewer-cap');
+        if (vimg) { vimg.src = url; vimg.alt = cap || ''; }
+        if (vcap) vcap.textContent = cap || '';
+        viewer.classList.add('gx-viewer--open');
+        try { viewer.scrollTop = 0; } catch (e) {}
+        return true;
+    }
+    function renderActive() {
+        var panes = document.querySelectorAll('.gx-pane');
+        for (var i = 0; i < panes.length; i++) {
+            if (panes[i].classList.contains('gx-pane--open')) paintPagers(panes[i]);
+        }
+    }
+    function gxSetFilter(ch) {
+        if (ch !== 'mio' && ch !== 'he') ch = 'all';
+        var world = null;
+        try { world = document.querySelector('.gx-world'); } catch (e) {}
+        if (world) {
+            world.classList.remove('gx-f-mio');
+            world.classList.remove('gx-f-he');
+            if (ch !== 'all') world.classList.add(ch === 'he' ? 'gx-f-he' : 'gx-f-mio');
+        }
+        var rows = [];
+        try { rows = document.querySelectorAll('.gx-chrow'); } catch (e) {}
+        for (var i = 0; i < rows.length; i++) {
+            var btns = rows[i].querySelectorAll('.gx-chbtn');
+            for (var j = 0; j < btns.length; j++) {
+                btns[j].classList.toggle('gx-chbtn--active', (btns[j].getAttribute('data-ch') || 'all') === ch);
+            }
+        }
+        try {
+            var panes = document.querySelectorAll('.gx-pane--open');
+            for (var k = 0; k < panes.length; k++) paintPagers(panes[k]);
+        } catch (e) {}
+    }
+    function renderTabs() {
+        var bar = document.querySelector('.gx-tabs');
+        var panes = document.querySelector('.gx-panes');
+        if (!bar || !panes) return;
+        gxLoad();
+        bar.innerHTML = '';
+        panes.innerHTML = '';
+        var counts = {};
+        TABS.forEach(function(tb) { counts[tb.id] = 0; });
+        TABS.forEach(function(tb, idx) {
+            var b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'gx-tab' + (idx === 0 ? ' gx-tab--active' : '');
+            b.innerHTML = '<span>' + tb.label + '</span>';
+            b.addEventListener('click', function() {
+                var bs = bar.querySelectorAll('.gx-tab');
+                for (var i = 0; i < bs.length; i++) bs[i].classList.remove('gx-tab--active');
+                b.classList.add('gx-tab--active');
+                var ps = panes.querySelectorAll('.gx-pane');
+                for (var j = 0; j < ps.length; j++) {
+                    var on = (j === idx);
+                    ps[j].classList.toggle('gx-pane--open', on);
+                    if (on) paintPagers(ps[j]);
+                }
+            });
+            bar.appendChild(b);
+            var p = document.createElement('div');
+            p.className = 'gx-pane' + (idx === 0 ? ' gx-pane--open' : '');
+            p.innerHTML = tb.build();
+            panes.appendChild(p);
+        });
+        var obox = panes.querySelector('.gx-outfits');
+        if (obox) obox.innerHTML = renderOutfits('mio');
+        paintPagers(panes.querySelector('.gx-pane--open') || panes);
+        var go = document.querySelector('.gx-go');
+        var pass = document.querySelector('.gx-pass');
+        if (go) go.addEventListener('click', function() {
+            var v = pass ? pass.value : '';
+            if ((v || '').trim() === GX_PASS) {
+                GX_mem.all = true;
+                gxSave();
+                go.textContent = '已解锁';
+                renderActive();
+                setTimeout(function() { go.textContent = '解锁全部'; }, 1500);
+            } else {
+                var old = go.textContent;
+                go.textContent = '密码不对';
+                setTimeout(function() { go.textContent = old; }, 1200);
+            }
+        });
+        panes.addEventListener('click', function(e) {
+            var t = e.target && e.target.closest ? e.target.closest('.gx-nav,.gx-lockface,.gx-photo,.gx-scene,.gx-chbtn,.gx-thumb,.gx-locked') : null;
+            if (!t || !panes.contains(t)) return;
+            if (t.classList.contains('gx-nav')) {
+                var pg = t.closest ? t.closest('.gx-pager') : null;
+                if (!pg) return;
+                var gk = pg.getAttribute('data-gk');
+                var files = GX_REG[gk] || [];
+                var pages = Math.max(1, Math.ceil(files.length / GX_PAGE));
+                var idx = GX_IDX[gk] || 0;
+                idx = (idx + (t.classList.contains('gx-prev') ? -1 : 1) + pages) % pages;
+                GX_IDX[gk] = idx;
+                paintPager(pg);
+                return;
+            }
+            if (t.classList.contains('gx-locked')) {
+                var kk = t.getAttribute('data-key') || '';
+                if (kk) {
+                    unlockFile(kk);
+                    var hit = gxFileByKey(kk);
+                    if (hit && hit[0]) gxShowViewer(t, hit[0], hit[1] || '');
+                }
+                return;
+            }
+            if (t.classList.contains('gx-thumb')) {
+                var full = t.getAttribute('data-full');
+                if (full) gxShowViewer(t, full, t.getAttribute('title') || '');
+                return;
+            }
+
+            if (t.classList.contains('gx-scene')) {
+                var body = t.nextElementSibling;
+                if (body) {
+                    body.classList.toggle('gx-body--open');
+                    var ar = t.querySelector('.gx-arrow');
+                    if (ar) ar.textContent = body.classList.contains('gx-body--open') ? '▾' : '▸';
+                    if (body.classList.contains('gx-body--open')) paintPagers(body);
+                }
+                return;
+            }
+            if (t.classList.contains('gx-chbtn')) {
+                gxSetFilter(t.getAttribute('data-ch') || 'all');
+                return;
+            }
+        });
+        var viewer = document.querySelector('.gx-viewer');
+        var vimg = viewer ? viewer.querySelector('.gx-viewer-img') : null;
+        var vcap = viewer ? viewer.querySelector('.gx-viewer-cap') : null;
+        var vclose = viewer ? viewer.querySelector('.gx-close') : null;
+        window.__gxOpenViewer = function(url, cap) {
+            if (gxShowViewer(viewer, url, cap)) return;
+            if (!viewer) return;
+            if (vimg) { vimg.src = url; vimg.alt = cap || ''; }
+            if (vcap) vcap.textContent = cap || '';
+            viewer.classList.add('gx-viewer--open');
+            try { viewer.scrollTop = 0; } catch (e) {}
+        };
+        window.__gxCloseViewer = function() { if (viewer) viewer.classList.remove('gx-viewer--open'); };
+        if (vclose) vclose.addEventListener('click', function() { window.__gxCloseViewer(); });
+        if (viewer) viewer.addEventListener('click', function(e) { if (e.target === viewer) window.__gxCloseViewer(); });
+        var grow = document.querySelector('.gx-chrow--global');
+        if (grow) {
+            var gbtns = grow.querySelectorAll('.gx-chbtn');
+            for (var gi = 0; gi < gbtns.length; gi++) {
+                (function(btn) {
+                    btn.addEventListener('click', function() { gxSetFilter(btn.getAttribute('data-ch') || 'all'); });
+                })(gbtns[gi]);
+            }
+        }
+        document.addEventListener('keydown', function(e) { if (e.key === 'Escape') window.__gxCloseViewer(); });
+    }
+    window.__gx = {
+        stats: function() {
+            var total = 0, open = 0;
+            for (var k in GX_REG) {
+                for (var i = 0; i < GX_REG[k].length; i++) {
+                    total++;
+                    if (gxOpen(gxKey(GX_REG[k][i][0]))) open++;
+                }
+            }
+            return { total: total, open: open, groups: Object.keys(GX_REG).length };
+        },
+        unlock: function(key) { unlockFile(key); },
+        unlockAll: function(pass) {
+            if ((pass || '') !== GX_PASS) return false;
+            GX_mem.all = true; gxSave(); renderActive(); return true;
+        }
+    };
+/* 满血API纯文字降级：API/模型名含“满血”时只留纯文字（fail-open：异常则正常渲染） */
+function uwIsFullBlood(msgObj){
+  try{
+    var budget={n:0};
+    function scan(v,depth){
+      if(v==null||depth>4||budget.n>300)return false;
+      if(typeof v==='string'){budget.n++;return v.indexOf('满血')!==-1;}
+      if(typeof v!=='object')return false;
+      if(Object.prototype.toString.call(v)==='[object Array]'){for(var i=0;i<v.length&&i<12;i++){try{if(scan(v[i],depth+1))return true;}catch(e){}}return false;}
+      var skip={message:1,raw:1,mes:1,chat:1,messages:1,characters:1,character:1,lorebook:1,lorebooks:1,worldbook:1,prompt:1,prompts:1,data:1,html:1,innerHTML:1};
+      for(var k in v){
+        if(!Object.prototype.hasOwnProperty.call(v,k))continue;
+        if(skip[k])continue;
+        var val=null;
+        try{val=v[k];}catch(e){continue;}
+        try{if(scan(val,depth+1))return true;}catch(e){}
+      }
+      return false;
+    }
+    try{if(msgObj&&scan(msgObj,0))return true;}catch(e){}
+    var ctx=null;
+    try{if(window.SillyTavern&&window.SillyTavern.getContext)ctx=window.SillyTavern.getContext();}catch(e){ctx=null;}
+    if(!ctx){try{if(window.parent&&window.parent.SillyTavern&&window.parent.SillyTavern.getContext)ctx=window.parent.SillyTavern.getContext();}catch(e){ctx=null;}}
+    try{if(ctx&&scan(ctx,0))return true;}catch(e){}
+  }catch(e){}
+  return false;
+}
+function uwCurMsg(){
+  try{if(typeof getChatMessages==='function'&&typeof getCurrentMessageId==='function'){var m=getChatMessages(getCurrentMessageId());if(m&&m.length)return m[0];}}catch(e){}
+  return null;
+}
+    try{
+      if(uwIsFullBlood(uwCurMsg())){var _gxW=null;try{_gxW=document.querySelector('.gx-world');}catch(e){}if(_gxW){_gxW.textContent='全图鉴仓库（满血模式：纯文字，已隐藏图片）';}return;}
+    }catch(e){}
+    renderTabs();
+})();
+</script>
+</body>
+</html>
