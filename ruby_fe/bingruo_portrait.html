@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>海鸣町夏日画报 · 立绘收藏</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background: transparent;
+            font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+            padding: 8px;
+        }
+
+        /* 主画报容器：票券风网格蓝天 + 硬描边 */
+        .magazine-container {
+            position: relative; width: 100%; max-width: 860px; margin: 0 auto 20px auto; border-radius: 18px;
+            background-color: #cfe8f8;
+            background-image:
+                linear-gradient(rgba(255, 255, 255, 0.65) 1.5px, transparent 1.5px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.65) 1.5px, transparent 1.5px);
+            background-size: 26px 26px;
+            border: 3px solid #2b2b3a;
+            box-shadow: 6px 6px 0 #2b2b3a;
+            overflow: hidden; padding: 40px 10px 60px; display: flex; flex-direction: column; align-items: center;
+            min-height: 550px;
+        }
+
+        .magazine-container::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(ellipse 90% 42% at 50% 30%, rgba(255, 255, 255, 0.55), transparent 70%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* 藏品馆入口：实底小药丸按钮 */
+        .btn-archive {
+            position: absolute; bottom: 20px; right: 20px;
+            color: #fff; background: #2b2b3a; border: 2px solid #2b2b3a; border-radius: 20px;
+            padding: 5px 14px; cursor: pointer; z-index: 30;
+            transition: transform 0.2s ease, box-shadow 0.2s ease; display: flex; align-items: center; gap: 6px;
+            font-size: 12px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;
+            box-shadow: 3px 3px 0 rgba(43, 43, 58, 0.35);
+            font-family: inherit;
+        }
+        .btn-archive:hover { transform: translateY(-2px); box-shadow: 4px 4px 0 rgba(43, 43, 58, 0.35); }
+        .btn-archive svg { width: 18px; height: 18px; fill: currentColor; }
+
+        /* 排版大字：描边空心字 */
+        .typo-bg {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) rotate(-5deg);
+            font-size: 100px; font-weight: 900; color: transparent; white-space: nowrap; pointer-events: none;
+            z-index: 1; letter-spacing: -2px; font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            -webkit-text-stroke: 2px rgba(255, 255, 255, 0.85);
+            paint-order: stroke fill;
+            animation: typoFloat 15s ease-in-out infinite alternate;
+        }
+        @keyframes typoFloat { 0% { transform: translate(-50%, -50%) rotate(-5deg) scale(1); } 100% { transform: translate(-48%, -48%) rotate(-2deg) scale(1.05); } }
+
+        .typo-vertical { position: absolute; top: 60px; left: 20px; width: 20px; word-wrap: break-word; font-size: 12px; color: #2b2b3a; letter-spacing: 4px; line-height: 2; z-index: 15; font-weight: 900; opacity: 0.75; pointer-events: none; }
+        .typo-date { position: absolute; bottom: 25px; left: 20px; font-size: 11px; color: #2b2b3a; letter-spacing: 2px; z-index: 15; font-weight: 900; opacity: 0.75; pointer-events: none; background: #fff; border: 2px solid #2b2b3a; border-radius: 8px; padding: 2px 8px; box-shadow: 2px 2px 0 #2b2b3a; }
+
+        /* 环境光晕与水纹：保留海味，压暗适配硬描边 */
+        .ambient-light { position: absolute; width: 150%; height: 150%; top: -25%; left: -25%; background: radial-gradient(circle at 30% 40%, rgba(255,255,255,0.8) 0%, transparent 60%), radial-gradient(circle at 80% 70%, rgba(186, 225, 255, 0.9) 0%, transparent 50%); pointer-events: none; z-index: 2; animation: lightBreathe 10s ease-in-out infinite alternate; }
+        @keyframes lightBreathe { 0% { transform: scale(1); opacity: 0.7; } 100% { transform: scale(1.1); opacity: 1; } }
+
+        .water-ripple, .water-ripple-2 { position: absolute; bottom: 0; left: 0; width: 100%; background-size: 200% 100%; z-index: 3; pointer-events: none; opacity: 0.7; }
+        .water-ripple { height: 140px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C59.71,118.08,130.83,119.33,200.7,109.13,243.68,102.86,284.14,79.52,321.39,56.44Z' fill='rgba(255,255,255,0.4)'%3E%3C/path%3E%3C/svg%3E"); animation: flowRipple 15s linear infinite; }
+        .water-ripple-2 { height: 90px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1200 120' preserveAspectRatio='none'%3E%3Cpath d='M985.66,92.83C906.67,72,823.78,31,743.84,14.19c-82.26-17.34-168.06-16.33-250.45.39-57.84,11.73-114,31.07-172,41.86A600.21,600.21,0,0,1,0,27.35V120H1200V95.8C1132.19,118.92,1055.71,111.31,985.66,92.83Z' fill='rgba(255,255,255,0.5)'%3E%3C/path%3E%3C/svg%3E"); animation: flowRipple 10s linear infinite reverse; }
+        @keyframes flowRipple { 0% { background-position: 0% 0; } 100% { background-position: -200% 0; } }
+
+        /* 画报舞台 */
+        .magazine-stage { position: relative; width: 100%; display: flex; justify-content: center; align-items: center; z-index: 10; margin-top: 10px; flex: 1; min-height: 400px; }
+
+        /* ==================== 拍立得卡片：白底硬描边 ==================== */
+        .card-base {
+            position: absolute; background: #ffffff; padding: 8px 8px 10px; border-radius: 14px;
+            border: 3px solid #2b2b3a;
+            box-shadow: 6px 6px 0 #2b2b3a;
+            opacity: 0; isolation: isolate; cursor: pointer;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, z-index 0s;
+        }
+
+        /* 利用 padding-top 强制锁定比例，兼容 100% 所有设备 */
+        .img-wrap { width: 100%; position: relative; padding-top: 146.15%; /* 1216/832 */ background: #f0f7fd; border-radius: 8px; overflow: hidden; border: 2px solid #2b2b3a; }
+        .chara-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: contain; object-position: center; transition: transform 0.5s ease; }
+
+        .card-base:hover { box-shadow: 8px 8px 0 #2b2b3a; z-index: 20 !important; filter: none !important; }
+        .card-base:hover .chara-img { transform: scale(1.02); }
+        .card-base:active { transform: scale(0.96) !important; }
+
+        .glass-tag { position: absolute; bottom: 16px; right: -8px; background: #2b2b3a; padding: 5px 16px; border: 2px solid #2b2b3a; border-radius: 20px; color: #fff; font-size: 13px; font-weight: 900; letter-spacing: 2px; box-shadow: 3px 3px 0 rgba(43, 43, 58, 0.35); transform: rotate(-3deg); z-index: 2; pointer-events: none; transition: transform 0.3s; font-family: inherit; }
+        .card-base:hover .glass-tag { transform: rotate(0deg) scale(1.05); }
+
+        .tape { position: absolute; width: 76px; height: 24px; background: rgba(255, 200, 200, 0.85); border-left: 2px dashed #ff9999; border-right: 2px dashed #ff9999; box-shadow: 1px 1px 3px rgba(0,0,0,0.2); z-index: 3; pointer-events: none; }
+
+        /* 排版位置逻辑 (废弃 clamp，改用基础兼容写法) */
+        .stage-single .card-main { width: 55%; min-width: 220px; max-width: 320px; transform: translateY(30px) rotate(2deg); animation: slideUpFade 1s forwards; z-index: 10; }
+        .stage-single .tape { top: -10px; left: 50%; transform: translateX(-50%) rotate(-4deg); }
+        .stage-single .card-main:hover { transform: translateY(15px) rotate(0deg) scale(1.03); }
+
+        .stage-double .card-sub { width: 38%; min-width: 160px; max-width: 240px; left: 10%; top: 10px; transform: translateY(20px) rotate(-6deg); animation: slideUpSub 1s forwards; z-index: 8; filter: brightness(0.96); }
+        .stage-double .card-sub .glass-tag { left: -10px; right: auto; transform: rotate(4deg); bottom: 20px; font-size: 11px; }
+        .stage-double .card-sub .tape { top: 5px; left: -15px; transform: rotate(-45deg); }
+        .stage-double .card-sub:hover { transform: translateY(5px) rotate(-2deg) scale(1.05); filter: brightness(1); }
+
+        .stage-double .card-main { width: 45%; min-width: 180px; max-width: 280px; right: 8%; top: 40px; transform: translateY(40px) rotate(4deg); animation: slideUpMain 1.2s forwards; z-index: 12; animation-delay: 0.1s; }
+        .stage-double .card-main .tape { top: -8px; right: 15px; transform: rotate(5deg); }
+        .stage-double .card-main:hover { transform: translateY(25px) rotate(0deg) scale(1.05); }
+
+        @keyframes slideUpFade { to { opacity: 1; transform: translateY(0) rotate(2deg); } }
+        @keyframes slideUpSub { to { opacity: 1; transform: translateY(0) rotate(-6deg); } }
+        @keyframes slideUpMain { to { opacity: 1; transform: translateY(0) rotate(4deg); } }
+
+        /* 顶部标题区：徽章丸 + 描边大字 */
+        .aesthetic-header { position: relative; z-index: 20; display: flex; flex-direction: column; align-items: center; gap: 6px; margin-bottom: 8px; }
+        .aesthetic-title { display: inline-block; font-size: 12px; font-weight: 900; letter-spacing: 5px; color: #fff; background: #2b2b3a; border-radius: 20px; padding: 4px 16px; transform: rotate(-2deg); pointer-events: none; }
+        .aesthetic-subtitle { font-size: 40px; font-weight: 900; letter-spacing: 6px; line-height: 1.15; color: #5eb8f0; -webkit-text-stroke: 1.5px #2b2b3a; paint-order: stroke fill; text-shadow: 4px 4px 0 #2b2b3a; transform: rotate(-2deg); pointer-events: none; }
+        .title-line { display: block; font-size: 11px; font-weight: 900; letter-spacing: 3px; color: #5a6a7d; margin-top: 2px; pointer-events: none; }
+        .title-line::before { content: '★ '; color: #ffb02e; }
+        .title-line::after { content: ' ★'; color: #ffb02e; }
+
+        /* 票券风点缀：星星 / 加号 */
+        .deco-star { position: absolute; z-index: 4; color: #ffd66e; line-height: 1; -webkit-text-stroke: 1.5px #2b2b3a; paint-order: stroke fill; text-shadow: 2px 2px 0 #2b2b3a; pointer-events: none; animation: decoTwinkle 2.8s ease-in-out infinite alternate; }
+        .deco-star--1 { top: 4%; left: 6%; font-size: 30px; transform: rotate(-14deg); }
+        .deco-star--2 { top: 12%; right: 7%; font-size: 22px; transform: rotate(12deg); animation-delay: -1.4s; }
+        .deco-plus { position: absolute; z-index: 4; color: #ff8a5e; font-size: 26px; font-weight: 900; line-height: 1; -webkit-text-stroke: 1.5px #2b2b3a; paint-order: stroke fill; text-shadow: 2px 2px 0 #2b2b3a; pointer-events: none; bottom: 22%; left: 4%; transform: rotate(-10deg); }
+        @keyframes decoTwinkle { from { opacity: 0.55; } to { opacity: 1; } }
+
+        /* 生态与粒子层：五彩纸屑 */
+        .decor-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
+        .particle-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 18; }
+        .bokeh-particle { position: absolute; border-radius: 3px; background: #ffd66e; border: 1.5px solid #2b2b3a; opacity: 0; animation: floatParticle infinite ease-in; }
+        @keyframes floatParticle { 0% { transform: translateY(0) rotate(0deg) scale(0.5); opacity: 0; } 20% { opacity: 0.9; } 80% { opacity: 0.7; } 100% { transform: translateY(-200px) rotate(120deg) scale(1); opacity: 0; } }
+
+        /* ==================== 藏品馆弹窗：奶油面板 ==================== */
+        .archive-modal {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 999999;
+            background: rgba(15, 23, 42, 0.72);
+            flex-direction: column; align-items: center; justify-content: flex-end; overflow: hidden; opacity: 0; transition: opacity 0.3s ease;
+            padding: 18px;
+        }
+        .archive-modal.show { display: flex; opacity: 1; }
+        .archive-panel {
+            width: 100%; max-width: 520px; max-height: 82vh; display: flex; flex-direction: column;
+            background: #fffdf6; border: 3px solid #2b2b3a; border-radius: 18px;
+            box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.45); overflow: hidden;
+        }
+
+        .archive-header { padding: 12px 16px 10px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2.5px dashed rgba(43, 43, 58, 0.35); flex-shrink: 0; }
+        .archive-title { font-size: 15px; font-weight: 900; color: #2b2b3a; letter-spacing: 3px; display: flex; align-items: center; gap: 8px; }
+        .btn-close { padding: 5px 16px; border-radius: 20px; background: #2b2b3a; border: 2px solid #2b2b3a; color: #fff; cursor: pointer; font-weight: 900; font-size: 12px; font-family: inherit; box-shadow: 2px 2px 0 rgba(43,43,58,0.35); }
+        .btn-close:active { transform: translateY(1px); box-shadow: 1px 1px 0 rgba(43,43,58,0.35); }
+
+        .char-tabs { display: flex; gap: 8px; padding: 12px 14px 0; flex-shrink: 0; justify-content: center; }
+        .char-tab { flex: 1; padding: 8px 10px; background: #eee; border: 2px solid #2b2b3a; border-bottom: none; border-radius: 10px 10px 0 0; color: #777; font-weight: 900; cursor: pointer; transition: 0.2s; font-size: 13px; letter-spacing: 2px; font-family: inherit; }
+        .char-tab.active { background: #fffdf6; color: #2b2b3a; }
+        .theme-mio .char-tab.active { background: #0284c7; border-color: #0284c7; color: #fff; }
+        .theme-tsuru .char-tab.active { background: #ea580c; border-color: #ea580c; color: #fff; }
+
+        .archive-content { flex: 1; overflow-y: auto; padding: 10px 14px 24px; -webkit-overflow-scrolling: touch; }
+        .char-section { display: none; }
+        .char-section.active { display: block; animation: elegantFadeIn 0.4s ease forwards; }
+        @keyframes elegantFadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+        .outfit-block { background: #fff; border: 2.5px solid #2b2b3a; border-radius: 12px; margin-bottom: 14px; padding: 12px; box-shadow: 4px 4px 0 rgba(43, 43, 58, 0.25); }
+        .outfit-title { font-size: 13px; font-weight: 900; color: #fff; background: #2b2b3a; border-radius: 20px; padding: 3px 12px; display: inline-block; margin-bottom: 10px; letter-spacing: 2px; }
+        .theme-mio .outfit-title { background: #0284c7; }
+        .theme-tsuru .outfit-title { background: #ea580c; }
+
+        .slider-wrapper { position: relative; display: flex; align-items: center; gap: 8px; }
+        .slider-btn { width: 34px; height: 34px; border-radius: 50%; background: #fff; border: 2.5px solid #2b2b3a; display: flex; justify-content: center; align-items: center; cursor: pointer; color: #2b2b3a; flex-shrink: 0; box-shadow: 2px 2px 0 #2b2b3a; z-index: 2; font-family: inherit; }
+        .slider-btn:active { transform: translateY(1px); box-shadow: 1px 1px 0 #2b2b3a; }
+        .slider-btn svg { width: 14px; height: 14px; fill: currentColor; }
+
+        /* 硬件加速的顺滑滚动 */
+        .slider-track { flex: 1; display: flex; gap: 10px; overflow-x: auto; padding: 8px 4px; scroll-behavior: smooth; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+        .slider-track::-webkit-scrollbar { display: none; }
+
+        .gallery-slot { width: 110px; flex-shrink: 0; scroll-snap-align: center; background: #fff; border-radius: 10px; padding: 5px; box-shadow: 3px 3px 0 rgba(43, 43, 58, 0.3); position: relative; overflow: hidden; border: 2.5px solid #2b2b3a; cursor: pointer; transition: transform 0.2s; }
+        .gallery-slot:active { transform: scale(0.95); }
+        .slot-img-wrap { width: 100%; padding-top: 146.15%; position: relative; background: #f0f7fd; border-radius: 6px; overflow: hidden; border: 2px solid #2b2b3a; }
+        .gallery-img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+
+        .gallery-slot.locked .gallery-img { filter: brightness(0.25) contrast(0.9) grayscale(1); opacity: 0.5; }
+        .gallery-slot.locked .lock-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 28px; height: 28px; fill: #fff; z-index: 5; }
+        .gallery-slot:not(.locked) .lock-icon { display: none; }
+        .slot-index { position: absolute; bottom: 8px; right: 8px; background: #2b2b3a; padding: 1px 7px; border-radius: 8px; font-size: 10px; font-weight: 900; color: #fff; z-index: 5; }
+
+        /* 放大查看 Modal */
+        .viewer-modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; z-index: 9999999; background: rgba(15, 23, 42, 0.88); justify-content: center; align-items: center; cursor: zoom-out; opacity: 0; transition: opacity 0.3s; padding: 16px; }
+        .viewer-modal.show { display: flex; opacity: 1; }
+        .viewer-modal img { max-width: 94vw; max-height: 86vh; object-fit: contain; border-radius: 12px; border: 3px solid #fff; box-shadow: 0 12px 50px rgba(0, 0, 0, 0.6); transform: scale(0.9); transition: transform 0.3s; cursor: default; }
+        .viewer-modal.show img { transform: scale(1); }
+
+        /* 角色主题：澪冰蓝 / 鹤暖阳 */
+        .theme-mio .card-base { border-color: #0284c7; box-shadow: 6px 6px 0 #bae6fd; }
+        .theme-mio .glass-tag { background: #0284c7; border-color: #0284c7; }
+        .theme-mio .tape { background: rgba(186, 230, 253, 0.85); border-color: #38bdf8; }
+        .theme-mio .aesthetic-subtitle { color: #0369a1; }
+        .theme-tsuru .card-base { border-color: #ea580c; box-shadow: 8px 8px 0 #fde047; }
+        .theme-tsuru .glass-tag { background: #ea580c; border-color: #ea580c; }
+        .theme-tsuru .tape { background: rgba(253, 186, 116, 0.85); border-color: #f97316; }
+        .theme-tsuru .aesthetic-subtitle { color: #c2410c; }
+
+        /* 移动端专属微调 */
+        @media screen and (max-width: 600px) {
+            .magazine-container { padding: 30px 10px 50px; min-height: 420px; }
+            .typo-bg { font-size: 70px; }
+            .stage-double .card-sub { width: 42%; left: 2%; top: 10px; }
+            .stage-double .card-main { width: 50%; right: 2%; top: 30px; }
+            .stage-single .card-main { width: 65%; }
+            .glass-tag { font-size: 11px; padding: 4px 12px; }
+            .typo-vertical { display: none; }
+            .btn-archive { bottom: 15px; right: 15px; font-size: 10px; }
+            .aesthetic-subtitle { font-size: 30px; }
+
+            .gallery-slot { width: 95px; }
+            .archive-panel { max-height: 86vh; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .magazine-container *, .archive-modal *, .viewer-modal * { animation: none !important; transition: none !important; }
+        }
+    @media (pointer:coarse){.slider-btn{width:44px;height:44px;}}
+        </style>
+</head>
+<body>
+    <div class="magazine-container" id="main-panel" style="display: none;">
+        <div class="typo-bg">UMINARI ★ SUMMER</div>
+        <div class="typo-vertical">海鳴町の盛夏<br>波の音が聞こえる</div>
+        <div class="typo-date">No. 01 / UMINARI</div>
+        <div class="ambient-light"></div>
+        <div class="water-ripple"></div>
+        <div class="water-ripple-2"></div>
+
+        <div class="decor-layer">
+            <span class="deco-star deco-star--1">★</span>
+            <span class="deco-star deco-star--2">★</span>
+            <span class="deco-plus">+</span>
+        </div>
+
+        <div class="aesthetic-header">
+            <div class="aesthetic-title">海鸣町 · 夏日画报</div>
+            <div class="aesthetic-subtitle">立绘收藏</div>
+            <div class="title-line"></div>
+        </div>
+
+        <div class="magazine-stage" id="stage-area">
+            <div style="color: #6ba8d6; font-size: 14px;">加载中...</div>
+        </div>
+
+        <div class="particle-layer" id="particle-layer"></div>
+
+        <!-- 弱化版图鉴入口 -->
+        <div class="btn-archive" onclick="openArchive()" title="打开图鉴">
+            <svg viewBox="0 0 24 24"><path d="M18 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 4h5v8l-2.5-1.5L6 12V4z"/></svg>
+            Archive
+        </div>
+    </div>
+
+    <!-- 图鉴 Modal -->
+    <div class="archive-modal" id="archive-modal">
+        <div class="archive-panel">
+        <div class="archive-header">
+            <div class="archive-title">✦ 藏品图鉴 ✦</div>
+            <div class="btn-close" onclick="closeArchive()">关闭</div>
+        </div>
+        <div class="char-tabs" id="archive-tabs">
+            <div class="char-tab active" onclick="switchTab('澪')">潮见澪</div>
+            <div class="char-tab" onclick="switchTab('鹤')">潮见鹤</div>
+        </div>
+        <div class="archive-content" id="archive-content"></div>
+        </div>
+    </div>
+
+    <!-- 放大查看 Modal -->
+    <div class="viewer-modal" id="viewer-modal" onclick="closeViewer()">
+        <img id="viewer-img" loading="lazy" decoding="async" src="" alt="大图" onclick="event.stopPropagation()">
+    </div>
+
+    <script>
+        var baseUrl = "https://cdn.jsdelivr.net/gh/roxysl521-droid/bingruo-li-hui@main/";
+        var characters = ['澪', '鹤'];
+        var charMap = { '澪': 'ling', '鹤': 'he' };
+        var outfits = ['常服', '夏服', '冬服', '泳装', '浴衣', '赤裸', '睡衣', '校服'];
+        var outfitMap = { '常服':'cf', '夏服':'xf', '冬服':'df', '泳装':'yz', '浴衣':'yy', '赤裸':'cl', '睡衣':'sy', '校服':'xiao' };
+        var totalImagesPerOutfit = 6;
+
+        /* 检测是否为小屏设备 */
+        var isMobile = window.innerWidth <= 600;
+
+        function getUnlockedSet() {
+            var data = localStorage.getItem('uminari_gallery_unlocked');
+            if(data) { try { return JSON.parse(data); } catch(e) {} }
+            return {};
+        }
+        function saveUnlock(key) {
+            var unlocked = getUnlockedSet();
+            if(!unlocked[key]) {
+                unlocked[key] = true;
+                localStorage.setItem('uminari_gallery_unlocked', JSON.stringify(unlocked));
+            }
+        }
+        function isUnlocked(key) { return !!getUnlockedSet()[key]; }
+
+        var lockSvg = '<svg class="lock-icon" viewBox="0 0 24 24"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zm-6 9c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2zm3.1-9H8.9V6c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2z"/></svg>';
+
+        function getMessageData() {
+            var msgs = getChatMessages(getCurrentMessageId());
+            if (!msgs || msgs.length === 0) return null;
+            return msgs[0].message;
+        }
+
+        function parseData(messageText) {
+            var result = { chars: [] };
+            var match = messageText.match(/<立绘展示>([\s\S]*?)<\/立绘展示>/);
+            if (match && match[1]) {
+                var content = match[1].replace(/，/g, ',').trim();
+                if (content && content !== '无') {
+                    var items = content.split(',');
+                    for(var i=0; i<items.length; i++) {
+                        var parts = items[i].split('|');
+                        var name = parts[0] ? parts[0].trim() : '';
+                        var outfit = parts[1] ? parts[1].trim() : '常服';
+                        if (name && result.chars.length < 2) {
+                            result.chars.push({ name: name, outfit: outfit });
+                        }
+                    }
+                }
+            }
+            return result;
+        }
+
+        /* 移动端削减粒子数量防卡顿 */
+        function createParticles() {
+            var html = '';
+            var count = isMobile ? 8 : 22;
+            for(var i = 0; i < count; i++) {
+                var left = Math.random() * 95, size = Math.random() * 6 + 2;
+                var delay = Math.random() * 8, duration = Math.random() * 4 + 6, bottom = Math.random() * 40;
+                html += '<div class="bokeh-particle" style="left:'+left+'%; width:'+size+'px; height:'+size+'px; animation-delay:'+delay+'s; animation-duration:'+duration+'s; bottom:'+bottom+'px;"></div>';
+            }
+            document.getElementById('particle-layer').innerHTML = html;
+        }
+
+        function processCardData(charObj) {
+            var charCode = charMap[charObj.name] || 'ling';
+            var outfitCode = outfitMap[charObj.outfit] || 'cf';
+            var randomIdx = Math.floor(Math.random() * totalImagesPerOutfit) + 1;
+            var key = charObj.name + '_' + charObj.outfit + '_' + randomIdx;
+            var imgSrc = baseUrl + charCode + '_' + outfitCode + '_' + randomIdx + '.png';
+            saveUnlock(key);
+            return imgSrc;
+        }
+
+        function renderPage(data) {
+            var panel = document.getElementById('main-panel');
+            var stage = document.getElementById('stage-area');
+            (function(){
+                var allMio = data.chars.length>0, allTsuru = data.chars.length>0, ti;
+                for (ti=0; ti<data.chars.length; ti++) {
+                    if ((data.chars[ti].name||'').indexOf('澪')===-1) allMio=false;
+                    if ((data.chars[ti].name||'').indexOf('鹤')===-1) allTsuru=false;
+                }
+                var th = allMio?'theme-mio':(allTsuru?'theme-tsuru':'');
+                panel.classList.remove('theme-mio'); panel.classList.remove('theme-tsuru');
+                if (th) panel.classList.add(th);
+                var am0 = document.getElementById('archive-modal');
+                if (am0) { am0.classList.remove('theme-mio'); am0.classList.remove('theme-tsuru'); if (th) am0.classList.add(th); }
+            })();
+
+            if (data.chars.length === 0) {
+                panel.style.display = 'none'; return;
+            }
+
+            var html = '';
+
+            if (data.chars.length === 1) {
+                stage.className = 'magazine-stage stage-single';
+                var c = data.chars[0];
+                var imgSrc = processCardData(c);
+
+                html += '<div class="card-base card-main" onclick="openViewer(\''+imgSrc+'\')" title="点击查看大图">';
+                html += '  <div class="tape"></div>';
+                html += '  <div class="img-wrap"><img class="chara-img" decoding="async" fetchpriority="high" src="'+imgSrc+'" onerror="this.parentElement.style.background=\'#e0e0e0\'"></div>';
+                html += '  <div class="glass-tag">' + c.name + ' · ' + c.outfit + '</div>';
+                html += '</div>';
+            } else {
+                stage.className = 'magazine-stage stage-double';
+                var c1 = data.chars[0], c2 = data.chars[1];
+                var imgSrc1 = processCardData(c1);
+                var imgSrc2 = processCardData(c2);
+
+                html += '<div class="card-base card-sub" onclick="openViewer(\''+imgSrc1+'\')" title="点击查看大图">';
+                html += '  <div class="tape"></div>';
+                html += '  <div class="img-wrap"><img class="chara-img" decoding="async" fetchpriority="high" src="'+imgSrc1+'" onerror="this.parentElement.style.background=\'#e0e0e0\'"></div>';
+                html += '  <div class="glass-tag">' + c1.name + ' · ' + c1.outfit + '</div>';
+                html += '</div>';
+
+                html += '<div class="card-base card-main" onclick="openViewer(\''+imgSrc2+'\')" title="点击查看大图">';
+                html += '  <div class="tape"></div>';
+                html += '  <div class="img-wrap"><img class="chara-img" decoding="async" fetchpriority="high" src="'+imgSrc2+'" onerror="this.parentElement.style.background=\'#e0e0e0\'"></div>';
+                html += '  <div class="glass-tag">' + c2.name + ' · ' + c2.outfit + '</div>';
+                html += '</div>';
+            }
+
+            stage.innerHTML = html;
+            panel.style.display = 'flex';
+            createParticles();
+        }
+
+        function buildArchiveHTML() {
+            var html = '';
+            for(var ci=0; ci<characters.length; ci++) {
+                var charName = characters[ci];
+                var isActive = ci === 0 ? 'active' : '';
+                html += '<div class="char-section ' + isActive + '" id="sec_' + charName + '">';
+
+                for(var oi=0; oi<outfits.length; oi++) {
+                    var outfitName = outfits[oi];
+                    html += '<div class="outfit-block">';
+                    html += '  <div class="outfit-title">✦ ' + outfitName + '</div>';
+                    html += '  <div class="slider-wrapper">';
+                    var trackId = 'track_' + charName + '_' + outfitName;
+                    html += '    <div class="slider-btn" onclick="scrollTrack(\''+trackId+'\', -1)"><svg viewBox="0 0 24 24"><path d="M15.41 16.59L10.83 12l4.58-4.59L14 6l-6 6 6 6 1.41-1.41z"/></svg></div>';
+                    html += '    <div class="slider-track" id="'+trackId+'">';
+
+                    var charCode = charMap[charName];
+                    var outfitCode = outfitMap[outfitName];
+
+                    for(var i = 1; i <= totalImagesPerOutfit; i++) {
+                        var key = charName + '_' + outfitName + '_' + i;
+                        var unlocked = isUnlocked(key);
+                        var imgSrc = baseUrl + charCode + '_' + outfitCode + '_' + i + '.png';
+                        var lockClass = unlocked ? '' : 'locked';
+                        var clickEvent = unlocked ? 'onclick="openViewer(\''+imgSrc+'\')"' : '';
+
+                        html += '      <div class="gallery-slot ' + lockClass + '" ' + clickEvent + '>';
+                        html += '        <div class="slot-img-wrap">';
+                        html += '          <img class="gallery-img" loading="lazy" decoding="async" src="'+imgSrc+'" onerror="this.src=\'https://dummyimage.com/832x1216/f0f7fd/a0c4ff.png&text=?\'">';
+                        html +=            lockSvg;
+                        html += '        </div>';
+                        html += '        <div class="slot-index">' + i + '/' + totalImagesPerOutfit + '</div>';
+                        html += '      </div>';
+                    }
+                    html += '    </div>';
+                    html += '    <div class="slider-btn" onclick="scrollTrack(\''+trackId+'\', 1)"><svg viewBox="0 0 24 24"><path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/></svg></div>';
+                    html += '  </div>';
+                    html += '</div>';
+                }
+                html += '</div>';
+            }
+            document.getElementById('archive-content').innerHTML = html;
+        }
+
+        window.scrollTrack = function(trackId, dir) {
+            var track = document.getElementById(trackId);
+            /* 根据屏幕宽度调整一次滑动的距离 */
+            var scrollDist = isMobile ? 220 : 260;
+            if(track) track.scrollBy({ left: dir * scrollDist, behavior: 'smooth' });
+        };
+
+        window.switchTab = function(charName) {
+            var tabs = document.querySelectorAll('.char-tab');
+            for(var i=0; i<tabs.length; i++) tabs[i].classList.remove('active');
+            event.target.classList.add('active');
+
+            var secs = document.querySelectorAll('.char-section');
+            for(var j=0; j<secs.length; j++) secs[j].classList.remove('active');
+            document.getElementById('sec_' + charName).classList.add('active');
+            var am2 = document.getElementById('archive-modal');
+            if (am2) { am2.classList.remove('theme-mio'); am2.classList.remove('theme-tsuru'); am2.classList.add(charName.indexOf('鹤')!==-1 ? 'theme-tsuru' : 'theme-mio'); }
+        };
+
+        window.openArchive = function() {
+            buildArchiveHTML();
+            var modal = document.getElementById('archive-modal');
+            modal.classList.add('show');
+            document.body.style.overflow = 'hidden';
+        };
+
+        window.closeArchive = function() {
+            var modal = document.getElementById('archive-modal');
+            modal.classList.remove('show');
+            document.body.style.overflow = '';
+        };
+
+        window.openViewer = function(src) {
+            var viewer = document.getElementById('viewer-modal');
+            document.getElementById('viewer-img').src = src;
+            viewer.classList.add('show');
+        };
+
+        window.closeViewer = function() {
+            document.getElementById('viewer-modal').classList.remove('show');
+        };
+
+        function init() {
+            try {
+                var text = getMessageData();
+/* 满血API纯文字降级：API/模型名含“满血”时只留纯文字（fail-open：异常则正常渲染） */
+function uwIsFullBlood(msgObj){
+  try{
+    var budget={n:0};
+    function scan(v,depth){
+      if(v==null||depth>4||budget.n>300)return false;
+      if(typeof v==='string'){budget.n++;return v.indexOf('满血')!==-1;}
+      if(typeof v!=='object')return false;
+      if(Object.prototype.toString.call(v)==='[object Array]'){for(var i=0;i<v.length&&i<12;i++){try{if(scan(v[i],depth+1))return true;}catch(e){}}return false;}
+      var skip={message:1,raw:1,mes:1,chat:1,messages:1,characters:1,character:1,lorebook:1,lorebooks:1,worldbook:1,prompt:1,prompts:1,data:1,html:1,innerHTML:1};
+      for(var k in v){
+        if(!Object.prototype.hasOwnProperty.call(v,k))continue;
+        if(skip[k])continue;
+        var val=null;
+        try{val=v[k];}catch(e){continue;}
+        try{if(scan(val,depth+1))return true;}catch(e){}
+      }
+      return false;
+    }
+    try{if(msgObj&&scan(msgObj,0))return true;}catch(e){}
+    var ctx=null;
+    try{if(window.SillyTavern&&window.SillyTavern.getContext)ctx=window.SillyTavern.getContext();}catch(e){ctx=null;}
+    if(!ctx){try{if(window.parent&&window.parent.SillyTavern&&window.parent.SillyTavern.getContext)ctx=window.parent.SillyTavern.getContext();}catch(e){ctx=null;}}
+    try{if(ctx&&scan(ctx,0))return true;}catch(e){}
+  }catch(e){}
+  return false;
+}
+function uwCurMsg(){
+  try{if(typeof getChatMessages==='function'&&typeof getCurrentMessageId==='function'){var m=getChatMessages(getCurrentMessageId());if(m&&m.length)return m[0];}}catch(e){}
+  return null;
+}
+                try{if(uwIsFullBlood(uwCurMsg()))return;}catch(e){}
+                if (text) renderPage(parseData(text));
+            } catch (error) {
+                console.error("立绘渲染失败:", error);
+            }
+        }
+        $(function() { init(); });
+    </script>
+</body>
+</html>
