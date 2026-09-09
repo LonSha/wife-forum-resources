@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>受孕判定 · 鹿笙物语</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700;900&family=LXGW+WenKai+TC:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* ===== 色彩体系 — 继承正文美化/状态栏 ===== */
+        :root {
+            --bg-base:       hsla(40, 22%, 95%, 0.98);
+            --bg-alt:        hsla(40, 16%, 91%, 0.9);
+            --panel:         hsla(40, 20%, 99%, 0.85);
+            --panel-strong:  hsla(40, 20%, 99%, 0.95);
+            --border:        hsla(0, 0%, 0%, 0.06);
+            --border-bold:   hsla(0, 0%, 0%, 0.12);
+            --text-main:     hsla(0, 0%, 14%, 1);
+            --text-sub:      hsla(0, 0%, 38%, 1);
+            --text-muted:    hsla(0, 0%, 56%, 1);
+            --accent:        hsla(340, 62%, 54%, 1);
+            --accent-soft:   hsla(340, 62%, 54%, 0.07);
+            --accent-border: hsla(340, 62%, 54%, 0.2);
+            --glow:          hsla(340, 62%, 54%, 0.2);
+            --accent-2:      hsla(190, 58%, 40%, 1);
+            --glass-hi:      hsla(0, 0%, 100%, 0.35);
+            --shadow:        hsla(0, 0%, 0%, 0.08);
+            --shadow-off:    hsla(0, 0%, 0%, 0.12);
+            --dot:           hsla(0, 0%, 0%, 0.022);
+            --preg-bg:       hsla(340, 50%, 48%, 0.1);
+            --preg-border:   hsla(340, 50%, 48%, 0.32);
+            --preg-glow:     hsla(340, 50%, 48%, 0.22);
+            --success-color: hsla(150, 52%, 42%, 1);
+            --success-soft:  hsla(150, 52%, 42%, 0.1);
+            --success-border: hsla(150, 52%, 42%, 0.25);
+            --fail-color:    hsla(0, 62%, 52%, 1);
+            --fail-soft:     hsla(0, 62%, 52%, 0.08);
+            --fail-border:   hsla(0, 62%, 52%, 0.2);
+        }
+        body {
+            font-family: "LXGW WenKai TC", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: transparent; padding: 4px; color: var(--text-main);
+        }
+
+        /* ===== 主容器 — 比状态栏小 ===== */
+        .pcr-container {
+            max-width: 520px; border-radius: 12px; overflow: hidden; position: relative;
+            background: var(--bg-base);
+            background-image: radial-gradient(var(--dot) 1.5px, transparent 1.5px);
+            background-size: 18px 18px;
+            box-shadow: 0 4px 16px var(--shadow);
+            opacity: 0; transform: translateY(8px) scale(0.98);
+            animation: pcrPopIn 0.45s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        @keyframes pcrPopIn { to { opacity: 1; transform: translateY(0) scale(1); } }
+
+        /* 背景装饰 */
+        .pcr-bg-glow {
+            position: absolute; inset: -50%; pointer-events: none; z-index: 0;
+            background: radial-gradient(circle at 70% 20%, var(--glow) 0%, transparent 50%);
+            opacity: 0.3;
+        }
+        .pcr-bg-stripes {
+            position: absolute; inset: 0; z-index: 1; pointer-events: none;
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 2px, var(--glass-hi) 2px, var(--glass-hi) 4px);
+        }
+
+        /* ===== 顶栏 — 斜切标签 + 信息行 ===== */
+        .pcr-topbar {
+            display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+            padding: 8px 12px; position: relative; z-index: 10;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(90deg, var(--accent-soft), transparent 50%, var(--accent-soft));
+        }
+        .pcr-title-tag {
+            background: var(--accent); color: #fff; font-size: 11px; font-weight: 900;
+            padding: 3px 12px; border-radius: 4px; transform: skewX(-8deg);
+            box-shadow: 0 2px 5px var(--glow); flex-shrink: 0; letter-spacing: 1px;
+        }
+        .pcr-title-tag > span { display: block; transform: skewX(8deg); }
+        .pcr-chip {
+            background: var(--panel); border: 1px solid var(--border); border-radius: 6px;
+            padding: 3px 9px; font-size: 11px; font-weight: 700;
+            display: flex; align-items: center; gap: 4px;
+            box-shadow: 0 1px 4px var(--shadow);
+            backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+            opacity: 0; transform: translateX(8px);
+            animation: pcrSlideIn 0.35s cubic-bezier(0.2,0.8,0.2,1) forwards;
+            transition: all 0.2s;
+        }
+        .pcr-chip:hover { transform: translateY(-1px); box-shadow: 0 3px 8px var(--shadow); }
+        @keyframes pcrSlideIn { to { opacity: 1; transform: translateX(0); } }
+        .pcr-chip .ico { font-size: 12px; }
+        .pcr-chip .val { color: var(--accent); }
+        .pcr-spacer { flex: 1; }
+        /* ===== 内容区 ===== */
+        .pcr-body { position: relative; z-index: 5; padding: 12px 14px 14px; display: flex; flex-direction: column; gap: 10px; }
+
+        /* 区块标题 */
+        .pcr-sec-head { display: flex; align-items: center; gap: 6px; margin-bottom: 2px; }
+        .pcr-sec-head-text { font-size: 10px; font-weight: 900; letter-spacing: 2px; color: var(--text-sub); text-transform: uppercase; }
+        .pcr-sec-head-line { flex: 1; height: 1px; background: linear-gradient(90deg, var(--accent-border), transparent); }
+        .pcr-sec-head-tag {
+            background: var(--accent-2); color: #fff; font-size: 9px; font-weight: 900;
+            padding: 2px 7px; border-radius: 3px; transform: skewX(-8deg);
+            box-shadow: 1px 1px 0 var(--shadow-off); letter-spacing: 1px;
+        }
+        .pcr-sec-head-tag > span { display: block; transform: skewX(8deg); }
+
+        /* ===== 可折叠面板通用 ===== */
+        .pcr-collapse-panel {
+            background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+            position: relative; overflow: hidden;
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 2px 8px var(--shadow);
+            opacity: 0; transform: translateY(6px);
+            transition: box-shadow 0.25s, border-color 0.25s, transform 0.25s;
+        }
+        .pcr-collapse-panel.pcr-show { opacity: 1; transform: translateY(0); }
+        .pcr-dice-panel { animation: pcrFadeUp 0.4s ease 0.1s forwards; }
+        .pcr-calc-panel { animation: pcrFadeUp 0.4s ease 0.2s forwards; }
+        .pcr-collapse-panel:hover { box-shadow: 0 4px 12px var(--shadow); border-color: var(--accent-border); transform: translateY(-1px); }
+        .pcr-collapse-panel::after {
+            content: ''; position: absolute; top: 0; left: -100%; width: 30%; height: 100%;
+            background: linear-gradient(90deg, transparent, var(--glass-hi), transparent);
+            transform: skewX(-20deg); animation: pcrShine 5s infinite; pointer-events: none;
+        }
+        @keyframes pcrShine { 0% { left: -100%; } 30%,100% { left: 200%; } }
+
+        /* 折叠头部 — 点击展开/收起 */
+        .pcr-collapse-head {
+            display: flex; align-items: center; gap: 6px; cursor: pointer;
+            padding: 8px 12px; user-select: none;
+            transition: background 0.2s;
+        }
+        .pcr-collapse-head:hover { background: var(--accent-soft); }
+        .pcr-collapse-arrow {
+            font-size: 10px; color: var(--text-muted); transition: transform 0.3s;
+            flex-shrink: 0; width: 14px; text-align: center;
+        }
+        .pcr-collapse-panel.expanded .pcr-collapse-arrow { transform: rotate(90deg); }
+
+        /* 折叠内容 — 默认 max-height:0 隐藏 */
+        .pcr-collapse-body {
+            max-height: 0; overflow: hidden;
+            transition: max-height 0.4s ease;
+            padding: 0 12px;
+        }
+        .pcr-collapse-panel.expanded .pcr-collapse-body { max-height: 500px; padding-bottom: 10px; }
+
+        .pcr-dice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        .pcr-dice-row {
+            display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+            padding: 4px 8px; border-radius: 6px;
+            background: linear-gradient(135deg, var(--accent-soft), transparent 60%);
+            border-left: 2px solid var(--accent);
+            font-size: 11px; line-height: 1.5; color: var(--text-sub);
+        }
+        .pcr-dice-row .num { font-family: "Noto Serif SC", serif; font-weight: 900; color: var(--accent); font-size: 12px; flex-shrink: 0; }
+        .pcr-dice-row .label { font-weight: 700; color: var(--text-main); font-size: 11px; flex-shrink: 0; }
+        .pcr-dice-row .roll { color: var(--text-muted); font-size: 10px; }
+        .pcr-dice-row .mod { color: var(--text-sub); font-size: 10px; }
+        .pcr-dice-row .final { font-family: "Noto Serif SC", serif; font-weight: 900; color: var(--text-main); font-size: 13px; margin-left: auto; }
+
+        @keyframes pcrFadeUp { to { opacity: 1; transform: translateY(0); } }
+
+        .pcr-calc-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 12px; }
+        .pcr-calc-row {
+            display: flex; align-items: center; gap: 4px; flex-wrap: wrap;
+            font-size: 11px; color: var(--text-sub); line-height: 1.6;
+        }
+        .pcr-calc-row .num { font-family: "Noto Serif SC", serif; font-weight: 900; color: var(--accent); font-size: 11px; flex-shrink: 0; }
+        .pcr-calc-row .label { font-weight: 700; color: var(--text-main); font-size: 11px; flex-shrink: 0; }
+        .pcr-calc-row .formula { color: var(--text-muted); font-size: 10px; }
+        .pcr-calc-row .result { font-family: "Noto Serif SC", serif; font-weight: 700; color: var(--text-main); font-size: 12px; margin-left: auto; }
+
+        .pcr-final-row {
+            display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+            margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); font-size: 12px;
+        }
+        .pcr-final-row .lbl { font-weight: 900; color: var(--text-sub); letter-spacing: 1px; }
+        .pcr-final-row .formula { color: var(--text-muted); font-size: 11px; }
+        .pcr-final-row .val {
+            font-family: "Noto Serif SC", serif; font-weight: 900;
+            font-size: 16px; color: var(--accent); text-shadow: 0 0 8px var(--glow);
+        }
+
+        /* ===== 判定面板 ===== */
+        .pcr-judge-panel {
+            background: linear-gradient(135deg, var(--preg-bg), transparent 60%);
+            border: 1px solid var(--preg-border); border-radius: 10px;
+            padding: 10px 14px; position: relative; overflow: hidden;
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            box-shadow: 0 2px 10px var(--preg-glow);
+            opacity: 0; transform: translateY(6px);
+            animation: pcrFadeUp 0.4s ease 0.3s forwards;
+            transition: all 0.25s;
+        }
+        .pcr-judge-panel:hover { box-shadow: 0 4px 14px var(--preg-glow); transform: translateY(-1px); }
+        .pcr-judge-panel::before {
+            content: ''; position: absolute; bottom: -20px; right: -20px;
+            width: 60px; height: 60px; border-radius: 50%;
+            background: var(--accent); opacity: 0.03; pointer-events: none;
+        }
+        .pcr-judge-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; font-size: 12px; }
+        .pcr-judge-row .roll { font-family: "Noto Serif SC", serif; font-weight: 700; color: var(--text-main); font-size: 13px; }
+        .pcr-judge-row .vs { font-weight: 900; color: var(--text-muted); font-size: 11px; letter-spacing: 1px; }
+        .pcr-judge-row .rate { font-family: "Noto Serif SC", serif; font-weight: 700; color: var(--accent); font-size: 13px; }
+        .pcr-judge-row .arrow { font-weight: 900; color: var(--text-muted); font-size: 14px; }
+        .pcr-judge-row .result {
+            font-family: "Noto Serif SC", serif; font-weight: 900;
+            font-size: 15px; padding: 3px 12px; border-radius: 6px; letter-spacing: 2px;
+        }
+        .pcr-judge-row .result.success {
+            color: var(--success-color); background: var(--success-soft);
+            border: 1px solid var(--success-border); text-shadow: 0 0 6px var(--success-soft);
+        }
+        .pcr-judge-row .result.fail {
+            color: var(--fail-color); background: var(--fail-soft);
+            border: 1px solid var(--fail-border);
+        }
+        .pcr-judge-row .result.success::before { content: '\2728 '; font-size: 13px; }
+        .pcr-judge-row .result.fail::before { content: '\2715 '; font-size: 12px; }
+
+        /* ===== 底部光带 ===== */
+        .pcr-sys-bar {
+            height: 2px; width: 100%;
+            background: linear-gradient(90deg, transparent, var(--accent), transparent, var(--accent-2), transparent);
+            background-size: 200% 100%; animation: pcrSlideBar 5s linear infinite;
+            opacity: 0.4; position: relative; z-index: 10;
+        }
+        @keyframes pcrSlideBar { to { background-position: 200% 0; } }
+
+        /* ===== 加载 ===== */
+        .pcr-loading { text-align: center; padding: 20px; display: flex; align-items: center; justify-content: center; }
+        .pcr-spinner { width: 24px; height: 24px; border: 2px solid var(--border-bold); border-top-color: var(--accent); border-radius: 50%; animation: pcrSpin 0.8s linear infinite; }
+        @keyframes pcrSpin { to { transform: rotate(360deg); } }
+
+        /* ===== 响应式 ===== */
+        @media (max-width: 480px) {
+            .pcr-body { padding: 10px 10px 12px; gap: 8px; }
+            .pcr-dice-grid { grid-template-columns: 1fr; }
+            .pcr-calc-grid { grid-template-columns: 1fr; }
+            .pcr-dice-row, .pcr-calc-row { font-size: 10px; }
+            .pcr-final-row .val { font-size: 14px; }
+            .pcr-judge-row .result { font-size: 13px; }
+        }
+    </style>
+    <script>
+        /* ================================================================
+           从当前消息提取 <pregnancy_check_result> 标签内容
+           直接拿文本渲染，不需要标签
+        ================================================================ */
+        function getMsg() {
+            try {
+                var ctx = (typeof getContext === 'function') ? getContext() : (typeof SillyTavern !== 'undefined' && SillyTavern.getContext ? SillyTavern.getContext() : null);
+                if (ctx && ctx.chat) {
+                    var cid = typeof getCurrentMessageId === 'function' ? getCurrentMessageId() : (ctx.chat.length - 1);
+                    if (ctx.chat[cid] && ctx.chat[cid].mes) return ctx.chat[cid].mes;
+                }
+            } catch(e) {}
+            if (typeof getChatMessages === 'function') {
+                var msgs = getChatMessages(getCurrentMessageId());
+                if (msgs && msgs.length > 0) return msgs[0].mes || msgs[0].message || null;
+            }
+            return null;
+        }
+
+        /* 提取 pregnancy_check_result 标签内容 */
+        function extractPCR(txt) {
+            var m = txt.match(/<pregnancy_check_result>([\s\S]*?)<\/pregnancy_check_result>/i);
+            if (m && m[1]) return m[1].trim();
+            return null;
+        }
+
+        /* HTML 转义 */
+        function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+        /* ================================================================
+           写死渲染格式 — 解析文本行
+        ================================================================ */
+        function parseData(rawText) {
+            var lines = rawText.split(/\n/);
+            var data = {
+                charName: '', cyclePhase: '', baseRate: '',
+                diceRows: [], calcRows: [],
+                finalRate: '', judgeRoll: '', judgeRate: '', judgeResult: ''
+            };
+            var section = '';
+
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i].trim();
+                if (!line) continue;
+
+                var m;
+                /* 触发角色 */
+                if ((m = line.match(/^触发角色\s*[:：]\s*(.+)$/))) { data.charName = m[1].trim(); continue; }
+                /* 周期阶段 */
+                if ((m = line.match(/^周期阶段\s*[:：]\s*(.+)$/))) { data.cyclePhase = m[1].trim(); continue; }
+                /* 基础受孕率 */
+                if ((m = line.match(/^基础受孕率\s*[:：]\s*(.+)$/))) { data.baseRate = m[1].trim(); continue; }
+                /* 进入骰值区块 */
+                if (/骰值/.test(line) && /[:：]/.test(line)) { section = 'dice'; continue; }
+                /* 进入结算区块 */
+                if (/结算/.test(line) && /[:：]/.test(line)) { section = 'calc'; continue; }
+                /* 最终受孕率 */
+                if ((m = line.match(/最终受孕率\s*[:：]\s*(.+)$/))) { data.finalRate = m[1].trim(); section = ''; continue; }
+                /* 判定行 */
+                if ((m = line.match(/^判定\s*[:：]\s*(.+)$/))) {
+                    var js = m[1].trim();
+                    /* 格式: 4d26+14=[15,38,22,18] 均值=23.25  vs  阈值29.6  → 受孕成功 */
+                    var jm = js.match(/4d26\+14\s*[=＝]\s*\[([\d,\s]+)\][^\d]*[=＝]\s*(\d+(?:\.\d+)?)\s*(?:vs|VS|ⅴs|Vs)\s*.*?(\d+(?:\.\d+)?)\s*[→\->]*\s*(.+)$/);
+                    if (jm) {
+                        data.judgeRoll = jm[1].trim();
+                        data.judgeAvg = jm[2];
+                        data.judgeRate = jm[3];
+                        data.judgeResult = jm[4].trim();
+                    } else {
+                        data.judgeResult = js;
+                    }
+                    section = '';
+                    continue;
+                }
+                /* 骰值行 */
+                if (section === 'dice') {
+                    if ((m = line.match(/^([①②③④⑤⑥])\s*(.+?)[:：]\s*(.+)$/))) {
+                        data.diceRows.push({ num: m[1], label: m[2].trim(), detail: m[3].trim() });
+                        continue;
+                    }
+                }
+                /* 结算行 */
+                if (section === 'calc') {
+                    if ((m = line.match(/^([①②③④⑤⑥])\s*(.+?)[:：]\s*(.+)$/))) {
+                        data.calcRows.push({ num: m[1], label: m[2].trim(), detail: m[3].trim() });
+                        continue;
+                    }
+                }
+            }
+            return data;
+        }
+
+        /* ================================================================
+           构建 HTML — 写死格式
+        ================================================================ */
+        function buildHTML(d) {
+            var html = '';
+            /* 顶栏 */
+            html += '<div class="pcr-topbar">';
+            html += '<div class="pcr-title-tag"><span>受孕判定</span></div>';
+            if (d.charName) html += '<div class="pcr-chip" style="animation-delay:0.05s;"><span class="ico">👩</span><span class="val">' + esc(d.charName) + '</span></div>';
+            if (d.cyclePhase) html += '<div class="pcr-chip" style="animation-delay:0.1s;"><span class="ico">📅</span><span class="val">' + esc(d.cyclePhase) + '</span></div>';
+            if (d.baseRate) html += '<div class="pcr-chip" style="animation-delay:0.15s;"><span class="ico">📊</span><span>基础</span><span class="val">' + esc(d.baseRate) + '</span></div>';
+            html += '<div class="pcr-spacer"></div>';
+            html += '</div>';
+
+            /* 内容区 */
+            html += '<div class="pcr-body">';
+
+            /* 骰值面板 — 默认收缩 */
+            if (d.diceRows.length > 0) {
+                html += '<div class="pcr-collapse-panel pcr-dice-panel pcr-show">';
+                html += '<div class="pcr-collapse-head" onclick="toggleCollapse(this)">';
+                html += '<span class="pcr-collapse-arrow">▶</span>';
+                html += '<div class="pcr-sec-head-tag"><span>骰值</span></div>';
+                html += '<div class="pcr-sec-head-line"></div>';
+                html += '</div>';
+                html += '<div class="pcr-collapse-body">';
+                html += '<div class="pcr-dice-grid">';
+                for (var i = 0; i < d.diceRows.length; i++) {
+                    var r = d.diceRows[i];
+                    var detail = r.detail;
+                    var rollM = detail.match(/1d20\s*[=＝]\s*(\d+)/);
+                    var rollVal = rollM ? rollM[1] : '';
+                    var finalM = detail.match(/[=＝]\s*(\d+)\s*$/);
+                    var finalVal = finalM ? finalM[1] : '';
+                    var midPart = detail;
+                    if (rollM) midPart = midPart.replace(/1d20\s*[=＝]\s*\d+/, '').trim();
+                    if (finalM) midPart = midPart.replace(/[=＝]\s*\d+\s*$/, '').trim();
+
+                    html += '<div class="pcr-dice-row">';
+                    html += '<span class="num">' + r.num + '</span>';
+                    html += '<span class="label">' + esc(r.label) + '</span>';
+                    if (rollVal) html += '<span class="roll">1d20=' + esc(rollVal) + '</span>';
+                    if (midPart) html += '<span class="mod">' + esc(midPart) + '</span>';
+                    if (finalVal) html += '<span class="final">= ' + esc(finalVal) + '</span>';
+                    html += '</div>';
+                }
+                html += '</div></div>'; // grid + body
+                html += '</div>'; // panel
+            }
+
+            /* 结算面板 — 默认收缩 */
+            if (d.calcRows.length > 0 || d.finalRate) {
+                html += '<div class="pcr-collapse-panel pcr-calc-panel pcr-show">';
+                html += '<div class="pcr-collapse-head" onclick="toggleCollapse(this)">';
+                html += '<span class="pcr-collapse-arrow">▶</span>';
+                html += '<div class="pcr-sec-head-tag"><span>结算</span></div>';
+                html += '<div class="pcr-sec-head-line"></div>';
+                html += '</div>';
+                html += '<div class="pcr-collapse-body">';
+                if (d.calcRows.length > 0) {
+                    html += '<div class="pcr-calc-grid">';
+                    for (var j = 0; j < d.calcRows.length; j++) {
+                        var c = d.calcRows[j];
+                        var cd = c.detail;
+                        var calcFinalM = cd.match(/[=＝]\s*(.+)$/);
+                        var calcResult = calcFinalM ? calcFinalM[1].trim() : '';
+                        var calcFormula = cd;
+                        if (calcFinalM) calcFormula = cd.replace(/[=＝]\s*.+$/, '').trim();
+
+                        html += '<div class="pcr-calc-row">';
+                        html += '<span class="num">' + c.num + '</span>';
+                        html += '<span class="label">' + esc(c.label) + '</span>';
+                        if (calcFormula) html += '<span class="formula">' + esc(calcFormula) + '</span>';
+                        if (calcResult) html += '<span class="result">= ' + esc(calcResult) + '</span>';
+                        html += '</div>';
+                    }
+                    html += '</div>';
+                }
+                /* 最终受孕率 */
+                if (d.finalRate) {
+                    var frStr = d.finalRate;
+                    var frFinalM = frStr.match(/[=＝]\s*(.+)$/);
+                    var frResult = frFinalM ? frFinalM[1].trim() : frStr;
+                    var frFormula = frFinalM ? frStr.replace(/[=＝]\s*.+$/, '').trim() : '';
+
+                    html += '<div class="pcr-final-row">';
+                    html += '<span class="lbl">最终受孕率</span>';
+                    if (frFormula) html += '<span class="formula">' + esc(frFormula) + '</span>';
+                    html += '<span class="val">= ' + esc(frResult) + '</span>';
+                    html += '</div>';
+                }
+                html += '</div>'; // collapse-body
+                html += '</div>'; // panel
+            }
+
+            /* 判定面板 — 始终展开 */
+            if (d.judgeResult) {
+                var isSuccess = /成功/.test(d.judgeResult);
+                var resultCls = isSuccess ? 'success' : 'fail';
+
+                html += '<div class="pcr-judge-panel">';
+                html += '<div class="pcr-sec-head"><div class="pcr-sec-head-tag" style="background:var(--accent)"><span>判定</span></div><div class="pcr-sec-head-line"></div></div>';
+                html += '<div class="pcr-judge-row">';
+                if (d.judgeRoll) html += '<span class="roll">4d26+14=[' + esc(d.judgeRoll) + ']</span>';
+                if (d.judgeAvg) html += '<span class="roll">均值=' + esc(d.judgeAvg) + '</span>';
+                html += '<span class="vs">VS</span>';
+                if (d.judgeRate) html += '<span class="rate">阈值' + esc(d.judgeRate) + '</span>';
+                html += '<span class="arrow">→</span>';
+                html += '<span class="result ' + resultCls + '">' + esc(d.judgeResult) + '</span>';
+                html += '</div></div>';
+            }
+
+            html += '</div>'; // body
+            return html;
+        }
+
+        /* ================================================================
+           主渲染
+        ================================================================ */
+        function doRender() {
+            var el = document.getElementById('pcr-content');
+            try {
+                var msg = getMsg();
+                if (!msg) { el.innerHTML = '<div class="pcr-loading"><div class="pcr-spinner"></div></div>'; return; }
+                var raw = extractPCR(msg);
+                if (!raw) { el.innerHTML = '<div class="pcr-loading"><div class="pcr-spinner"></div></div>'; return; }
+                var data = parseData(raw);
+                el.innerHTML = buildHTML(data);
+            } catch(e) {
+                el.innerHTML = '<div class="pcr-loading"><div class="pcr-spinner"></div></div>';
+            }
+        }
+
+        /* 折叠/展开 */
+        function toggleCollapse(headEl) {
+            var panel = headEl.closest('.pcr-collapse-panel');
+            panel.classList.toggle('expanded');
+        }
+
+        $(function() { doRender(); });
+    </script>
+</head>
+<body>
+    <div class="pcr-container" id="pcr-main">
+        <div class="pcr-bg-glow"></div>
+        <div class="pcr-bg-stripes"></div>
+        <div id="pcr-content">
+            <div class="pcr-loading"><div class="pcr-spinner"></div></div>
+        </div>
+        <div class="pcr-sys-bar"></div>
+    </div>
+</body>
+</html>
