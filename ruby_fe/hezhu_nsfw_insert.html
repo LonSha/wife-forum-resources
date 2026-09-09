@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>蔚蓝档案风插图面板-极致小巧+轮播版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: transparent;
+            padding: 4px;
+            padding-bottom: max(4px, env(safe-area-inset-bottom));
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* 主容器：再缩小五分之一 */
+        .ba-container {
+            width: 100%;
+            max-width: 480px; /* 原600px压至480px */
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-radius: 4px;
+            border: 2px solid #1288b8;
+            box-shadow: 0 4px 12px rgba(18, 136, 184, 0.1);
+            position: relative;
+            overflow: hidden;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%);
+            animation: slideUpFade 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            opacity: 0;
+            transform: translateY(15px);
+            will-change: transform, opacity;
+        }
+
+        @keyframes slideUpFade {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 顶部装饰条 */
+        .ba-header {
+            background: #1288b8;
+            height: 26px; /* 更窄 */
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .ba-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transform: skewX(-20deg);
+            animation: shine 3s infinite;
+        }
+
+        @keyframes shine {
+            0% { left: -100%; }
+            20% { left: 200%; }
+            100% { left: 200%; }
+        }
+
+        .header-icon {
+            width: 14px;
+            height: 14px;
+            margin-right: 4px;
+            fill: currentColor;
+        }
+
+        /* 图片展示区 */
+        .image-wrapper {
+            padding: 6px;
+            background: #f5f7fa;
+            position: relative;
+            display: grid;
+            gap: 6px;
+            /* 电脑端单图缩至极小，原140px再缩五分之一至约110px */
+            grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
+        }
+
+        .img-item {
+            width: 100%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            border-radius: 4px;
+            padding: 2px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .img-item:hover {
+                transform: translateY(-1px);
+                box-shadow: 0 4px 12px rgba(18, 136, 184, 0.2);
+                border-color: #1288b8;
+            }
+            .img-item:hover .img-badge {
+                transform: translateY(0);
+                opacity: 1;
+                background: #1288b8;
+            }
+        }
+
+        .img-item:active {
+            transform: scale(0.98);
+        }
+
+        .loading-box {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #eef2f5;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #1288b8;
+            font-size: 10px;
+            border: 1px dashed #b5d5e5;
+            border-radius: 2px;
+        }
+
+        .loading-icon {
+            width: 20px;
+            height: 20px;
+            fill: #1288b8;
+            margin-bottom: 4px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.5; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0.5; transform: scale(0.95); }
+        }
+
+        .illust-img {
+            width: 100%;
+            height: auto;
+            border-radius: 2px;
+            display: none;
+            transition: transform 0.3s ease;
+            will-change: transform, opacity;
+        }
+
+        .img-appear {
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .img-badge {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            background: rgba(18, 136, 184, 0.9);
+            color: white;
+            font-size: 9px;
+            padding: 2px 4px;
+            border-radius: 2px;
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            font-weight: bold;
+            display: none;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            transform: translateY(10px);
+            opacity: 0;
+            pointer-events: none;
+            will-change: transform, opacity;
+        }
+
+        /* 底部信息栏 */
+        .ba-footer {
+            padding: 6px 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: white;
+            border-top: 1px solid #e1e8ed;
+            font-size: 10px;
+            color: #5c6c75;
+        }
+
+        .tag-badge {
+            background: #1288b8;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 6px;
+            font-weight: bold;
+            font-size: 9px;
+            text-transform: uppercase;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .file-icon {
+            width: 10px;
+            height: 10px;
+            fill: #5c6c75;
+        }
+
+        /* ================= 大图预览 Modal 与轮播 ================= */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999990;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            cursor: zoom-out;
+            padding: max(10px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) max(10px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left));
+            will-change: opacity;
+            touch-action: none; /* 辅助防穿透 */
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transform: scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            pointer-events: none;
+            will-change: transform;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        /* 大图尺寸再缩小五分之一：PC极限压至48%宽，40vh高 */
+        .modal-img {
+            max-width: 48%;
+            max-height: 40vh;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 4px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+            border: 2px solid rgba(255,255,255,0.15);
+            background: #fff;
+            pointer-events: auto;
+            transition: opacity 0.2s ease;
+            will-change: opacity;
+        }
+
+        /* 翻页按钮 */
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 44px; /* 稍微增大触摸面积 */
+            height: 44px;
+            background: rgba(18, 136, 184, 0.7);
+            border: 2px solid rgba(255,255,255,0.5);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            cursor: pointer;
+            pointer-events: auto;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            z-index: 10;
+            user-select: none;
+            touch-action: manipulation; /* 防止双击缩放 */
+        }
+
+        @media (hover: hover) and (pointer: fine) {
+            .nav-btn:hover {
+                background: rgba(18, 136, 184, 1);
+                transform: translateY(-50%) scale(1.1);
+            }
+        }
+
+        .nav-btn:active {
+            transform: translateY(-50%) scale(0.95);
+            background: rgba(18, 136, 184, 1);
+        }
+
+        .nav-btn.left {
+            left: calc(50% - 28% - 50px); /* 根据图片max-width粗略定位 */
+        }
+
+        .nav-btn.right {
+            right: calc(50% - 28% - 50px);
+        }
+
+        .nav-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        /* 如果不能翻页则隐藏 */
+        .nav-btn.hidden {
+            display: none;
+            pointer-events: none;
+        }
+
+        .modal-close-hint {
+            margin-top: 12px;
+            color: rgba(255,255,255,0.8);
+            font-size: 10px;
+            letter-spacing: 1px;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+            pointer-events: none;
+            background: rgba(0,0,0,0.4);
+            padding: 4px 10px;
+            border-radius: 8px;
+        }
+
+        /* 翻页指示器文本 */
+        .page-indicator {
+            position: absolute;
+            bottom: max(40px, env(safe-area-inset-bottom));
+            color: rgba(255,255,255,0.9);
+            font-size: 12px;
+            font-weight: bold;
+            background: rgba(0,0,0,0.5);
+            padding: 4px 12px;
+            border-radius: 12px;
+            pointer-events: none;
+        }
+
+        /* ================= 移动端适配 ================= */
+        @media screen and (max-width: 600px) {
+            .image-wrapper {
+                /* 手机端列表原90px压至约70px */
+                grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+                gap: 4px;
+                padding: 4px;
+            }
+
+            .modal-img {
+                /* 手机端大图缩至绝对不到半屏 */
+                max-width: 70%;
+                max-height: 35vh;
+            }
+
+            .img-badge {
+                display: block;
+                opacity: 1;
+                transform: translateY(0);
+                background: rgba(18, 136, 184, 0.85);
+                font-size: 8px;
+                padding: 1px 3px;
+            }
+
+            /* 移动端调整翻页按钮位置，靠边一点防止挡住图片 */
+            .nav-btn {
+                width: 36px;
+                height: 36px;
+            }
+            .nav-btn.left {
+                left: max(5%, env(safe-area-inset-left));
+            }
+            .nav-btn.right {
+                right: max(5%, env(safe-area-inset-right));
+            }
+            .nav-btn svg {
+                width: 20px;
+                height: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ba-container" id="content">
+        <div class="ba-header">
+            <svg class="header-icon" viewBox="0 0 24 24">
+                <path d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,19H5V5H19V19M13.96,12.29L11.21,15.83L9.25,13.47L6.5,17H17.5L13.96,12.29Z" />
+            </svg>
+            ILLUST. DATA MULTIPLEX
+        </div>
+
+        <div class="image-wrapper" id="image-grid">
+            <!-- 渲染占位 -->
+        </div>
+
+        <div class="ba-footer">
+            <span class="tag-badge" id="action-tag">PROCESSING...</span>
+            <div class="file-info">
+                <svg class="file-icon" viewBox="0 0 24 24">
+                    <path d="M13,9V3.5L18.5,9M6,2C4.89,2 4,2.89 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2H6Z" />
+                </svg>
+                <span id="file-name">Loaded</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 大图预览遮罩 (新增轮播) -->
+    <div class="modal-overlay" id="image-modal" onclick="closeModal()">
+        <div class="modal-content">
+            <!-- 左侧箭头 -->
+            <div class="nav-btn left" id="btn-prev" onclick="prevImage(event)">
+                <svg viewBox="0 0 24 24">
+                    <path d="M15.41,16.58L10.83,12L15.41,7.41L14,6L8,12L14,18L15.41,16.58Z" />
+                </svg>
+            </div>
+
+            <img class="modal-img" id="modal-image" src="" alt="大图预览" onclick="event.stopPropagation();">
+
+            <!-- 右侧箭头 -->
+            <div class="nav-btn right" id="btn-next" onclick="nextImage(event)">
+                <svg viewBox="0 0 24 24">
+                    <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z" />
+                </svg>
+            </div>
+
+            <div class="page-indicator" id="page-indicator">1 / 1</div>
+            <div class="modal-close-hint">点击背景关闭</div>
+        </div>
+    </div>
+
+    <script>
+        /* ========== 全局图库数组 ========== */
+        var galleryImages = [];
+        var currentIndex = 0;
+        var scrollPosition = 0; /* 记录滚动位置 */
+
+        var actionDict = {
+            'kj': '口交', 'zj': '足交', 'rj': '乳交',
+            'nsw': '女上位', 'zcw': '正常位', 'hrw': '后入位'
+        };
+
+        function getMessageData() {
+            var chatMessages = getChatMessages(getCurrentMessageId());
+            if (!chatMessages || chatMessages.length === 0) {
+                return null;
+            }
+            return chatMessages[0].message;
+        }
+
+        function parseMultipleData(messageText) {
+            var results = [];
+            var tagMatch = messageText.match(/<nsfw_illust>([\s\S]*?)<\/nsfw_illust>/);
+            if (!tagMatch || !tagMatch[1]) {
+                return results;
+            }
+            var content = tagMatch[1];
+            var regex = /\[([^\]\|]+)\|([^\]\|]+)\]/g;
+            var match;
+            while ((match = regex.exec(content)) !== null) {
+                results.push({
+                    chara: match[1].trim(),
+                    action: match[2].trim()
+                });
+            }
+            return results;
+        }
+
+        /* ========== 辅助：防滚动穿透 ========== */
+        window.lockBodyScroll = function(isLock) {
+            var body = document.body;
+            if (isLock) {
+                scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+                body.style.position = 'fixed';
+                body.style.top = '-' + scrollPosition + 'px';
+                body.style.width = '100%';
+            } else {
+                body.style.position = '';
+                body.style.top = '';
+                body.style.width = '';
+                window.scrollTo(0, scrollPosition);
+            }
+        };
+
+        /* ========== 轮播图控制 ========== */
+        window.openModal = function(index) {
+            currentIndex = index;
+            updateModalUI();
+
+            var modal = document.getElementById('image-modal');
+            modal.style.display = 'flex';
+            window.lockBodyScroll(true); /* 开启防穿透 */
+
+            setTimeout(function() {
+                modal.classList.add('active');
+            }, 10);
+        };
+
+        window.closeModal = function() {
+            var modal = document.getElementById('image-modal');
+            modal.classList.remove('active');
+
+            setTimeout(function() {
+                modal.style.display = 'none';
+                document.getElementById('modal-image').src = '';
+                window.lockBodyScroll(false); /* 解除防穿透 */
+            }, 300);
+        };
+
+        window.prevImage = function(e) {
+            e.stopPropagation(); /* 防止触发关闭 */
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateModalUI();
+            }
+        };
+
+        window.nextImage = function(e) {
+            e.stopPropagation(); /* 防止触发关闭 */
+            if (currentIndex < galleryImages.length - 1) {
+                currentIndex++;
+                updateModalUI();
+            }
+        };
+
+        function updateModalUI() {
+            var modalImg = document.getElementById('modal-image');
+            /* 加一点小动画让切换平滑 */
+            modalImg.style.opacity = '0.3';
+            setTimeout(function() {
+                modalImg.src = galleryImages[currentIndex];
+                modalImg.style.opacity = '1';
+            }, 50);
+
+            var btnPrev = document.getElementById('btn-prev');
+            var btnNext = document.getElementById('btn-next');
+            var indicator = document.getElementById('page-indicator');
+
+            if (currentIndex === 0) {
+                btnPrev.classList.add('hidden');
+            } else {
+                btnPrev.classList.remove('hidden');
+            }
+
+            if (currentIndex === galleryImages.length - 1) {
+                btnNext.classList.add('hidden');
+            } else {
+                btnNext.classList.remove('hidden');
+            }
+
+            indicator.innerText = (currentIndex + 1) + ' / ' + galleryImages.length;
+
+            /* 如果只有一张图，隐藏指示器和所有按钮 */
+            if (galleryImages.length <= 1) {
+                indicator.style.display = 'none';
+                btnPrev.classList.add('hidden');
+                btnNext.classList.add('hidden');
+            } else {
+                indicator.style.display = 'block';
+            }
+        }
+
+        /* ========== 加载回调 ========== */
+        window.imageLoaded = function(id) {
+            var img = document.getElementById('img-' + id);
+            var loader = document.getElementById('load-' + id);
+            if (loader) loader.style.display = 'none';
+            if (img) {
+                img.style.display = 'block';
+                img.classList.add('img-appear');
+            }
+        };
+
+        window.imageError = function(id) {
+            var loader = document.getElementById('load-' + id);
+            if (loader) {
+                loader.innerHTML = `
+                    <svg class="loading-icon" viewBox="0 0 24 24" style="fill: #e74c3c; animation: none;">
+                        <path d="M11,15H13V17H11V15M11,7H13V13H11V7M12,2C6.47,2 2,6.5 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20Z" />
+                    </svg>
+                    <span style="color: #e74c3c; font-size: 9px;">错误</span>
+                `;
+            }
+        };
+
+        /* ========== 主函数 ========== */
+        function init() {
+            try {
+                var messageText = getMessageData();
+                if (!messageText) throw new Error("无数据");
+
+                var dataList = parseMultipleData(messageText);
+                if (dataList.length === 0) throw new Error("未解析到标签");
+
+                var gridHtml = '';
+                var tags = [];
+                galleryImages = []; /* 清空重新填充 */
+
+                dataList.forEach(function(item, index) {
+                    var randomNum = Math.floor(Math.random() * 5) + 1;
+                    var fileName = item.chara + '_' + item.action + '_' + randomNum + '.jpg';
+                    var imgUrl = 'https://cdn.jsdelivr.net/gh/qinjingyue/zhuzudexiari@main/' + fileName;
+
+                    galleryImages.push(imgUrl);
+
+                    var displayName = actionDict[item.action] || item.action.toUpperCase();
+                    if (tags.indexOf(displayName) === -1) tags.push(displayName);
+
+                    gridHtml += `
+                        <div class="img-item" title="点击放大" onclick="window.openModal(${index})">
+                            <div class="loading-box" id="load-${index}">
+                                <svg class="loading-icon" viewBox="0 0 24 24">
+                                    <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z" />
+                                </svg>
+                                <span>读取</span>
+                            </div>
+                            <img id="img-${index}" class="illust-img" src="${imgUrl}" loading="lazy"
+                                 onload="window.imageLoaded(${index})" onerror="window.imageError(${index})">
+                            <div class="img-badge">${item.chara.toUpperCase()} | ${displayName}</div>
+                        </div>
+                    `;
+                });
+
+                document.getElementById('image-grid').innerHTML = gridHtml;
+
+                var finalTag = tags.length > 0 ? tags.join(' / ') : 'READY';
+                document.getElementById('action-tag').innerText = finalTag;
+                document.getElementById('file-name').innerText = galleryImages.length + ' PIC';
+
+            } catch (error) {
+                document.getElementById('image-grid').innerHTML = `
+                    <div class="loading-box" style="aspect-ratio: auto; padding: 10px; grid-column: 1 / -1;">
+                        <svg class="loading-icon" viewBox="0 0 24 24" style="fill: #5c6c75; animation: none;">
+                            <path d="M12,2L4,5V11C4,16.5 7.5,21.7 12,23C16.5,21.7 20,16.5 20,11V5L12,2M12,11V4.2L18,6.5V11C18,15.5 15.2,19.6 12,20.9V11H6V6.5L12,4.2V11H12Z" />
+                        </svg>
+                        <span style="font-size: 10px;">${error.message}</span>
+                    </div>
+                `;
+            }
+        }
+
+        $(function() { init(); });
+    </script>
+</body>
+</html>
