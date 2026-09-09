@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>海鸣町夏日画报 · 正文美化</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background: transparent;
+            padding: 8px;
+            min-height: auto;
+            position: relative;
+            overflow-x: hidden;
+            color: #2b2b3a;
+        }
+
+        .story-container {
+            max-width: 1024px;
+            margin: 0 auto;
+            padding: 60px 24px 60px;
+            background-color: #fffdf6;
+            background-image:
+                linear-gradient(rgba(2, 132, 199, 0.07) 1.5px, transparent 1.5px),
+                linear-gradient(90deg, rgba(2, 132, 199, 0.07) 1.5px, transparent 1.5px);
+            background-size: 26px 26px;
+            border-radius: 18px;
+            border: 3px solid #2b2b3a;
+            box-shadow: 6px 6px 0 #2b2b3a;
+            position: relative;
+            z-index: 1;
+        }
+
+        .story-container::before {
+            content: 'UMINARI-CHO ★ 盛夏限定连载';
+            position: absolute;
+            top: 16px;
+            left: 20px;
+            font-size: 11px;
+            font-weight: 900;
+            color: #fff;
+            background: #2b2b3a;
+            border-radius: 20px;
+            padding: 4px 14px;
+            letter-spacing: 3px;
+            transform: rotate(-2deg);
+        }
+
+        .story-container::after {
+            content: '连载更新中 · ONGOING';
+            position: absolute;
+            top: 16px;
+            right: 20px;
+            font-size: 10px;
+            font-weight: 900;
+            color: #2b2b3a;
+            letter-spacing: 2px;
+            background: #ffd66e;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 2px solid #2b2b3a;
+            box-shadow: 2px 2px 0 #2b2b3a;
+        }
+
+        .corner-tl, .corner-tr, .corner-bl, .corner-br {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            pointer-events: none;
+            z-index: 5;
+        }
+        .corner-tl { top: -2px; left: -2px; border-top: 4px solid #2b2b3a; border-left: 4px solid #2b2b3a; border-top-left-radius: 18px; }
+        .corner-tr { top: -2px; right: -2px; border-top: 4px solid #2b2b3a; border-right: 4px solid #2b2b3a; border-top-right-radius: 18px; }
+        .corner-bl { bottom: -2px; left: -2px; border-bottom: 4px solid #2b2b3a; border-left: 4px solid #2b2b3a; border-bottom-left-radius: 18px; }
+        .corner-br { bottom: -2px; right: -2px; border-bottom: 4px solid #2b2b3a; border-right: 4px solid #2b2b3a; border-bottom-right-radius: 18px; }
+
+        .wave-bg-container {
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: 100%;
+            overflow: hidden;
+            border-radius: 15px;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.5;
+        }
+        .wave-bg {
+            position: absolute;
+            bottom: 0; left: 0; width: 100%; height: auto;
+            opacity: 0.5;
+        }
+
+        .content-wrapper {
+            position: relative;
+            z-index: 2;
+        }
+
+        .narrative {
+            line-height: 2.1;
+            font-size: 16.5px;
+            margin-bottom: 28px;
+            text-align: justify;
+            color: #2b2b3a;
+            letter-spacing: 1px;
+            padding: 30px 26px 24px;
+            background: #fff;
+            border-radius: 4px 14px 14px 14px;
+            position: relative;
+            border: 2.5px solid #2b2b3a;
+            border-left-width: 8px;
+            border-left-color: #0284c7;
+            box-shadow: 4px 4px 0 rgba(43, 43, 58, 0.25);
+            animation: slide-in-left 0.6s cubic-bezier(0.2, 0.9, 0.3, 1.1) forwards;
+            opacity: 0;
+        }
+
+        .narrative::before {
+            content: '';
+            position: absolute;
+            top: -2.5px; left: -2.5px;
+            width: 14px; height: 14px;
+            background: #ffd66e;
+            border: 2.5px solid #2b2b3a;
+            border-radius: 50%;
+            z-index: 3;
+        }
+
+        .narrative::after {
+            content: '[ SCENE LOG ]';
+            position: absolute;
+            top: 8px; right: 12px;
+            font-size: 10px;
+            font-weight: 900;
+            color: #fff;
+            background: #2b2b3a;
+            border-radius: 10px;
+            padding: 2px 10px;
+            letter-spacing: 2px;
+        }
+
+        .narrative .uni-tag { margin-bottom: 10px; }
+        .narrative p {
+            margin-top: 14px;
+            text-indent: 2em;
+        }
+        .narrative p:first-of-type {
+            margin-top: 0;
+            text-indent: 0;
+        }
+        .narrative p:first-of-type::first-letter {
+            font-size: 1.5em;
+            font-weight: 900;
+            color: #fff;
+            background: #0284c7;
+            border: 2px solid #2b2b3a;
+            border-radius: 8px;
+            margin-right: 6px;
+            padding: 0 8px;
+            float: left;
+            line-height: 1.4;
+            margin-top: 2px;
+            box-shadow: 2px 2px 0 #2b2b3a;
+        }
+
+        @keyframes slide-in-left {
+            0% { opacity: 0; transform: translateX(-30px); }
+            100% { opacity: 1; transform: translateX(0); }
+        }
+
+        .dialogue-box {
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            margin: 40px 0;
+            gap: 8px;
+            opacity: 0;
+            transform: translateY(30px);
+        }
+
+        /* 统一名牌：角色/旁白标签 */
+        .uni-tag {
+            align-self: flex-start;
+            font-size: 11px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #fff;
+            background: #2b2b3a;
+            border: 2px solid #2b2b3a;
+            border-radius: 12px;
+            padding: 2px 12px;
+            box-shadow: 2px 2px 0 rgba(43, 43, 58, 0.3);
+        }
+        .uni-mio { background: #0284c7; border-color: #0284c7; }
+        .uni-tsuru { background: #ea580c; border-color: #ea580c; }
+        .uni-npc { background: #fff; color: #2b2b3a; }
+        .uni-nar { background: #ffd66e; color: #2b2b3a; }
+        .dialogue-box:has(.uni-mio) .bubble { border-left-color: #0284c7; box-shadow: 4px 4px 0 #bae6fd; }
+        .dialogue-box:has(.uni-tsuru) .bubble { border-radius: 22px; box-shadow: 4px 4px 0 #fdba74; }
+
+        .animate-pop {
+            animation: pop-in 0.6s cubic-bezier(0.2, 0.9, 0.2, 1.1) forwards;
+        }
+
+        @keyframes pop-in {
+            0% { opacity: 0; transform: translateY(30px) scale(0.97); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .avatar-section {
+            position: relative;
+            flex-shrink: 0;
+            width: 90px;
+            height: 90px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .avatar-section::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            width: 60px;
+            height: 10px;
+            background: #2b2b3a;
+            border-radius: 50%;
+            opacity: 0.18;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
+        .avatar-section:hover::after {
+            transform: translateY(3px) scale(1.15);
+            opacity: 0.25;
+        }
+
+        .avatar-ring-outer {
+            position: absolute;
+            width: 97px;
+            height: 97px;
+            border: 2.5px dashed rgba(2, 132, 199, 0.55);
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .avatar-ring-middle {
+            position: absolute;
+            width: 88px;
+            height: 88px;
+            border-top: 3px solid rgba(2, 132, 199, 0.7);
+            border-bottom: 3px solid rgba(2, 132, 199, 0.7);
+            border-left: 3px solid transparent;
+            border-right: 3px solid transparent;
+            border-radius: 50%;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .avatar-ring-inner {
+            position: absolute;
+            width: 82px;
+            height: 82px;
+            border-radius: 50%;
+            background: #bae6fd;
+            border: 2px solid #2b2b3a;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .avatar-section:hover .avatar-ring-outer { opacity: 1; animation: spin-slow 12s linear infinite; }
+        .avatar-section:hover .avatar-ring-middle { opacity: 1; animation: spin-reverse 8s linear infinite; }
+        .avatar-section:hover .avatar-ring-inner { opacity: 0.6; animation: halo-pulse 1.5s infinite alternate ease-in-out; }
+
+        @keyframes spin-slow { 100% { transform: rotate(360deg); } }
+        @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
+        @keyframes halo-pulse { 0% { transform: scale(0.96); opacity: 0.4; } 100% { transform: scale(1.06); opacity: 0.7; } }
+
+        .avatar {
+            width: 90px;
+            height: 90px;
+            border-radius: 50%;
+            object-fit: cover;
+            object-position: center 54%;
+            background-color: #f0f9ff;
+            border: 3px solid #2b2b3a;
+            box-shadow: 3px 3px 0 #2b2b3a;
+            position: relative;
+            z-index: 2;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s ease;
+            image-rendering: high-quality;
+            image-rendering: -webkit-optimize-contrast;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+
+        .avatar.loading-img {
+            animation: pulse-bg 1.2s infinite alternate;
+            filter: grayscale(60%);
+        }
+
+        .avatar-section:hover .avatar {
+            transform: scale(1.06) rotate(-2deg);
+            box-shadow: 5px 5px 0 #2b2b3a;
+        }
+
+        .dialogue-content {
+            display: flex;
+            flex-direction: column;
+            max-width: calc(100% - 114px);
+            position: relative;
+            min-width: 0;
+        }
+
+        .npc-box { gap: 0; margin: 36px 0; }
+        .npc-content { max-width: 95%; }
+
+        .name-plate-wrapper {
+            position: relative;
+            margin-bottom: 10px;
+            padding-bottom: 4px;
+        }
+
+        .name-plate-wrapper::after {
+            content: '';
+            position: absolute;
+            bottom: 0; left: 0;
+            width: 100%;
+            height: 3px;
+            background: repeating-linear-gradient(90deg, #2b2b3a 0, #2b2b3a 8px, transparent 8px, transparent 14px);
+            opacity: 0.35;
+        }
+
+        .name-plate {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding-left: 12px;
+            position: relative;
+            flex-wrap: wrap;
+        }
+
+        .name-plate::before {
+            content: '';
+            position: absolute;
+            left: 0; top: 10%; height: 80%; width: 6px;
+            background: #0284c7;
+            border: 2px solid #2b2b3a;
+            border-radius: 4px;
+        }
+
+        .char-info {
+            font-size: 20px;
+            font-weight: 900;
+            color: #0369a1;
+            letter-spacing: 3px;
+            text-shadow: 2px 2px 0 #bae6fd;
+        }
+
+        .npc-plate-wrapper::after { opacity: 0.2; }
+        .npc-plate::before { background: #8a93a7; }
+        .npc-char-info { font-size: 14px; font-weight: 900; color: #2b2b3a; letter-spacing: 2px; }
+
+        .badge-group {
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border: 2.5px solid #2b2b3a;
+            border-radius: 20px;
+            padding: 2px 4px;
+            box-shadow: 2px 2px 0 #2b2b3a;
+        }
+
+        .npc-badge {
+            background: #fff;
+            border: 2px solid #2b2b3a;
+            border-radius: 8px;
+            padding: 1px 6px;
+            font-size: 10px;
+            font-weight: 900;
+            color: #2b2b3a;
+            letter-spacing: 1px;
+        }
+
+        .char-sub {
+            font-size: 10px;
+            font-weight: 900;
+            color: #fff;
+            background: #0284c7;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-family: inherit;
+        }
+
+        .emotion-tag {
+            font-size: 11px;
+            font-weight: 900;
+            padding: 2px 8px;
+            color: #0369a1;
+            letter-spacing: 1px;
+        }
+
+        /* ================= 气泡：纸片硬描边 ================= */
+        .bubble {
+            background: #fff;
+            padding: 22px 28px;
+            border-radius: 6px 20px 20px 20px;
+            font-size: 17px;
+            line-height: 2;
+            color: #2b2b3a;
+            position: relative;
+            box-shadow: 4px 4px 0 rgba(43, 43, 58, 0.3);
+            border: 2.5px solid #2b2b3a;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        /* 气泡尾巴 */
+        .bubble::after {
+            content: '';
+            position: absolute;
+            top: 22px;
+            left: -11px;
+            width: 16px;
+            height: 16px;
+            background: #fff;
+            border-left: 2.5px solid #2b2b3a;
+            border-bottom: 2.5px solid #2b2b3a;
+            transform: rotate(45deg) skew(8deg, 8deg);
+            z-index: 3;
+        }
+
+        /* 确保正文永远在最上层 */
+        .bubble-text {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ---------------- 三大随机内部装饰类 ---------------- */
+
+        /* 通用底纹层 */
+        .bubble-deco {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* 变体 1：水印双引号 (文学感) */
+        .deco-var-1 .bubble-deco::after {
+            content: '"';
+            position: absolute;
+            right: 12px;
+            bottom: -38px;
+            font-size: 130px;
+            font-family: Georgia, serif;
+            color: rgba(2, 132, 199, 0.10);
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        /* 变体 2：精密切割点阵 (视觉小说感) */
+        .deco-var-2 .bubble-deco {
+            background-image: radial-gradient(rgba(2, 132, 199, 0.16) 1.2px, transparent 1.2px);
+            background-size: 9px 9px;
+            mask-image: linear-gradient(90deg, transparent 55%, black 100%);
+            -webkit-mask-image: linear-gradient(90deg, transparent 55%, black 100%);
+        }
+
+        /* 变体 3：基准尺标与十字星 (科技设定感) */
+        .deco-var-3 .bubble-deco::before {
+            content: '+ + +';
+            position: absolute;
+            top: 14px; right: 20px;
+            font-size: 12px;
+            font-weight: 900;
+            color: rgba(2, 132, 199, 0.35);
+            letter-spacing: 8px;
+        }
+        .deco-var-3 .bubble-deco::after {
+            content: '';
+            position: absolute;
+            bottom: 18px; left: 24px;
+            width: 44px; height: 4px;
+            background: repeating-linear-gradient(90deg, rgba(2, 132, 199, 0.35) 0, rgba(2, 132, 199, 0.35) 6px, transparent 6px, transparent 12px);
+        }
+
+        /* --- NPC 的次级气泡 --- */
+        .npc-bubble {
+            background: #f4f6fa;
+            border-radius: 10px 18px 18px 18px;
+            border: 2.5px dashed rgba(43, 43, 58, 0.55);
+            box-shadow: none;
+            color: #3d4657;
+            font-size: 16px;
+            padding: 16px 22px;
+            overflow: hidden;
+        }
+        .npc-bubble::before, .npc-bubble::after { display: none; }
+
+        /* NPC 的装饰统一染成低调灰蓝 */
+        .npc-box .deco-var-1 .bubble-deco::after { color: rgba(43, 43, 58, 0.10); }
+        .npc-box .deco-var-2 .bubble-deco { background-image: radial-gradient(rgba(43, 43, 58, 0.18) 1.2px, transparent 1.2px); }
+        .npc-box .deco-var-3 .bubble-deco::before { color: rgba(43, 43, 58, 0.35); }
+        .npc-box .deco-var-3 .bubble-deco::after { background: repeating-linear-gradient(90deg, rgba(43, 43, 58, 0.3) 0, rgba(43, 43, 58, 0.3) 6px, transparent 6px, transparent 12px); }
+
+
+        /* ================= 角色专属：姐姐鹤（暖阳圆润） ================= */
+        .name-plate-wrapper.tsuru::after { opacity: 0.3; }
+        .name-plate.tsuru::before { background: #ea580c; }
+        .name-plate.tsuru .char-info { color: #c2410c; text-shadow: 2px 2px 0 #fde047; }
+        .badge-group.tsuru { box-shadow: 2px 2px 0 #ea580c; }
+        .badge-group.tsuru .char-sub { background: #ea580c; }
+        .badge-group.tsuru .emotion-tag { color: #c2410c; }
+
+        .bubble.tsuru {
+            border-radius: 22px 26px 26px 26px;
+            box-shadow: 4px 4px 0 #fdba74;
+        }
+        .bubble.tsuru::after { filter: none; }
+
+        /* 鹤的变体装饰色修改 */
+        .tsuru .deco-var-1 .bubble-deco::after { color: rgba(234, 88, 12, 0.10); }
+        .tsuru .deco-var-2 .bubble-deco { background-image: radial-gradient(rgba(234, 88, 12, 0.18) 1.2px, transparent 1.2px); }
+        .tsuru .deco-var-3 .bubble-deco::before { color: rgba(234, 88, 12, 0.35); }
+        .tsuru .deco-var-3 .bubble-deco::after { background: repeating-linear-gradient(90deg, rgba(234, 88, 12, 0.3) 0, rgba(234, 88, 12, 0.3) 6px, transparent 6px, transparent 12px); }
+
+
+        .avatar-section.tsuru::after { opacity: 0.25; }
+        .avatar-section.tsuru .avatar-ring-outer { border-color: rgba(234, 88, 12, 0.55); }
+        .avatar-section.tsuru .avatar-ring-middle { border-top-color: rgba(234, 88, 12, 0.7); border-bottom-color: rgba(234, 88, 12, 0.7); }
+        .avatar-section.tsuru .avatar-ring-inner { background: #fde047; }
+
+        .avatar-section.tsuru .avatar {
+            border-color: #2b2b3a;
+            box-shadow: 3px 3px 0 #ea580c;
+        }
+        .avatar-section.tsuru:hover .avatar {
+            box-shadow: 5px 5px 0 #ea580c;
+        }
+
+        /* ================= 角色专属：妹妹澪（凛系方格） ================= */
+        .name-plate.mio .char-info { color: #0369a1; text-shadow: 2px 2px 0 #bae6fd; }
+        .bubble.mio {
+            border-radius: 6px;
+            border-left-width: 8px;
+            border-left-color: #0284c7;
+            box-shadow: 4px 4px 0 #bae6fd;
+        }
+        .avatar-section.mio .avatar { border-radius: 18px; }
+        /* 澪的蓝色系已继承全局默认值 */
+
+
+        /* ================= 统一正文大框：全文只用一个框 ================= */
+        .unified-body {
+            background: #fff;
+            border: 2.5px solid #2b2b3a;
+            border-left: 8px solid #0284c7;
+            border-radius: 6px 20px 20px 20px;
+            box-shadow: 4px 4px 0 rgba(43, 43, 58, 0.3);
+            padding: 42px 28px 28px;
+            position: relative;
+            overflow: hidden;
+            animation: pop-in 0.6s cubic-bezier(0.2, 0.9, 0.2, 1.1) forwards;
+            opacity: 0;
+        }
+        .unified-body::after {
+            content: '[ STORY LOG ]';
+            position: absolute;
+            top: 10px; right: 14px;
+            font-size: 10px;
+            font-weight: 900;
+            color: #fff;
+            background: #2b2b3a;
+            border-radius: 10px;
+            padding: 2px 10px;
+            letter-spacing: 2px;
+        }
+        .unified-body > * + * { margin-top: 14px; }
+        .u-nar {
+            line-height: 2.1;
+            font-size: 16.5px;
+            text-align: justify;
+            color: #2b2b3a;
+            letter-spacing: 1px;
+            text-indent: 2em;
+            margin: 0;
+        }
+        .unified-body > .u-nar.first { text-indent: 0; }
+        .unified-body > .u-nar.first::first-letter {
+            font-size: 1.5em;
+            font-weight: 900;
+            color: #fff;
+            background: #0284c7;
+            border: 2px solid #2b2b3a;
+            border-radius: 8px;
+            margin-right: 6px;
+            padding: 0 8px;
+            float: left;
+            line-height: 1.4;
+            margin-top: 2px;
+            box-shadow: 2px 2px 0 #2b2b3a;
+        }
+        .u-line {
+            display: flex;
+            gap: 12px;
+            align-items: flex-start;
+            border-top: 2px dashed rgba(43, 43, 58, 0.18);
+            padding-top: 14px;
+        }
+        .unified-body > :first-child { border-top: none; padding-top: 0; }
+        .u-rail {
+            flex: none;
+            width: 93px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+        }
+        .u-rail .avatar-section { width: 78px; height: 78px; }
+        .u-rail .avatar { width: 78px; height: 78px; border-radius: 16px; }
+        .u-rail .avatar-ring-outer { width: 64px; height: 64px; }
+        .u-rail .avatar-ring-middle { width: 58px; height: 58px; }
+        .u-rail .avatar-ring-inner { width: 55px; height: 55px; }
+        .u-emo {
+            font-size: 10px;
+            font-weight: 900;
+            letter-spacing: 2px;
+            color: #fff;
+            background: #2b2b3a;
+            border: 2px solid #2b2b3a;
+            border-radius: 10px;
+            padding: 1px 8px;
+            box-shadow: 2px 2px 0 rgba(43, 43, 58, 0.3);
+            white-space: nowrap;
+            max-width: 62px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .u-emo.emo-mio { background: #0284c7; border-color: #0284c7; }
+        .u-emo.emo-tsuru { background: #ea580c; border-color: #ea580c; }
+        .u-content { flex: 1; min-width: 0; }
+        .u-content .uni-tag { margin-bottom: 8px; }
+        .u-content .u-emo{margin-left:8px;max-width:none;vertical-align:1px;}
+        .u-text {
+            font-size: 17px;
+            line-height: 2;
+            color: #2b2b3a;
+        }
+        .u-line.npc { display: block; }
+        .u-line.npc .uni-tag { margin-bottom: 8px; }
+        @media screen and (max-width: 480px) {
+            .unified-body { padding: 38px 16px 20px; }
+            .u-rail { width: 78px; }
+            .u-rail .avatar-section { width: 66px; height: 66px; }
+            .u-rail .avatar { width: 66px; height: 66px; border-radius: 18px; }
+            .u-rail .avatar-ring-outer,
+            .u-rail .avatar-ring-middle,
+            .u-rail .avatar-ring-inner { display: none; }
+            .u-text { font-size: 15.5px; }
+        }
+
+
+        .unified-body .zw-illu{margin:6px auto 2px;max-width:480px;text-align:center}
+        .unified-body .zw-illu-img{width:100%;border-radius:12px;display:block;border:2.5px solid #2b2b3a;box-shadow:4px 4px 0 rgba(43,43,58,.3)}
+        .unified-body .zw-illu-cap{font-size:12px;color:#2b2b3a;margin-top:6px;letter-spacing:2px;font-weight:900}
+
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #2b2b3a;
+            font-weight: 900;
+            font-size: 18px;
+            letter-spacing: 4px;
+        }
+        .loading::after { content: ' ★'; color: #ffb02e; animation: pulse-bg 1.6s infinite alternate; }
+        @keyframes pulse-bg { from { opacity: 0.5; } to { opacity: 1; } }
+
+        @media (prefers-reduced-motion: reduce) {
+            .story-container *, .story-container *::before, .story-container *::after { animation: none !important; transition: none !important; }
+        }
+    html,body{overflow-x:hidden;}
+        .avatar-section{-webkit-tap-highlight-color:transparent;touch-action:manipulation;}
+                .u-line.char{display:block;}
+        .u-chead{display:flex;align-items:center;gap:8px;margin-bottom:2px;}
+        .avatar-section.sm{width:44px;height:44px;}
+        .avatar-section.sm .avatar{width:44px;height:44px;border-radius:12px;}
+        .avatar-section.sm::after{display:none;}
+        .avatar-section.sm .avatar-ring-outer,.avatar-section.sm .avatar-ring-middle,.avatar-section.sm .avatar-ring-inner{display:none;}
+        .u-saybub{background:#fff;color:#2b2b3a;border:2.5px solid #2b2b3a;border-left:8px solid #0284c7;border-radius:6px 14px 14px 14px;box-shadow:3px 3px 0 rgba(43,43,58,.22);padding:12px 16px;font-size:17px;line-height:1.9;margin:8px 0;}.u-saybub.tsuru{border-left-color:#ea580c;}
+        .u-line.plain{display:block;}
+        .u-who{display:block;font-size:12px;font-weight:900;color:#888;letter-spacing:2px;margin-bottom:2px;}
+        .u-pt{font-size:16.5px;line-height:2;color:#2b2b3a;}
+        @media screen and (max-width:480px){.u-saybub{font-size:15.5px;}.u-pt{font-size:15px;}}
+.u-chead{display:flex;align-items:center;gap:8px;margin-bottom:4px;flex-wrap:nowrap;}.u-chead .uni-tag{margin-bottom:0;flex:none;white-space:nowrap;}.u-chead .u-emo{margin-left:0;max-width:none;flex:none;white-space:nowrap;}.avatar-section.sm{width:64px;height:64px;}.avatar-section.sm .avatar{width:64px;height:64px;border-radius:16px;}@media screen and (max-width:480px){.avatar-section.sm{width:54px;height:54px;}.avatar-section.sm .avatar{width:54px;height:54px;border-radius:14px;}}.u-chead{display:flex;align-items:center;gap:10px;margin-bottom:4px;}.u-chead .u-pills{display:flex;flex-direction:column;align-items:flex-start;gap:5px;}.u-chead .uni-tag{margin-bottom:0;}.u-chead .u-emo{margin-left:0;max-width:none;}        .u-dlg{position:relative;padding:14px 12px 12px 8px;margin-top:8px;}
+        .u-dtop{display:flex;gap:10px;align-items:flex-start;}
+        .u-dbody{flex:1;min-width:0;}
+        .u-dname{font-size:15px;font-weight:900;letter-spacing:2px;margin-bottom:6px;}
+        .u-dlg.mio .u-dname{color:#0284c7;}
+        .u-dlg.tsuru .u-dname{color:#ea580c;}
+        .u-dsay{font-size:17px;line-height:1.9;border-left:3px solid #d7dee5;padding-left:12px;margin:2px 0;}
+        .u-dlg.mio .u-dsay{border-left-color:#0284c7;}
+        .u-dlg.tsuru .u-dsay{border-left-color:#ea580c;}
+        .u-dact{font-size:16px;line-height:1.9;color:#444;margin-top:6px;text-align:center;}
+        .u-cn{position:absolute;width:16px;height:12px;}
+        .u-cn.tl{top:0;left:0;border-top:2px solid #9aa4ad;border-left:2px solid #9aa4ad;}
+        .u-cn.tr{top:0;right:0;border-top:2px solid #9aa4ad;border-right:2px solid #9aa4ad;}
+        .u-cn.bl{bottom:0;left:0;border-bottom:2px solid #9aa4ad;border-left:2px solid #9aa4ad;}
+        .u-cn.br{bottom:0;right:0;border-bottom:2px solid #9aa4ad;border-right:2px solid #9aa4ad;}
+        .u-rule{border-top:2px dashed #d5dbe0;margin:14px 10px 4px;}
+        .u-nar{text-align:center;text-indent:0;}
+        .unified-body > .u-nar.first::first-letter{all:unset;}
+        .u-mind{text-align:center;font-size:12px;color:#888;letter-spacing:3px;margin:12px 0 4px;}
+        .u-q{background:rgba(2,132,199,.08);border-left:3px solid #0284c7;padding:0 6px;border-radius:0 6px 6px 0;}
+        @media screen and (max-width:480px){.u-dsay{font-size:16px;}.u-dact{font-size:15px;}}
+.u-dsay{border:2.5px solid #2b2b3a;border-left-color:#2b2b3a;background:#fff;border-radius:6px 14px 14px 14px;box-shadow:3px 3px 0 rgba(43,43,58,.22);padding:12px 16px;}.u-dlg.mio .u-dsay{background:#eef6fd;border-left-color:#2b2b3a;}.u-dlg.tsuru .u-dsay{background:#fff7ed;border-left-color:#2b2b3a;}.u-demo{font-size:12px;color:#888;margin-left:8px;letter-spacing:1px;font-weight:400;}.u-nar{text-align:left;}.u-dact{text-align:left;}.u-mind{text-align:left;}.u-cn{display:none;}.u-dlg{border-top:2px dashed rgba(43,43,58,.35);border-bottom:2px dashed rgba(43,43,58,.35);padding-top:14px;padding-bottom:14px;}.u-line.plain{border-top:none;padding-top:0;}.u-dlg{border-top:1px dotted #e3e7eb;border-bottom:1px dotted #e3e7eb;}.u-nar{margin:0 0 16px;text-indent:2em;line-height:2.2;text-align:left;}.unified-body > .u-nar:last-child{margin-bottom:0;}.u-line.plain,.u-nar,.u-mind{margin-left:74px;}.unified-body > .u-nar:last-child{margin-bottom:0;margin-left:74px;}@media screen and (max-width:480px){.u-line.plain,.u-nar,.u-mind{margin-left:64px;}.unified-body > .u-nar:last-child{margin-left:64px;}}.u-dbody > .u-dname + .u-dsay{position:relative;}.u-dbody > .u-dname + .u-dsay::before{content:"";position:absolute;top:-19px;left:20px;border:9px solid transparent;border-bottom:9px solid #2b2b3a;}.u-dlg.mio .u-dbody > .u-dname + .u-dsay::after{content:"";position:absolute;top:-13px;left:22px;border:7px solid transparent;border-bottom:7px solid #eef6fd;}.u-dlg.tsuru .u-dbody > .u-dname + .u-dsay::after{content:"";position:absolute;top:-13px;left:22px;border:7px solid transparent;border-bottom:7px solid #fff7ed;}</style>
+</head>
+<body>
+
+    <div class="story-container" id="content">
+        <div class="corner-tl"></div><div class="corner-tr"></div>
+        <div class="corner-bl"></div><div class="corner-br"></div>
+
+        <div class="wave-bg-container">
+            <svg class="wave-bg" viewBox="0 0 1440 320" xmlns="http://www.w3.org/2000/svg">
+                <path fill="#0284c7" fill-opacity="1" d="M0,224L48,208C96,192,192,160,288,144C384,128,480,128,576,149.3C672,171,768,213,864,224C960,235,1056,213,1152,197.3C1248,181,1344,171,1392,165.3L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+            </svg>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="loading">LOADING · 海鸣町受信中</div>
+        </div>
+    </div>
+
+    <script>
+        var preventCacheHash = new Date().getTime();
+        var githubUser = "roxysl521-droid";
+        var githubRepo = "bingruo-li-hui";
+        var branch = "main";
+        var baseUrl = "https://raw.githubusercontent.com/" + githubUser + "/" + githubRepo + "/" + branch + "/";
+
+        var avatarMap = {
+            "潮见鹤": { "开心": "鹤_开心", "生气": "鹤_生气", "伤心": "鹤_伤心", "紧张": "鹤_紧张", "淡定": "鹤_淡定", "害羞": "鹤_害羞", "嫌弃": "鹤_嫌弃", "喜欢": "鹤_喜欢", "惊讶": "鹤_惊讶", "吃醋": "鹤_吃醋" },
+            "潮见澪": { "开心": "澪_开心", "生气": "澪_生气", "伤心": "澪_伤心", "紧张": "澪_紧张", "淡定": "澪_淡定", "害羞": "澪_害羞", "嫌弃": "澪_嫌弃", "喜欢": "澪_喜欢", "惊讶": "澪_惊讶", "吃醋": "澪_吃醋" }
+        };
+
+        var canvasCache = {};
+        function processImageSmoothly(originalUrl, targetImgElement) {
+            if (canvasCache[originalUrl]) {
+                targetImgElement.src = canvasCache[originalUrl];
+                targetImgElement.classList.remove('loading-img');
+                return;
+            }
+
+            var img = new Image();
+            img.crossOrigin = "Anonymous";
+            img.onload = function() {
+                try {
+                    var canvas = document.createElement("canvas");
+                    var targetSize = 180;
+                    canvas.width = targetSize;
+                    canvas.height = targetSize;
+                    var ctx = canvas.getContext("2d");
+
+                    var sWidth = img.width;
+                    var sHeight = img.height;
+                    var side = Math.min(sWidth, sHeight) * 0.70;
+                    var fx = sWidth * 0.5;
+                    var fy = sHeight * 0.41;
+                    var sx = Math.max(0, Math.min(sWidth - side, fx - side / 2));
+                    var sy = Math.max(0, Math.min(sHeight - side, fy - side / 2));
+
+                    ctx.imageSmoothingEnabled = true;
+                    ctx.imageSmoothingQuality = "high";
+                    ctx.drawImage(img, sx, sy, side, side, 0, 0, targetSize, targetSize);
+
+                    var highQualityDataUrl = canvas.toDataURL("image/webp", 1.0);
+                    canvasCache[originalUrl] = highQualityDataUrl;
+                    targetImgElement.src = highQualityDataUrl;
+                    targetImgElement.classList.remove('loading-img');
+                } catch(e) {
+                    console.error("重采样失败", e);
+                    targetImgElement.src = originalUrl;
+                    targetImgElement.classList.remove('loading-img');
+                }
+            };
+            img.onerror = function() {
+                targetImgElement.classList.remove('loading-img');
+            };
+            img.src = originalUrl;
+        }
+
+        function getMessageData() {
+            var chatMessages = getChatMessages(getCurrentMessageId());
+            if (!chatMessages || chatMessages.length === 0) return null;
+            return chatMessages[0].message;
+        }
+
+        function extractContent(messageText) {
+            var combinedContent = '';
+            var regex = /<story>([\s\S]*?)<\/story>/g;
+            var match;
+            var hasMatch = false;
+
+            while ((match = regex.exec(messageText)) !== null) {
+                hasMatch = true;
+                combinedContent += match[1].trim() + '\n\n';
+            }
+
+            if (hasMatch) {
+                return combinedContent.trim();
+            }
+            return messageText.trim();
+        }
+
+        function getRawUrl(charName, emotion) {
+            var charData = avatarMap[charName];
+            var prefix = (charName && charName.indexOf('鹤') !== -1) ? "鹤_淡定" : "澪_淡定";
+            if (charData) prefix = charData[emotion] || charData["淡定"] || prefix;
+            var randomNum = Math.floor(Math.random() * 3) + 1;
+            return baseUrl + encodeURIComponent(prefix + "_" + randomNum + ".png") + "?v=" + preventCacheHash;
+        }
+
+        function getRomaji(name) {
+            if (name.indexOf("鹤") !== -1) return "TSURU";
+            if (name.indexOf("澪") !== -1) return "MIO";
+            return "UNKNOWN";
+        }
+
+        /* 用哈希算法决定气泡的装饰种类，确保相同的文本总是有相同的装饰，避免页面重新计算时闪烁 */
+        function getDecoVar(text) {
+            var hash = 0;
+            for (var i = 0; i < text.length; i++) {
+                hash = ((hash << 5) - hash) + text.charCodeAt(i);
+                hash = hash & hash;
+            }
+            /* 返回 1, 2, 或 3 */
+            return Math.abs(hash) % 3 + 1;
+        }
+
+
+        var ZW_TU_BASE = "https://raw.githubusercontent.com/roxysl521-droid/bingruo-tu-1/main/";
+        var ZW_NS_BASE = "https://raw.githubusercontent.com/roxysl521-droid/bingruo-nsf/main/";
+        var ZW_TU_SCENES = [{"name":"家门口","keys":["家门口","门口","大门"],"fallback":"逛街","actions":[{"act":"逛街","keys":["逛","散步","出门","闲逛"]}]},{"name":"村口","keys":["村口"],"fallback":"逛街","actions":[{"act":"逛街","keys":["逛","散步","出门","闲逛"]}]},{"name":"村内","keys":["村内","村里","村子"],"fallback":"逛街","actions":[{"act":"逛街","keys":["逛","散步","出门","闲逛"]}]},{"name":"家","keys":["老宅","二楼","房间","客厅","厨房","餐厅","饭厅","院子","玄关","宅","家"],"fallback":"吹风扇","actions":[{"act":"一起洗澡","keys":["洗澡","浴室","泡澡"]},{"act":"怀里写作业","keys":["怀里写","怀中写","腿上写","怀里做","怀里听课"]},{"act":"怀里睡觉","keys":["怀里睡","怀中睡","腿上睡"]},{"act":"写作业","keys":["作业","习题","功课"]},{"act":"听收音机","keys":["收音机","广播"]},{"act":"吹风扇","keys":["风扇","吹风"]},{"act":"吃汉堡肉","keys":["汉堡肉","汉堡"]},{"act":"吃刨冰","keys":["刨冰"]},{"act":"吃冰棍","keys":["冰棍","冰棒"]},{"act":"吃饭","keys":["吃饭","晚饭","午饭","早饭","米饭"]},{"act":"看电视","keys":["电视"]},{"act":"洗漱","keys":["洗漱","刷牙","洗脸"]},{"act":"玄关出门","keys":["玄关","出门","换鞋"]},{"act":"睡醒","keys":["睡醒","醒来","起床","刚醒"]},{"act":"沙发睡觉","keys":["沙发"]},{"act":"暖炉休息","keys":["暖炉"]},{"act":"做饭","keys":["做饭","做菜","下厨"]},{"act":"午睡","keys":["午睡","午觉"]},{"act":"晒衣服","keys":["晒衣服","晾衣","晾晒"]}]},{"name":"人工海水浴场","keys":["人工海水","海水浴场"],"fallback":"闲逛","actions":[{"act":"吃刨冰","keys":["刨冰"]},{"act":"游泳","keys":["游泳","泳衣","戏水"]},{"act":"休息","keys":["休息","发呆"]},{"act":"闲逛","keys":["闲逛","散步","逛"]}]},{"name":"海边","keys":["海边","沙滩","海岸","海滩"],"fallback":"非泳装","actions":[{"act":"泳装","keys":["泳衣","泳装","比基尼","游泳","戏水"]},{"act":"赶海","keys":["赶海","贝壳","潮汐","退潮","螃蟹"]},{"act":"非泳装","keys":[]}]},{"name":"体育馆","keys":["体育馆"],"fallback":"休息","actions":[{"act":"休息","keys":["休息","发呆"]},{"act":"闲逛","keys":["闲逛","散步"]}]},{"name":"古本屋","keys":["古本屋","书店","旧书"],"fallback":"看书","actions":[{"act":"看书","keys":["看书","读书"]},{"act":"休息","keys":["休息","发呆"]}]},{"name":"商店","keys":["商店","大熊商店","大熊","购物"],"fallback":"购物","actions":[{"act":"购物","keys":["购物","买","采购"]}]},{"name":"杉木林道","keys":["杉木","林道"],"fallback":"闲逛","actions":[{"act":"寻宝","keys":["寻宝","宝藏","探险"]},{"act":"休息","keys":["休息","发呆"]},{"act":"闲逛","keys":["闲逛","散步"]}]},{"name":"海鸣小学旧址","keys":["小学","旧址","校舍"],"fallback":"闲逛","actions":[{"act":"玩乐","keys":["玩乐","玩耍","捉迷藏","游戏","玩"]},{"act":"休息","keys":["休息","发呆"]},{"act":"闲逛","keys":["闲逛","散步"]}]},{"name":"海鸣神社","keys":["神社"],"fallback":"参拜","actions":[{"act":"参拜","keys":["参拜","祈愿","求签","许愿"]},{"act":"休息","keys":["休息","发呆"]},{"act":"闲逛","keys":["闲逛","散步"]}]},{"name":"潮汤","keys":["潮汤","澡堂"],"fallback":"泡温泉","actions":[{"act":"泡温泉","keys":["温泉","泡汤"]},{"act":"喝牛奶","keys":["牛奶"]},{"act":"清洗身体","keys":["洗身","冲洗","擦身","洗头","淋浴"]}]},{"name":"炭窑遗址","keys":["炭窑","遗址"],"fallback":"闲逛","actions":[{"act":"寻宝","keys":["寻宝","宝藏","探险"]},{"act":"休息","keys":["休息","发呆"]},{"act":"闲逛","keys":["闲逛","散步"]}]},{"name":"离岸提","keys":["离岸提","离岸堤"],"fallback":"闲逛","star":true,"actions":[{"act":"看星星","keys":["星星","夜空","观星"]},{"act":"闲逛","keys":["闲逛","散步"]}]},{"name":"肉的坂本","keys":["坂本","肉店","可乐饼"],"fallback":"买可乐饼","actions":[{"act":"买可乐饼","keys":["可乐饼"]},{"act":"挑猪肉","keys":["猪肉","选肉"]}]},{"name":"车站","keys":["车站","站前","巴士"],"fallback":"等车","actions":[{"act":"等车","keys":["等车","巴士","候车"]}]},{"name":"龙王崎展望台","keys":["展望台","龙王崎"],"fallback":"闲逛","actions":[{"act":"钓鱼","keys":["钓鱼","钓竿","鱼竿"]},{"act":"休息","keys":["休息","发呆"]},{"act":"闲逛","keys":["闲逛","散步","眺望","看海"]}]},{"name":"婚纱","special":true,"keys":["婚纱","结婚","嫁衣","婚礼","新娘"],"fallback":"婚纱","actions":[{"act":"婚纱","keys":[]}]},{"name":"怀孕","special":true,"keys":["怀孕","孕妇","身孕"],"fallback":"怀孕","actions":[{"act":"怀孕","keys":[]}]},{"name":"生子","special":true,"keys":["生子","宝宝","婴儿","出生","分娩"],"fallback":"生子","actions":[{"act":"生子","keys":[]}]}];
+        var ZW_TU_COUNTS = {"人工海水浴场|休息":5,"人工海水浴场|吃刨冰":5,"人工海水浴场|游泳":5,"人工海水浴场|闲逛":5,"体育馆|休息":5,"体育馆|闲逛":5,"古本屋|休息":5,"古本屋|看书":5,"商店|购物":5,"婚纱|婚纱":3,"家|一起洗澡":5,"家|写作业":5,"家|吃冰棍":5,"家|吃刨冰":5,"家|吃汉堡肉":5,"家|吃饭":5,"家|听收音机":5,"家|吹风扇":5,"家|怀里写作业":5,"家|怀里睡觉":5,"家|暖炉休息":5,"家|沙发睡觉":5,"家|洗漱":5,"家|玄关出门":5,"家|看电视":5,"家|睡醒":5,"家门口|逛街":8,"怀孕|怀孕":3,"杉木林道|休息":5,"杉木林道|寻宝":5,"杉木林道|闲逛":5,"村内|逛街":8,"村口|逛街":8,"海边|泳装":5,"海边|赶海":5,"海边|非泳装":5,"海鸣小学旧址|休息":5,"海鸣小学旧址|玩乐":5,"海鸣小学旧址|闲逛":5,"海鸣神社|休息":5,"海鸣神社|参拜":5,"海鸣神社|闲逛":5,"潮汤|喝牛奶":5,"潮汤|泡温泉":5,"潮汤|清洗身体":5,"炭窑遗址|休息":5,"炭窑遗址|寻宝":5,"炭窑遗址|闲逛":5,"生子|生子":3,"离岸提|看星星":5,"离岸提|闲逛":5,"肉的坂本|买可乐饼":5,"肉的坂本|挑猪肉":5,"车站|等车":5,"龙王崎展望台|休息":5,"龙王崎展望台|钓鱼":5,"龙王崎展望台|闲逛":5};
+        var ZW_TU_HE = {"人工海水浴场|休息":5,"人工海水浴场|吃刨冰":5,"人工海水浴场|游泳":5,"人工海水浴场|闲逛":5,"体育馆|休息":5,"体育馆|闲逛":5,"古本屋|休息":5,"古本屋|看书":5,"商店|购物":5,"婚纱|婚纱":3,"家|一起洗澡":5,"家|做饭":5,"家|午睡":5,"家|吃冰棍":5,"家|吃刨冰":5,"家|吃汉堡肉":5,"家|吃饭":5,"家|吹风扇":5,"家|晒衣服":5,"家|暖炉休息":5,"家|洗漱":5,"家|玄关出门":5,"家|看电视":5,"家|睡醒":5,"家门口|逛街":8,"怀孕|怀孕":3,"杉木林道|休息":5,"杉木林道|寻宝":5,"杉木林道|闲逛":5,"村内|逛街":8,"村口|逛街":8,"海边|泳装":5,"海边|赶海":5,"海边|非泳装":5,"海鸣小学旧址|休息":5,"海鸣小学旧址|玩乐":5,"海鸣小学旧址|闲逛":5,"海鸣神社|休息":5,"海鸣神社|参拜":5,"海鸣神社|闲逛":5,"潮汤|喝牛奶":5,"潮汤|泡温泉":5,"潮汤|清洗身体":5,"炭窑遗址|休息":5,"炭窑遗址|寻宝":5,"炭窑遗址|闲逛":5,"生子|生子":3,"离岸提|看星星":5,"离岸提|闲逛":5,"肉的坂本|买可乐饼":5,"肉的坂本|挑猪肉":5,"车站|等车":5,"龙王崎展望台|休息":5,"龙王崎展望台|钓鱼":5,"龙王崎展望台|闲逛":5};
+        var ZW_NS_ACTS = {"乳交":3,"口交":3,"后入位":5,"后入位_高潮":5,"正常位":5,"正常位_高潮":5,"足交":3,"骑乘位":5,"骑乘位_高潮":5};
+        var ZW_NS_MAP = {"家门口":"野外","村口":"野外","村内":"野外","家":"房间","老宅":"房间","二楼":"房间","房间":"房间","宅":"房间","厨房":"房间","院子":"房间","玄关":"房间","人工海水浴场":"海边","海边":"海边","体育馆":"野外","古本屋":"野外","商店":"野外","杉木林道":"野外","海鸣小学旧址":"野外","海鸣神社":"野外","潮汤":"温泉","炭窑遗址":"野外","离岸提":"海边","肉的坂本":"野外","车站":"野外","龙王崎展望台":"海边","婚纱":"房间","怀孕":"房间","生子":"房间"};
+        var ZW_NS_KEYS = ["口交","乳交","足交","后入","骑乘","跨坐","手交","插入","抽插","肉棒","阴茎","龟头","做爱","交合","性交","潮吹","射精","中出"];
+                var ZW_CHA_BASE = "https://raw.githubusercontent.com/roxysl521-droid/bingruo-cha-ru/main/";
+        var ZW_AV_EMOS = ['开心','生气','伤心','紧张','淡定','害羞','嫌弃','喜欢','惊讶','吃醋'];
+        var ZW_CHA_EMO = {'开心':'开心','喜欢':'开心','生气':'生气','嫌弃':'嫌弃','害羞':'害羞','伤心':'委屈','委屈':'委屈','紧张':'平淡','淡定':'平淡','惊讶':'平淡','吃醋':'生气'};
+        /* 按内容推断情绪：显式有效情绪优先；平淡/未知/缺失才走推断，避免满屏平淡 */
+        function zwInferEmo(content, ch) {
+            var s = String(content || '');
+            if (/翻白眼|啧|才怪|懒得|切[，。！？、…]|白眼/.test(s)) return '嫌弃';
+            if (/哼|呸|滚|烦死|闭嘴|笨死|气死|混蛋|讨厌/.test(s)) return '生气';
+            if (/吃醋|酸溜溜/.test(s)) return '吃醋';
+            if (/笑|哈|嘻|开心|好耶|太好了/.test(s)) return '开心';
+            if (/喜欢你|爱你|爱/.test(s)) return '喜欢';
+            if (/哭|呜|叹气|唉|难过|对不起|抱歉|眼泪/.test(s)) return '伤心';
+            if (/怕|发抖|抖|紧张|不敢|缩/.test(s)) return '紧张';
+            if (/脸红|羞|别看|羞死|耳根/.test(s)) return '害羞';
+            if (/诶|啊|呀|哇|欸|什么|怎么会|真的吗|不会吧/.test(s)) return '惊讶';
+            if (/？|\?/.test(s)) return '惊讶';
+            if (/！|!/.test(s)) return '开心';
+            if (/…|\.\.\.|～|—/.test(s)) return '淡定';
+            return '';
+        }
+        function zwNormEmo(raw, content, ch) {
+            var r = String(raw || '').trim();
+            if (r && ZW_AV_EMOS.indexOf(r) >= 0) return r;
+            var inf = zwInferEmo(content, ch);
+            if (inf) return inf;
+            if (ch === '鹤') return '开心';
+            return '淡定';
+        }
+        /* 把一行内容拆成说话(say)与动作/旁白(act)，说话不再跟旁边堆在一起 */
+                /* 旁白里的引用裹高亮条（自研，与任何外部样式无关） */
+        function zwQHighlight(text) {
+            return String(text || '').replace(/「[^」]*」|『[^』]*』|“[^”]*”|"[^"]*"|"[^"]*"|'[^']*'/g, function (q) {
+                return '<span class="u-q">' + q + '</span>';
+            });
+        }
+function zwSplitSpeech(content) {
+            var segs = [], re = /「[^」]*」|『[^』]*』|"[^"]*"|"[^"]*"|'[^']*'/g, m, last = 0;
+            while ((m = re.exec(content)) !== null) {
+                if (m.index > last) { var a = content.slice(last, m.index).trim(); if (a) segs.push({ t: 'act', s: a }); }
+                segs.push({ t: 'say', s: m[0] });
+                last = m.index + m[0].length;
+            }
+            var tail = content.slice(last).trim();
+            if (tail) segs.push({ t: 'act', s: tail });
+            if (!segs.length && String(content || '').trim()) segs.push({ t: 'act', s: String(content).trim() });
+            return segs;
+        }
+        /* 焦点人物：tag台词字数最多者（平局后来者居上），结尾短喊不再劫持配图 */
+        function zwFocusSpeaker(src) {
+            var re = /^\[([^|\]]+)\|([^\]]+)\]\s*(.*)$/gm, m;
+            var totals = {}, infos = {}, order = [];
+            while ((m = re.exec(src)) !== null) {
+                var w = m[1].trim();
+                if (/^(地点|时间|插图|旁白)$/.test(w)) continue;
+                var c = (w.indexOf('鹤') !== -1) ? '鹤' : ((w.indexOf('澪') !== -1) ? '澪' : '');
+                if (!c) continue;
+                var txt = (m[3] || '').trim();
+                if (!totals[c]) { totals[c] = 0; infos[c] = { name: w, emo: m[2].trim(), first: m.index, last: m.index }; order.push(c); }
+                totals[c] += txt.length;
+                infos[c].name = w; infos[c].emo = m[2].trim(); infos[c].last = m.index;
+            }
+            var best = '', bestN = -1, fi;
+            for (fi = 0; fi < order.length; fi++) { var kk = order[fi]; if (totals[kk] >= bestN) { best = kk; bestN = totals[kk]; } }
+            if (!best) return { ch: '', name: '', emo: '', span: '', win: '' };
+            var s0 = src.lastIndexOf('\n', infos[best].first) + 1;
+            /* 注意：收到正文结尾（不是最后一个tag行尾），tag之后的旁白属于同一情境；
+               人物归属已由戏份锁死，尾巴只能贡献场景/动作，抢不走角色 */
+            var span = src.slice(s0);
+            var win = span.slice(-Math.max(150, Math.floor(span.length * 0.4)));
+            return { ch: best, name: infos[best].name, emo: infos[best].emo, span: span, win: win };
+        }
+        /* 背景音排除：紧贴响/放着/传来/听见/背景/播着/顺便的关键词命中不算动作 */
+        function zwAmbientHit(hay, key) {
+            var p = -1;
+            while ((p = hay.indexOf(key, p + 1)) >= 0) {
+                var near = hay.slice(Math.max(0, p - 8), p + key.length + 8);
+                if (/响|放着|传来|听见|背景|播着|顺便/.test(near)) continue;
+                return true;
+            }
+            return false;
+        }
+function zwLastWho(src) {
+            var re = /\[([^|\]]+)\|([^\]]+)\]/g, m, w = '', e = '';
+            while ((m = re.exec(src)) !== null) { var _w = m[1].trim(); if (/^(地点|时间|插图|旁白)$/.test(_w)) continue; w = _w; e = m[2].trim(); }
+            return { who: w, emo: e };
+        }
+
+        function zwLastLocTags(fullText) {
+            var arr = [], m, re = /\[地点\|([^\]]*)\]/g;
+            while ((m = re.exec(fullText)) !== null) { arr.push(m[1]); }
+            return arr;
+        }
+        function zwLastTime(fullText) {
+            var arr = [], m, re = /\[时间\|([^\]]*)\]/g;
+            while ((m = re.exec(fullText)) !== null) { arr.push(m[1]); }
+            return arr.length ? arr[arr.length - 1] : '';
+        }
+        function zwCountOcc(haystack, needle) {
+            if (!needle) return 0;
+            var c = 0, p = 0;
+            while ((p = haystack.indexOf(needle, p)) !== -1) { c++; p += needle.length; }
+            return c;
+        }
+        function zwScoreScenes(src, locAll, locTag) {
+            var out = [], si, sc, ki, best, how, s, occ;
+            for (si = 0; si < ZW_TU_SCENES.length; si++) {
+                sc = ZW_TU_SCENES[si]; best = 0; how = '';
+                for (ki = 0; ki < sc.keys.length; ki++) {
+                    var k = sc.keys[ki]; if (!k) continue;
+                    if (sc.special) {
+                        if (src.indexOf(k) !== -1 || locAll.indexOf(k) !== -1) { s = 1000 + k.length * 10; if (s > best) { best = s; how = 'special'; } }
+                    } else {
+                        occ = zwCountOcc(src, k);
+                        if (occ > 0) {
+                            s = k.length * occ;
+                            if (locTag && locTag.indexOf(k) !== -1) s += 5;
+                            if (s > best) { best = s; how = 'src'; }
+                        }
+                    }
+                }
+                out.push({ sc: sc, score: best, how: how, idx: si });
+            }
+            out.sort(function(a, b) { return b.score - a.score || a.idx - b.idx; });
+            return out;
+        }
+        function zwLocFallback(locTag) {
+            if (!locTag) return [];
+            for (var si = 0; si < ZW_TU_SCENES.length; si++) {
+                var sc = ZW_TU_SCENES[si];
+                if (sc.special) continue;
+                for (var ki = 0; ki < sc.keys.length; ki++) {
+                    if (sc.keys[ki] && locTag.indexOf(sc.keys[ki]) !== -1) return [{ sc: sc, score: 1, how: 'locFallback', idx: si }];
+                }
+            }
+            return [];
+        }
+        function zwScoreAct(scene, hay, cntFn) {
+            var best = null, ai, a, wi, s, hits;
+            for (ai = 0; ai < scene.actions.length; ai++) {
+                a = scene.actions[ai];
+                if (!cntFn(scene.name, a.act)) continue;
+                s = 0; hits = 0;
+                for (wi = 0; wi < a.keys.length; wi++) {
+                    var k = a.keys[wi]; if (!k) continue;
+                    if (hay.indexOf(k) !== -1) { s += k.length; hits++; }
+                }
+                if (s > 0 && (!best || s > best.score || (s === best.score && hits > best.hits))) best = { act: a.act, score: s, hits: hits };
+            }
+            return best;
+        }
+        function zwNsScene(loc, src) {
+            var hay = loc + ' ' + src;
+            if (/客厅/.test(hay)) return '客厅';
+            if (/厕/.test(hay)) return '厕所';
+            if (/浴室/.test(hay)) return '浴室';
+            if (/温泉/.test(hay)) return '温泉';
+            for (var k in ZW_NS_MAP) { if (loc.indexOf(k) !== -1) return ZW_NS_MAP[k]; }
+            return '野外';
+        }
+        function zwPick(src, fullText, mid) {
+            /* 自动配图只在 AI 楼层生效；楼层奇偶不可靠（开局票在0楼，AI楼层可能全为偶数），改按消息 role 判断 */
+            if (typeof mid !== 'number') return '';
+            try {
+                var _zwMsgs = getChatMessages(mid);
+                if (_zwMsgs && _zwMsgs.length && _zwMsgs[0] && _zwMsgs[0].role === 'user') return '';
+            } catch (_zwE) { /* role 查询失败时放行：本正则 placement 已限定 AI 输出楼层 */ }
+            var focus = zwFocusSpeaker(src);
+            var ch = focus.ch;
+            if (!ch) return ''; var lw = { who: focus.name, emo: focus.emo };
+            var locArr = zwLastLocTags(fullText);
+            var loc = locArr.length ? locArr[locArr.length - 1] : '';
+            var timeStr = zwLastTime(fullText);
+            var hay = src + '\n' + locArr.join('\n') + '\n' + timeStr;
+            var i, url = '', f = '';
+            for (i = 0; i < ZW_NS_KEYS.length; i++) {
+                if (hay.indexOf(ZW_NS_KEYS[i]) !== -1) {
+                    var sc = zwNsScene(loc, src);
+                    var act = '';
+                    if (hay.indexOf('手交') !== -1) { act = (ch === '鹤' && sc === '房间') ? '手交' : ''; }
+                    else if (hay.indexOf('足交') !== -1) act = '足交';
+                    else if (hay.indexOf('乳交') !== -1) act = '乳交';
+                    else if (hay.indexOf('口交') !== -1) act = '口交';
+                    else if (hay.indexOf('后入') !== -1) act = (/高潮|绝顶|潮吹|去了/.test(hay) ? '后入位_高潮' : '后入位');
+                    else if (hay.indexOf('骑乘') !== -1 || hay.indexOf('跨坐') !== -1) act = (/高潮|绝顶|潮吹|去了/.test(hay) ? '骑乘位_高潮' : '骑乘位');
+                    else act = (/高潮|绝顶|潮吹/.test(hay) ? '正常位_高潮' : '正常位');
+                    if (act) {
+                        var n = (ch === '鹤' && act === '手交') ? ((sc === '房间') ? 3 : 0) : (ZW_NS_ACTS[act] || 0);
+                        if (n) f = ch + '_' + sc + '_' + act + '_' + (1 + Math.floor(Math.random() * n)) + '.png'; url = ZW_NS_BASE + encodeURIComponent(f);
+                    }
+                    break;
+                }
+            }
+                        if (!url) {
+                /* 级联选图：角色(已定)→场景→动作；动作在焦点窗内无命中则情绪插图兜底 */
+                var tCntFn = function(sn, a2) { return (ch === '鹤') ? (ZW_TU_HE[sn + '|' + a2] || 0) : (ZW_TU_COUNTS[sn + '|' + a2] || 0); };
+                var zwSceneHas = function(sn) {
+                    var sc = null, si0, ai0;
+                    for (si0 = 0; si0 < ZW_TU_SCENES.length; si0++) if (ZW_TU_SCENES[si0].name === sn) sc = ZW_TU_SCENES[si0];
+                    if (!sc) return false;
+                    if (tCntFn(sn, sc.fallback)) return true;
+                    for (ai0 = 0; ai0 < sc.actions.length; ai0++) if (tCntFn(sn, sc.actions[ai0].act)) return true;
+                    return false;
+                };
+                /* 焦点窗：只看本轮(末250字+地点)，背景里顺嘴提一句的不算动作 */
+                var focusHay = focus.win + '\n' + loc;
+                var ranked = zwScoreScenes(focus.span, locArr.join('\n'), loc);
+                var scenePick = null, ri, ent;
+                for (ri = 0; ri < ranked.length; ri++) {
+                    ent = ranked[ri];
+                    if (ent.score <= 0 || !zwSceneHas(ent.sc.name)) continue;
+                    scenePick = ent.sc;
+                    break;
+                }
+                if (!scenePick) {
+                    var fbList = zwLocFallback(loc), fi;
+                    for (fi = 0; fi < fbList.length; fi++) if (zwSceneHas(fbList[fi].sc.name)) { scenePick = fbList[fi].sc; break; }
+                }
+                var pick = null;
+                if (scenePick) {
+                    if (scenePick.special) {
+                        pick = { scene: scenePick.name, act: scenePick.fallback, fb: scenePick.fallback };
+                    } else {
+                        var best = null, ai, a, wi, s, hits, k;
+                        for (ai = 0; ai < scenePick.actions.length; ai++) {
+                            a = scenePick.actions[ai];
+                            if (!tCntFn(scenePick.name, a.act)) continue;
+                            s = 0; hits = 0;
+                            for (wi = 0; wi < a.keys.length; wi++) {
+                                k = a.keys[wi]; if (!k) continue;
+                                if (zwAmbientHit(focusHay, k)) { s += k.length; hits++; }
+                            }
+                            if (s > 0 && (!best || s > best.score || (s === best.score && hits > best.hits))) best = { act: a.act, score: s, hits: hits };
+                        }
+                        if (!best && scenePick.star) {
+                            var nightHay = timeStr + ' ' + focusHay;
+                            if (/夜|晚|凌晨|星空/.test(nightHay) || /(^|\D)(2[0-3]|0\d|0?[0-5])[:时]/.test(nightHay)) {
+                                if (tCntFn(scenePick.name, '看星星')) best = { act: '看星星', score: 1, hits: 0 };
+                            }
+                        }
+                        if (best) pick = { scene: scenePick.name, act: best.act, fb: scenePick.fallback };
+                    }
+                }
+                if (pick) {
+                    var tAct = pick.act;
+                    var total = tCntFn(pick.scene, tAct);
+                    if (!total) { tAct = pick.fb; total = tCntFn(pick.scene, tAct); }
+                    if (total) {
+                        var tsc = ((pick.scene === '商店') && (ch === '鹤')) ? '大熊商店' : ((pick.scene === '离岸提') ? '离岸堤' : pick.scene);
+                        f = (tAct === pick.scene) ? (ch + '_' + tsc + '_' + (1 + Math.floor(Math.random() * total)) + '.png') : (ch + '_' + tsc + '_' + tAct + '_' + (1 + Math.floor(Math.random() * total)) + '.png');
+                        url = ZW_TU_BASE + encodeURIComponent(f);
+                    }
+                }
+                if (!url) {
+                    /* 情绪插图兜底：角色_室内外_情绪（cha-ru 图床，每组10张） */
+                    var emoN = zwNormEmo(focus.emo, focus.span, ch);
+                    var chaEmo = ZW_CHA_EMO[emoN] || '平淡';
+                    var indoor = /室|房|屋|宅|家|厅|厨|浴|汤|店|馆|玄关|廊|厕|仓|所/.test(loc);
+                    var place = indoor ? '房间' : '室外';
+                    var idx2 = 1 + Math.floor(Math.random() * 10);
+                    f = ch + '_' + place + '_' + chaEmo + '_' + idx2 + '.png';
+                    url = ZW_CHA_BASE + encodeURIComponent(f);
+                }
+            }
+return '<div class="zw-illu"><img class="zw-illu-img" loading="lazy" src="' + url + '" alt="" decoding="async" onerror="try{this.closest(\'.zw-illu\').style.display=\'none\'}catch(e){}"><div class="zw-illu-cap">' + (function(){ var _s=f.replace(/\.png$/, '').split('_').slice(1,-1).join(' · '); return _s ? (lw.who + ' · ' + _s) : lw.who; })() + '</div></div>';
+        }
+
+                function renderPage(text, fullText, mid) {
+            text = text.replace(/<(think|thinking)>[\s\S]*?<\/\1>/gi, '');
+
+            var paragraphs = text.split(/\n\s*\n|\n/);
+            var blocks = [];
+            var avatarsToProcess = [];
+            var lineCount = 0;
+            var firstBlock = true; var prevDlg = false;
+
+            var dialogueRegex = /^\[(.*?)\|(.*?)\]\s*(.*)$/;
+
+            paragraphs.forEach(function(p) {
+                var trimmed = p.trim();
+                if (!trimmed) return;
+                if (trimmed.startsWith('<think>') || trimmed.startsWith('</think>')) return;
+
+                var match = trimmed.match(dialogueRegex);
+                if (match) {
+                    var charName = match[1].trim();
+                    var emotion = match[2].trim();
+                    var content = match[3].trim();
+
+                    var isTsuru = charName.indexOf('鹤') !== -1;
+                    var isMio = charName.indexOf('澪') !== -1;
+                    var avCls = isTsuru ? 'tsuru' : (isMio ? 'mio' : '');
+                    var tagClass = isTsuru ? 'uni-tsuru' : (isMio ? 'uni-mio' : 'uni-npc');
+                    var chKey = isTsuru ? '鹤' : (isMio ? '澪' : '');
+                    var normEmo = zwNormEmo(emotion, content, chKey);
+
+                    /* 说话与旁边动作/旁白分开，各自成块 */
+                    var segs = zwSplitSpeech(content);
+                    var bodyHtml = '';
+                    segs.forEach(function(sg) {
+                        bodyHtml += (sg.t === 'say') ? '<div class="u-say">' + sg.s + '</div>' : '<div class="u-act">' + sg.s + '</div>';
+                    });
+
+                                                            var isMind = /心声|心音|独白/.test(charName + emotion);
+                    if (isMind) {
+                        /* 心声：小标签＋居中正文，不进气泡 */
+                        var mindName = charName.replace(/[·•].*$/, '');
+                        var mindLine = '<div class="u-mind">' + mindName + ' · 心声 ···</div>';
+                        mindLine += '<p class="u-nar">' + zwQHighlight(content) + '</p>';
+                        blocks.push(mindLine);
+                        prevDlg = false;
+                    } else if (avCls) {
+                        /* 澪/鹤：头像＋彩色名，竖线分隔说话，整块套角标 */
+                        var avId = 'zw-av-' + lineCount;
+                        var line = '<div class="u-dlg ' + avCls + '">';
+                        line += '<div class="u-dtop"><div class="avatar-section sm ' + avCls + '"><img id="' + avId + '" class="avatar loading-img" decoding="async" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="' + charName + '" onerror="try{this.closest(\'.avatar-section\').style.display=\'none\'}catch(e){}">';
+                        line += '</div><div class="u-dbody"><div class="u-dname">' + charName + '<span class="u-demo">' + normEmo + '</span></div>';
+                        segs.forEach(function(sg) {
+                            line += (sg.t === 'say') ? '<div class="u-dsay">' + sg.s + '</div>' : '<div class="u-dact">' + sg.s + '</div>';
+                        });
+                        line += '</div></div>';
+                        line += '';
+                        line += '</div>';
+                        blocks.push(line);
+                        avatarsToProcess.push({ id: avId, url: getRawUrl(charName, normEmo) });
+                        prevDlg = true;
+                    } else {
+                        /* 你/NPC：素文本，无气泡无头像 */
+                        var plainLine = '<div class="u-line plain">';
+                        plainLine += '<span class="u-who">' + charName + '</span><div class="u-pt">' + content + '</div>';
+                        plainLine += '</div>';
+                        blocks.push(plainLine);
+                        prevDlg = false;
+                    }
+                    lineCount++;
+
+
+                    firstBlock = false;
+                } else {
+                    blocks.push('<p class="u-nar' + (firstBlock ? ' first' : '') + '">' + zwQHighlight(trimmed) + '</p>');
+                    firstBlock = false; prevDlg = false;
+                }
+            });
+
+            /* 自动配图插进正文中间；取不到图时只显示纯文本大框 */
+            try {
+                var illu = zwPick(text, fullText || '', (typeof mid === 'number') ? mid : 0);
+                if (illu && blocks.length > 0) {
+                    var at = Math.ceil(blocks.length / 2);
+                    blocks.splice(at, 0, illu);
+                }
+            } catch (e) { console.error('配图失败', e); }
+
+            /* 全文只用一个大框，不再按段落拆成多个气泡 */
+            var html = '<div class="unified-body">' + blocks.join('') + '</div>';
+            document.querySelector('.content-wrapper').innerHTML = html;
+
+            setTimeout(function() {
+                avatarsToProcess.forEach(function(item) {
+                    var imgEl = document.getElementById(item.id);
+                    if (imgEl) {
+                        processImageSmoothly(item.url, imgEl);
+                    }
+                });
+            }, 50);
+        }
+
+function init() {
+            try {
+                var messageText = getMessageData();
+/* 满血API纯文字降级：API/模型名含“满血”时只留纯文字（fail-open：异常则正常渲染） */
+function uwIsFullBlood(msgObj){
+  try{
+    var budget={n:0};
+    function scan(v,depth){
+      if(v==null||depth>4||budget.n>300)return false;
+      if(typeof v==='string'){budget.n++;return v.indexOf('满血')!==-1;}
+      if(typeof v!=='object')return false;
+      if(Object.prototype.toString.call(v)==='[object Array]'){for(var i=0;i<v.length&&i<12;i++){try{if(scan(v[i],depth+1))return true;}catch(e){}}return false;}
+      var skip={message:1,raw:1,mes:1,chat:1,messages:1,characters:1,character:1,lorebook:1,lorebooks:1,worldbook:1,prompt:1,prompts:1,data:1,html:1,innerHTML:1};
+      for(var k in v){
+        if(!Object.prototype.hasOwnProperty.call(v,k))continue;
+        if(skip[k])continue;
+        var val=null;
+        try{val=v[k];}catch(e){continue;}
+        try{if(scan(val,depth+1))return true;}catch(e){}
+      }
+      return false;
+    }
+    try{if(msgObj&&scan(msgObj,0))return true;}catch(e){}
+    var ctx=null;
+    try{if(window.SillyTavern&&window.SillyTavern.getContext)ctx=window.SillyTavern.getContext();}catch(e){ctx=null;}
+    if(!ctx){try{if(window.parent&&window.parent.SillyTavern&&window.parent.SillyTavern.getContext)ctx=window.parent.SillyTavern.getContext();}catch(e){ctx=null;}}
+    try{if(ctx&&scan(ctx,0))return true;}catch(e){}
+  }catch(e){}
+  return false;
+}
+function uwCurMsg(){
+  try{if(typeof getChatMessages==='function'&&typeof getCurrentMessageId==='function'){var m=getChatMessages(getCurrentMessageId());if(m&&m.length)return m[0];}}catch(e){}
+  return null;
+}
+                try{if(uwIsFullBlood(uwCurMsg())){var _w0=document.querySelector('.content-wrapper');if(_w0){_w0.textContent=extractContent(messageText);}return;}}catch(e){}
+                if (!messageText) {
+                    document.querySelector('.content-wrapper').innerHTML = '<div class="loading">❌ SYSTEM ERROR: DATA NOT FOUND</div>';
+                    return;
+                }
+                var text = extractContent(messageText);
+                var mid = 0;
+                try { mid = getCurrentMessageId(); } catch (e) {}
+                renderPage(text, messageText, mid);
+            } catch (error) {
+                console.error("错误:", error);
+                document.querySelector('.content-wrapper').innerHTML = '<div class="loading">❌ RENDER ERROR：' + error.message + '</div>';
+            }
+        }
+
+        $(function() { init(); });
+    </script>
+</body>
+</html>
