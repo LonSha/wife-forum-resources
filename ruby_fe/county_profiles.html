@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>毛玻璃人物图鉴</title>
+    <style>
+        /* 引入指定字体 */
+        @import url("https://fontsapi.zeoseven.com/2173/main/result.css"); /* 宋骨黑体 Medium */
+        @import url("https://fontsapi.zeoseven.com/556/main/result.css");  /* The Peak Font Plus */
+        @import url("https://fontsapi.zeoseven.com/582/main/result.css");  /* gkai00mp */
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: transparent;
+            padding: 10px;
+            color: #e0e0e0;
+            display: flex;
+            justify-content: center;
+            overflow-x: hidden;
+        }
+
+        /* 动画定义 */
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes shine {
+            0% { left: -100%; opacity: 0; }
+            50% { opacity: 0.3; }
+            100% { left: 200%; opacity: 0; }
+        }
+
+        /* 主容器：毛玻璃材质 */
+        .glass-container {
+            width: 100%;
+            max-width: 850px;
+            background: rgba(15, 16, 20, 0.45);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-top: 1px solid rgba(255, 255, 255, 0.3);
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            padding: 30px 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 20px rgba(255, 255, 255, 0.02);
+            animation: fadeUp 0.6s ease-out forwards;
+            position: relative;
+        }
+
+        .glass-container::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 40%, rgba(255,255,255,0) 100%);
+            pointer-events: none;
+            border-radius: 16px;
+        }
+
+        /* 标头区域 */
+        .header-box {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .main-title {
+            font-family: "宋骨黑体 Medium", serif;
+            font-size: 28px;
+            color: #f3f4f6;
+            letter-spacing: 4px;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 10px rgba(255, 255, 255, 0.2);
+        }
+
+        .sub-title {
+            font-family: "The Peak Font Plus", sans-serif;
+            font-size: 16px;
+            color: #d4a373;
+            letter-spacing: 2px;
+        }
+
+        /* 分组标题 */
+        .group-title {
+            font-family: "The Peak Font Plus", sans-serif;
+            font-size: 20px;
+            color: #e5e7eb;
+            margin: 25px 0 15px 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.2);
+            position: relative;
+            z-index: 2;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 卡片网格布局，稍微放大基础尺寸，保证图片渲染精度 */
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 3D翻转卡片容器 */
+        .flip-card {
+            background-color: transparent;
+            width: 100%;
+            aspect-ratio: 2 / 3; /* 调整为更修长的人像比例 */
+            perspective: 1200px; /* 加大透视深度，减少模糊 */
+            cursor: pointer;
+            animation: fadeUp 0.6s ease-out both;
+            transform: translateZ(0); /* 开启独立硬件加速层 */
+            will-change: transform;
+        }
+
+        .flip-card:nth-child(1) { animation-delay: 0.1s; }
+        .flip-card:nth-child(2) { animation-delay: 0.15s; }
+        .flip-card:nth-child(3) { animation-delay: 0.2s; }
+        .flip-card:nth-child(4) { animation-delay: 0.25s; }
+        .flip-card:nth-child(5) { animation-delay: 0.3s; }
+        .flip-card:nth-child(6) { animation-delay: 0.35s; }
+
+        /* 卡片内层 */
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+            /* 防止翻转时的锯齿边缘 */
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .flip-card:hover .flip-card-inner {
+            box-shadow: 0 12px 25px rgba(0, 0, 0, 0.6), 0 0 15px rgba(212, 163, 115, 0.2);
+        }
+
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        /* 正面和背面共用样式：加入强制抗模糊属性 */
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform: translateZ(1px); /* 强制分层，防止像素挤压糊图 */
+        }
+
+        /* 正面：显示图片 */
+        .flip-card-front {
+            background-color: #1a1b20;
+        }
+
+        .flip-card-front img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top;
+            /* 强制高对比度渲染，对抗3D模糊 */
+            image-rendering: -webkit-optimize-contrast;
+            image-rendering: crisp-edges;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+
+        /* 底部半透明姓名条 */
+        .name-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 12px 0;
+            background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+            font-family: "The Peak Font Plus", sans-serif;
+            font-size: 18px;
+            color: #fff;
+            letter-spacing: 2px;
+        }
+
+        /* 背面：毛玻璃材质 + 简介文字 */
+        .flip-card-back {
+            background: rgba(20, 22, 28, 0.9);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transform: rotateY(180deg) translateZ(1px);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            border-top: 1px solid rgba(212, 163, 115, 0.4);
+        }
+
+        .flip-card-back::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 50%; height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255,255,255,0.05), transparent);
+            transform: skewX(-25deg);
+            animation: shine 3s infinite cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+        }
+
+        .back-name {
+            font-family: "The Peak Font Plus", sans-serif;
+            font-size: 22px;
+            color: #d4a373;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(212, 163, 115, 0.3);
+            width: 85%;
+        }
+
+        .back-desc {
+            font-family: "gkai00mp", serif;
+            font-size: 16px;
+            color: #d1d5db;
+            line-height: 1.7;
+            text-align: justify;
+        }
+
+        /* 手机端适配 */
+        @media (max-width: 600px) {
+            body { padding: 5px; }
+            .glass-container { padding: 20px 10px; }
+            .main-title { font-size: 24px; }
+            .card-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
+            .back-name { font-size: 18px; }
+            .back-desc { font-size: 14px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="glass-container" id="content">
+        <!-- 标头 -->
+        <div class="header-box">
+            <div class="main-title">人物图鉴</div>
+            <div class="sub-title">✦ 点击卡片查看档案 ✦</div>
+        </div>
+
+        <div id="profiles-container"></div>
+    </div>
+
+    <script>
+        /* 固定的角色数据，已替换为哥哥最新的文案和链接 */
+        const characters = [
+            // 被欺凌者
+            { name: "彭小狸", group: "被欺凌者", img: "https://files.catbox.moe/ghhhkd.png", desc: "沉迷网络的辍学少女，靠虚假乐观麻痹自己，试图用身体换网费。" },
+            { name: "陆燃", group: "被欺凌者", img: "https://files.catbox.moe/fxe9en.png", desc: "被原生家庭抛弃的缺爱少女，用疯狗般的暴力反击掩饰内心的脆弱。" },
+            { name: "陈麦", group: "被欺凌者", img: "https://files.catbox.moe/fhovvc.png", desc: "患有轻度智障的孤儿，靠糖果和网吧方姐庇护，本能地承受恶意。" },
+            { name: "林佳琪", group: "被欺凌者", img: "https://files.catbox.moe/y00qgy.png", desc: "伪装成不良少女的乖乖女，色厉内荏，用劣质伪装掩饰内心的恐惧。" },
+            { name: "林夏", group: "被欺凌者", img: "https://files.catbox.moe/f2zt1t.png", desc: "隐藏烧伤疤痕的假小子，用粗鲁和男孩子气掩饰极度的自卑。" },
+            { name: "许知言", group: "被欺凌者", img: "https://files.catbox.moe/su7miq.png", desc: "双腿残疾的温和少女，底层被欺凌者，只能靠成绩和课本苦苦支撑。" },
+
+            // 欺凌者 / 上位者
+            { name: "贺清寒", group: "欺凌者 / 上位者", img: "https://files.catbox.moe/hm2rw8.png", desc: "市干部之女，用专属欺凌进行扭曲的百合支配。" },
+            { name: "孙梦婷", group: "欺凌者 / 上位者", img: "https://files.catbox.moe/89j0zr.png", desc: "臭名昭著的校霸大姐大，用身体换取校外混混靠山，慕强凌弱。" },
+
+            // NPC / 旁观者
+            { name: "沈青禾", group: "NPC / 旁观者", img: "https://files.catbox.moe/cybf17.png", desc: "理想主义的新来年轻教师，想帮学生却屡屡碰壁，充满无力感。" },
+            { name: "方姐", group: "NPC / 旁观者", img: "https://files.catbox.moe/9m1t1z.png", desc: "慵懒爽利的网吧老板娘，是陈麦与在校外唯一的庇护者。" },
+            { name: "苏蔓", group: "NPC / 旁观者", img: "https://files.catbox.moe/yc1ht2.png", desc: "冷漠的明哲保身者，对校园暴力视而不见，只求不给自己添麻烦。" },
+            { name: "叶轻", group: "NPC / 旁观者", img: "https://files.catbox.moe/lqj7k6.png", desc: "游离于校园生态外的神秘转学生，中央高干之女，只对你偏爱。" }
+        ];
+
+        /* 生成单张卡片的HTML */
+        function createCardHtml(char) {
+            return `
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <img src="${char.img}" alt="${char.name}">
+                            <div class="name-bar">${char.name}</div>
+                        </div>
+                        <div class="flip-card-back">
+                            <div class="back-name">${char.name}</div>
+                            <div class="back-desc">${char.desc}</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        /* 渲染所有分组和卡片 */
+        function renderProfiles() {
+            const container = document.getElementById('profiles-container');
+            const groups = ["被欺凌者", "欺凌者 / 上位者", "NPC / 旁观者"];
+            let html = '';
+
+            groups.forEach(groupName => {
+                html += `<div class="group-title">📌 ${groupName}</div>`;
+                html += `<div class="card-grid">`;
+                characters.filter(c => c.group === groupName).forEach(char => {
+                    html += createCardHtml(char);
+                });
+                html += `</div>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        /* 初始化 */
+        $(function() {
+            renderProfiles();
+        });
+    </script>
+</body>
+</html>
