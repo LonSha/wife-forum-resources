@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>约会场景插图 - 信件动态交互版</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, "Microsoft YaHei", "Noto Sans JP", sans-serif;
+            background: transparent;
+            padding: 10px 0;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* 基础入场动画与持续悬浮 */
+        .letter-container {
+            width: 100%;
+            max-width: 520px;
+            margin: 10px auto;
+            opacity: 0;
+            transform: translateY(15px) rotate(-1deg);
+            animation:
+                letterDrop 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) forwards,
+                letterFloat 6s ease-in-out infinite 0.8s;
+        }
+
+        @keyframes letterDrop {
+            to { opacity: 1; transform: translateY(0) rotate(0deg); }
+        }
+
+        @keyframes letterFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+
+        .letter-envelope {
+            position: relative;
+            background: var(--letter-bg, #fefcf9);
+            border-radius: 14px;
+            padding: 28px 24px 24px;
+            box-shadow:
+                0 4px 12px rgba(0, 0, 0, 0.04),
+                0 12px 32px rgba(0, 0, 0, 0.06),
+                inset 0 0 0 1px var(--letter-border, rgba(200, 180, 160, 0.3));
+            border-top: 4px solid var(--letter-accent, #d4a89a);
+            overflow: hidden;
+            transition: box-shadow 0.4s ease;
+        }
+
+        .letter-container:hover .letter-envelope {
+            box-shadow:
+                0 8px 20px rgba(0, 0, 0, 0.05),
+                0 16px 40px rgba(0, 0, 0, 0.08),
+                inset 0 0 0 1px var(--letter-border, rgba(200, 180, 160, 0.4));
+        }
+
+        .letter-envelope::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image:
+                repeating-linear-gradient(
+                    0deg,
+                    transparent,
+                    transparent 27px,
+                    var(--letter-line, rgba(200, 180, 160, 0.1)) 27px,
+                    var(--letter-line, rgba(200, 180, 160, 0.1)) 28px
+                );
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .letter-envelope::after {
+            content: '';
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: 2px dashed var(--letter-accent, #d4a89a);
+            opacity: 0.3;
+            z-index: 1;
+            transition: transform 0.5s ease;
+        }
+
+        .letter-container:hover .letter-envelope::after {
+            transform: rotate(15deg) scale(1.05);
+        }
+
+        .letter-header {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid var(--letter-border, rgba(200, 180, 160, 0.2));
+        }
+
+        .letter-from {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .letter-from-label {
+            font-size: 10px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--letter-accent, #d4a89a);
+            font-weight: 700;
+            font-family: "SF Mono", Consolas, monospace;
+        }
+
+        .letter-from-name {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--letter-text, #3d3530);
+            letter-spacing: 1px;
+        }
+
+        /* 统一控制邮戳 SVG 的大小 */
+        .letter-stamp {
+            width: 48px;
+            height: 48px;
+            border-radius: 4px;
+            border: 2px solid var(--letter-accent, #d4a89a);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--letter-stamp-bg, rgba(212, 168, 154, 0.08));
+            color: var(--letter-accent, #d4a89a);
+            flex-shrink: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .letter-stamp svg {
+            width: 24px;
+            height: 24px;
+            flex-shrink: 0;
+        }
+
+        .letter-stamp::after {
+            content: '';
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            right: -2px;
+            bottom: -2px;
+            border: 3px dashed var(--letter-accent, #d4a89a);
+            opacity: 0.2;
+            border-radius: 6px;
+        }
+
+        /* 统一控制信件场景标签 SVG 的大小 */
+        .letter-scene-tag {
+            position: relative;
+            z-index: 2;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--letter-tag-bg, rgba(212, 168, 154, 0.1));
+            border: 1px solid var(--letter-border, rgba(200, 180, 160, 0.3));
+            border-radius: 20px;
+            padding: 5px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--letter-accent, #d4a89a);
+            margin-bottom: 16px;
+            letter-spacing: 0.5px;
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .letter-scene-tag svg {
+            width: 14px;
+            height: 14px;
+            flex-shrink: 0;
+        }
+
+        .letter-envelope:hover .letter-scene-tag {
+            transform: translateX(4px);
+        }
+
+        /* 图片区域悬停动效 */
+        .letter-photo {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            border-radius: 8px;
+            overflow: hidden;
+            background: var(--letter-photo-bg, #f0ebe6);
+            box-shadow:
+                0 3px 10px rgba(0, 0, 0, 0.08),
+                inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+            margin-bottom: 16px;
+            cursor: zoom-in;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .letter-photo:hover {
+            transform: translateY(-2px) scale(1.01);
+            box-shadow:
+                0 8px 20px rgba(0, 0, 0, 0.12),
+                0 0 0 2px var(--letter-accent, #d4a89a),
+                inset 0 0 0 1px rgba(0, 0, 0, 0.04);
+        }
+
+        .letter-photo-inner {
+            width: 100%;
+            aspect-ratio: 1612 / 832;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .letter-photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            opacity: 0;
+            transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+
+        .letter-photo img.loaded {
+            opacity: 1;
+        }
+
+        .letter-photo:hover img.loaded {
+            transform: scale(1.03);
+        }
+
+        .letter-photo-loading {
+            position: absolute;
+            font-size: 11px;
+            color: var(--letter-accent, #d4a89a);
+            font-family: "SF Mono", Consolas, monospace;
+            letter-spacing: 2px;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+
+        .letter-tape {
+            position: absolute;
+            top: -6px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-1deg);
+            width: 80px;
+            height: 22px;
+            background: var(--letter-tape-color, rgba(212, 168, 154, 0.25));
+            border-radius: 2px;
+            z-index: 3;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: background 0.3s ease;
+        }
+
+        .letter-footer {
+            position: relative;
+            z-index: 2;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px dashed var(--letter-border, rgba(200, 180, 160, 0.25));
+        }
+
+        .letter-date {
+            font-size: 11px;
+            color: var(--letter-muted, #b0a09a);
+            font-family: "SF Mono", Consolas, monospace;
+            letter-spacing: 1px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* 控制主信件底部相册按钮的 SVG 大小 */
+        .btn-gallery {
+            background: var(--letter-bg);
+            border: 1px solid var(--letter-accent);
+            color: var(--letter-accent);
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: "SF Mono", Consolas, monospace;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+        .btn-gallery svg {
+            width: 12px;
+            height: 12px;
+            flex-shrink: 0;
+        }
+
+        .btn-gallery:hover {
+            background: var(--letter-accent);
+            color: var(--letter-bg);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            transform: translateY(-1px);
+        }
+
+        .letter-corner {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            z-index: 1;
+            opacity: 0.4;
+        }
+
+        .letter-corner--tl { top: 8px; left: 8px; border-top: 2px solid var(--letter-accent); border-left: 2px solid var(--letter-accent); }
+        .letter-corner--br { bottom: 8px; right: 8px; border-bottom: 2px solid var(--letter-accent); border-right: 2px solid var(--letter-accent); }
+
+        /* ==================== 放大查看 Modal ==================== */
+        .date-image-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(20, 18, 16, 0.85);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 999999;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            cursor: zoom-out;
+            padding: 20px;
+        }
+
+        .date-image-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+
+        .date-image-modal img {
+            max-width: 95vw;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.3);
+            transform: scale(0.95);
+            transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .date-image-modal.show img {
+            transform: scale(1);
+        }
+
+        .date-modal-close-hint {
+            position: absolute;
+            top: 24px; right: 32px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 13px;
+            letter-spacing: 2px;
+            font-weight: 600;
+            font-family: "SF Mono", Consolas, monospace;
+            pointer-events: none;
+            background: rgba(0,0,0,0.4);
+            padding: 6px 12px;
+            border-radius: 20px;
+        }
+
+        /* ==================== Gallery 全局相册 ==================== */
+        .gallery-modal {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(252, 250, 248, 0.95); backdrop-filter: blur(12px);
+            z-index: 99999; display: flex; flex-direction: column; align-items: center;
+            opacity: 0; pointer-events: none; transition: opacity 0.4s ease; padding: 40px; overflow-y: auto;
+        }
+        .gallery-modal.active { opacity: 1; pointer-events: auto; }
+        .gallery-close {
+            position: absolute; top: 30px; right: 40px; width: 40px; height: 40px;
+            background: #fff; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 24px; color: #b8988a; box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            cursor: pointer; transition: all 0.3s; z-index: 100; font-weight: bold; border: 1px solid rgba(184,152,138,0.3);
+        }
+        .gallery-close:hover {
+            background: #d4a89a; color: #fff; transform: rotate(90deg) scale(1.1); box-shadow: 0 4px 15px rgba(212,168,154,0.3);
+        }
+        .gallery-header { width: 100%; max-width: 1000px; display: flex; flex-direction: column; gap: 16px; margin-bottom: 24px; }
+        .gallery-tabs { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+
+        .gallery-tab-btn {
+            background: #fff; border: 1px solid rgba(184,152,138,0.4); color: #8c7b74;
+            padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: bold;
+            cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+        }
+        .gallery-tab-btn:hover { border-color: #d4a89a; color: #d4a89a; }
+        .gallery-tab-btn.active { background: #d4a89a; color: #fff; border-color: #d4a89a; box-shadow: 0 4px 10px rgba(212,168,154,0.2); }
+
+        .scene-tab-btn {
+            background: #fff; border: 1px solid rgba(184,152,138,0.4); color: #8c7b74;
+            padding: 6px 14px; border-radius: 8px; font-size: 12px; font-weight: bold;
+            cursor: pointer; transition: all 0.3s; box-shadow: 0 2px 5px rgba(0,0,0,0.03);
+            display: flex; align-items: center; gap: 4px;
+        }
+
+        /* 控制 Gallery 场景按钮内 SVG 的严格显示区域 */
+        .scene-tab-icon {
+            width: 14px;
+            height: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            margin-right: 2px;
+        }
+
+        .scene-tab-icon svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .scene-tab-btn:hover { border-color: #d4a89a; color: #d4a89a; }
+        .scene-tab-btn.active { background: #d4a89a; color: #fff; border-color: #d4a89a; }
+
+        .gallery-grid { width: 100%; max-width: 1000px; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 24px; padding-bottom: 60px; }
+        .gallery-item {
+            width: 100%; aspect-ratio: 1612 / 832; border-radius: 10px; overflow: hidden;
+            background: #f0ebe6; box-shadow: 0 4px 12px rgba(0,0,0,0.06); position: relative;
+            cursor: zoom-in; transition: transform 0.3s, box-shadow 0.3s; opacity: 0;
+            transform: translateY(15px); border: 1px solid rgba(0,0,0,0.05);
+        }
+        .gallery-item.shown { animation: gridItemPop 0.5s ease forwards; }
+        @keyframes gridItemPop { to { opacity: 1; transform: translateY(0); } }
+        .gallery-item:hover { transform: translateY(-4px); box-shadow: 0 8px 20px rgba(212,168,154,0.25); border-color: #d4a89a; }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; opacity: 0; transition: opacity 0.5s ease; }
+        .gallery-item img.loaded { opacity: 1; }
+        .gallery-item .img-label {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            background: linear-gradient(transparent, rgba(61,53,48,0.85)); color: #fff;
+            padding: 15px 12px 8px; font-size: 11px; font-family: "SF Mono", Consolas, monospace;
+            opacity: 0; transition: opacity 0.3s; pointer-events: none;
+        }
+        .gallery-item:hover .img-label { opacity: 1; }
+
+        @media (max-width: 768px) {
+            .gallery-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+            .gallery-modal { padding: 20px 10px; }
+            .gallery-close { top: 15px; right: 15px; width: 35px; height: 35px; font-size: 20px; }
+            .gallery-tab-btn { padding: 5px 12px; font-size: 11px; }
+            .scene-tab-btn { padding: 5px 10px; font-size: 11px; }
+            .date-image-modal { padding: 10px; }
+            .date-modal-close-hint { top: 16px; right: 16px; font-size: 10px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="letter-container" id="content">
+        <div class="letter-envelope">
+            <div class="letter-photo-inner">
+                <div class="letter-photo-loading">LOADING...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 全局预览模态框 -->
+    <div id="date-image-modal" class="date-image-modal" onclick="window.closeDateImageModal()">
+        <div class="date-modal-close-hint">TAP TO CLOSE</div>
+        <img id="date-modal-img" src="" alt="PREVIEW">
+    </div>
+
+    <!-- Gallery 模态框 -->
+    <div class="gallery-modal" id="galleryModal">
+        <div class="gallery-close" onclick="closeGallery()">×</div>
+        <div class="gallery-header">
+            <div class="gallery-tabs" id="charTabs"></div>
+            <div class="gallery-tabs" id="sceneTabs" style="margin-top: 5px;"></div>
+        </div>
+        <div class="gallery-grid" id="galleryGrid"></div>
+    </div>
+
+    <script>
+        /* ========== 仓库配置 ========== */
+        // 默认仓库（其他角色使用）
+        var REPO_URL = "https://cdn.jsdelivr.net/gh/roxysl521-droid/tianjiang-buchong-@main/";
+        // 诗织专用仓库
+        var SHIORI_REPO_URL = "https://cdn.jsdelivr.net/gh/roxysl521-droid/tianjiang_buchong_bu@main/";
+
+        /* ========== SVG 矢量图标库 (移除硬编码宽高，靠CSS控制) ========== */
+        var SVG_LIB = {
+            pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>',
+            dyy: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"></rect><line x1="7" y1="2" x2="7" y2="22"></line><line x1="17" y1="2" x2="17" y2="22"></line><line x1="2" y1="12" x2="22" y2="12"></line><line x1="2" y1="7" x2="7" y2="7"></line><line x1="2" y1="17" x2="7" y2="17"></line><line x1="17" y1="17" x2="22" y2="17"></line><line x1="17" y1="7" x2="22" y2="7"></line></svg>',
+            gy:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"></path><line x1="2" y1="22" x2="11" y2="13"></line></svg>',
+            gj:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>',
+            hb:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"></path></svg>',
+            jj:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"></path><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"></path><line x1="6" y1="1" x2="6" y2="4"></line><line x1="10" y1="1" x2="10" y2="4"></line><line x1="14" y1="1" x2="14" y2="4"></line></svg>',
+            xrj: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4"></path><path d="M12 18v4"></path><path d="m4.93 4.93 2.83 2.83"></path><path d="m16.24 16.24 2.83 2.83"></path><path d="M2 12h4"></path><path d="M18 12h4"></path><path d="m4.93 19.07 2.83-2.83"></path><path d="m16.24 7.76 2.83-2.83"></path></svg>',
+            yly: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6.82a6 6 0 0 0-12 0c0 4.41 3.53 7.82 5.53 10.15.26.3.68.3.94 0 2-2.33 5.53-5.74 5.53-10.15Z"></path><path d="M12 2v2"></path><path d="M16.5 5 15 7"></path><path d="M7.5 5 9 7"></path><path d="M9 17h6v5H9z"></path></svg>',
+            gb:  '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>'
+        };
+
+        /* ========== 场景配置 ========== */
+        var SCENE_CONFIG = {
+            'dyy': { id: 'dyy', name: '电影院', count: 3, svgKey: 'dyy' },
+            'gy':  { id: 'gy', name: '公园', count: 3, svgKey: 'gy' },
+            'gj':  { id: 'gj', name: '逛街', count: 3, svgKey: 'gj' },
+            'hb':  { id: 'hb', name: '海边', count: 3, svgKey: 'hb' },
+            'jj':  { id: 'jj', name: '居家', count: 3, svgKey: 'jj' },
+            'xrj': { id: 'xrj', name: '夏日祭', count: 3, svgKey: 'xrj' },
+            'yly': { id: 'yly', name: '游乐园', count: 3, svgKey: 'yly' },
+            'gb':  { id: 'gb', name: '告白', count: 1, svgKey: 'gb' }
+        };
+
+        var SCENE_LIST = [
+            SCENE_CONFIG.dyy, SCENE_CONFIG.gy, SCENE_CONFIG.gj, SCENE_CONFIG.hb,
+            SCENE_CONFIG.jj, SCENE_CONFIG.xrj, SCENE_CONFIG.yly, SCENE_CONFIG.gb
+        ];
+
+        /* ========== 角色配色方案 ========== */
+        var CHAR_THEMES = {
+            'li_xu': {
+                name: '宫本 璃绪', en: 'Miyamoto Rio',
+                bg: '#f8f9fc', border: 'rgba(123, 158, 176, 0.2)', accent: '#7b9eb0',
+                line: 'rgba(123, 158, 176, 0.08)', text: '#2c3e50',
+                tagBg: 'rgba(123, 158, 176, 0.08)', stampBg: 'rgba(123, 158, 176, 0.06)',
+                tape: 'rgba(123, 158, 176, 0.2)', muted: '#8fa8b8', photoBg: '#eef3f6'
+            },
+            'jie_yue': {
+                name: '月见里 结月', en: 'Tsukimisato Yuzuki',
+                bg: '#fefcf8', border: 'rgba(216, 165, 139, 0.25)', accent: '#d4a07a',
+                line: 'rgba(216, 165, 139, 0.08)', text: '#4a3728',
+                tagBg: 'rgba(216, 165, 139, 0.08)', stampBg: 'rgba(216, 165, 139, 0.06)',
+                tape: 'rgba(216, 165, 139, 0.22)', muted: '#c0a08a', photoBg: '#f5efe8'
+            },
+            'ke_zi': {
+                name: '红林 刻子', en: 'Kurebayashi Koko',
+                bg: '#fef9f8', border: 'rgba(198, 91, 91, 0.2)', accent: '#c65b5b',
+                line: 'rgba(198, 91, 91, 0.06)', text: '#3d2020',
+                tagBg: 'rgba(198, 91, 91, 0.07)', stampBg: 'rgba(198, 91, 91, 0.05)',
+                tape: 'rgba(198, 91, 91, 0.18)', muted: '#c08888', photoBg: '#f8eeee'
+            },
+            'xue_nai': {
+                name: '月见里 雪乃', en: 'Tsukimisato Yukino',
+                bg: '#fcf8fa', border: 'rgba(155, 107, 131, 0.2)', accent: '#9b6b83',
+                line: 'rgba(155, 107, 131, 0.07)', text: '#3a2a33',
+                tagBg: 'rgba(155, 107, 131, 0.07)', stampBg: 'rgba(155, 107, 131, 0.05)',
+                tape: 'rgba(155, 107, 131, 0.18)', muted: '#b0909a', photoBg: '#f4eef1'
+            },
+            'qian_dong': {
+                name: '白峰 千冬', en: 'Shiramine Chifuyu',
+                bg: '#f9f9fa', border: 'rgba(108, 122, 137, 0.2)', accent: '#6c7a89',
+                line: 'rgba(108, 122, 137, 0.07)', text: '#2c3540',
+                tagBg: 'rgba(108, 122, 137, 0.07)', stampBg: 'rgba(108, 122, 137, 0.05)',
+                tape: 'rgba(108, 122, 137, 0.18)', muted: '#98a8b0', photoBg: '#eef0f2'
+            },
+            'yan_ye': {
+                name: '朝雾 言叶', en: 'Asagiri Kotoha',
+                bg: '#fef9fb', border: 'rgba(255, 182, 193, 0.25)', accent: '#e8909c',
+                line: 'rgba(255, 182, 193, 0.1)', text: '#4a2030',
+                tagBg: 'rgba(255, 182, 193, 0.08)', stampBg: 'rgba(255, 182, 193, 0.06)',
+                tape: 'rgba(255, 182, 193, 0.22)', muted: '#d0a0aa', photoBg: '#faf0f2'
+            },
+            'chen_xing_tong': {
+                name: '陈星瞳', en: 'Chen Xingtong',
+                bg: '#fffbf7', border: 'rgba(255, 159, 67, 0.2)', accent: '#e8934a',
+                line: 'rgba(255, 159, 67, 0.07)', text: '#4a3020',
+                tagBg: 'rgba(255, 159, 67, 0.07)', stampBg: 'rgba(255, 159, 67, 0.05)',
+                tape: 'rgba(255, 159, 67, 0.18)', muted: '#c8a070', photoBg: '#f8f0e8'
+            },
+            'chen': {
+                name: '如月 澄', en: 'Kisaragi Sumi',
+                bg: '#f8f9fc', border: 'rgba(136, 146, 176, 0.2)', accent: '#7882a8',
+                line: 'rgba(136, 146, 176, 0.07)', text: '#2a2e40',
+                tagBg: 'rgba(136, 146, 176, 0.07)', stampBg: 'rgba(136, 146, 176, 0.05)',
+                tape: 'rgba(136, 146, 176, 0.18)', muted: '#a0a8c0', photoBg: '#eef0f5'
+            },
+            'chun': {
+                name: '式部 椿', en: 'Shikibu Tsubaki',
+                bg: '#fdf8f8', border: 'rgba(181, 73, 91, 0.2)', accent: '#b5495b',
+                line: 'rgba(181, 73, 91, 0.06)', text: '#3a1820',
+                tagBg: 'rgba(181, 73, 91, 0.06)', stampBg: 'rgba(181, 73, 91, 0.04)',
+                tape: 'rgba(181, 73, 91, 0.16)', muted: '#c07080', photoBg: '#f5eced'
+            },
+            'jing_liu': {
+                name: '宫本 静流', en: 'Miyamoto Shizuru',
+                bg: '#faf9f8', border: 'rgba(157, 141, 143, 0.2)', accent: '#8d7d7f',
+                line: 'rgba(157, 141, 143, 0.07)', text: '#3a3335',
+                tagBg: 'rgba(157, 141, 143, 0.06)', stampBg: 'rgba(157, 141, 143, 0.04)',
+                tape: 'rgba(157, 141, 143, 0.16)', muted: '#b0a5a7', photoBg: '#f2efee'
+            },
+            'you_ye': {
+                name: '花菱 柚叶', en: 'Hanabishi Yuzuha',
+                bg: '#f8fafc', border: 'rgba(107, 130, 150, 0.2)', accent: '#5a7a96',
+                line: 'rgba(107, 130, 150, 0.07)', text: '#283848',
+                tagBg: 'rgba(107, 130, 150, 0.06)', stampBg: 'rgba(107, 130, 150, 0.04)',
+                tape: 'rgba(107, 130, 150, 0.16)', muted: '#90a8b8', photoBg: '#ecf1f5'
+            },
+            'you': {
+                name: '白峰 柚', en: 'Shiramine Yuzu',
+                bg: '#f9fafb', border: 'rgba(155, 164, 181, 0.2)', accent: '#7a8599',
+                line: 'rgba(155, 164, 181, 0.07)', text: '#303848',
+                tagBg: 'rgba(155, 164, 181, 0.06)', stampBg: 'rgba(155, 164, 181, 0.04)',
+                tape: 'rgba(155, 164, 181, 0.16)', muted: '#a0aab8', photoBg: '#eef0f3'
+            },
+            'sha_yin': {
+                name: '久世 纱英', en: 'Kuze Sae',
+                bg: '#fef9fb', border: 'rgba(232, 160, 180, 0.22)', accent: '#d888a0',
+                line: 'rgba(232, 160, 180, 0.08)', text: '#402830',
+                tagBg: 'rgba(232, 160, 180, 0.07)', stampBg: 'rgba(232, 160, 180, 0.05)',
+                tape: 'rgba(232, 160, 180, 0.2)', muted: '#c8a0b0', photoBg: '#f8eef2'
+            },
+            'kan': {
+                name: '神代 栞', en: 'Kamishiro Shiori',
+                bg: '#f4f6f8', border: 'rgba(84, 101, 118, 0.2)', accent: '#546576',
+                line: 'rgba(84, 101, 118, 0.08)', text: '#2a323a',
+                tagBg: 'rgba(84, 101, 118, 0.07)', stampBg: 'rgba(84, 101, 118, 0.05)',
+                tape: 'rgba(84, 101, 118, 0.18)', muted: '#8c9ba8', photoBg: '#eceef0'
+            },
+            // ★ 新增诗织角色，使用独立仓库
+            'shi_zhi': {
+                name: '诗织', en: 'Shiori',
+                repo: 'https://cdn.jsdelivr.net/gh/roxysl521-droid/tianjiang_buchong_bu@main/',
+                bg: '#fdf9fb', border: 'rgba(200, 130, 160, 0.25)', accent: '#c882a0',
+                line: 'rgba(200, 130, 160, 0.08)', text: '#402830',
+                tagBg: 'rgba(200, 130, 160, 0.08)', stampBg: 'rgba(200, 130, 160, 0.06)',
+                tape: 'rgba(200, 130, 160, 0.22)', muted: '#b890a0', photoBg: '#f8eef3'
+            }
+        };
+
+        var CHAR_LIST = Object.keys(CHAR_THEMES).map(function(key) {
+            return { id: key, name: CHAR_THEMES[key].name };
+        });
+
+        /* ========== 工具函数：获取角色对应的仓库前缀 ========== */
+        function getRepoUrl(charId) {
+            var theme = CHAR_THEMES[charId];
+            if (theme && theme.repo) return theme.repo;
+            return REPO_URL;
+        }
+
+        /* ========== Gallery 状态 ========== */
+        var currentGalleryChar = 'jie_yue';
+        var currentGalleryScene = 'dyy';
+
+        /* ========== 获取消息内容 ========== */
+        function getMessageData() {
+            try {
+                var chatMessages = getChatMessages(getCurrentMessageId());
+                if (!chatMessages || chatMessages.length === 0) return null;
+                return chatMessages[0].message;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        /* ========== 哈希函数 ========== */
+        function hashStr(str) {
+            var hash = 0;
+            if (!str || str.length === 0) return hash;
+            for (var i = 0; i < str.length; i++) {
+                var char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash = hash & hash;
+            }
+            return Math.abs(hash);
+        }
+
+        /* ========== 解析数据 ========== */
+        function parseData(messageText) {
+            var result = { char: '', scene: '', isValid: false, rawText: messageText };
+
+            var tagMatch = messageText.match(/<date_illust>([\s\S]*?)<\/date_illust>/);
+            if (!tagMatch || !tagMatch[1]) return result;
+            var content = tagMatch[1];
+
+            var charMatch = content.match(/\[角色\|(.*?)\]/);
+            if (charMatch && charMatch[1]) result.char = charMatch[1].trim();
+
+            var sceneMatch = content.match(/\[场景\|(.*?)\]/);
+            if (sceneMatch && sceneMatch[1]) result.scene = sceneMatch[1].trim();
+
+            if (result.char && result.scene) result.isValid = true;
+            return result;
+        }
+
+        /* ========== 模态框全局控制 ========== */
+        window.openDateImageModal = function(src) {
+            var modal = document.getElementById('date-image-modal');
+            var img = document.getElementById('date-modal-img');
+            if (modal && img) {
+                img.src = src;
+                modal.classList.add('show');
+            }
+        };
+
+        window.closeDateImageModal = function() {
+            var modal = document.getElementById('date-image-modal');
+            if (modal) {
+                modal.classList.remove('show');
+            }
+        };
+
+        window.openGallery = function() {
+            document.getElementById('galleryModal').classList.add('active');
+            renderGalleryTabs();
+            renderGalleryGrid();
+        };
+
+        window.closeGallery = function() {
+            document.getElementById('galleryModal').classList.remove('active');
+        };
+
+        window.setGalleryChar = function(id) {
+            currentGalleryChar = id;
+            renderGalleryTabs();
+            renderGalleryGrid();
+        };
+
+        window.setGalleryScene = function(id) {
+            currentGalleryScene = id;
+            renderGalleryTabs();
+            renderGalleryGrid();
+        };
+
+        /* ========== 图片错误处理 ========== */
+        window.handleDateImgError = function(imgElement) {
+            if (!imgElement.getAttribute('data-retried')) {
+                imgElement.setAttribute('data-retried', 'true');
+                imgElement.style.opacity = '0.1';
+                var loadingEl = imgElement.parentElement.querySelector('.letter-photo-loading');
+                if (loadingEl) loadingEl.textContent = 'IMAGE NOT FOUND';
+                /* 取消放大点击事件 */
+                if(imgElement.parentElement.parentElement) {
+                    imgElement.parentElement.parentElement.onclick = null;
+                    imgElement.parentElement.parentElement.style.cursor = 'default';
+                }
+            }
+        };
+
+        /* ========== Gallery 渲染 ========== */
+        function renderGalleryTabs() {
+            var charHtml = '';
+            CHAR_LIST.forEach(function(c) {
+                charHtml += '<div class="gallery-tab-btn ' + (c.id === currentGalleryChar ? 'active' : '') + '" onclick="setGalleryChar(\'' + c.id + '\')">' + c.name + '</div>';
+            });
+            document.getElementById('charTabs').innerHTML = charHtml;
+
+            var sceneHtml = '';
+            SCENE_LIST.forEach(function(s) {
+                var svgIcon = SVG_LIB[s.svgKey] || '';
+                sceneHtml += '<div class="scene-tab-btn ' + (s.id === currentGalleryScene ? 'active' : '') + '" onclick="setGalleryScene(\'' + s.id + '\')">' +
+                    '<span class="scene-tab-icon">' + svgIcon + '</span>' + s.name +
+                '</div>';
+            });
+            document.getElementById('sceneTabs').innerHTML = sceneHtml;
+        }
+
+        function renderGalleryGrid() {
+            var grid = document.getElementById('galleryGrid');
+            grid.innerHTML = '<div style="color:#b8988a;width:100%;text-align:center;grid-column: 1 / -1;padding:40px;">LOADING...</div>';
+
+            var scene = SCENE_CONFIG[currentGalleryScene];
+            var count = scene.count;
+            var html = '';
+            var animDelay = 0;
+
+            // 使用角色对应的仓库前缀
+            var repoBase = getRepoUrl(currentGalleryChar);
+
+            for (var i = 1; i <= count; i++) {
+                var imgName = '';
+                if (currentGalleryScene === 'gb') {
+                    imgName = currentGalleryChar + '_gb.png';
+                } else {
+                    imgName = currentGalleryChar + '_' + currentGalleryScene + '_' + i + '.png';
+                }
+
+                var fullUrl = repoBase + imgName;
+                html += '<div class="gallery-item shown" onclick="openDateImageModal(\'' + fullUrl + '\')" style="animation-delay: ' + animDelay + 's;">' +
+                    '<img src="' + fullUrl + '" loading="lazy" decoding="async" onload="this.classList.add(\'loaded\'); this.parentElement.style.background=\'transparent\';" onerror="this.parentElement.style.display=\'none\'">' +
+                    '<div class="img-label">' + imgName + '</div></div>';
+                animDelay += 0.05;
+            }
+            grid.innerHTML = html;
+        }
+
+        /* ========== 渲染主界面 ========== */
+        function renderPage(data) {
+            if (!data.isValid) return;
+
+            var charId = data.char;
+            var sceneId = data.scene;
+
+            /* 设置 Gallery 初始状态为当前信件的角色和场景 */
+            if (CHAR_THEMES[charId]) currentGalleryChar = charId;
+            if (SCENE_CONFIG[sceneId]) currentGalleryScene = sceneId;
+
+            var theme = CHAR_THEMES[charId] || CHAR_THEMES['jie_yue'];
+            var scene = SCENE_CONFIG[sceneId] || SCENE_CONFIG['gy'];
+
+            /* 拼接图片URL */
+            var imgName = '';
+            if (sceneId === 'gb') {
+                imgName = charId + '_gb.png';
+            } else {
+                var seed = hashStr(data.rawText);
+                var num = (seed % scene.count) + 1;
+                imgName = charId + '_' + sceneId + '_' + num + '.png';
+            }
+            // 使用角色对应的仓库前缀
+            var fullUrl = getRepoUrl(charId) + imgName;
+
+            /* 获取当前日期 */
+            var now = new Date();
+            var dateStr = now.getFullYear() + '.' + String(now.getMonth() + 1).padStart(2, '0') + '.' + String(now.getDate()).padStart(2, '0');
+
+            /* 获取图标 */
+            var stampSvg = SVG_LIB[scene.svgKey] || SVG_LIB.dyy;
+            var pinSvg = SVG_LIB.pin;
+
+            var html =
+                '<div class="letter-envelope" style="' +
+                    '--letter-bg: ' + theme.bg + ';' +
+                    '--letter-border: ' + theme.border + ';' +
+                    '--letter-accent: ' + theme.accent + ';' +
+                    '--letter-line: ' + theme.line + ';' +
+                    '--letter-text: ' + theme.text + ';' +
+                    '--letter-tag-bg: ' + theme.tagBg + ';' +
+                    '--letter-stamp-bg: ' + theme.stampBg + ';' +
+                    '--letter-tape-color: ' + theme.tape + ';' +
+                    '--letter-muted: ' + theme.muted + ';' +
+                    '--letter-photo-bg: ' + theme.photoBg + ';' +
+                '">' +
+                    '<div class="letter-corner letter-corner--tl"></div>' +
+                    '<div class="letter-corner letter-corner--br"></div>' +
+                    '<div class="letter-header">' +
+                        '<div class="letter-from">' +
+                            '<div class="letter-from-label">FROM</div>' +
+                            '<div class="letter-from-name">' + theme.name + '</div>' +
+                        '</div>' +
+                        '<div class="letter-stamp">' + stampSvg + '</div>' +
+                    '</div>' +
+                    '<div class="letter-scene-tag">' + pinSvg + scene.name + '</div>' +
+                    '<div class="letter-photo" onclick="openDateImageModal(\'' + fullUrl + '\')">' +
+                        '<div class="letter-tape"></div>' +
+                        '<div class="letter-photo-inner">' +
+                            '<div class="letter-photo-loading">DEVELOPING...</div>' +
+                            '<img src="' + fullUrl + '" onload="this.classList.add(\'loaded\'); var el=this.parentElement.querySelector(\'.letter-photo-loading\'); if(el) el.style.display=\'none\';" onerror="handleDateImgError(this)" decoding="async">' +
+                        '</div>' +
+                    '</div>' +
+                    '<div class="letter-footer">' +
+                        '<div class="letter-date">' +
+                            dateStr + ' — ' + theme.en +
+                        '</div>' +
+                        '<div class="btn-gallery" onclick="openGallery()">' +
+                            '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>' +
+                            '影像留存' +
+                        '</div>' +
+                    '</div>' +
+                '</div>';
+
+            document.getElementById('content').innerHTML = html;
+        }
+
+        /* ========== 主函数 ========== */
+        function init() {
+            try {
+                var messageText = getMessageData();
+                if (!messageText) return;
+                var data = parseData(messageText);
+                renderPage(data);
+            } catch (e) {
+                console.error("date_illust error:", e);
+            }
+        }
+
+        $(function() { init(); });
+    </script>
+</body>
+</html>
