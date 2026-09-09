@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>NSFW插图按钮</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'SF Mono', 'Consolas', 'Microsoft YaHei', monospace; background: transparent; padding: 4px 0; }
+        .nsfw-container { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; }
+        .nsfw-btn-group { display: flex; flex-direction: column; width: 100%; max-width: 600px; }
+
+        .nsfw-btn {
+            display: inline-flex; align-items: center; gap: 6px; align-self: flex-start;
+            padding: 5px 12px 5px 12px; border-radius: 20px; font-size: 12px;
+            cursor: pointer; white-space: nowrap; transition: all 0.3s ease;
+            background: rgba(30, 30, 35, 0.8); border: 1px solid rgba(255, 117, 151, 0.3);
+            color: #ff7597; backdrop-filter: blur(4px); user-select: none;
+        }
+        .nsfw-btn:hover { transform: translateY(-1px); background: rgba(50, 30, 35, 0.9); box-shadow: 0 2px 8px rgba(255, 117, 151, 0.3); }
+        .nsfw-btn .char-name { font-weight: 600; }
+        .nsfw-btn .action { font-size: 11px; opacity: 0.8; border-left: 1px solid rgba(255,117,151,0.2); padding-left: 6px; }
+        .nsfw-btn .arrow { font-size: 10px; transition: transform 0.3s ease; }
+        .nsfw-btn.expanded .arrow { transform: rotate(180deg); }
+
+        .nsfw-btn.theme-jixian { border-color: rgba(91, 122, 153, 0.4); color: #7a9bc0; }
+        .nsfw-btn.theme-jixian:hover { background: rgba(30, 40, 50, 0.9); box-shadow: 0 2px 8px rgba(91, 122, 153, 0.3); }
+        .nsfw-btn.theme-jixian .action { border-left-color: rgba(91,122,153,0.2); }
+
+        .nsfw-btn.theme-yinuo { border-color: rgba(200, 168, 130, 0.4); color: #d4b896; }
+        .nsfw-btn.theme-yinuo:hover { background: rgba(40, 35, 25, 0.9); box-shadow: 0 2px 8px rgba(200, 168, 130, 0.3); }
+        .nsfw-btn.theme-yinuo .action { border-left-color: rgba(200,168,130,0.2); }
+
+        .nsfw-btn.theme-chronos { border-color: rgba(155, 109, 255, 0.4); color: #b88eff; }
+        .nsfw-btn.theme-chronos:hover { background: rgba(35, 25, 45, 0.9); box-shadow: 0 2px 8px rgba(155, 109, 255, 0.3); }
+        .nsfw-btn.theme-chronos .action { border-left-color: rgba(155,109,255,0.2); }
+
+        .nsfw-image-wrapper { margin-top: 8px; width: 100%; overflow: hidden; max-height: 0; opacity: 0; transition: max-height 0.5s ease, opacity 0.3s ease; }
+        .nsfw-image-wrapper.show { max-height: 2000px; opacity: 1; margin-bottom: 12px; }
+        .nsfw-image-box { border-radius: 8px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 4px 20px rgba(0,0,0,0.5); background: rgba(20,20,25,0.6); position: relative; }
+        .nsfw-image-box img { display: block; width: 100%; height: auto; }
+        .nsfw-loading { text-align: center; padding: 30px; color: #888; font-size: 13px; }
+        .nsfw-loading::after { content: '...'; animation: dots 1.5s infinite; }
+        @keyframes dots { 0% { content: '.'; } 33% { content: '..'; } 66% { content: '...'; } }
+        .nsfw-error { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+        .nsfw-blur { filter: blur(20px); transition: filter 0.6s ease; cursor: pointer; }
+        .nsfw-blur:hover { filter: blur(15px); }
+        .nsfw-blur.revealed { filter: blur(0); }
+        .nsfw-blur-overlay { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.8); font-size: 14px; pointer-events: none; transition: opacity 0.4s ease; text-align: center; }
+        .nsfw-blur-overlay.hidden { opacity: 0; }
+    </style>
+</head>
+<body>
+    <div class="nsfw-container" id="nsfw-root">
+        <div class="nsfw-loading">正在解析场景数据</div>
+    </div>
+
+    <script>
+        (function() {
+            var me = document.currentScript;
+            var rootEl = me.previousElementSibling;
+
+            /* ===== 去重防卫锁 ===== */
+            /* 确保同一个气泡里只执行一次渲染，把多余的副本自毁 */
+            var msgNode = me.closest('.mes_text');
+            if (msgNode) {
+                if (msgNode.dataset.nsfwRendered === 'true') {
+                    rootEl.remove();
+                    return; /* 直接终止多余执行 */
+                }
+                msgNode.dataset.nsfwRendered = 'true';
+            }
+
+            /* 最新角色与动作映射 */
+            var charNameMap = { "纪弦": "jixian", "一诺": "yinuo", "柯萝": "chronos" };
+            var themeMap = { "纪弦": "theme-jixian", "一诺": "theme-yinuo", "柯萝": "theme-chronos" };
+            var actionMap = {
+                "事后": "after",
+                "性交": "sex",
+                "高潮": "climax",
+                "口交": "blowjob",
+                "足交": "footjob",
+                "肛交": "anal"
+            };
+
+            /* 图片基础路径 */
+            var imgBaseUrl = "https://raw.githubusercontent.com/KronosXup/---/chronos_assets/";
+
+            function getMessageData() {
+                if (typeof getChatMessages === 'undefined') return null;
+                var cm = getChatMessages(getCurrentMessageId());
+                return (!cm || cm.length === 0) ? null : cm[0].message;
+            }
+
+            function parseAllScenes(messageText) {
+                var scenes = [];
+                var regex = /<nsfw_scene>([\s\S]*?)<\/nsfw_scene>/g;
+                var match;
+                while ((match = regex.exec(messageText)) !== null) {
+                    var content = match[1];
+                    var lines = content.trim().split('\n');
+                    var parsingChars = false;
+                    for (var i = 0; i < lines.length; i++) {
+                        var text = lines[i].trim();
+                        if (!text) continue;
+                        if (text.indexOf('在场角色') !== -1) { parsingChars = true; continue; }
+                        if (parsingChars && (text.indexOf('-') === 0 || text.indexOf('- ') === 0)) {
+                            var parts = text.replace(/^-\s*/, '').trim().split('|');
+                            if (parts.length >= 2) {
+                                var name = parts[0].trim();
+                                var action = parts[1].trim();
+                                if (charNameMap[name] && actionMap[action]) {
+                                    scenes.push({ name: name, action: action, enName: charNameMap[name], enAction: actionMap[action] });
+                                }
+                            }
+                        }
+                    }
+                }
+                return scenes;
+            }
+
+            function getImageUrl(scene) {
+                return imgBaseUrl + scene.enName + '/' + scene.enName + '_' + scene.enAction + '.png';
+            }
+
+            function renderPage(scenes) {
+                if (!rootEl) return;
+                if (scenes.length === 0) {
+                    rootEl.innerHTML = '<div style="color:#666;font-size:12px;padding:4px;display:none;">无NSFW场景数据</div>';
+                    return;
+                }
+                var html = '';
+                for (var i = 0; i < scenes.length; i++) {
+                    var s = scenes[i];
+                    var theme = themeMap[s.name] || 'theme-default';
+                    html += '<div class="nsfw-btn-group">';
+                    html += '<div class="nsfw-btn ' + theme + '" data-index="' + i + '">';
+                    html += '<span class="char-name">' + s.name + '</span>';
+                    html += '<span class="action">' + s.action + '</span>';
+                    html += '<span class="arrow">▼</span>';
+                    html += '</div>';
+                    html += '<div class="nsfw-image-wrapper" id="img-wrapper-' + i + '">';
+                    html += '<div class="nsfw-image-box" id="img-box-' + i + '">';
+                    html += '<div class="nsfw-loading">加载中</div>';
+                    html += '</div>';
+                    html += '</div>';
+                    html += '</div>';
+                }
+                rootEl.innerHTML = html;
+                bindClickEvents(scenes);
+            }
+
+            function bindClickEvents(scenes) {
+                var buttons = rootEl.querySelectorAll('.nsfw-btn');
+                buttons.forEach(function(btn) {
+                    btn.addEventListener('click', function() {
+                        var idx = parseInt(this.getAttribute('data-index'));
+                        var wrapper = rootEl.querySelector('#img-wrapper-' + idx);
+                        var box = rootEl.querySelector('#img-box-' + idx);
+                        if (!wrapper || !box) return;
+                        if (this.classList.contains('expanded')) {
+                            this.classList.remove('expanded');
+                            wrapper.classList.remove('show');
+                        } else {
+                            this.classList.add('expanded');
+                            wrapper.classList.add('show');
+                            if (!box.dataset.loaded) {
+                                loadImage(scenes[idx], box, idx);
+                            }
+                        }
+                    });
+                });
+            }
+
+            function loadImage(scene, box, idx) {
+                box.dataset.loaded = 'true';
+                var url = getImageUrl(scene);
+                var img = new Image();
+                img.onload = function() {
+                    box.innerHTML = '';
+                    var blur = document.createElement('img');
+                    blur.src = url;
+                    blur.className = 'nsfw-blur';
+                    blur.style.cursor = 'pointer';
+                    var overlay = document.createElement('div');
+                    overlay.className = 'nsfw-blur-overlay';
+                    overlay.textContent = '点击查看';
+                    blur.addEventListener('click', function() {
+                        blur.classList.add('revealed');
+                        overlay.classList.add('hidden');
+                    });
+                    box.appendChild(blur);
+                    box.appendChild(overlay);
+                };
+                img.onerror = function() {
+                    box.innerHTML = '<div class="nsfw-error">图片加载失败<br><span style="font-size:11px;opacity:0.6;">' + scene.name + ' | ' + scene.action + '</span><br><span style="font-size:10px;opacity:0.4;margin-top:4px;display:block;">URL: ' + url + '</span></div>';
+                };
+                img.src = url;
+            }
+
+            function init() {
+                try {
+                    var messageText = getMessageData();
+                    if (!messageText) {
+                        /* 加点延时再试一次，确保不是消息还没刷新完 */
+                        setTimeout(function(){
+                            messageText = getMessageData();
+                            if (!messageText) {
+                                if (rootEl) rootEl.innerHTML = '';
+                                return;
+                            }
+                            var scenes = parseAllScenes(messageText);
+                            renderPage(scenes);
+                        }, 500);
+                        return;
+                    }
+                    var scenes = parseAllScenes(messageText);
+                    renderPage(scenes);
+                } catch (error) {
+                    if (rootEl) rootEl.innerHTML = '<div style="color:#ff7597;font-size:12px;padding:4px;">解析失败：' + error.message + '</div>';
+                }
+            }
+
+            setTimeout(init, 100);
+        })();
+    </script>
+</body>
+</html>
