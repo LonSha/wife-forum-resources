@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+<title>剧情插画</title>
+<style>
+.zw-illu{margin:10px auto;max-width:480px;text-align:center}
+.zw-illu-img{width:100%;border-radius:12px;display:block}
+.zw-illu-cap{font-size:12px;color:#888;margin-top:6px;letter-spacing:2px;font-weight:700}
+html,body{overflow-x:hidden;}
+        </style>
+</head>
+<body>
+<div class="zw-illu-slot" style="display:none"></div>
+<script>
+(function() {
+    var slot = (document.currentScript && document.currentScript.previousElementSibling) || (function() {
+        var all = document.querySelectorAll('.zw-illu-slot');
+        for (var i = all.length - 1; i >= 0; i--) {
+            if (!all[i].hasAttribute('data-zw-done')) { all[i].setAttribute('data-zw-done', '1'); return all[i]; }
+        }
+        return null;
+    })();
+    function hide() { if (slot) slot.style.display = 'none'; }
+    try {
+        if (!slot) return;
+        if (typeof getChatMessages !== 'function' || typeof getCurrentMessageId !== 'function') return hide();
+        var mid = getCurrentMessageId();
+        if (typeof mid !== 'number') return hide();
+        try {
+            var _thMsgs = getChatMessages(mid);
+            if (_thMsgs && _thMsgs.length && _thMsgs[0] && _thMsgs[0].role === 'user') return hide();
+        } catch (_thE) { /* role 查询失败时放行：本正则 placement 已限定 AI 输出楼层 */ }
+        var msgs = getChatMessages(mid);
+        if (!msgs || !msgs.length) return hide();
+/* 满血API纯文字降级：API/模型名含“满血”时只留纯文字（fail-open：异常则正常渲染） */
+function uwIsFullBlood(msgObj){
+  try{
+    var budget={n:0};
+    function scan(v,depth){
+      if(v==null||depth>4||budget.n>300)return false;
+      if(typeof v==='string'){budget.n++;return v.indexOf('满血')!==-1;}
+      if(typeof v!=='object')return false;
+      if(Object.prototype.toString.call(v)==='[object Array]'){for(var i=0;i<v.length&&i<12;i++){try{if(scan(v[i],depth+1))return true;}catch(e){}}return false;}
+      var skip={message:1,raw:1,mes:1,chat:1,messages:1,characters:1,character:1,lorebook:1,lorebooks:1,worldbook:1,prompt:1,prompts:1,data:1,html:1,innerHTML:1};
+      for(var k in v){
+        if(!Object.prototype.hasOwnProperty.call(v,k))continue;
+        if(skip[k])continue;
+        var val=null;
+        try{val=v[k];}catch(e){continue;}
+        try{if(scan(val,depth+1))return true;}catch(e){}
+      }
+      return false;
+    }
+    try{if(msgObj&&scan(msgObj,0))return true;}catch(e){}
+    var ctx=null;
+    try{if(window.SillyTavern&&window.SillyTavern.getContext)ctx=window.SillyTavern.getContext();}catch(e){ctx=null;}
+    if(!ctx){try{if(window.parent&&window.parent.SillyTavern&&window.parent.SillyTavern.getContext)ctx=window.parent.SillyTavern.getContext();}catch(e){ctx=null;}}
+    try{if(ctx&&scan(ctx,0))return true;}catch(e){}
+  }catch(e){}
+  return false;
+}
+function uwCurMsg(){
+  try{if(typeof getChatMessages==='function'&&typeof getCurrentMessageId==='function'){var m=getChatMessages(getCurrentMessageId());if(m&&m.length)return m[0];}}catch(e){}
+  return null;
+}
+        try{if(uwIsFullBlood(msgs[0]))return hide();}catch(e){}
+        var text = msgs[0].message || '';
+var locArr = tuLastTags(/\[地点\|([^\]]*)\]/, text);
+        var loc = locArr.length ? locArr[locArr.length-1] : '';
+        var indoor = /室|房|屋|宅|家|厅|厨|浴|汤|店|馆|玄关|廊|厕|仓|所/.test(loc);
+        var scene = indoor ? '房间' : '室外';
+        var storyM = text.match(/<story>([\s\S]*?)<\/story>/);
+        var src = storyM ? storyM[1] : text;
+        var re = /\[([^|\]]+)\|([^\]]+)\]/g, m, lastWho = '', lastEmo = '';
+        while ((m = re.exec(src)) !== null) { var _w2 = m[1].trim(); if (/^(地点|时间|插图|旁白)$/.test(_w2)) continue; lastWho = _w2; lastEmo = m[2].trim(); }
+        if (!lastWho) return hide();
+        var focus0=tuFocusSpeaker(src);
+        if(!focus0.ch) return hide(); var ch=focus0.ch; lastWho=focus0.name; lastEmo=focus0.emo;
+        var emoMap = { '开心': '开心', '生气': '生气', '害羞': '害羞', '嫌弃': '嫌弃', '伤心': '委屈', '喜欢': '开心', '惊讶': '平淡', '紧张': '平淡', '淡定': '平淡', '吃醋': '生气' };
+        var emo = emoMap[lastEmo] || '平淡';
+        var TU_BASE = 'https://raw.githubusercontent.com/roxysl521-droid/bingruo-tu-1/main/';
+        var TU_SCENES = [{"name":"家门口","keys":["家门口","门口","大门"],"fallback":"逛街","actions":[{"act":"逛街","keys":["逛","散步","出门","闲逛"]}]},{"name":"村口","keys":["村口"],"fallback":"逛街","actions":[{"act":"逛街","keys":["逛","散步","出门","闲逛"]}]},{"name":"村内","keys":["村内","村里","村子"],"fallback":"逛街","actions":[{"act":"逛街","keys":["逛","散步","出门","闲逛"]}]},{"name":"家","keys":["老宅","二楼","房间","客厅","厨房","餐厅","饭厅","院子","玄关","宅","家"],"fallback":"吹风扇","actions":[{"act":"一起洗澡","keys":["洗澡","浴室","泡澡"]},{"act":"怀里写作业","keys":["怀里写","怀中写","腿上写","怀里做","怀里听课"]},{"act":"怀里睡觉","keys":["怀里睡","怀中睡","腿上睡"]},{"act":"写作业","keys":["作业","习题","功课"]},{"act":"听收音机","keys":["收音机","广播"]},{"act":"吹风扇","keys":["风扇","吹风"]},{"act":"吃汉堡肉","keys":["汉堡肉","汉堡"]},{"act":"吃刨冰","keys":["刨冰"]},{"act":"吃冰棍","keys":["冰棍","冰棒"]},{"act":"吃饭","keys":["吃饭","晚饭","午饭","早饭","米饭"]},{"act":"看电视","keys":["电视"]},{"act":"洗漱","keys":["洗漱","刷牙","洗脸"]},{"act":"玄关出门","keys":["玄关","出门","换鞋"]},{"act":"睡醒","keys":["睡醒","醒来","起床","刚醒"]},{"act":"沙发睡觉","keys":["沙发"]},{"act":"暖炉休息","keys":["暖炉"]},{"act":"做饭","keys":["做饭","做菜","下厨"]},{"act":"午睡","keys":["午睡","午觉"]},{"act":"晒衣服","keys":["晒衣服","晾衣","晾晒"]}]},{"name":"人工海水浴场","keys":["人工海水","海水浴场"],"fallback":"闲逛","actions":[{"act":"吃刨冰","keys":["刨冰"]},{"act":"游泳","keys":["游泳","泳衣","戏水"]},{"act":"休息","keys":["休息","发呆"]},{"act":"闲逛","keys":["闲逛","散步","逛"]}]},{"name":"海边","keys":["海边","沙滩","海岸","海滩"],"fallback":"非泳装","actions":[{"act":"泳装","keys":["泳衣","泳装","比基尼","游泳","戏水"]},{"act":"赶海","keys":["赶海","贝壳","潮汐","退潮","螃蟹"]},{"act":"非泳装","keys":[]}]},{"name":"体育馆","keys":["体育馆"],"fallback":"休息","actions":[{"act":"休息","keys":["休息","发呆"]},{"act":"闲逛","keys":["闲逛","散步"]}]},{"name":"古本屋","keys":["古本屋","书店","旧书"],"fallback":"看书","actions":[{"act":"看书","keys":["看书","读书"]},{"act":"休息","keys":["休息","发呆"]}]},{"name":"商店","keys":["商店","大熊商店","大熊","购物"],"fallback":"购物","actions":[{"act":"购物","keys":["购物","买","采购"]}]},{"name":"杉木林道","keys":["杉木","林道"],"fallback":"闲逛","actions":[{"act":"寻宝","keys":["寻宝","宝藏","探险"]},{"act":"休息","keys":["休息","发呆"]},{"act":"闲逛","keys":["闲逛","散步"]}]},{"name":"海鸣小学旧址","keys":["小学","旧址","校舍"],"fallback":"闲逛","actions":[{"act":"玩乐","keys":["玩乐","玩耍","捉迷藏","游戏","玩"]},{"act":"休息","keys":["休息","发呆"]},{"act":"闲逛","keys":["闲逛","散步"]}]},{"name":"海鸣神社","keys":["神社"],"fallback":"参拜","actions":[{"act":"参拜","keys":["参拜","祈愿","求签","许愿"]},{"act":"休息","keys":["休息","发呆"]},{"act":"闲逛","keys":["闲逛","散步"]}]},{"name":"潮汤","keys":["潮汤","澡堂"],"fallback":"泡温泉","actions":[{"act":"泡温泉","keys":["温泉","泡汤"]},{"act":"喝牛奶","keys":["牛奶"]},{"act":"清洗身体","keys":["洗身","冲洗","擦身","洗头","淋浴"]}]},{"name":"炭窑遗址","keys":["炭窑","遗址"],"fallback":"闲逛","actions":[{"act":"寻宝","keys":["寻宝","宝藏","探险"]},{"act":"休息","keys":["休息","发呆"]},{"act":"闲逛","keys":["闲逛","散步"]}]},{"name":"离岸提","keys":["离岸提","离岸堤"],"fallback":"闲逛","star":true,"actions":[{"act":"看星星","keys":["星星","夜空","观星"]},{"act":"闲逛","keys":["闲逛","散步"]}]},{"name":"肉的坂本","keys":["坂本","肉店","可乐饼"],"fallback":"买可乐饼","actions":[{"act":"买可乐饼","keys":["可乐饼"]},{"act":"挑猪肉","keys":["猪肉","选肉"]}]},{"name":"车站","keys":["车站","站前","巴士"],"fallback":"等车","actions":[{"act":"等车","keys":["等车","巴士","候车"]}]},{"name":"龙王崎展望台","keys":["展望台","龙王崎"],"fallback":"闲逛","actions":[{"act":"钓鱼","keys":["钓鱼","钓竿","鱼竿"]},{"act":"休息","keys":["休息","发呆"]},{"act":"闲逛","keys":["闲逛","散步","眺望","看海"]}]},{"name":"婚纱","special":true,"keys":["婚纱","结婚","嫁衣","婚礼","新娘"],"fallback":"婚纱","actions":[{"act":"婚纱","keys":[]}]},{"name":"怀孕","special":true,"keys":["怀孕","孕妇","身孕"],"fallback":"怀孕","actions":[{"act":"怀孕","keys":[]}]},{"name":"生子","special":true,"keys":["生子","宝宝","婴儿","出生","分娩"],"fallback":"生子","actions":[{"act":"生子","keys":[]}]}];
+        var TU_COUNTS = {"人工海水浴场|休息":5,"人工海水浴场|吃刨冰":5,"人工海水浴场|游泳":5,"人工海水浴场|闲逛":5,"体育馆|休息":5,"体育馆|闲逛":5,"古本屋|休息":5,"古本屋|看书":5,"商店|购物":5,"婚纱|婚纱":3,"家|一起洗澡":5,"家|写作业":5,"家|吃冰棍":5,"家|吃刨冰":5,"家|吃汉堡肉":5,"家|吃饭":5,"家|听收音机":5,"家|吹风扇":5,"家|怀里写作业":5,"家|怀里睡觉":5,"家|暖炉休息":5,"家|沙发睡觉":5,"家|洗漱":5,"家|玄关出门":5,"家|看电视":5,"家|睡醒":5,"家门口|逛街":8,"怀孕|怀孕":3,"杉木林道|休息":5,"杉木林道|寻宝":5,"杉木林道|闲逛":5,"村内|逛街":8,"村口|逛街":8,"海边|泳装":5,"海边|赶海":5,"海边|非泳装":5,"海鸣小学旧址|休息":5,"海鸣小学旧址|玩乐":5,"海鸣小学旧址|闲逛":5,"海鸣神社|休息":5,"海鸣神社|参拜":5,"海鸣神社|闲逛":5,"潮汤|喝牛奶":5,"潮汤|泡温泉":5,"潮汤|清洗身体":5,"炭窑遗址|休息":5,"炭窑遗址|寻宝":5,"炭窑遗址|闲逛":5,"生子|生子":3,"离岸提|看星星":5,"离岸提|闲逛":5,"肉的坂本|买可乐饼":5,"肉的坂本|挑猪肉":5,"车站|等车":5,"龙王崎展望台|休息":5,"龙王崎展望台|钓鱼":5,"龙王崎展望台|闲逛":5};
+        var TU_HE = {"人工海水浴场|休息":5,"人工海水浴场|吃刨冰":5,"人工海水浴场|游泳":5,"人工海水浴场|闲逛":5,"体育馆|休息":5,"体育馆|闲逛":5,"古本屋|休息":5,"古本屋|看书":5,"商店|购物":5,"婚纱|婚纱":3,"家|一起洗澡":5,"家|做饭":5,"家|午睡":5,"家|吃冰棍":5,"家|吃刨冰":5,"家|吃汉堡肉":5,"家|吃饭":5,"家|吹风扇":5,"家|晒衣服":5,"家|暖炉休息":5,"家|洗漱":5,"家|玄关出门":5,"家|看电视":5,"家|睡醒":5,"家门口|逛街":8,"怀孕|怀孕":3,"杉木林道|休息":5,"杉木林道|寻宝":5,"杉木林道|闲逛":5,"村内|逛街":8,"村口|逛街":8,"海边|泳装":5,"海边|赶海":5,"海边|非泳装":5,"海鸣小学旧址|休息":5,"海鸣小学旧址|玩乐":5,"海鸣小学旧址|闲逛":5,"海鸣神社|休息":5,"海鸣神社|参拜":5,"海鸣神社|闲逛":5,"潮汤|喝牛奶":5,"潮汤|泡温泉":5,"潮汤|清洗身体":5,"炭窑遗址|休息":5,"炭窑遗址|寻宝":5,"炭窑遗址|闲逛":5,"生子|生子":3,"离岸提|看星星":5,"离岸提|闲逛":5,"肉的坂本|买可乐饼":5,"肉的坂本|挑猪肉":5,"车站|等车":5,"龙王崎展望台|休息":5,"龙王崎展望台|钓鱼":5,"龙王崎展望台|闲逛":5};
+        var TU_HE_TR = {'商店':'大熊商店','离岸提':'离岸堤'};
+
+        var TU_CHA_BASE = "https://raw.githubusercontent.com/roxysl521-droid/bingruo-cha-ru/main/";
+var TU_AV_EMOS = ['开心','生气','伤心','紧张','淡定','害羞','嫌弃','喜欢','惊讶','吃醋'];
+var TU_CHA_EMO = {'开心':'开心','喜欢':'开心','生气':'生气','嫌弃':'嫌弃','害羞':'害羞','伤心':'委屈','委屈':'委屈','紧张':'平淡','淡定':'平淡','惊讶':'平淡','吃醋':'生气'};
+/* 按内容推断情绪：显式有效情绪优先；平淡/未知/缺失才走推断 */
+function tuInferEmo(content, ch) {
+    var s = String(content || '');
+    if (/翻白眼|啧|才怪|懒得|切[，。！？、…]|白眼/.test(s)) return '嫌弃';
+    if (/哼|呸|滚|烦死|闭嘴|笨死|气死|混蛋|讨厌/.test(s)) return '生气';
+    if (/吃醋|酸溜溜/.test(s)) return '吃醋';
+    if (/笑|哈|嘻|开心|好耶|太好了/.test(s)) return '开心';
+    if (/喜欢你|爱你|爱/.test(s)) return '喜欢';
+    if (/哭|呜|叹气|唉|难过|对不起|抱歉|眼泪/.test(s)) return '伤心';
+    if (/怕|发抖|抖|紧张|不敢|缩/.test(s)) return '紧张';
+    if (/脸红|羞|别看|羞死|耳根/.test(s)) return '害羞';
+    if (/诶|啊|呀|哇|欸|什么|怎么会|真的吗|不会吧/.test(s)) return '惊讶';
+    if (/？|\?/.test(s)) return '惊讶';
+    if (/！|!/.test(s)) return '开心';
+    if (/…|\.\.\.|～|—/.test(s)) return '淡定';
+    return '';
+}
+function tuNormEmo(raw, content, ch) {
+    var r = String(raw || '').trim();
+    if (r && TU_AV_EMOS.indexOf(r) >= 0) return r;
+    var inf = tuInferEmo(content, ch);
+    if (inf) return inf;
+    if (ch === '鹤') return '开心';
+    return '淡定';
+}
+        /* 焦点人物：tag台词字数最多者（平局后来者居上），结尾短喊不再劫持配图 */
+        function tuFocusSpeaker(src) {
+            var re = /^\[([^|\]]+)\|([^\]]+)\]\s*(.*)$/gm, m;
+            var totals = {}, infos = {}, order = [];
+            while ((m = re.exec(src)) !== null) {
+                var w = m[1].trim();
+                if (/^(地点|时间|插图|旁白)$/.test(w)) continue;
+                var c = (w.indexOf('鹤') !== -1) ? '鹤' : ((w.indexOf('澪') !== -1) ? '澪' : '');
+                if (!c) continue;
+                var txt = (m[3] || '').trim();
+                if (!totals[c]) { totals[c] = 0; infos[c] = { name: w, emo: m[2].trim(), first: m.index, last: m.index }; order.push(c); }
+                totals[c] += txt.length;
+                infos[c].name = w; infos[c].emo = m[2].trim(); infos[c].last = m.index;
+            }
+            var best = '', bestN = -1, fi;
+            for (fi = 0; fi < order.length; fi++) { var kk = order[fi]; if (totals[kk] >= bestN) { best = kk; bestN = totals[kk]; } }
+            if (!best) return { ch: '', name: '', emo: '', span: '', win: '' };
+            var s0 = src.lastIndexOf('\n', infos[best].first) + 1;
+            /* 注意：收到正文结尾（不是最后一个tag行尾），tag之后的旁白属于同一情境；
+               人物归属已由戏份锁死，尾巴只能贡献场景/动作，抢不走角色 */
+            var span = src.slice(s0);
+            var win = span.slice(-Math.max(150, Math.floor(span.length * 0.4)));
+            return { ch: best, name: infos[best].name, emo: infos[best].emo, span: span, win: win };
+        }
+        /* 背景音排除：紧贴响/放着/传来/听见/背景/播着/顺便的关键词命中不算动作 */
+        function tuAmbientHit(hay, key) {
+            var p = -1;
+            while ((p = hay.indexOf(key, p + 1)) >= 0) {
+                var near = hay.slice(Math.max(0, p - 8), p + key.length + 8);
+                if (/响|放着|传来|听见|背景|播着|顺便/.test(near)) continue;
+                return true;
+            }
+            return false;
+        }
+function tuLastTags(re, text) {
+            var arr = [], m;
+            var r = new RegExp(re.source, 'g');
+            while ((m = r.exec(text)) !== null) { arr.push(m[1]); }
+            return arr;
+        }
+        function tuCountOcc(haystack, needle) {
+            if (!needle) return 0;
+            var c = 0, p = 0;
+            while ((p = haystack.indexOf(needle, p)) !== -1) { c++; p += needle.length; }
+            return c;
+        }
+        function tuScoreScenes(src, locAll, locTag) {
+            var out = [], si, sc, ki, best, how, s, occ;
+            for (si = 0; si < TU_SCENES.length; si++) {
+                sc = TU_SCENES[si]; best = 0; how = '';
+                for (ki = 0; ki < sc.keys.length; ki++) {
+                    var k = sc.keys[ki]; if (!k) continue;
+                    if (sc.special) {
+                        if (src.indexOf(k) !== -1 || locAll.indexOf(k) !== -1) { s = 1000 + k.length * 10; if (s > best) { best = s; how = 'special'; } }
+                    } else {
+                        occ = tuCountOcc(src, k);
+                        if (occ > 0) {
+                            s = k.length * occ;
+                            if (locTag && locTag.indexOf(k) !== -1) s += 5;
+                            if (s > best) { best = s; how = 'src'; }
+                        }
+                    }
+                }
+                out.push({ sc: sc, score: best, how: how, idx: si });
+            }
+            out.sort(function(a, b) { return b.score - a.score || a.idx - b.idx; });
+            return out;
+        }
+        function tuLocFallback(locTag) {
+            if (!locTag) return [];
+            for (var si = 0; si < TU_SCENES.length; si++) {
+                var sc = TU_SCENES[si];
+                if (sc.special) continue;
+                for (var ki = 0; ki < sc.keys.length; ki++) {
+                    if (sc.keys[ki] && locTag.indexOf(sc.keys[ki]) !== -1) return [{ sc: sc, score: 1, how: 'locFallback', idx: si }];
+                }
+            }
+            return [];
+        }
+        function tuScoreAct(scene, hay, cntFn) {
+            var best = null, ai, a, wi, s, hits;
+            for (ai = 0; ai < scene.actions.length; ai++) {
+                a = scene.actions[ai];
+                if (!cntFn(scene.name, a.act)) continue;
+                s = 0; hits = 0;
+                for (wi = 0; wi < a.keys.length; wi++) {
+                    var k = a.keys[wi]; if (!k) continue;
+                    if (hay.indexOf(k) !== -1) { s += k.length; hits++; }
+                }
+                if (s > 0 && (!best || s > best.score || (s === best.score && hits > best.hits))) best = { act: a.act, score: s, hits: hits };
+            }
+            return best;
+        }
+        function tuPick(){
+            /* 级联选图：角色(已定)→场景→动作；动作只看本轮焦点窗，无命中返回null走情绪兜底 */
+            var tCntFn = function(sn, a){ return (ch==='鹤')?(TU_HE[sn+'|'+a]||0):(TU_COUNTS[sn+'|'+a]||0); };
+            function tuSceneHas(sn){
+                var sc=null, si0, ai0;
+                for(si0=0; si0<TU_SCENES.length; si0++) if(TU_SCENES[si0].name===sn) sc=TU_SCENES[si0];
+                if(!sc) return false;
+                if(tCntFn(sn, sc.fallback)) return true;
+                for(ai0=0; ai0<sc.actions.length; ai0++) if(tCntFn(sn, sc.actions[ai0].act)) return true;
+                return false;
+            }
+            var focus2=tuFocusSpeaker(src); var focusHay = focus2.win + '\n' + loc;
+            var ranked = tuScoreScenes(focus2.span, locArr.join('\n'), loc);
+            var scenePick = null, ri, ent;
+            for(ri=0; ri<ranked.length; ri++){ ent=ranked[ri]; if(ent.score<=0||!tuSceneHas(ent.sc.name)) continue; scenePick=ent.sc; break; }
+            if(!scenePick){ var fb=tuLocFallback(loc), fi; for(fi=0; fi<fb.length; fi++) if(tuSceneHas(fb[fi].sc.name)){ scenePick=fb[fi].sc; break; } }
+            if(!scenePick) return null;
+            if(scenePick.special) return {scene:scenePick.name, act:scenePick.fallback, fb:scenePick.fallback};
+            var best=null, ai, a, wi, s, hits, k;
+            for(ai=0; ai<scenePick.actions.length; ai++){
+                a=scenePick.actions[ai];
+                if(!tCntFn(scenePick.name, a.act)) continue;
+                s=0; hits=0;
+                for(wi=0; wi<a.keys.length; wi++){ k=a.keys[wi]; if(!k) continue; if (tuAmbientHit(focusHay, k)) { s += k.length; hits++; } }
+                if(s>0 && (!best || s>best.score || (s===best.score && hits>best.hits))) best={act:a.act, score:s, hits:hits};
+            }
+            if(!best && scenePick.star){
+                var timeM2=text.match(/\[时间\|([^\]]*)\]/);
+                var nightHay2=((timeM2?timeM2[1]:'')+' '+locArr.join(' ')+' '+focusHay);
+                if(/夜|晚|凌晨|星空/.test(nightHay2)||/(^|\D)(2[0-3]|0\d|0?[0-5])[:时]/.test(nightHay2)){ if(tCntFn(scenePick.name,'看星星')) best={act:'看星星', score:1, hits:0}; }
+            }
+            if(!best) return null;
+            return {scene:scenePick.name, act:best.act, fb:scenePick.fallback};
+        }
+var NS_BASE='https://raw.githubusercontent.com/roxysl521-droid/bingruo-nsf/main/';
+        var NS_SCENES=['厕所','客厅','房间','浴室','海边','温泉','野外'];
+        var NS_ACTS={'乳交':3,'口交':3,'后入位':5,'后入位_高潮':5,'正常位':5,'正常位_高潮':5,'足交':3,'骑乘位':5,'骑乘位_高潮':5};
+        var NS_MAP={'家门口':'野外','村口':'野外','村内':'野外','家':'房间','老宅':'房间','二楼':'房间','房间':'房间','宅':'房间','厨房':'房间','院子':'房间','玄关':'房间','人工海水浴场':'海边','海边':'海边','体育馆':'野外','古本屋':'野外','商店':'野外','杉木林道':'野外','海鸣小学旧址':'野外','海鸣神社':'野外','潮汤':'温泉','炭窑遗址':'野外','离岸提':'海边','肉的坂本':'野外','车站':'野外','龙王崎展望台':'海边','婚纱':'房间','怀孕':'房间','生子':'房间'};
+        var NS_KEYS=['口交','乳交','足交','后入','骑乘','跨坐','手交','插入','抽插','肉棒','阴茎','龟头','做爱','交合','性交','潮吹','射精','中出'];
+        function nsScene(){
+            var hay=loc+' '+src;
+            if(/客厅/.test(hay)) return '客厅';
+            if(/厕/.test(hay)) return '厕所';
+            if(/浴室/.test(hay)) return '浴室';
+            if(/温泉/.test(hay)) return '温泉';
+            for(var k in NS_MAP){ if(loc.indexOf(k)!==-1) return NS_MAP[k]; }
+            return '野外';
+        }
+        function nsFile(){
+            var hay=src+'\n'+loc;
+            for(var i=0;i<NS_KEYS.length;i++){ if(hay.indexOf(NS_KEYS[i])!==-1){
+                var sc=nsScene();
+                var act='';
+                if(hay.indexOf('手交')!==-1) act=(ch==='鹤'&&sc==='房间')?'手交':'';
+                else if(hay.indexOf('足交')!==-1) act='足交';
+                else if(hay.indexOf('乳交')!==-1) act='乳交';
+                else if(hay.indexOf('口交')!==-1) act='口交';
+                else if(hay.indexOf('后入')!==-1) act=(/高潮|绝顶|潮吹|去了/.test(hay)?'后入位_高潮':'后入位');
+                else if(hay.indexOf('骑乘')!==-1||hay.indexOf('跨坐')!==-1) act=(/高潮|绝顶|潮吹|去了/.test(hay)?'骑乘位_高潮':'骑乘位');
+                else act=(/高潮|绝顶|潮吹/.test(hay)?'正常位_高潮':'正常位');
+                if(!act) return '';
+                var n=(ch==='鹤'&&act==='手交')?((sc==='房间')?3:0):(NS_ACTS[act]||0);
+                if(!n) return '';
+                return ch+'_'+sc+'_'+act+'_'+(1+Math.floor(Math.random()*n))+'.png';
+            }}
+            return '';
+        }
+        var file,url,capStem='';
+        var nsf=nsFile();
+        if(nsf){ url=NS_BASE+encodeURIComponent(nsf); capStem=nsf.replace(/\.png$/,'').split('_').slice(1,-1).join(' · '); }
+        else{
+                var pick=tuPick();
+        if(!pick){
+            /* 情绪插图兜底：角色_室内外_情绪（cha-ru 图床，每组10张） */
+            var emoN2 = tuNormEmo(lastEmo, focus0.span, ch);
+            var chaEmo2 = TU_CHA_EMO[emoN2] || '平淡';
+            var idx2b = 1 + Math.floor(Math.random()*10);
+            file = ch + '_' + scene + '_' + chaEmo2 + '_' + idx2b + '.png';
+            capStem = file.replace(/\.png$/,'').split('_').slice(1,-1).join(' · ');
+            url = TU_CHA_BASE + encodeURIComponent(file);
+        } else {
+        var tAct=pick.act;
+        var tCnt=function(a){ return (ch==='鹤')?(TU_HE[pick.scene+'|'+a]||0):(TU_COUNTS[pick.scene+'|'+a]||0); };
+        var total=tCnt(tAct);
+        if(!total){ tAct=pick.fb; total=tCnt(tAct); }
+        if(!total) return hide();
+        var tsc=(pick.scene==='离岸提')?'离岸堤':(((pick.scene==='商店')&&(ch==='鹤'))?'大熊商店':pick.scene);
+        file=(tAct===pick.scene)?(ch+'_'+tsc+'_'+(1+Math.floor(Math.random()*total))+'.png'):(ch+'_'+tsc+'_'+tAct+'_'+(1+Math.floor(Math.random()*total))+'.png');
+        capStem=file.replace(/\.png$/,'').split('_').slice(1,-1).join(' · '); url=TU_BASE+encodeURIComponent(file);
+        }
+
+        }
+        /* 优先把插图插入正文段落中间（正文/插图/正文）；跨 iframe 不可达或段落不足时退回正文末尾原位渲染 */
+        function insertMidStory(u2, w2, e2) {
+            var frame = null;
+            try { frame = window.frameElement || null; } catch (eF) { frame = null; }
+            if (!frame || !frame.parentElement) return false;
+            function hasComp(el) { try { return !!(el.querySelector && el.querySelector('iframe,script,video,audio')); } catch (eC) { return false; } }
+            var cont = frame.parentElement;
+            while (cont && cont.children.length === 1 && cont.ownerDocument && cont !== cont.ownerDocument.body) cont = cont.parentElement; /* 穿出 TH-render 等单子包装层 */
+            if (!cont || !cont.children) return false;
+            var blocks = [], i, el;
+            for (i = 0; i < cont.children.length; i++) {
+                el = cont.children[i];
+                if (el.contains(frame)) break;
+                if (el.nodeType !== 1 || hasComp(el)) continue;
+                blocks.push(el);
+            }
+            if (blocks.length === 1 && blocks[0].children.length >= 2 && !hasComp(blocks[0])) {
+                var inner = [], j, c2;
+                for (j = 0; j < blocks[0].children.length; j++) {
+                    c2 = blocks[0].children[j];
+                    if (c2.nodeType === 1 && !hasComp(c2)) inner.push(c2);
+                }
+                if (inner.length >= 2) { cont = blocks[0]; blocks = inner; }
+            }
+            if (blocks.length < 2) return false;
+            var anchor = blocks[Math.ceil(blocks.length / 2) - 1];
+            var d = frame.ownerDocument || document;
+            var w3 = d.createElement('div');
+            w3.setAttribute('style', 'margin:10px auto;max-width:480px;text-align:center');
+            var im3 = d.createElement('img');
+            im3.setAttribute('src', u2);
+            im3.setAttribute('alt', '');
+            im3.setAttribute('loading', 'lazy');
+            im3.setAttribute('decoding', 'async');
+            im3.setAttribute('style', 'width:100%;border-radius:12px;display:block');
+            im3.onerror = function() { try { if (w3.parentNode) w3.parentNode.removeChild(w3); } catch (eR) {} };
+            var cp3 = d.createElement('div');
+            cp3.setAttribute('style', 'font-size:12px;color:#888;margin-top:6px;letter-spacing:2px;font-weight:700');
+            cp3.textContent = e2 ? (w2 + ' · ' + e2) : w2;
+            w3.appendChild(im3); w3.appendChild(cp3);
+            if (anchor.nextSibling) cont.insertBefore(w3, anchor.nextSibling); else cont.appendChild(w3);
+            return true;
+        }
+        if (insertMidStory(url, capStem ? (lastWho + ' · ' + capStem) : lastWho, '')) { hide(); }
+        else {
+            var wrap = document.createElement('div');
+            wrap.className = 'zw-illu';
+            var img = document.createElement('img');
+            img.className = 'zw-illu-img'; img.alt = ''; img.decoding = 'async';
+            var cap = document.createElement('div');
+            cap.className = 'zw-illu-cap'; cap.textContent = capStem ? (lastWho + ' · ' + capStem) : lastWho;
+            var done = false;
+            img.onload = function() { if (!done) { done = true; wrap.appendChild(img); wrap.appendChild(cap); slot.appendChild(wrap); slot.style.display = ''; } };
+            img.onerror = function() { hide(); };
+            img.src = url;
+        }
+    } catch (e) { hide(); }
+})();
+</script>
+</body>
+</html>
