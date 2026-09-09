@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>状态栏</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Microsoft YaHei", sans-serif;
+            background: transparent;
+            padding: 8px 0;
+            width: 100%;
+        }
+
+        .status-bar-container {
+            max-width: 100%;
+            margin: 0 auto;
+            background: linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%);
+            border-left: 4px solid #4a90e2;
+            border-right: 1px solid #e1ecf8;
+            border-top: 1px solid #e1ecf8;
+            border-bottom: 1px solid #e1ecf8;
+            border-radius: 6px;
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(74, 144, 226, 0.08);
+            gap: 12px;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #334e68;
+            flex: 1;
+        }
+
+        .status-icon {
+            display: inline-block;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background-color: #4a90e2;
+        }
+
+        .status-icon.location {
+            background-color: #5c6ac4;
+        }
+
+        .status-icon.time {
+            background-color: #47c1bf;
+        }
+
+        .status-label {
+            font-weight: bold;
+            color: #243b53;
+            white-space: nowrap;
+        }
+
+        .status-value {
+            color: #486581;
+            word-break: break-all;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 10px;
+            color: #829ab1;
+            font-size: 13px;
+            background: #f0f7ff;
+            border-radius: 6px;
+            border: 1px solid #e1ecf8;
+        }
+
+        /* 响应式调整，当屏幕较窄时换行 */
+        @media (max-width: 480px) {
+            .status-bar-container {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .status-item {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="content">
+        <div class="loading">读取状态数据中...</div>
+    </div>
+
+    <script>
+        /* ========== 获取消息内容 ========== */
+        function getMessageData() {
+            var chatMessages = getChatMessages(getCurrentMessageId());
+            if (!chatMessages || chatMessages.length === 0) {
+                console.error("无法获取消息内容");
+                return null;
+            }
+            return chatMessages[0].message;
+        }
+
+        /* ========== 解析数据 ========== */
+        function parseData(messageText) {
+            var result = {
+                characters: "未知角色",
+                location: "未知地点",
+                time: "未知时间"
+            };
+
+            /* 提取 mess 标签内容 */
+            var tagMatch = messageText.match(/<mess>([\s\S]*?)<\/mess>/);
+            if (!tagMatch || !tagMatch[1]) {
+                console.error("未找到 mess 标签");
+                return result;
+            }
+            var content = tagMatch[1].trim();
+
+            /* 按竖线分割数据: 角色名|地点|时间 */
+            var parts = content.split('|');
+
+            if (parts.length >= 1 && parts[0].trim()) {
+                result.characters = parts[0].trim();
+            }
+            if (parts.length >= 2 && parts[1].trim()) {
+                result.location = parts[1].trim();
+            }
+            if (parts.length >= 3 && parts[2].trim()) {
+                result.time = parts[2].trim();
+            }
+
+            return result;
+        }
+
+        /* ========== 渲染界面 ========== */
+        function renderPage(data) {
+            var html = '<div class="status-bar-container">' +
+                '<div class="status-item">' +
+                    '<span class="status-icon"></span>' +
+                    '<span class="status-label">登场角色：</span>' +
+                    '<span class="status-value">' + (data.characters || '无') + '</span>' +
+                '</div>' +
+                '<div class="status-item">' +
+                    '<span class="status-icon location"></span>' +
+                    '<span class="status-label">当前地点：</span>' +
+                    '<span class="status-value">' + (data.location || '未知') + '</span>' +
+                '</div>' +
+                '<div class="status-item">' +
+                    '<span class="status-icon time"></span>' +
+                    '<span class="status-label">当前时间：</span>' +
+                    '<span class="status-value">' + (data.time || '未知') + '</span>' +
+                '</div>' +
+            '</div>';
+
+            document.getElementById('content').innerHTML = html;
+        }
+
+        /* ========== 主函数 ========== */
+        function init() {
+            try {
+                var messageText = getMessageData();
+                if (!messageText) {
+                    document.getElementById('content').innerHTML =
+                        '<div class="loading">❌ 无法获取状态数据</div>';
+                    return;
+                }
+                var data = parseData(messageText);
+                renderPage(data);
+            } catch (error) {
+                console.error("解析错误:", error);
+                document.getElementById('content').innerHTML =
+                    '<div class="loading">❌ 状态栏加载失败</div>';
+            }
+        }
+
+        $(function() { init(); });
+    </script>
+</body>
+</html>
