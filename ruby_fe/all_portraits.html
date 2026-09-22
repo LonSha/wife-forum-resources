@@ -750,7 +750,7 @@
         <!-- 快速跳转按钮 -->
         <div class="action-bar">
           <button class="jump-btn" onclick="openCharJumpModal()">
-            👥 快速角色选择目录 (60+ 角色速查)
+            👥 快速角色选择目录 (98 角色速查)
           </button>
         </div>
       </div>
@@ -826,7 +826,7 @@
       <div class="char-jump-header">
         <div class="char-jump-title">
           <span>👥</span>
-          <span>角色快速目录 (共 60+ 位角色)</span>
+          <span>角色快速目录 (共 98 位角色)</span>
         </div>
         <button class="char-jump-close" onclick="closeCharJumpModalDirect()">✕</button>
       </div>
@@ -895,6 +895,9 @@ const GH = "https://raw.githubusercontent.com/";
     const R43 = GH + "AliceNekoqqq/Pic/master/img/1.png";
     const R44 = GH + "ningj8622-coder/-1/554d68072b068abbc69fcffc9e1ce657af209c21";R45 = GH + "ningj8622-coder/-1/8ce3b51cff803e8db22e90b8639b1cd6a6efcd8d";
     const R46 = GH + "q969833-web/youyue-photo1/main";
+    const R47 = GH + "ningj8622-coder/-1/97367ebbc5037756d775fbbdb3cb46e997e43231";
+    const R48 = GH + "ningj8622-coder/-1/ae641aea627547d8f430dc214060aea739efa237";
+    const R49 = GH + "ningj8622-coder/-1/e614b8e4ead1096c14ae2e74ebb8c11452743078"; /* preg */
 
     // ==========================================
     // 🔮 预设配置区
@@ -970,6 +973,29 @@ const GH = "https://raw.githubusercontent.com/";
           { key: "gangbang_aftermath", label: "群交事后" },
           { key: "orgasm", label: "高潮" },
           { key: "cowgirl", label: "女上位" },
+        ],
+      },
+      flame: {
+        label: "洛杉矶",
+        sfw: [
+          { key: "casual", label: "常服" },
+          { key: "loungewear", label: "居家" },
+          { key: "outing", label: "外出" },
+          { key: "lingerie", label: "内衣" },
+          { key: "naked", label: "赤裸" },
+          { key: "uniform", label: "制服" },
+        ],
+        nsfw: [
+          { key: "blowjob", label: "口交" },
+          { key: "footjob", label: "足交" },
+          { key: "holding_pee", label: "憋尿" },
+          { key: "sex", label: "性交" },
+          { key: "anal", label: "肛交" },
+          { key: "orgasm", label: "高潮" },
+          { key: "plug_training", label: "肛塞调教" },
+          { key: "bondage_training", label: "捆绑调教" },
+          { key: "exhibition", label: "露出" },
+          { key: "nude_selfie", label: "全裸自拍" },
         ],
       },
     };
@@ -1178,6 +1204,11 @@ const GH = "https://raw.githubusercontent.com/";
       { id: "yinyishu", name: "尹以菽", preset: "modern", sfwBase: "WAITING_FOR_IMAGE_HOST", nsfwBase: "WAITING_FOR_IMAGE_HOST", overrides: { uniform: "https://raw.githubusercontent.com/xm212617-code/-/fd50c8148a4a3efb6ed9b54ddf189d461a947b20/yinyishu_jk.png", daily: "https://raw.githubusercontent.com/xm212617-code/-/fd50c8148a4a3efb6ed9b54ddf189d461a947b20/yinyishu_tee.png", outing: "https://raw.githubusercontent.com/xm212617-code/-/fd50c8148a4a3efb6ed9b54ddf189d461a947b20/yinyishu_out.png", nsfw: "https://raw.githubusercontent.com/xm212617-code/-/38c41d466b8ae3437f4594c0d98f9be0481e4ffe/yinyishu_nude_nsfw.png", blowjob: "https://raw.githubusercontent.com/xm212617-code/-/38c41d466b8ae3437f4594c0d98f9be0481e4ffe/yinyishu_blowjob_nsfw.png", footjob: "https://raw.githubusercontent.com/xm212617-code/-/38c41d466b8ae3437f4594c0d98f9be0481e4ffe/yinyishu_footjob_nsfw.png", sex: "https://raw.githubusercontent.com/xm212617-code/-/38c41d466b8ae3437f4594c0d98f9be0481e4ffe/yinyishu_sex_nsfw.png", training: "https://raw.githubusercontent.com/xm212617-code/-/38c41d466b8ae3437f4594c0d98f9be0481e4ffe/yinyishu_training_nsfw.png", exhibition: "https://raw.githubusercontent.com/xm212617-code/-/38c41d466b8ae3437f4594c0d98f9be0481e4ffe/yinyishu_daily_exposure_nsfw.png", daily_strip_nsfw: "https://raw.githubusercontent.com/xm212617-code/-/38c41d466b8ae3437f4594c0d98f9be0481e4ffe/yinyishu_daily_strip_nsfw.png", blowjob_nsfw: "https://raw.githubusercontent.com/xm212617-code/-/38c41d466b8ae3437f4594c0d98f9be0481e4ffe/yinyishu_blowjob_nsfw.png", buttplug_nsfw: "https://raw.githubusercontent.com/xm212617-code/-/38c41d466b8ae3437f4594c0d98f9be0481e4ffe/yinyishu_buttplug_nsfw.png", outing_strip_nsfw: "https://raw.githubusercontent.com/xm212617-code/-/38c41d466b8ae3437f4594c0d98f9be0481e4ffe/yinyishu_outing_strip_nsfw.png", jk_training_nsfw: "https://raw.githubusercontent.com/xm212617-code/-/38c41d466b8ae3437f4594c0d98f9be0481e4ffe/yinyishu_jk_training_nsfw.png", jk_sex_nsfw: "https://raw.githubusercontent.com/xm212617-code/-/38c41d466b8ae3437f4594c0d98f9be0481e4ffe/yinyishu_jk_sex_nsfw.png", footjob_nsfw: "https://raw.githubusercontent.com/xm212617-code/-/38c41d466b8ae3437f4594c0d98f9be0481e4ffe/yinyishu_footjob_nsfw.png", sex_nsfw: "https://raw.githubusercontent.com/xm212617-code/-/38c41d466b8ae3437f4594c0d98f9be0481e4ffe/yinyishu_sex_nsfw.png", gym_blowjob_nsfw: "https://raw.githubusercontent.com/xm212617-code/-/38c41d466b8ae3437f4594c0d98f9be0481e4ffe/yinyishu_gym_blowjob_nsfw.png", gym_sex_nsfw: "https://raw.githubusercontent.com/xm212617-code/-/38c41d466b8ae3437f4594c0d98f9be0481e4ffe/yinyishu_gym_sex_nsfw.png", daily_blowjob_nsfw: "https://raw.githubusercontent.com/xm212617-code/-/38c41d466b8ae3437f4594c0d98f9be0481e4ffe/yinyishu_daily_blowjob_nsfw.png", daily_exposure_nsfw: "https://raw.githubusercontent.com/xm212617-code/-/38c41d466b8ae3437f4594c0d98f9be0481e4ffe/yinyishu_daily_exposure_nsfw.png", jk_strip_nsfw: "https://raw.githubusercontent.com/xm212617-code/-/38c41d466b8ae3437f4594c0d98f9be0481e4ffe/yinyishu_jk_strip_nsfw.png", training_nsfw: "https://raw.githubusercontent.com/xm212617-code/-/38c41d466b8ae3437f4594c0d98f9be0481e4ffe/yinyishu_training_nsfw.png", exposure_training_nsfw: "https://raw.githubusercontent.com/xm212617-code/-/38c41d466b8ae3437f4594c0d98f9be0481e4ffe/yinyishu_exposure_training_nsfw.png", outing_exposure_nsfw: "https://raw.githubusercontent.com/xm212617-code/-/38c41d466b8ae3437f4594c0d98f9be0481e4ffe/yinyishu_outing_exposure_nsfw.png", home_sex_nsfw: "https://raw.githubusercontent.com/xm212617-code/-/38c41d466b8ae3437f4594c0d98f9be0481e4ffe/yinyishu_home_sex_nsfw.png", daily_training_nsfw: "https://raw.githubusercontent.com/xm212617-code/-/38c41d466b8ae3437f4594c0d98f9be0481e4ffe/yinyishu_daily_training_nsfw.png" } },
       { id: "shenci", name: "沈辞", preset: "modern", sfwBase: "https://raw.githubusercontent.com/samlinxi/img/main/img", nsfwBase: "https://raw.githubusercontent.com/samlinxi/img/main/img", overrides: {} },
       { id: "ai_luo_yi", name: "艾洛伊", preset: "modern", sfwBase: "WAITING_FOR_IMAGE_HOST", nsfwBase: "WAITING_FOR_IMAGE_HOST", overrides: { uniform: "https://raw.githubusercontent.com/ningj8622-coder/-1/83c321febee6cb540c01f55e66a807c6da1abbe0/ai_luo_yi_uniform_calm.png", daily: "https://raw.githubusercontent.com/ningj8622-coder/-1/83c321febee6cb540c01f55e66a807c6da1abbe0/ai_luo_yi_daily_calm.png", outing: "https://raw.githubusercontent.com/ningj8622-coder/-1/83c321febee6cb540c01f55e66a807c6da1abbe0/ai_luo_yi_outing_calm.png", training: "https://raw.githubusercontent.com/ningj8622-coder/-1/83c321febee6cb540c01f55e66a807c6da1abbe0/ai_luo_yi_training_calm.png", naked: "https://raw.githubusercontent.com/ningj8622-coder/-1/83c321febee6cb540c01f55e66a807c6da1abbe0/ai_luo_yi_naked_calm.png" } }
+,
+      { id: "sophie", name: "苏菲", preset: "flame", sfwBase: R47, nsfwBase: R47, pregBase: R49, overrides: {} },
+      { id: "eloy", name: "埃洛伊", preset: "flame", sfwBase: R47, nsfwBase: R47, pregBase: R49, overrides: {} },
+      { id: "illya", name: "伊莉雅", preset: "flame", sfwBase: R47, nsfwBase: R47, pregBase: R48, overrides: {} },
+      { id: "jessica", name: "杰西卡", preset: "flame", sfwBase: R48, nsfwBase: R48, pregBase: R48, overrides: {} }
     ];
 
     const fallbackAvatars = {
@@ -1200,7 +1231,7 @@ const GH = "https://raw.githubusercontent.com/";
       liu_qiyin: "刘", bai_xiaoxue: "白", lin_wenxia: "林", xu_yuanji: "许",
       xu_yuan: "许", anlin: "安", shujing: "淑", lanxin: "兰",
       sunqi: "孙", zhu_yue: "朱", zhao_shiqing: "赵", zhu_juexiang: "祝",
-      pei_shuquan: "裴", zhi_yun: "智", tang_mi: "唐", lin_yue: "林"
+      pei_shuquan: "裴", zhi_yun: "智", tang_mi: "唐", lin_yue: "林", sophie: "苏", eloy: "埃", jessica: "杰", illya: "伊"
     };
 
     // --- 全局状态管理 ---
@@ -1249,6 +1280,15 @@ const GH = "https://raw.githubusercontent.com/";
         return `${base}/pei_shuquan_uniform${Math.random() > 0.5 ? "" : "2"}.png`;
       }
       return `${base}/${charData.id}_${variantKey}.png`;
+    }
+
+    function getPregImageUrl(charData, variantKey) {
+      if (charData.overrides && charData.overrides["pregnant_" + variantKey]) {
+        return charData.overrides["pregnant_" + variantKey];
+      }
+      const base = charData.pregBase;
+      if (!base || base === "WAITING_FOR_IMAGE_HOST") return "";
+      return `${base}/${charData.id}_pregnant_${variantKey}.png`;
     }
 
     function toggleGlobalVersion() {
@@ -1537,6 +1577,30 @@ const GH = "https://raw.githubusercontent.com/";
       });
       nsfwSection.appendChild(nsfwGrid);
       galleryContainer.appendChild(nsfwSection);
+
+      if (char.pregBase) {
+        const pregSfwSection = document.createElement("div");
+        pregSfwSection.innerHTML = `<div class="section-title">怀孕情境 · 普通 (SFW)</div>`;
+        const pregSfwGrid = document.createElement("div");
+        pregSfwGrid.className = "grid";
+        presetConfig.sfw.forEach((variant) => {
+          const url = getPregImageUrl(char, variant.key);
+          pregSfwGrid.appendChild(createGridItem(`怀孕·${variant.label}`, `${char.id}_pregnant_${variant.key}.png`, char.id, true, "pregnant_" + variant.key, char.name));
+        });
+        pregSfwSection.appendChild(pregSfwGrid);
+        galleryContainer.appendChild(pregSfwSection);
+
+        const pregNsfwSection = document.createElement("div");
+        pregNsfwSection.innerHTML = `<div class="section-title">怀孕情境 · 私密 (NSFW)</div>`;
+        const pregNsfwGrid = document.createElement("div");
+        pregNsfwGrid.className = "grid";
+        presetConfig.nsfw.forEach((variant) => {
+          const url = getPregImageUrl(char, variant.key);
+          pregNsfwGrid.appendChild(createGridItem(`怀孕·${variant.label}`, `${char.id}_pregnant_${variant.key}.png`, char.id, false, "pregnant_" + variant.key, char.name));
+        });
+        pregNsfwSection.appendChild(pregNsfwGrid);
+        galleryContainer.appendChild(pregNsfwSection);
+      }
     }
 
     function createGridItem(tag, filename, charId, isSfw, variantKey, charName) {
