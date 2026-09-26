@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --bg: #0b0a0f;
+            --text: #f3f0ff;
+            --muted: #9ea0b5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: transparent;
+            color: var(--text);
+            padding: 12px 8px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            max-width: 300px;
+            margin: 0 auto 8px;
+            padding: 0;
+        }
+
+        .item img {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 6px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+            object-fit: cover;
+        }
+
+        .item .placeholder {
+            width: 100%;
+            max-width: 300px;
+            min-height: 360px;
+            border-radius: 6px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--muted);
+            font-size: 56px;
+            font-weight: 700;
+        }
+
+        .label {
+            color: var(--muted);
+            font-size: 13px;
+            letter-spacing: 0.04em;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="list"></div>
+
+    <script>
+        const baseUrlMap = {
+            pei_yunzhi: 'WAITING_FOR_IMAGE_HOST',
+            liang_yuhu: 'WAITING_FOR_IMAGE_HOST',
+            liang_yuling: 'WAITING_FOR_IMAGE_HOST',
+            xiao_guiluan: 'WAITING_FOR_IMAGE_HOST',
+            chu_xiu: 'WAITING_FOR_IMAGE_HOST',
+            chi_xuan: 'WAITING_FOR_IMAGE_HOST',
+            sikong_yejing: 'WAITING_FOR_IMAGE_HOST',
+            liang_yingluo: 'WAITING_FOR_IMAGE_HOST',
+            hua_suwan: 'WAITING_FOR_IMAGE_HOST',
+            xiao_yuyan: 'WAITING_FOR_IMAGE_HOST'
+        };
+
+        const overrideUrls = {
+            // 裴韫之
+            'pei_yunzhi_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之n26fw/裴韫之n26fw/-6.webp',
+            'pei_yunzhi_blowjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之n26fw/裴韫之n26fw/-2.webp',
+            'pei_yunzhi_footjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之n26fw/裴韫之n26fw/-10.webp',
+            'pei_yunzhi_breastjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之n26fw/裴韫之n26fw/-5.webp',
+            'pei_yunzhi_anal': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之n26fw/裴韫之n26fw/-11.webp',
+            'pei_yunzhi_doggystyle': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之n26fw/裴韫之n26fw/-1.webp',
+            'pei_yunzhi_standing_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之n26fw/裴韫之n26fw/-8.webp',
+            'pei_yunzhi_outdoor_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之n26fw/裴韫之n26fw/-7.webp',
+            'pei_yunzhi_masturbation': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之n26fw/裴韫之n26fw/-9.webp',
+            'pei_yunzhi_orgasm': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之n26fw/裴韫之n26fw/.webp',
+            'pei_yunzhi_cowgirl': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之n26fw/裴韫之n26fw/-4.webp',
+            'pei_yunzhi_bathing': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之n26fw/裴韫之n26fw/-3.png',
+
+            // 梁钰虎
+            'liang_yuhu_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E6%A2%81%E9%92%B0%E8%99%8E/%E6%A2%81%E9%92%B0%E8%99%8E/-6.png',
+            'liang_yuhu_blowjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E5%8F%A3%E4%BA%A4.png',
+            'liang_yuhu_footjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E6%A2%81%E9%92%B0%E8%99%8E/%E6%A2%81%E9%92%B0%E8%99%8E/-3.png',
+            'liang_yuhu_anal': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E6%A2%81%E9%92%B0%E8%99%8E/%E6%A2%81%E9%92%B0%E8%99%8E/%E8%82%9B%E4%BA%A4%E5%A6%A9%E5%AA%9A%E7%89%88.png',
+            'liang_yuhu_breastjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E6%A2%81%E9%92%B0%E8%99%8E/%E6%A2%81%E9%92%B0%E8%99%8E/-5.png',
+            'liang_yuhu_cowgirl': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁钰虎/梁钰虎/-10.png',
+            'liang_yuhu_standing_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E6%A2%81%E9%92%B0%E8%99%8E/%E6%A2%81%E9%92%B0%E8%99%8E/%E7%AB%99%E7%AB%8B%E6%80%A7%E4%BA%A4.png',
+            'liang_yuhu_doggystyle': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁钰虎/梁钰虎/-7.png',
+            'liang_yuhu_outdoor_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E6%A2%81%E9%92%B0%E8%99%8E/%E6%A2%81%E9%92%B0%E8%99%8E/%E9%87%8E%E6%88%98.png',
+            'liang_yuhu_orgasm': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E6%A2%81%E9%92%B0%E8%99%8E/%E6%A2%81%E9%92%B0%E8%99%8E/%E9%AB%98%E6%BD%AE.png',
+            'liang_yuhu_bathing': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁钰虎/梁钰虎/-9.png',
+            'liang_yuhu_masturbation': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E6%A2%81%E9%92%B0%E8%99%8E/%E6%A2%81%E9%92%B0%E8%99%8E/%E8%87%AA%E6%85%B0.png',
+
+            // 梁玉翎
+            'liang_yuling_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n5fw/梁玉翎n5fw/.png',
+            'liang_yuling_blowjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n5fw/梁玉翎n5fw/-8.webp',
+            'liang_yuling_footjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n5fw/梁玉翎n5fw/-4.webp',
+            'liang_yuling_anal': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n5fw/梁玉翎n5fw/-5.webp',
+            'liang_yuling_breastjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n5fw/梁玉翎n5fw/-11.webp',
+            'liang_yuling_cowgirl': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n5fw/梁玉翎n5fw/-10.webp',
+            'liang_yuling_standing_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n5fw/梁玉翎n5fw/-2.webp',
+            'liang_yuling_doggystyle': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n5fw/梁玉翎n5fw/-7.webp',
+            'liang_yuling_outdoor_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n5fw/梁玉翎n5fw/-1.webp',
+            'liang_yuling_orgasm': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n5fw/梁玉翎n5fw/-6.webp',
+            'liang_yuling_bathing': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n5fw/梁玉翎n5fw/-9.webp',
+            'liang_yuling_masturbation': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n5fw/梁玉翎n5fw/-3.webp',
+
+            // 萧归鸾
+            'xiao_guiluan_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/2026/9/13-6.png',
+            'xiao_guiluan_blowjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/2026/9月13号.png',
+            'xiao_guiluan_footjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/2026/9/13-3.png',
+            'xiao_guiluan_anal': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/肛交.png',
+            'xiao_guiluan_breastjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/2026/9/13-5.png',
+            'xiao_guiluan_cowgirl': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/2026/9/13-4.png',
+            'xiao_guiluan_standing_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E8%90%A7%E5%BD%92%E9%B8%BE/%E8%90%A7%E5%BD%92%E9%B8%BE/2026/9/13-1.png',
+            'xiao_guiluan_doggystyle': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/-11.png',
+            'xiao_guiluan_outdoor_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/2026/9/13.png',
+            'xiao_guiluan_orgasm': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/-10.png',
+            'xiao_guiluan_bathing': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/沐浴.png',
+            'xiao_guiluan_masturbation': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/2026/9/13-2.png',
+
+            // 楚秀
+            'chu_xiu_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/-7.webp',
+            'chu_xiu_blowjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/-3.webp',
+            'chu_xiu_footjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/-11.webp',
+            'chu_xiu_anal': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/.png',
+            'chu_xiu_breastjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/9月13号-1.png',
+            'chu_xiu_cowgirl': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/-5.webp',
+            'chu_xiu_standing_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/-9.webp',
+            'chu_xiu_doggystyle': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/9月13号.webp',
+            'chu_xiu_outdoor_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/-8.png',
+            'chu_xiu_orgasm': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/9月13号-2.webp',
+            'chu_xiu_bathing': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/-4.webp',
+            'chu_xiu_masturbation': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/-10.png',
+
+            // 池璇
+            'chi_xuan_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-4.png',
+            'chi_xuan_blowjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-5.png',
+            'chi_xuan_footjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-9.png',
+            'chi_xuan_anal': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-1.png',
+            'chi_xuan_breastjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-6.png',
+            'chi_xuan_cowgirl': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-11.png',
+            'chi_xuan_standing_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-12.png',
+            'chi_xuan_doggystyle': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/.png',
+            'chi_xuan_outdoor_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-7.png',
+            'chi_xuan_orgasm': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-2.png',
+            'chi_xuan_bathing': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-3.png',
+            'chi_xuan_masturbation': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-10.png',
+
+            // 司空也静
+            'sikong_yejing_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/_fixedPrompt__%20_%20artist_soejima%20shigenori%2C%20%5B%5B%5B%5Bartist_z3zz4%5D%5D%5D%5D%2C%20%5B%5B%5Bmisaka_12003%20s-1820065271%20(1).webp',
+            'sikong_yejing_blowjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E5%8F%B8%E7%A9%BA%E4%B9%9F%E9%9D%99/%E5%8F%B8%E7%A9%BA%E4%B9%9F%E9%9D%99/%E5%8F%A3%E4%BA%A4.webp',
+            'sikong_yejing_footjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E5%8F%B8%E7%A9%BA%E4%B9%9F%E9%9D%99/%E5%8F%B8%E7%A9%BA%E4%B9%9F%E9%9D%99/%E8%B6%B3%E4%BA%A4.webp',
+            'sikong_yejing_anal': 'https://i.postimg.cc/hPcpT74H/gang-jiao.webp',
+            'sikong_yejing_breastjob': 'https://i.postimg.cc/sx9mb3mw/fixed-Prompt-artist-soejima-shigenori-artist-z3zz4-misaka-12003-s-1820065271-(5).webp',
+            'sikong_yejing_cowgirl': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E5%8F%B8%E7%A9%BA%E4%B9%9F%E9%9D%99/%E5%8F%B8%E7%A9%BA%E4%B9%9F%E9%9D%99/%E5%A5%B3%E4%B8%8A.png',
+            'sikong_yejing_standing_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E5%8F%B8%E7%A9%BA%E4%B9%9F%E9%9D%99/%E5%8F%B8%E7%A9%BA%E4%B9%9F%E9%9D%99/%E7%AB%99%E7%AB%8B%E6%80%A7%E4%BA%A4.webp',
+            'sikong_yejing_doggystyle': 'https://i.postimg.cc/KvfQNvR7/hou-ru.webp',
+            'sikong_yejing_outdoor_sex': 'https://i.postimg.cc/Dz9cZSYg/ye-zhan.webp',
+            'sikong_yejing_orgasm': 'https://i.postimg.cc/RVdGRVN0/gao-chao.webp',
+            'sikong_yejing_bathing': 'https://i.postimg.cc/rwpjYXrj/mu-yu.webp',
+            'sikong_yejing_masturbation': 'https://i.postimg.cc/9XGLDB2B/fixed-Prompt-artist-soejima-shigenori-artist-z3zz4-misaka-12003-s-1820065271-(2).webp',
+
+            // 梁璎珞
+            'liang_yingluo_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/性交i字形.webp',
+            'liang_yingluo_blowjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/口交.webp',
+            'liang_yingluo_footjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/足交.webp',
+            'liang_yingluo_anal': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/肛交.webp',
+            'liang_yingluo_breastjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/乳交.webp',
+            'liang_yingluo_cowgirl': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/女上.webp',
+            'liang_yingluo_standing_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/__fixedPrompt__%20_%20artist_soejima%20shigenori%2C%20%5B%5B%5B%5Bartist_z3zz4%5D%5D%5D%5D%2C%20%5B%5B%5Bmisaka_1200%20s-2935766906%20(3).webp',
+            'liang_yingluo_doggystyle': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/后入.webp',
+            'liang_yingluo_outdoor_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/野战.webp',
+            'liang_yingluo_orgasm': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/高潮.webp',
+            'liang_yingluo_bathing': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/沐浴.webp',
+            'liang_yingluo_masturbation': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/自慰.webp',
+
+            // 华素纨
+            'hua_suwan_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-19.webp',
+            'hua_suwan_blowjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-15.webp',
+            'hua_suwan_footjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-1.webp',
+            'hua_suwan_anal': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-14.webp',
+            'hua_suwan_breastjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-18.webp',
+            'hua_suwan_cowgirl': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-17.webp',
+            'hua_suwan_standing_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-4.webp',
+            'hua_suwan_doggystyle': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-12.webp',
+            'hua_suwan_outdoor_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-20.webp',
+            'hua_suwan_orgasm': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-13.webp',
+            'hua_suwan_bathing': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-16.webp',
+            'hua_suwan_masturbation': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/.webp',
+
+            // 萧玉颜
+            'xiao_yuyan_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-11.webp',
+            'xiao_yuyan_blowjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-6.webp',
+            'xiao_yuyan_footjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-15.webp',
+            'xiao_yuyan_anal': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-2.webp',
+            'xiao_yuyan_breastjob': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-10.webp',
+            'xiao_yuyan_cowgirl': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-9.webp',
+            'xiao_yuyan_standing_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-13.webp',
+            'xiao_yuyan_doggystyle': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-4.webp',
+            'xiao_yuyan_outdoor_sex': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-12.webp',
+            'xiao_yuyan_orgasm': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-3.webp',
+            'xiao_yuyan_bathing': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-8.webp',
+            'xiao_yuyan_masturbation': 'https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-14.webp'
+        };
+
+        const variants = {
+            '性交': 'sex',
+            '口交': 'blowjob',
+            '足交': 'footjob',
+            '乳交': 'breastjob',
+            '肛交': 'anal',
+            '后入': 'doggystyle',
+            '站立性交': 'standing_sex',
+            '野战': 'outdoor_sex',
+            '自慰': 'masturbation',
+            '高潮': 'orgasm',
+            '女上': 'cowgirl',
+            '洗澡': 'bathing'
+        };
+
+        const characters = {
+            '裴韫之': 'pei_yunzhi',
+            '梁钰虎': 'liang_yuhu',
+            '梁玉翎': 'liang_yuling',
+            '萧归鸾': 'xiao_guiluan',
+            '楚秀': 'chu_xiu',
+            '池璇': 'chi_xuan',
+            '司空也静': 'sikong_yejing',
+            '梁璎珞': 'liang_yingluo',
+            '华素纨': 'hua_suwan',
+            '萧玉颜': 'xiao_yuyan'
+        };
+
+        const fallbackAvatars = {
+            pei_yunzhi: '裴',
+            liang_yuhu: '虎',
+            liang_yuling: '翎',
+            xiao_guiluan: '鸾',
+            chu_xiu: '秀',
+            chi_xuan: '璇',
+            sikong_yejing: '司',
+            liang_yingluo: '璎',
+            hua_suwan: '华',
+            xiao_yuyan: '萧'
+        };
+
+        const sceneText = `$1`;
+
+        const canonicalNames = Object.keys(characters);
+
+        function normalizeName(value) {
+            return (value || '').replace(/\s+/g, '').trim();
+        }
+
+        function getUniqueCharacters(value) {
+            return Array.from(new Set(normalizeName(value).split('').filter(Boolean)));
+        }
+
+        function getCharacterCoverage(rawName, candidateName) {
+            const targetChars = getUniqueCharacters(rawName);
+            const candidateChars = getUniqueCharacters(candidateName);
+            if (targetChars.length === 0 || candidateChars.length === 0) {
+                return { matchedCount: 0, requiredCount: 0, coverage: 0 };
+            }
+
+            const targetSet = new Set(targetChars);
+            const matchedCount = candidateChars.filter(char => targetSet.has(char)).length;
+            const requiredCount = candidateChars.length >= 3 ? 2 : candidateChars.length;
+
+            return {
+                matchedCount,
+                requiredCount,
+                coverage: matchedCount / candidateChars.length
+            };
+        }
+
+        function levenshteinDistance(a, b) {
+            const s = normalizeName(a);
+            const t = normalizeName(b);
+            const m = s.length;
+            const n = t.length;
+            if (m === 0) return n;
+            if (n === 0) return m;
+
+            const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+            for (let i = 0; i <= m; i++) dp[i][0] = i;
+            for (let j = 0; j <= n; j++) dp[0][j] = j;
+
+            for (let i = 1; i <= m; i++) {
+                for (let j = 1; j <= n; j++) {
+                    const cost = s[i - 1] === t[j - 1] ? 0 : 1;
+                    dp[i][j] = Math.min(
+                        dp[i - 1][j] + 1,
+                        dp[i][j - 1] + 1,
+                        dp[i - 1][j - 1] + cost
+                    );
+                }
+            }
+
+            return dp[m][n];
+        }
+
+        function resolveName(rawName) {
+            const target = normalizeName(rawName);
+            if (!target) return null;
+
+            if (canonicalNames.includes(target)) {
+                return target;
+            }
+
+            let coverageBestNames = [];
+            let coverageBestScore = -1;
+            let coverageBestMatchedCount = -1;
+
+            for (const candidate of canonicalNames) {
+                const { matchedCount, requiredCount, coverage } = getCharacterCoverage(target, candidate);
+                if (matchedCount < requiredCount) {
+                    continue;
+                }
+
+                if (
+                    coverage > coverageBestScore ||
+                    (coverage === coverageBestScore && matchedCount > coverageBestMatchedCount)
+                ) {
+                    coverageBestNames = [candidate];
+                    coverageBestScore = coverage;
+                    coverageBestMatchedCount = matchedCount;
+                } else if (coverage === coverageBestScore && matchedCount === coverageBestMatchedCount) {
+                    coverageBestNames.push(candidate);
+                }
+            }
+
+            if (coverageBestNames.length === 1) {
+                return coverageBestNames[0];
+            }
+
+            let bestNames = [];
+            let bestDistance = Infinity;
+
+            for (const candidate of canonicalNames) {
+                const dist = levenshteinDistance(target, candidate);
+                if (dist < bestDistance) {
+                    bestDistance = dist;
+                    bestNames = [candidate];
+                } else if (dist === bestDistance) {
+                    bestNames.push(candidate);
+                }
+            }
+
+            if (bestNames.length === 1) {
+                const limit = Math.max(1, Math.ceil(Math.min(target.length, bestNames[0].length) * 0.4));
+                return bestDistance <= limit ? bestNames[0] : null;
+            }
+
+            return null;
+        }
+
+        function parseLines() {
+            const blocks = [];
+            const re = /<environment_details>([\s\S]*?)<\/environment_details>/gm;
+            let m;
+            while ((m = re.exec(sceneText)) !== null) {
+                blocks.push(m[1]);
+            }
+            if (blocks.length === 0) blocks.push(sceneText);
+
+            const lines = [];
+            for (const b of blocks) {
+                const match = b.match(/在场角色[：:]\s*([\s\S]*?)(?=\n\n|$)/);
+                if (!match) continue;
+                const segLines = match[1]
+                    .split('\n')
+                    .map(l => l.trim())
+                    .filter(l => l.includes('|'))
+                    .map(l => l.replace(/^[-*•\d\.]+\s*/, ''));
+                lines.push(...segLines);
+            }
+            return lines;
+        }
+
+        function buildItems(lines) {
+            const items = [];
+            for (const line of lines) {
+                const parts = line.split('|').map(s => s.trim());
+                if (parts.length < 2) continue;
+                const name = resolveName(parts[0]);
+                const action = parts[1];
+                if (!name || !characters[name] || !variants[action]) continue;
+                items.push({ code: characters[name], label: action, key: variants[action] });
+            }
+            return items;
+        }
+
+        function render(items) {
+            const list = document.getElementById('list');
+            list.innerHTML = items.map(item => {
+                const base = baseUrlMap[item.code];
+                let src = base && base !== 'WAITING_FOR_IMAGE_HOST' ? `${base}/${item.code}_${item.key}.png` : '';
+                if (overrideUrls[`${item.code}_${item.key}`]) {
+                    src = overrideUrls[`${item.code}_${item.key}`];
+                }
+                return `
+                    <div class="item">
+                        ${src
+                        ? `<img src="${src}" alt="${item.label}" loading="lazy">`
+                        : `<div class="placeholder">${fallbackAvatars[item.code] || '?'}</div>`}
+                        <div class="label">${item.label}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        render(buildItems(parseLines()));
+    </script>
+</body>
+
+</html>

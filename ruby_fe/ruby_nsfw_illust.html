@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+:root{--bg:#0b0a0f;--text:#f3f0ff;--muted:#9ea0b5;}*{box-sizing:border-box;margin:0;padding:0;}body{font-family:"Inter","PingFang SC","Microsoft YaHei",sans-serif;background:transparent;color:var(--text);padding:12px 8px 20px;display:flex;flex-direction:column;gap:12px;}.scene-card-wrapper{position:relative;width:100%;}#list{display:flex;flex-direction:column;gap:16px;}.item{display:flex;flex-direction:column;align-items:center;gap:10px;max-width:300px;margin:0 auto;padding:0;perspective:1200px;}.status-card{width:100%;cursor:pointer;position:relative;}.card-inner{position:relative;width:100%;display:grid;transition:transform 0.8s cubic-bezier(0.34,1.56,0.64,1);transform-style:preserve-3d;border-radius:6px;box-shadow:0 12px 32px rgba(0,0,0,0.3);background:linear-gradient(180deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02));}.status-card:hover .card-inner{transform:translateY(-2px);box-shadow:0 16px 40px rgba(255,255,255,0.1);}.status-card.is-flipped:hover .card-inner{transform:translateY(-2px) rotateY(180deg);}.status-card.is-flipped .card-inner{transform:rotateY(180deg);}.card-face{grid-area:1 / 1;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:6px;overflow:hidden;display:flex;align-items:center;justify-content:center;min-height:360px;width:100%;height:100%;position:relative;}.card-back{transform:rotateY(180deg);}@keyframes dc-portrait-breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}
+.card-face img{width:100%;height:100%;display:block;animation:dc-portrait-breathe 4s ease-in-out infinite;transition:transform 0.4s ease;object-fit:cover;object-position:center top;border-radius:6px;}.flip-hint{position:absolute;top:10px;right:10px;background:rgba(0,0,0,0.65);color:#fff;font-size:11px;font-weight:500;letter-spacing:0.02em;padding:6px 12px;border-radius:12px;opacity:0;transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);transform:translateY(-5px);pointer-events:none;z-index:10;backdrop-filter:blur(4px);display:flex;align-items:center;gap:4px;}.status-card:hover .flip-hint{opacity:1;transform:translateY(0);}.placeholder{width:100%;min-height:360px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:56px;font-weight:700;}.label{color:var(--muted);font-size:13px;font-weight:500;letter-spacing:0.04em;}@media (max-width:560px){.flip-hint{opacity:0.8;transform:translateY(0);}}
+</style>
+</head>
+
+<body>
+    <div class="scene-card-wrapper">
+        <div id="nsfw-data-raw" style="display: none">$1</div>
+        <div id="list"></div>
+
+        <script>
+const GH="https://raw.githubusercontent.com/";
+const R0=GH+"zhamuqiu/tongren2/refs/heads/main";
+const R1=GH+"vmkudz-sys/my-image-bed/main/lin_jia_nsfw.png";
+const R2=GH+"roxysl521-droid/linanan_xiaoma/main";
+const R3=GH+"vmkudz-sys/my-image-bed/main";
+const R4=GH+"xuanyuy2019-ops/Image/main/shenyan";
+const R5=GH+"HaoX520/-/refs/heads/main/zhu_yue/zhu_yue_vulva_selfie.png";
+const R6=GH+"HaoX520/-/refs/heads/main/zhu_yue/zhu_yue_exhibition.png";
+const R7=GH+"HaoX520/-/refs/heads/main/zhu_yue/zhu_yue_outdoor_selfie.png";
+const R8=GH+"HaoX520/-/refs/heads/main/zhu_yue/zhu_yue_nude_selfie.png";
+const R9=GH+"ningj8622-coder/-1/554d68072b068abbc69fcffc9e1ce657af209c21";R10=GH+"ningj8622-coder/-1/8ce3b51cff803e8db22e90b8639b1cd6a6efcd8d";
+
+            (function() {
+                const scripts = document.getElementsByTagName('script');
+                const currentScript = scripts[scripts.length - 1];
+                const wrapper = currentScript.parentElement;
+                const listContainer = wrapper.querySelector('#list');
+
+                const initialFlipped = Math.random() < 0.5;
+
+                const baseUrlMap = {
+                    shenci: GH+"samlinxi/img/-/main/img",
+                    ai_luo_yi: "https://raw.githubusercontent.com/ningj8622-coder/-1/af8e0c15fcc63b2de60f0134c02337dde81a7076",
+                    // 第一批角色
+                    sun_yitong: GH+'xm212617-code/-/a9830d2826c33925dedef30590d0c6709c3d8021',
+                    liu_qing: GH+'xm212617-code/-/a9830d2826c33925dedef30590d0c6709c3d8021',
+                    zhang_ziwei: GH+'xm212617-code/-/40df97071b5f9e5f52bc0aab107efc6610c9d8bf',
+                    li_nanxing: GH+'xm212617-code/-/ad797fdb8dfc35619f4b922ad7f25d06d56b2530',
+                    jin_jingjing: GH+'xm212617-code/-/64f18bf75073d8736c56dff50291da709c0b5e25',
+                    tang_jialin: GH+'xm212617-code/-/bab371f966c4a1ad10aeee4c285f4382d3d93863',
+                    hu_jing: GH+'xm212617-code/-/533f66d0d1f93768dfcd5fe7aa8621602b8f7f85',
+                    lan_ye: GH+'xm212617-code/-/56dac2f4159c16748445600c5a5b4e9147c074a7',
+                    huang_shuyi: GH+'xm212617-code/-/434db2d525c8312e1b6f83dfc001b30a11ed0ede',
+                    chen_xiaobei: GH+'xm212617-code/-/e50bef3dca86eede99229a3d4393c0a8200a15da',
+                    luo_jia: GH+'xm212617-code/-/906a985b1bb327fea740a6576809e276c65ebc96',
+                    zhao_yaqin: GH+'xm212617-code/-/2701373f7349c16114efacca1ef972fd100db404',
+                    wen_su: GH+'xm212617-code/-/9a70bb527c32f8fb3f195e5924c411794b947128',
+                    rang_na: GH+'xm212617-code/-/405b9c6a2363e8ec841c5950f3a99323851642b4',
+                    pang_yongxuan: GH+'xm212617-code/-/312181e0d272d99602c5115426befc1c98871dac',
+                    shen_yang: GH+'AliceNekoqqq/Pic/master/img',
+
+                    // 第二批角色
+                    zhu_peiling: GH+'xm212617-code/-/0d4a190e2d2e33f49455593975c7ec53fa91faab',
+                    lin_anan: GH+'xm212617-code/-/1b9e52ffecb0e75a013964b85282e65588db7168',
+                    wu_haiwen: GH+'xm212617-code/-/0381ce2b377901d357c010fcd23a1989b0024384',
+                    sun_ruixi: GH+'xm212617-code/-/ccf87ce04045ddd68967aee30bef021d44fafd6d',
+                    zhu_yegu: GH+'xm212617-code/-/1fb85db6d57b7ec7705543aacbaa1e5b92d3d303',
+                    lun_xintong: GH+'duonglanoanh503-code/-/ef624a92337bc56159e82e5fe2d862a669b9b8b9',
+                    wen_xin: GH+'duonglanoanh503-code/-/b90d73298806755d2272f0c8a80771d4665a5712',
+                    wen_lan: GH+'duonglanoanh503-code/-/b27295ffa77f14f97a7f03eb82e55c184e81a040',
+                    hong_xintong: GH+'duonglanoanh503-code/-/d86430fb7ea0109a8a594a52162225f3cc729beb',
+                    he_ling: GH+'duonglanoanh503-code/-/bd10a003f0e42e1fb78c99af19b5e33561760dc0',
+                    suyu: R0,
+                    chen_shuting: R0,
+                    ma_qi: R0,
+                    yuan_liping: R0,
+                    ming_xiangxiang: R0,
+                    wen_ruoning: R0,
+                    fang_min: R0,
+                    lin_muyi: R0,
+                    ding_manhong: R0,
+                    zhao_xiaoman: R0,
+                    zhao_ziyou: R0,
+                    su_wantang: R2,
+                    chen_si_yu: R2,
+                    su_zi_ning: R2,
+                    rong_rourou: R0,
+                    zhou_yutong: R0,
+                    bai_xiaoxue: R0,
+                    liu_yuan: R0,
+                    han_bingjiao: GH+'xuanyuy2019-ops/Image/main/han/nsfw',
+                    luo_hua: GH+'xuanyuy2019-ops/Image/main/han',
+                    yang_can: GH+'yiliya443290-a11y/-/main',
+                    pang_ying: GH+'duonglanoanh503-code/-/c473aa71af653948434c690ef74eeb76990f2b79',
+                    dugu_chuner: GH+'duonglanoanh503-code/-/67d4f29d81f3b33f08600df4ebb8f6713a4c8e97',
+                    han_zhenzhen: GH+'duonglanoanh503-code/-/05b8ba0a3251ec6b7512198700a778407ec81338',
+                    zhu_qing: GH+'duonglanoanh503-code/-/a60df006222d2456375d4a4a82cccb5c891637c6',
+                    zhang_weiwei: GH+'duonglanoanh503-code/-/2bf4f2541f5b92134bad72276e0c25ec11cf49a7',
+                    tang_qian: GH+'duonglanoanh503-code/-/f014ec4c445df74500b1f5af6f181eab91b6ebd8',
+                    ya_tao: GH+'duonglanoanh503-code/-/120acb564978aeb91f907320dbae32384dbad0d9',
+                    ma_qingqing: GH+'duonglanoanh503-code/-/8195007a0f25527f04922b22e343d6f0e52471fa',
+                    wen_yuan: GH+'duonglanoanh503-code/-/387d9f4f74c153f88c0303dbcf5c55e12ae06166',
+                    dong_shiqing: GH+'duonglanoanh503-code/-/4067b674693f175f4052f3264843b86ea160a71e',
+                    chen_yingying: GH+'duonglanoanh503-code/-/b772f1238d8f170b52bd87d407e13a9609aec57c',
+                    lin_anan_xiaoma: R2,
+                    an_chunsheng: GH+'duonglanoanh503-code/-/f3401d447cb94253263c62c97779d95437c1432c',
+                    nake: GH+'duonglanoanh503-code/-/fec4c0286db909a1576ddd3745856a3fadb7271f',
+                    shaoyao: GH+'duonglanoanh503-code/-/0c71e47b316ce95a47200d04fc469a363fad0f29',
+                    jin_ning: GH+'duonglanoanh503-code/-/7d558a056af4cbe5d8d804d67505c80fc4bd88da',
+                    wen_su_da: R2,
+                    sun_yuanqing: GH+'duonglanoanh503-code/-/ca331f322201fe954018568f01494a5de324936d',
+                    hai_lin: GH+'duonglanoanh503-code/-/c5c8255226ee5f321b5251974333cdd3fac546fe',
+                    zhou_ling: GH+'duonglanoanh503-code/-/3c76be53e4d7c74aa27241ea4c32d405270f06f9',
+                    yunyi: GH+'KronosXup/bangshou-art/main/yunyi',
+                    peihan: GH+'KronosXup/bangshou-art/main/peihan',
+                    xu_mingwei: R0,
+                    guo_yuyao: GH+'Alunamin/xiancheng/main/guo_yuyao',
+                    liu_qiyin: GH+'Alunamin/xiancheng/main/liu_qiyin',
+                    wen_xia: R3,
+                    lin_jia: R3,
+                    xu_yuanji: R4,
+                    xu_yuan: R4,
+                    anlin: GH+'xm212617-code/-/666daf0c5d5831009fc91f5009e4bba5cbbcba6b',
+                    shujing: GH+'xm212617-code/-/b6d31a1e2acf200b038a68233a9d1b726c0a4b13',
+                    lanxin: GH+'duonglanoanh503-code/-/c242d95f0061c1d51eaecf07be6b9e41f931dc82',
+                    sunqi: GH+'duonglanoanh503-code/-/a732fb2afff13c00609e7e2adc5d193d1485192a',
+                    
+                    zhu_yue: GH+'HaoX520/-/refs/heads/main/zhu_yue',
+                    zhao_shiqing: GH+'495996581-coder/image/main/xiancheng',
+                    zhu_juexiang: GH+'HaoX520/-/refs/heads/main/zhu_juexiang',
+                    pei_shuquan: GH+'LonSha/xiancheng/main',
+                    // 🆕 智允
+                    zhi_yun: R9,
+                    // 唐蜜
+                    tang_mi: GH+'HaoX520/-/refs/heads/main/tang_mi',
+                    // 林悦
+                    lin_yue: 'https://raw.githubusercontent.com/ningj8622-coder/-1/1b8b808c9bbfc79ba68476dfd4342312d15dbc5d',
+                    // 珞珈(大)
+                    luo_jia27: 'https://raw.githubusercontent.com/HaoX520/-/main/luo_jia27',
+                    da_luo_hua: 'https://raw.githubusercontent.com/xuanyuy2019-ops/Image/main/han',
+                    // 董釉月
+                    dong_youyue: 'https://raw.githubusercontent.com/q969833-web/youyue-photo1/main',
+                    gu_haitang: 'https://raw.githubusercontent.com/ningj8622-coder/-1/f6d9c4832343c5f5bf81f859611179d5280418fa',
+                    jing_yuan: 'https://raw.githubusercontent.com/ningj8622-coder/-1/2e37d098df2192b5896f4114299c53744b889391',
+                    gao_wen: 'https://raw.githubusercontent.com/ningj8622-coder/-1/e3608c1b5dfe7ca46893629a268a7988f3206f5c',
+                    zhu_yi: 'https://raw.githubusercontent.com/ningj8622-coder/-1/2d30d17675e1a4acc033989e315f800f7e3fa8c7',
+                    li_shuang_zhu: 'https://raw.githubusercontent.com/ningj8622-coder/-1/2ce3b00637344f6aee70f63aa8279c63400e4987',
+                    he_jia: 'https://raw.githubusercontent.com/ningj8622-coder/-1/8ff6b7c4d4707abe356c7cfd891006cda0a38802',
+                    shen_yan: 'https://raw.githubusercontent.com/xuanyuy2019-ops/Image/main/shenyan3'};
+
+                const VERSION2_CONFIG = {
+                    nan_mengqiu: { overrides: { uniform: "https://i.postimg.cc/RZ41NyVb/2026nian09yue05ri21dian35fen46miao.webp", daily: "https://i.postimg.cc/QMncYMgq/2026nian09yue05ri21dian56fen51miao.webp", outing: "https://i.postimg.cc/fLtmGhB3/2026nian09yue05ri22dian02fen40miao.webp", nsfw: "https://i.postimg.cc/HxqXHPhR/2026nian09yue05ri22dian12fen12miao.webp" } },
+                    'sun_yitong': { nsfwBase: GH+'ningj8622-coder/-1/56e321c094ebeae18125450ecb7c91c64e1c75e5',
+                    luo_ke_ke: R10, overrides: {} },
+                    'zhang_ziwei': { nsfwBase: GH+'ningj8622-coder/-1/61b4b92a7c0ddd361fdcfa174fc1e97a398c6bd7', overrides: {} },
+                    'liu_qing': { nsfwBase: GH+'ningj8622-coder/-1/03829b288b27ce3f46753b7eb325dc3031c7999c', overrides: {} },
+                    'li_nanxing': { nsfwBase: GH+'ningj8622-coder/-1/19f1a4a98e8976e441133de769dda730670a6b7c', overrides: {} },
+                    'jin_jingjing': { nsfwBase: GH+'ningj8622-coder/-1/e6f825ab04b087e070a9f07f93cb73bb6fa14286', overrides: {} },
+                    'tang_jialin': { nsfwBase: GH+'ningj8622-coder/-1/3629590f981d36cc68e3d1696349dd1de13b32b5', overrides: {} },
+                    'hu_jing': { nsfwBase: GH+'ningj8622-coder/-1/1de1c22e45edb7830cd909de7cfbcb1877f13cea', overrides: {} },
+                    'lan_ye': { nsfwBase: GH+'ningj8622-coder/-1/68e7f30618d184cc66949de0fa68b45b83c49c5f', overrides: {} },
+                    'huang_shuyi': { nsfwBase: GH+'ningj8622-coder/-1/c9fe2a07a5e423f6624e97124dd0c74235440a93', overrides: {} },
+                    'chen_xiaobei': { nsfwBase: GH+'ningj8622-coder/-1/eee6f3d0f905b743625293d4f56090311c667003', overrides: {} },
+                    'luo_jia': { nsfwBase: GH+'ningj8622-coder/-1/60ed3af6fbe22efcae102489306d9fab8e108863', overrides: {} },
+                    'luo_jia27': { nsfwBase: GH+'HaoX520/-/main/luo_jia27', overrides: {} }, 'da_luo_hua': { nsfwBase: GH+"xuanyuy2019-ops/Image/main/han", overrides: {} },
+                    'dong_youyue': { nsfwBase: GH+'q969833-web/youyue-photo1/main', overrides: {} },
+                    'zhao_yaqin': { nsfwBase: GH+'ningj8622-coder/-1/f7773d9105f8fbf6254406315ab0a65fa3900cd3', overrides: {} },
+                    'wen_su': { nsfwBase: GH+'ningj8622-coder/-1/082b654b3c6653ee32314e0343bf5d0dc0429a3d', overrides: {} },
+                    'rang_na': { nsfwBase: GH+'ningj8622-coder/-1/32eb10d95e136df704d167d01bf1f7038fcf7e5a', overrides: {} },
+                    'pang_yongxuan': { nsfwBase: GH+'ningj8622-coder/-1/c749b592ebaf6044127cd98fe8051639362a2040', overrides: {} },
+                    'shen_yang': { nsfwBase: GH+'AliceNekoqqq/Pic/master/img', overrides: {
+                            'orgasm': GH+'AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE_%E9%AB%98%E6%BD%AE.png',
+                            'holding_pee': GH+'AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE-%E6%86%8B%E5%B0%BF.png',
+                            'indoor_selfie': GH+'AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE_%E5%AE%A4%E5%86%85%E9%9C%B2%E5%87%BA%E8%87%AA%E6%8B%8D.png',
+                            'outdoor_selfie': GH+'AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE-%E6%88%B7%E5%A4%96%E9%9C%B2%E5%87%BA%E8%87%AA%E6%8B%8D.png',
+                            'nude_selfie': GH+'AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE-%E5%85%A8%E8%A3%B8%E8%87%AA%E6%8B%8D.png',
+                            'vulva_selfie': GH+'AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE-%E9%98%B4%E9%83%A8%E8%87%AA%E6%8B%8D.png',
+                            'exhibition': GH+'AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE-%E9%9C%B2%E5%87%BA.png',
+                            'training': GH+'AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE-%E8%B0%83%E6%95%99.png',
+                            'anal_training': GH+'AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE_%E8%82%9B%E9%97%A8%E8%B0%83%E6%95%99.png'
+                        } },
+                    'zhu_peiling': { nsfwBase: GH+'xm212617-code/-/0d4a190e2d2e33f49455593975c7ec53fa91faab', overrides: {} },
+                    'lin_anan': { nsfwBase: GH+'xm212617-code/-/1b9e52ffecb0e75a013964b85282e65588db7168', overrides: {} },
+                    'wu_haiwen': { nsfwBase: GH+'xm212617-code/-/0381ce2b377901d357c010fcd23a1989b0024384', overrides: {} },
+                    'sun_ruixi': { nsfwBase: GH+'xm212617-code/-/ccf87ce04045ddd68967aee30bef021d44fafd6d', overrides: { 'exhibition': GH+'xm212617-code/-/ccf87ce04045ddd68967aee30bef021d44fafd6d/sun_ruixi_exposure.png', 'outdoor_selfie': GH+'xm212617-code/-/ccf87ce04045ddd68967aee30bef021d44fafd6d/sun_ruixi_outdoor_exposure_selfie.png', 'indoor_selfie': GH+'xm212617-code/-/ccf87ce04045ddd68967aee30bef021d44fafd6d/sun_ruixi_indoor_exposure_selfie.png' } },
+                    'zhu_yegu': { nsfwBase: GH+'xm212617-code/-/1fb85db6d57b7ec7705543aacbaa1e5b92d3d303', overrides: {} },
+                    'lun_xintong': { nsfwBase: GH+'duonglanoanh503-code/-/ef624a92337bc56159e82e5fe2d862a669b9b8b9', overrides: {} },
+                    'wen_xin': { nsfwBase: GH+'duonglanoanh503-code/-/b90d73298806755d2272f0c8a80771d4665a5712', overrides: {} },
+                    'wen_lan': { nsfwBase: GH+'duonglanoanh503-code/-/b27295ffa77f14f97a7f03eb82e55c184e81a040', overrides: {} },
+                    'hong_xintong': { nsfwBase: GH+'duonglanoanh503-code/-/d86430fb7ea0109a8a594a52162225f3cc729beb', overrides: {} },
+                    'he_ling': { nsfwBase: GH+'duonglanoanh503-code/-/bd10a003f0e42e1fb78c99af19b5e33561760dc0', overrides: {} },
+                    'suyu': { nsfwBase: R0, overrides: {} },
+                    'chen_shuting': { nsfwBase: R0, overrides: {} },
+                    'ma_qi': { nsfwBase: R0, overrides: {} },
+                    'yuan_liping': { nsfwBase: R0, overrides: {} },
+                    'ming_xiangxiang': { nsfwBase: R0, overrides: {} },
+                    'ding_manhong': { nsfwBase: R0, overrides: {} },
+                    'wen_ruoning': { nsfwBase: R0, overrides: {} },
+                    'fang_min': { nsfwBase: R0, overrides: {} },
+                    'lin_muyi': { nsfwBase: R0, overrides: {} },
+                    'zhao_xiaoman': { nsfwBase: R0, overrides: {} },
+                    'zhao_ziyou': { nsfwBase: R0, overrides: {} },
+                    liu_yuan: R0,
+                    han_bingjiao: GH+'xuanyuy2019-ops/Image/main/han/nsfw',
+                    'su_wantang': { nsfwBase: R2, overrides: {} },
+                    'chen_si_yu': { nsfwBase: R2, overrides: { 'nsfw': GH+'roxysl521-droid/linanan_xiaoma/main/chen_si_yu_nsfw.png' } },
+                    'su_zi_ning': { nsfwBase: R2, overrides: {} },
+                    'rong_rourou': { nsfwBase: R0, overrides: {} },
+                    'zhou_yutong': { nsfwBase: R0, overrides: {} },
+                    'bai_xiaoxue': { nsfwBase: R0, overrides: {} },
+                    'luo_hua': { nsfwBase: GH+'xuanyuy2019-ops/Image/main/han', overrides: {} },
+                    'yang_can': { nsfwBase: GH+'yiliya443290-a11y/-/main', overrides: {} }, 
+                    'pang_ying': { nsfwBase: GH+'duonglanoanh503-code/-/c473aa71af653948434c690ef74eeb76990f2b79', overrides: {} },
+                    'dugu_chuner': { nsfwBase: GH+'duonglanoanh503-code/-/67d4f29d81f3b33f08600df4ebb8f6713a4c8e97', overrides: {} },
+                    'han_zhenzhen': { nsfwBase: GH+'duonglanoanh503-code/-/05b8ba0a3251ec6b7512198700a778407ec81338', overrides: {} },
+                    'zhu_qing': { nsfwBase: GH+'duonglanoanh503-code/-/a60df006222d2456375d4a4a82cccb5c891637c6', overrides: {} },
+                    'zhang_weiwei': { nsfwBase: GH+'duonglanoanh503-code/-/2bf4f2541f5b92134bad72276e0c25ec11cf49a7', overrides: {} },
+                    'tang_qian': { nsfwBase: GH+'duonglanoanh503-code/-/f014ec4c445df74500b1f5af6f181eab91b6ebd8', overrides: {} },
+                    'ya_tao': { nsfwBase: GH+'duonglanoanh503-code/-/120acb564978aeb91f907320dbae32384dbad0d9', overrides: {} },
+                    'ma_qingqing': { nsfwBase: GH+'duonglanoanh503-code/-/8195007a0f25527f04922b22e343d6f0e52471fa', overrides: {} },
+                    'wen_yuan': { nsfwBase: GH+'duonglanoanh503-code/-/387d9f4f74c153f88c0303dbcf5c55e12ae06166', overrides: {} },
+                    'dong_shiqing': { nsfwBase: GH+'duonglanoanh503-code/-/4067b674693f175f4052f3264843b86ea160a71e', overrides: {} },
+                    'chen_yingying': { nsfwBase: GH+'duonglanoanh503-code/-/b772f1238d8f170b52bd87d407e13a9609aec57c', overrides: {} },
+                    'lin_anan_xiaoma': { nsfwBase: R2, overrides: {} },
+                    'an_chunsheng': { nsfwBase: GH+'duonglanoanh503-code/-/f3401d447cb94253263c62c97779d95437c1432c', overrides: {} },
+                    'nake': { nsfwBase: GH+'duonglanoanh503-code/-/fec4c0286db909a1576ddd3745856a3fadb7271f', overrides: {} },
+                    'shaoyao': { nsfwBase: GH+'duonglanoanh503-code/-/0c71e47b316ce95a47200d04fc469a363fad0f29', overrides: {} },
+                    'jin_ning': { nsfwBase: GH+'duonglanoanh503-code/-/7d558a056af4cbe5d8d804d67505c80fc4bd88da', overrides: {} },
+                    'wen_su_da': { nsfwBase: R2, overrides: {} },
+                    'sun_yuanqing': { nsfwBase: GH+'duonglanoanh503-code/-/ca331f322201fe954018568f01494a5de324936d', overrides: {} },
+                    'hai_lin': { nsfwBase: GH+'duonglanoanh503-code/-/c5c8255226ee5f321b5251974333cdd3fac546fe', overrides: {} },
+                    'zhou_ling': { nsfwBase: GH+'duonglanoanh503-code/-/3c76be53e4d7c74aa27241ea4c32d405270f06f9', overrides: {} },
+                    'yunyi': { nsfwBase: GH+'KronosXup/bangshou-art/main/yunyi', overrides: {} },
+                    'peihan': { nsfwBase: GH+'KronosXup/bangshou-art/main/peihan', overrides: {} },
+                    'xu_mingwei': { nsfwBase: R0, overrides: { holding_pee: GH+'zhamuqiu/tongren2/refs/heads/main/xu_mingwei_hoding_pee.png', nude_selfie: GH+'zhamuqiu/tongren2/refs/heads/main/xu_mingwei_vulva_selfie.png', indoor_selfie: GH+'zhamuqiu/tongren2/refs/heads/main/xu_mingwei_outdoor_selfie.png', outdoor_selfie: GH+'zhamuqiu/tongren2/refs/heads/main/xu_mingwei_nude_selfie.png' } },
+                    'guo_yuyao': { nsfwBase: GH+'Alunamin/xiancheng/main/guo_yuyao', overrides: { indoor_selfie: GH+'Alunamin/xiancheng/main/guo_yuyao/guo_yuyao_vulva_selfie.png' } },
+                    'liu_qiyin': { nsfwBase: GH+'Alunamin/xiancheng/main/liu_qiyin', overrides: { nude_selfie: GH+'Alunamin/xiancheng/main/liu_qiyin/liu_qiyin_vulva_selfie.png', indoor_selfie: GH+'Alunamin/xiancheng/main/liu_qiyin/liu_qiyin_outdoor_selfie.png', outdoor_selfie: GH+'Alunamin/xiancheng/main/liu_qiyin/liu_qiyin_nude_selfie.png' } },
+                    'wen_xia': { nsfwBase: R3, overrides: { holding_pee: GH+'vmkudz-sys/my-image-bed/main/lin_wenxia_holding.png', uniform: GH+'vmkudz-sys/my-image-bed/main/lin_wenxia_uniform.png', outing: GH+'vmkudz-sys/my-image-bed/main/lin_wenxia_outing.png', orgasm: GH+'vmkudz-sys/my-image-bed/main/lin_wenxia_orgasm.png', anal_training: GH+'vmkudz-sys/my-image-bed/main/lin_wenxia_anal_training.png', training: GH+'vmkudz-sys/my-image-bed/main/lin_wenxia_training.png', exhibition: GH+'vmkudz-sys/my-image-bed/main/lin_wenxia_exhibition.png', nude_selfie: GH+'vmkudz-sys/my-image-bed/main/lin_wenxia_nude_selfie.png', indoor_selfie: GH+'vmkudz-sys/my-image-bed/main/lin_wenxia_indoor_selfie.png', outdoor_selfie: GH+'vmkudz-sys/my-image-bed/main/lin_wenxia_outdoor_selfie.png' } },
+                    'lin_jia': { nsfwBase: R3, overrides: { uniform: R1, outing: R1, holding_pee: R1, orgasm: R1, anal_training: R1, training: R1, exhibition: R1, nude_selfie: R1, indoor_selfie: R1, outdoor_selfie: R1, vulva_selfie: R1, breast_sex: R1, deepthroat: R1, tribadism: R1, oral_cumshot: R1, facial: R1, foot_cumshot: R1, breast_cumshot: R1, creampie: R1, external_cumshot: R1, ass_cumshot: R1 } },
+                    'xu_yuanji': { nsfwBase: R4, overrides: {} },
+                    'xu_yuan': { nsfwBase: R4, overrides: {} },
+                    'anlin': { nsfwBase: GH+'xm212617-code/-/666daf0c5d5831009fc91f5009e4bba5cbbcba6b', overrides: {} },
+                    'shujing': { nsfwBase: GH+'xm212617-code/-/b6d31a1e2acf200b038a68233a9d1b726c0a4b13', overrides: {} },
+                    'lanxin': { nsfwBase: GH+'duonglanoanh503-code/-/c242d95f0061c1d51eaecf07be6b9e41f931dc82', overrides: {} },
+                    'sunqi': { nsfwBase: GH+'duonglanoanh503-code/-/a732fb2afff13c00609e7e2adc5d193d1485192a', overrides: {} },
+                    
+                    'zhu_yue': { nsfwBase: GH+'HaoX520/-/refs/heads/main/zhu_yue', overrides: { 'outdoor_selfie': R8, 'indoor_selfie': R7, 'nude_selfie': R5, 'exhibition': R6, } },
+                    'zhu_juexiang': { nsfwBase: GH+'HaoX520/-/refs/heads/main/zhu_juexiang', overrides: {
+                        'outdoor_selfie': GH+'HaoX520/-/refs/heads/main/zhu_juexiang/zhu_juexiang_nude_selfie.png',
+                        'indoor_selfie': GH+'HaoX520/-/refs/heads/main/zhu_juexiang/zhu_juexiang_outdoor_selfie.png',
+                        'nude_selfie': GH+'HaoX520/-/refs/heads/main/zhu_juexiang/zhu_juexiang_selfie.png',
+                    } },
+                    
+                    'zhao_shiqing': { nsfwBase: GH+'495996581-coder/image/main/xiancheng', overrides: {} },
+                    'pei_shuquan': { nsfwBase: GH+'LonSha/xiancheng/main', overrides: {} },
+                    // 🆕 智允第二版配置
+                    'zhi_yun': { nsfwBase: R9, overrides: {
+                        'daily': R9 + '/zhi_yun_outing.png',
+                        'outing': R9 + '/zhi_yun_daily.png',
+                        'uniform': R9 + '/zhi_yun_uniform.png',
+                        'nsfw': R9 + '/zhi_yun_nsfw.png',
+                    } },
+                    'luo_ke_ke': { nsfwBase: R10, overrides: {
+                        'daily': R10 + '/luo_ke_ke_outing.png',
+                        'outing': R10 + '/luo_ke_ke_daily.png',
+                        'uniform': R10 + '/luo_ke_ke_uniform.png',
+                        'nsfw': R10 + '/luo_ke_ke_nsfw.png',
+                    } },
+                    // 唐蜜第二版配置
+                    'tang_mi': { nsfwBase: GH+'HaoX520/-/refs/heads/main/tang_mi', overrides: {
+                        'exhibition': GH+'HaoX520/-/refs/heads/main/tang_mi' + '/tang_mi__exhibition.png',
+                        'vulva_selfie': GH+'HaoX520/-/refs/heads/main/tang_mi/tang_mi_vulva_selfie.png',
+                    } }
+                };
+
+                const overrideUrls = {
+                    nan_mengqiu_nsfw: "https://i.postimg.cc/HxqXHPhR/2026nian09yue05ri22dian12fen12miao.webp",
+                    'nan_mengqiu_uniform': "https://i.postimg.cc/RZ41NyVb/2026nian09yue05ri21dian35fen46miao.webp",
+                    'nan_mengqiu_daily': "https://i.postimg.cc/QMncYMgq/2026nian09yue05ri21dian56fen51miao.webp",
+                    'nan_mengqiu_outing': "https://i.postimg.cc/fLtmGhB3/2026nian09yue05ri22dian02fen40miao.webp",
+                    'chen_xiaobei_training': GH+'xm212617-code/-/4b39e28b3f2ad5cf3460222d80da4fdb269b830f/chen_xiaobei_training.png',
+                    'sun_ruixi_exhibition': `${baseUrlMap.sun_ruixi}/sun_ruixi_exposure.png`,
+                    'sun_ruixi_outdoor_selfie': `${baseUrlMap.sun_ruixi}/sun_ruixi_outdoor_exposure_selfie.png`,
+                    'sun_ruixi_indoor_selfie': `${baseUrlMap.sun_ruixi}/sun_ruixi_indoor_exposure_selfie.png`,
+                    'shen_yang_orgasm': GH+'AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE_%E9%AB%98%E6%BD%AE.png',
+                    'shen_yang_holding_pee': GH+'AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE-%E6%86%8B%E5%B0%BF.png',
+                    'shen_yang_indoor_selfie': GH+'AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE_%E5%AE%A4%E5%86%85%E9%9C%B2%E5%87%BA%E8%87%AA%E6%8B%8D.png',
+                    'shen_yang_outdoor_selfie': GH+'AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE-%E6%88%B7%E5%A4%96%E9%9C%B2%E5%87%BA%E8%87%AA%E6%8B%8D.png',
+                    'shen_yang_nude_selfie': GH+'AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE-%E5%85%A8%E8%A3%B8%E8%87%AA%E6%8B%8D.png',
+                    'shen_yang_vulva_selfie': GH+'AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE-%E9%98%B4%E9%83%A8%E8%87%AA%E6%8B%8D.png',
+                    'shen_yang_exhibition': GH+'AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE-%E9%9C%B2%E5%87%BA.png',
+                    'shen_yang_training': GH+'AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE-%E8%B0%83%E6%95%99.png',
+                    'shen_yang_anal_training': GH+'AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE_%E8%82%9B%E9%97%A8%E8%B0%83%E6%95%99.png',
+                    'chen_si_yu_nsfw': GH+'roxysl521-droid/linanan_xiaoma/main/chen_si_yu_nsfw.png',
+                    'xu_mingwei_holding_pee': GH+'zhamuqiu/tongren2/refs/heads/main/xu_mingwei_hoding_pee.png',
+                    'xu_mingwei_nude_selfie': GH+'zhamuqiu/tongren2/refs/heads/main/xu_mingwei_vulva_selfie.png',
+                    'xu_mingwei_indoor_selfie': GH+'zhamuqiu/tongren2/refs/heads/main/xu_mingwei_outdoor_selfie.png',
+                    'xu_mingwei_outdoor_selfie': GH+'zhamuqiu/tongren2/refs/heads/main/xu_mingwei_nude_selfie.png',
+                    'guo_yuyao_indoor_selfie': GH+'Alunamin/xiancheng/main/guo_yuyao/guo_yuyao_vulva_selfie.png',
+                    'liu_qiyin_nude_selfie': GH+'Alunamin/xiancheng/main/liu_qiyin/liu_qiyin_vulva_selfie.png',
+                    'liu_qiyin_indoor_selfie': GH+'Alunamin/xiancheng/main/liu_qiyin/liu_qiyin_outdoor_selfie.png',
+                    'liu_qiyin_outdoor_selfie': GH+'Alunamin/xiancheng/main/liu_qiyin/liu_qiyin_nude_selfie.png',
+                                    
+                    'wen_xia_uniform': GH+'vmkudz-sys/my-image-bed/main/lin_wenxia_uniform.png',
+                    'wen_xia_outing': GH+'vmkudz-sys/my-image-bed/main/lin_wenxia_outing.png',
+                    'wen_xia_holding_pee': GH+'vmkudz-sys/my-image-bed/main/lin_wenxia_holding.png',
+                    'wen_xia_orgasm': GH+'vmkudz-sys/my-image-bed/main/lin_wenxia_orgasm.png',
+                    'wen_xia_anal_training': GH+'vmkudz-sys/my-image-bed/main/lin_wenxia_anal_training.png',
+                    'wen_xia_training': GH+'vmkudz-sys/my-image-bed/main/lin_wenxia_training.png',
+                    'wen_xia_exhibition': GH+'vmkudz-sys/my-image-bed/main/lin_wenxia_exhibition.png',
+                    'wen_xia_nude_selfie': GH+'vmkudz-sys/my-image-bed/main/lin_wenxia_nude_selfie.png',
+                    'wen_xia_indoor_selfie': GH+'vmkudz-sys/my-image-bed/main/lin_wenxia_indoor_selfie.png',
+                    'wen_xia_outdoor_selfie': GH+'vmkudz-sys/my-image-bed/main/lin_wenxia_outdoor_selfie.png',
+
+                    
+                    'lin_jia_uniform': `${GH}vmkudz-sys/my-image-bed/main/lin_jia_nsfw.png`,
+                    'lin_jia_outing': `${GH}vmkudz-sys/my-image-bed/main/lin_jia_nsfw.png`,
+                    'lin_jia_holding_pee': `${GH}vmkudz-sys/my-image-bed/main/lin_jia_nsfw.png`,
+                    'lin_jia_orgasm': `${GH}vmkudz-sys/my-image-bed/main/lin_jia_nsfw.png`,
+                    'lin_jia_anal_training': `${GH}vmkudz-sys/my-image-bed/main/lin_jia_nsfw.png`,
+                    'lin_jia_training': `${GH}vmkudz-sys/my-image-bed/main/lin_jia_nsfw.png`,
+                    'lin_jia_exhibition': `${GH}vmkudz-sys/my-image-bed/main/lin_jia_nsfw.png`,
+                    'lin_jia_nude_selfie': `${GH}vmkudz-sys/my-image-bed/main/lin_jia_nsfw.png`,
+                    'lin_jia_indoor_selfie': `${GH}vmkudz-sys/my-image-bed/main/lin_jia_nsfw.png`,
+                    'lin_jia_outdoor_selfie': `${GH}vmkudz-sys/my-image-bed/main/lin_jia_nsfw.png`,
+                    'lin_jia_vulva_selfie': `${GH}vmkudz-sys/my-image-bed/main/lin_jia_nsfw.png`,
+                    'lin_jia_breast_sex': `${GH}vmkudz-sys/my-image-bed/main/lin_jia_nsfw.png`,
+                    'lin_jia_deepthroat': `${GH}vmkudz-sys/my-image-bed/main/lin_jia_nsfw.png`,
+                    'lin_jia_tribadism': `${GH}vmkudz-sys/my-image-bed/main/lin_jia_nsfw.png`,
+                    'lin_jia_oral_cumshot': `${GH}vmkudz-sys/my-image-bed/main/lin_jia_nsfw.png`,
+                    'lin_jia_facial': `${GH}vmkudz-sys/my-image-bed/main/lin_jia_nsfw.png`,
+                    'lin_jia_foot_cumshot': `${GH}vmkudz-sys/my-image-bed/main/lin_jia_nsfw.png`,
+                    'lin_jia_breast_cumshot': `${GH}vmkudz-sys/my-image-bed/main/lin_jia_nsfw.png`,
+                    'lin_jia_creampie': `${GH}vmkudz-sys/my-image-bed/main/lin_jia_nsfw.png`,
+                    'lin_jia_external_cumshot': `${GH}vmkudz-sys/my-image-bed/main/lin_jia_nsfw.png`,
+                    'lin_jia_ass_cumshot': `${GH}vmkudz-sys/my-image-bed/main/lin_jia_nsfw.png`,
+                    'zhu_juexiang_outdoor_selfie': GH+'HaoX520/-/refs/heads/main/zhu_juexiang/zhu_juexiang_nude_selfie.png',
+                    'zhu_juexiang_indoor_selfie': GH+'HaoX520/-/refs/heads/main/zhu_juexiang/zhu_juexiang_outdoor_selfie.png',
+                    'zhu_juexiang_nude_selfie': GH+'HaoX520/-/refs/heads/main/zhu_juexiang/zhu_juexiang_selfie.png',
+                    'zhu_yue_outdoor_selfie': R8,
+                    'zhu_yue_indoor_selfie': R7,
+                    'zhu_yue_nude_selfie': R5,
+                    'zhu_yue_exhibition': R6,
+                    'pei_shuquan_blowjob': GH+'LonSha/xiancheng/main/pei_shuquan_blowjob.png',
+                    'pei_shuquan_orgasm': GH+'LonSha/xiancheng/main/pei_shuquan_orgasm.png',
+                    'pei_shuquan_sex': GH+'LonSha/xiancheng/main/pei_shuquan_sex.png',
+                    'pei_shuquan_vulva_selfie': GH+'LonSha/xiancheng/main/pei_shuquan_vulva_selfie.png',
+                    // 唐蜜 exhibition 双下划线修正
+                    'tang_mi_exhibition': GH+'HaoX520/-/refs/heads/main/tang_mi' + '/tang_mi__exhibition.png',
+                    'tang_mi_vulva_selfie': GH+'HaoX520/-/refs/heads/main/tang_mi/tang_mi_vulva_selfie.png'
+                };
+
+                const variants = {
+                    '日常': 'daily',
+                    '制服': 'uniform',
+                    '外出': 'outing',
+                    '赤裸': 'nsfw',
+                    '口交': 'blowjob',
+                    '足交': 'footjob',
+                    '憋尿': 'holding_pee',
+                    '性交': 'sex',
+                    '肛交': 'anal',
+                    '高潮': 'orgasm',
+                    '肛门调教': 'anal_training',
+                    '调教': 'training',
+                    '露出': 'exhibition',
+                    '阴部自拍': 'vulva_selfie',
+                    '全裸自拍': 'nude_selfie',
+                    '户外露出自拍': 'outdoor_selfie',
+                    '室内露出自拍': 'indoor_selfie',
+                    '乳交': 'breast_sex',
+                    '深喉': 'deepthroat',
+                    '素股': 'tribadism',
+                    '口爆': 'oral_cumshot',
+                    '颜射': 'facial',
+                    '足射': 'foot_cumshot',
+                    '乳射': 'breast_cumshot',
+                    '内射': 'creampie',
+                    '外射': 'external_cumshot',
+                    '臀射': 'ass_cumshot',
+                    '乳头调教': 'nipple_training',
+                    '阴部调教': 'pussy_training',
+                    '捆绑调教': 'bondage',
+                    '身体涂鸦': 'body_writing',
+                    '窒息调教': 'choking',
+                    '尿道调教': 'urethral_training',
+                    '群交射精': 'gangbang_creampie',
+                    '群交事后': 'gangbang_aftermath',
+                    '女上位': 'cowgirl'
+                };
+
+                const characters = {
+                    '孙翌童': 'sun_yitong',
+                    '张子薇': 'zhang_ziwei',
+                    '柳青': 'liu_qing',
+                    '李南星': 'li_nanxing',
+                    '金晶晶': 'jin_jingjing',
+                    '汤加琳': 'tang_jialin',
+                    '胡静': 'hu_jing',
+                    '兰叶': 'lan_ye',
+                    '黄淑仪': 'huang_shuyi',
+                    '陈晓北': 'chen_xiaobei',
+                    '珞珈': 'luo_jia',
+                    '珞花': 'luo_hua',
+                    '『珞珈』': 'luo_jia',
+                    '赵雅琴': 'zhao_yaqin',
+                    '文素': 'wen_su',
+                    '让娜': 'rang_na',
+                    '庞咏萱': 'pang_yongxuan',
+                    '沈漾': 'shen_yang',
+                    '祝佩玲': 'zhu_peiling',
+                    '林安安': 'lin_anan',
+                    '吴海文': 'wu_haiwen',
+                    '孙瑞希': 'sun_ruixi',
+                    '祝叶谷': 'zhu_yegu',
+                    '伦欣桐': 'lun_xintong',
+                    '文馨': 'wen_xin',
+                    '文澜': 'wen_lan',
+                    '洪欣彤': 'hong_xintong',
+                    '贺玲': 'he_ling',
+                    '苏雨': 'suyu',
+                    '陈书婷': 'chen_shuting',
+                    '马琪': 'ma_qi',
+                    '源丽萍': 'yuan_liping',
+                    '明香香': 'ming_xiangxiang',
+                    '温若宁': 'wen_ruoning',
+                    '方敏': 'fang_min',
+                    '林沐宜': 'lin_muyi',
+                    '丁曼红': 'ding_manhong',
+                    '赵小满': 'zhao_xiaoman',
+                    '赵自由': 'zhao_ziyou','韩冰娇': 'han_bingjiao', '刘予安': 'liu_yuan',
+                    '苏晚棠': 'su_wantang',
+                    '陈思雨': 'chen_si_yu',
+                    '苏紫宁': 'su_zi_ning',
+                    '荣柔柔': 'rong_rourou',
+                    '周语彤': 'zhou_yutong',
+                    '白晓雪': 'bai_xiaoxue',
+                    '阳灿': 'yang_can',
+                    '庞颖': 'pang_ying',
+                    '独孤春儿': 'dugu_chuner',
+                    '韩真真': 'han_zhenzhen',
+                    '朱清': 'zhu_qing',
+                    '张薇薇': 'zhang_weiwei',
+                    '汤倩': 'tang_qian',
+                    '雅陶': 'ya_tao',
+                    '马青青': 'ma_qingqing',
+                    '文鸢': 'wen_yuan',
+                    '董世青': 'dong_shiqing',
+                    '陈莹莹': 'chen_yingying',
+                    '林安安（小马）': 'lin_anan_xiaoma',
+                    '安春生': 'an_chunsheng',
+                    '那可': 'nake',
+                    '芍药': 'shaoyao',
+                    '金宁': 'jin_ning',
+                    '文素（大）': 'wen_su_da',
+                    '文素（大）（县1u版）': 'wen_su_da',
+                    '孙苑清': 'sun_yuanqing',
+                    '海霖': 'hai_lin',
+                    '周灵': 'zhou_ling',
+                    '云伊': 'yunyi',
+                    '沛涵': 'peihan',
+                    '许明薇': 'xu_mingwei',
+                    '郭雨瑶': 'guo_yuyao',
+                    '刘祈音': 'liu_qiyin',
+                    '林闻夏': 'wen_xia',
+                    '林葭': 'lin_jia',
+                    '许愿姬': 'xu_yuanji',
+                    '许愿': 'xu_yuan',
+                    '安琳': 'anlin',
+                    '淑静': 'shujing',
+                    '兰心': 'lanxin',
+                    '孙琦': 'sunqi',
+                    
+                    '朱玥': 'zhu_yue',
+                    // 🆕 智允
+                    '智允': 'zhi_yun',
+                    // 唐蜜
+                    '唐蜜': 'tang_mi',
+                    // 林悦
+                    '林悦': 'lin_yue',
+                    // 珞珈(大)
+                    '珞珈(大)': 'luo_jia27',
+                    '珞珈（不辞而别版）': 'luo_jia27',
+                    '大珞花': 'da_luo_hua',
+                    // 董釉月
+                    '董釉月': 'dong_youyue',
+                    '顾海棠': 'gu_haitang',
+                    '景媛': 'jing_yuan',
+                    '高雯': 'gao_wen',
+                    '朱艺': 'zhu_yi',
+                    '李双洙': 'li_shuang_zhu',
+                    '禾佳': 'he_jia',
+                    '沈雁': 'shen_yan',
+                    '南梦秋': 'nan_mengqiu',
+                    '艾洛伊': 'ai_luo_yi',
+                    '沈辞': 'shenci'};
+
+                const HAI_TANG_SET = { gu_haitang:1, jing_yuan:1, gao_wen:1, zhu_yi:1, li_shuang_zhu:1, he_jia:1, shen_yan:1, ai_luo_yi:1 };
+                    const HT_NSFW_OK = { blowjob:1, footjob:1, holding_pee:1, sex:1, anal:1, orgasm:1, anal_training:1, training:1, exhibition:1, nude_selfie:1, outdoor_selfie:1, indoor_selfie:1 };
+                    const fallbackAvatars = {
+                    sun_yitong: 'S',
+                    // 🆕 罗可可
+                    '罗可可': 'luo_ke_ke',
+                    zhang_ziwei: 'Z',
+                    liu_qing: 'L',
+                    li_nanxing: 'N',
+                    jin_jingjing: 'J',
+                    tang_jialin: 'T',
+                    hu_jing: 'H',
+                    lan_ye: 'Y',
+                    huang_shuyi: 'S',
+                    chen_xiaobei: 'X',
+                    luo_jia: 'L',
+                    luo_jia27: '珞',
+                    dong_youyue: '釉',
+                    zhao_yaqin: 'Z',
+                    wen_su: 'W',
+                    rang_na: 'R',
+                    pang_yongxuan: 'P',
+                    shen_yang: '沈',
+                    zhu_peiling: 'Z',
+                    lin_anan: 'L',
+                    wu_haiwen: 'W',
+                    sun_ruixi: 'S',
+                    zhu_yegu: 'Z',
+                    lun_xintong: 'L',
+                    wen_xin: 'W',
+                    wen_lan: 'W',
+                    hong_xintong: 'H',
+                    he_ling: 'H',
+                    suyu: 'S',
+                    chen_shuting: 'C',
+                    ma_qi: 'M',
+                    yuan_liping: 'Y',
+                    ming_xiangxiang: 'M',
+                    wen_ruoning: 'W',
+                    fang_min: '方',
+                    lin_muyi: '林',
+                    ding_manhong: '丁',
+                    zhao_xiaoman: '赵',
+                    zhao_ziyou: '赵',liu_yuan: '刘',han_bingjiao: '韩',
+                    su_wantang: 'S',
+                    chen_si_yu: 'C',
+                    su_zi_ning: 'S',
+                    rong_rourou: '荣',
+                    zhou_yutong: '周',
+                    bai_xiaoxue: '白',
+                    luo_hua: 'L',
+                    yang_can: '阳',
+                    pang_ying: '庞',
+                    dugu_chuner: '独',
+                    han_zhenzhen: '韩',
+                    zhu_qing: '朱',
+                    zhang_weiwei: '张',
+                    tang_qian: '汤',
+                    ya_tao: '雅',
+                    ma_qingqing: '马',
+                    wen_yuan: '文',
+                    dong_shiqing: '董',
+                    chen_yingying: '陈',
+                    lin_anan_xiaoma: '林',
+                    an_chunsheng: '安',
+                    nake: '那',
+                    shaoyao: '芍',
+                    jin_ning: '金',
+                    wen_su_da: '文',
+                    sun_yuanqing: '孙',
+                    hai_lin: '海',
+                    zhou_ling: '周',
+                    yunyi: '云',
+                    peihan: '沛',
+                    xu_mingwei: '许',
+                    guo_yuyao: '郭',
+                    liu_qiyin: '刘',
+                    wen_xia: '林',
+                    lin_jia: '林',
+                    xu_yuanji: '许',
+                    xu_yuan: '许',
+                    anlin: '安',
+                    shujing: '淑',
+                    lanxin: '兰',
+                    sunqi: '孙',
+                    
+                    zhu_yue: '朱',
+                    zhao_shiqing: '赵',
+                    zhu_juexiang: '祝',
+                    // 🆕 智允占位符
+                    zhi_yun: '智',
+                    // 唐蜜占位符
+                    tang_mi: '唐',
+                    // 林悦
+                    lin_yue: '林',
+                    gu_haitang: '棠',
+                    jing_yuan: '媛',
+                    gao_wen: '雯',
+                    zhu_yi: '艺',
+                    li_shuang_zhu: '洙',
+                    he_jia: '佳',
+                    shen_yan: '雁'};
+
+                const sceneText = (document.getElementById('nsfw-data-raw') || {}).textContent || '';
+                const canonicalNames = Object.keys(characters);
+
+                function normalizeName(value) { return (value || '').replace(/\s+/g, '').trim(); }
+
+                function getUniqueCharacters(value) { return Array.from(new Set(normalizeName(value).split('').filter(Boolean))); }
+
+                function getCharacterCoverage(rawName, candidateName) {
+                    const targetChars = getUniqueCharacters(rawName);
+                    const candidateChars = getUniqueCharacters(candidateName);
+                    if (targetChars.length === 0 || candidateChars.length === 0) return { matchedCount: 0, requiredCount: 0,
+                        coverage: 0 };
+                    const targetSet = new Set(targetChars);
+                    const matchedCount = candidateChars.filter(char => targetSet.has(char)).length;
+                    const requiredCount = candidateChars.length >= 3 ? 2 : candidateChars.length;
+                    return { matchedCount, requiredCount, coverage: matchedCount / candidateChars.length };
+                }
+
+                function levenshteinDistance(a, b) {
+                    const s = normalizeName(a);
+                    const t = normalizeName(b);
+                    const m = s.length,
+                        n = t.length;
+                    if (m === 0) return n;
+                    if (n === 0) return m;
+                    const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+                    for (let i = 0; i <= m; i++) dp[i][0] = i;
+                    for (let j = 0; j <= n; j++) dp[0][j] = j;
+                    for (let i = 1; i <= m; i++) {
+                        for (let j = 1; j <= n; j++) {
+                            const cost = s[i - 1] === t[j - 1] ? 0 : 1;
+                            dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+                        }
+                    }
+                    return dp[m][n];
+                }
+
+                function resolveName(rawName) {
+                    const target = normalizeName(rawName);
+                    if (!target) return null;
+                    if (canonicalNames.includes(target)) return target;
+                    let coverageBestNames = [],
+                        coverageBestScore = -1,
+                        coverageBestMatchedCount = -1;
+                    for (const candidate of canonicalNames) {
+                        const { matchedCount, requiredCount, coverage } = getCharacterCoverage(target, candidate);
+                        if (matchedCount < requiredCount) continue;
+                        if (coverage > coverageBestScore || (coverage === coverageBestScore && matchedCount >
+                                coverageBestMatchedCount)) {
+                            coverageBestNames = [candidate];
+                            coverageBestScore = coverage;
+                            coverageBestMatchedCount = matchedCount;
+                        } else if (coverage === coverageBestScore && matchedCount === coverageBestMatchedCount) {
+                            coverageBestNames.push(candidate);
+                        }
+                    }
+                    if (coverageBestNames.length === 1) return coverageBestNames[0];
+                    let bestNames = [],
+                        bestDistance = Infinity;
+                    for (const candidate of canonicalNames) {
+                        const dist = levenshteinDistance(target, candidate);
+                        if (dist < bestDistance) { bestDistance = dist;
+                            bestNames = [candidate]; } else if (dist === bestDistance) { bestNames.push(candidate); }
+                    }
+                    if (bestNames.length === 1) {
+                        const limit = Math.max(1, Math.ceil(Math.min(target.length, bestNames[0].length) * 0.4));
+                        return bestDistance <= limit ? bestNames[0] : null;
+                    }
+                    return null;
+                }
+
+                function parseLines() {
+                    const blocks = [];
+                    const re = /<environment_details>([\s\S]*?)<\/environment_details>/gm;
+                    let m;
+                    while ((m = re.exec(sceneText)) !== null) { blocks.push(m[1]); }
+                    if (blocks.length === 0) blocks.push(sceneText);
+
+                    const lines = [];
+                    for (const b of blocks) {
+                        const match = b.match(/在场角色[：:]\s*([\s\S]*?)(?=\n\n|$)/);
+                        if (!match) continue;
+                        const segLines = match[1].split('\n').map(l => l.trim()).filter(l => l.startsWith('-')).map(l => l
+                            .replace(/^\-\s*/, ''));
+                        lines.push(...segLines);
+                    }
+                    return lines;
+                }
+
+                function buildItems(lines) {
+                    const items = [];
+                    for (const line of lines) {
+                        const parts = line.split('|').map(s => s.trim());
+                        if (parts.length < 2) continue;
+                        const name = resolveName(parts[0]);
+                        const action = parts[1];
+                        if (!name || !characters[name] || !variants[action]) continue;
+                    if (HAI_TANG_SET[characters[name]] && !HT_NSFW_OK[variants[action]]) continue;
+                        items.push({ code: characters[name], label: action, key: variants[action] });
+                    }
+                    return items;
+                }
+
+                const FILE_PREFIX_OVERRIDE = {};
+                const MULTI_IMG_CODES = ['lin_jia', 'wen_xia'];
+                const MULTI_IMG_COUNT = 8;
+                const SHEN_YANG_MULTI = {
+                    footjob: 10, sex: 10, blowjob: 11, anal: 9, breast_sex: 10,
+                    deepthroat: 6, tribadism: 8,
+                    oral_cumshot: 3, facial: 3, foot_cumshot: 3, breast_cumshot: 3,
+                    creampie: 5, external_cumshot: 4, ass_cumshot: 3
+                };
+                const SHEN_YANG_CN = {
+                    footjob: '足交', sex: '性交', blowjob: '口交', anal: '肛交', breast_sex: '乳交',
+                    deepthroat: '深喉', tribadism: '素股',
+                    oral_cumshot: '射精-口爆', facial: '射精-颜射', foot_cumshot: '射精-足射',
+                    breast_cumshot: '射精-乳射', creampie: '射精-内射',
+                    external_cumshot: '射精-外射', ass_cumshot: '射精-臀射'
+                };
+                function filePrefix(code) { return FILE_PREFIX_OVERRIDE[code] || code; }
+                function hashStr(str) { var h = 0; if (!str || str.length === 0) return h; for (var i = 0; i < str.length; i++) { var c = str.charCodeAt(i); h = ((h << 5) - h) + c; h = h & h; } return Math.abs(h); }
+                function pickMultiIndex(seed, n) { return (seed % n) + 1; }
+
+                function getImageUrl(code, key, version) {
+                    if (version === 0 && overrideUrls[`${code}_${key}`]) {
+                        return overrideUrls[`${code}_${key}`];
+                    }
+
+                    let base = '';
+                    if (version === 0) {
+                        base = baseUrlMap[code];
+                    } else {
+                        const v2Config = VERSION2_CONFIG[code];
+                        if (v2Config) {
+                            if (v2Config.overrides && v2Config.overrides[key]) {
+                                return v2Config.overrides[key];
+                            }
+                            base = v2Config.nsfwBase;
+                        } else {
+                            base = baseUrlMap[code];
+                        }
+                    }
+
+                    if (!base || base === 'WAITING_FOR_IMAGE_HOST') return '';
+                    if (code === 'pei_shuquan' && key === 'uniform') {
+                        const ver = Math.random() > 0.5 ? '' : '2';
+                        return base + '/pei_shuquan_uniform' + ver + '.png';
+                    }
+                    if (code === 'shen_yang' && SHEN_YANG_MULTI[key]) {
+                        var cnName = SHEN_YANG_CN[key];
+                        var maxN = SHEN_YANG_MULTI[key];
+                        var seedSY = hashStr('shen_yang' + key + (version === 0 ? 'v1' : 'v2'));
+                        var idxSY = (seedSY % maxN) + 1;
+                        return base + '/' + encodeURIComponent('沈漾-' + cnName + '-' + idxSY + '.png');
+                    }
+                    if (MULTI_IMG_CODES.indexOf(code) !== -1) {
+                        var prefix = filePrefix(code);
+                        var seed = hashStr(code + key + (version === 0 ? 'v1' : 'v2'));
+                        var idx = pickMultiIndex(seed, MULTI_IMG_COUNT);
+                        var suffix = idx === 1 ? '' : idx;
+                        return `${base}/${prefix}${suffix}_${key}.png`;
+                    }
+                    return `${base}/${code}_${key}.png`;
+                }
+
+                function render(items) {
+                    if (items.length === 0) {
+                        listContainer.innerHTML = `
+                            <div style="text-align:center; color: var(--muted); padding: 40px 20px; font-size: 14px;">
+                                <p>未在场景中识别到任何角色。</p>
+                                <p style="margin-top: 8px; font-size: 13px;">请在「在场角色」列表中列出角色名称，例如：</p>
+                                <p style="margin-top: 4px; font-size: 13px; opacity: 0.7;">- 白晓雪 | 制服</p>
+                            </div>
+                        `;
+                        return;
+                    }
+
+                    listContainer.innerHTML = items.map(item => {
+                        const urlV1 = getImageUrl(item.code, item.key, 0);
+                        const urlV2 = getImageUrl(item.code, item.key, 1);
+                        const flipClass = initialFlipped ? 'is-flipped' : '';
+                        const fallbackText = fallbackAvatars[item.code] || '?';
+
+                        const renderFace = (url) => {
+                            if (url) {
+                                return `
+                                        <div class="flip-hint">🔄 点击切换</div>
+                                        <img src="${url}" alt="${item.label}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                        <div class="placeholder" style="display:none;">${fallbackText}</div>
+                                    `;
+                            } else {
+                                return `
+                                        <div class="flip-hint">🔄 点击切换</div>
+                                        <div class="placeholder">${fallbackText}</div>
+                                    `;
+                            }
+                        };
+
+                        return `
+                                <div class="item">
+                                    <div class="status-card ${flipClass}" onclick="this.classList.toggle('is-flipped')">
+                                        <div class="card-inner">
+                                            <div class="card-face card-front">
+                                                ${renderFace(urlV1)}
+                                            </div>
+                                            <div class="card-face card-back">
+                                                ${renderFace(urlV2)}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="label">${item.label}</div>
+                                </div>
+                            `;
+                    }).join('');
+                }
+
+                render(buildItems(parseLines()));
+            })();
+</script>
+    </div>
+</body>
+
+</html>

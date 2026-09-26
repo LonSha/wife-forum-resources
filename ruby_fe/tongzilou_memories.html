@@ -1,0 +1,1773 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>2008 筒子楼 · 记忆载入</title>
+    <style>
+        :root {
+            --win-gray: #c0c0c0;
+            --win-blue: #000080;
+            --win-light: #ffffff;
+            --win-shadow: #808080;
+            --glass-bg: rgba(235, 245, 255, 0.94);
+            --text-main: #0f172a;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: "Tahoma", "Microsoft YaHei", "SimSun", sans-serif;
+            min-height: 100vh;
+            background: transparent;
+            color: var(--text-main);
+            overflow-x: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+        }
+
+        .window-container {
+            width: 100%;
+            max-width: 600px;
+            height: 95vh;
+            background: var(--glass-bg);
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 2px solid var(--win-shadow);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            overflow: hidden;
+        }
+
+        .vintage-calendar {
+            position: absolute;
+            top: 40px;
+            right: 15px;
+            width: 70px;
+            background: #fff;
+            border: 1px solid #ccc;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+            transform: rotate(5deg);
+            z-index: 1;
+            opacity: 0.9;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .vintage-calendar:hover {
+            transform: rotate(0deg) scale(1.1);
+            box-shadow: 4px 4px 10px rgba(0,0,0,0.3);
+            opacity: 1;
+        }
+        .vintage-calendar:active {
+            transform: rotate(-2deg) scale(0.95);
+        }
+        .vintage-calendar-header {
+            background: #c91010;
+            color: white;
+            text-align: center;
+            font-size: 10px;
+            padding: 2px 0;
+            font-weight: bold;
+            font-family: "SimHei", sans-serif;
+            border-bottom: 2px solid #a00d0d;
+        }
+        .vintage-calendar-body {
+            text-align: center;
+            padding: 5px 0;
+        }
+        .vintage-calendar-day {
+            font-size: 24px;
+            font-weight: bold;
+            color: #c91010;
+            font-family: "Arial", sans-serif;
+            line-height: 1;
+        }
+        .vintage-calendar-month {
+            font-size: 10px;
+            color: #333;
+            margin-top: 3px;
+        }
+
+        .vintage-poster {
+            position: absolute;
+            bottom: 30px;
+            left: 15px;
+            width: 120px;
+            background: #fdfbf7;
+            padding: 6px;
+            border: 1px solid #dcdcdc;
+            box-shadow: 2px 2px 6px rgba(0,0,0,0.3);
+            transform: rotate(-6deg);
+            z-index: 1;
+            opacity: 0.9;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .vintage-poster:hover {
+            transform: rotate(-2deg) scale(1.05) translateY(-5px);
+            box-shadow: 5px 8px 15px rgba(0,0,0,0.2);
+            opacity: 1;
+        }
+        .vintage-poster:active {
+            transform: rotate(-8deg) scale(0.98);
+        }
+        .vintage-poster::before {
+            content: "";
+            position: absolute;
+            top: -6px; left: 50%;
+            transform: translateX(-50%);
+            width: 30px; height: 12px;
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid #ccc;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+        .vintage-poster-content {
+            border: 1px double #c91010;
+            padding: 5px;
+            text-align: center;
+        }
+        .vintage-poster-title {
+            color: #c91010;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 3px;
+            letter-spacing: 1px;
+        }
+        .vintage-poster-sub {
+            font-size: 9px;
+            color: #333;
+        }
+
+        .vintage-note {
+            position: absolute;
+            bottom: 40px;
+            right: 20px;
+            width: 100px;
+            height: 100px;
+            background: #fef08a;
+            border: 1px solid #eab308;
+            box-shadow: 2px 4px 6px rgba(0,0,0,0.15);
+            transform: rotate(8deg);
+            z-index: 1;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .vintage-note::after {
+            content: "";
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%) rotate(-3deg);
+            width: 40px;
+            height: 15px;
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: 0 1px 1px rgba(0,0,0,0.05);
+        }
+        .vintage-note::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 20px;
+            height: 20px;
+            background: linear-gradient(135deg, transparent 45%, #dca54c 50%, #fef08a 60%);
+            box-shadow: -2px -2px 3px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        .vintage-note:hover {
+            transform: rotate(2deg) scale(1.1) translateY(-10px);
+            box-shadow: 5px 15px 20px rgba(0,0,0,0.2);
+        }
+        .vintage-note:hover::before {
+            width: 30px;
+            height: 30px;
+            box-shadow: -4px -4px 6px rgba(0,0,0,0.15);
+        }
+        .vintage-note:active {
+            transform: rotate(5deg) scale(0.95);
+        }
+        .vintage-note-text {
+            color: #1e3a8a;
+            font-family: "SimSun", serif;
+            font-size: 13px;
+            font-weight: bold;
+            line-height: 1.4;
+            text-align: center;
+            transform: rotate(-2deg);
+        }
+
+        .window-header {
+            background: var(--win-blue);
+            color: #ffffff;
+            padding: 6px 12px;
+            font-size: 14px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+            position: relative;
+            z-index: 20;
+        }
+
+        .window-header-controls {
+            display: flex;
+            gap: 4px;
+        }
+        .win-btn-small {
+            background: var(--win-gray);
+            border-top: 1px solid var(--win-light);
+            border-left: 1px solid var(--win-light);
+            border-right: 1px solid #000;
+            border-bottom: 1px solid #000;
+            width: 18px;
+            height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+            font-weight: bold;
+            color: #000;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .win-btn-small:hover { background: #d0d0d0; }
+        .win-btn-small:active {
+            border-top: 1px solid #000;
+            border-left: 1px solid #000;
+            border-right: 1px solid var(--win-light);
+            border-bottom: 1px solid var(--win-light);
+            padding-top: 2px;
+            padding-left: 2px;
+        }
+
+        .page {
+            display: none;
+            padding: 20px;
+            flex-direction: column;
+            align-items: center;
+            animation: fadeIn 0.4s ease;
+            flex: 1;
+            overflow-y: auto;
+            position: relative;
+            z-index: 10;
+        }
+        .page.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .title-2008 {
+            font-size: 32px;
+            font-weight: 900;
+            color: #be185d;
+            text-shadow: 2px 2px 0px #fbcfe8, 4px 4px 0px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            margin-top: 10px;
+            letter-spacing: 2px;
+            text-align: center;
+            font-family: "SimSun", serif;
+            position: relative;
+            z-index: 5;
+        }
+
+        .cover-photo-frame {
+            background: #fcf9f5;
+            padding: 12px;
+            border: 2px solid var(--win-gray);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            z-index: 5;
+        }
+        .cover-photo-frame::before {
+            content: "";
+            position: absolute;
+            top: -10px; left: 50%;
+            transform: translateX(-50%) rotate(-2deg);
+            width: 80px; height: 20px;
+            background: rgba(253, 224, 71, 0.85);
+            border: 1px dashed rgba(202, 138, 4, 0.6);
+            z-index: 5;
+        }
+        .photo-inner {
+            width: 100%;
+            aspect-ratio: 4/3;
+            background: #e2e8f0;
+            border: 1px inset #90b0d0;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        .photo-inner img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.2s ease;
+        }
+
+        .loading-text {
+            position: absolute;
+            font-family: "SimSun", monospace;
+            font-size: 14px;
+            font-weight: bold;
+            color: #64748b;
+            display: none;
+        }
+
+        .photo-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--win-gray);
+            padding: 4px 8px;
+            border: 1px solid #808080;
+        }
+
+        .photo-caption {
+            font-size: 13px;
+            font-weight: bold;
+            color: #334155;
+            font-family: "SimSun", monospace;
+            flex: 1;
+            text-align: center;
+            padding: 0 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .win-btn-nav {
+            background: var(--win-gray);
+            border-top: 2px solid var(--win-light);
+            border-left: 2px solid var(--win-light);
+            border-right: 2px solid #000;
+            border-bottom: 2px solid #000;
+            padding: 2px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            color: #000;
+            cursor: pointer;
+            user-select: none;
+            font-family: "SimSun", sans-serif;
+        }
+        .win-btn-nav:active:not(:disabled) {
+            border-top: 2px solid #000;
+            border-left: 2px solid #000;
+            border-right: 2px solid var(--win-light);
+            border-bottom: 2px solid var(--win-light);
+            padding: 3px 9px 1px 11px;
+        }
+        .win-btn-nav:disabled {
+            color: #808080;
+            text-shadow: 1px 1px 0px #fff;
+            cursor: not-allowed;
+            border-top: 2px solid var(--win-light);
+            border-left: 2px solid var(--win-light);
+            border-right: 2px solid #000;
+            border-bottom: 2px solid #000;
+        }
+
+        .win-btn {
+            background: var(--win-gray);
+            border-top: 2px solid var(--win-light);
+            border-left: 2px solid var(--win-light);
+            border-right: 2px solid #000;
+            border-bottom: 2px solid #000;
+            padding: 10px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #000;
+            cursor: pointer;
+            user-select: none;
+            transition: background 0.1s;
+            font-family: "SimSun", sans-serif;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            z-index: 5;
+        }
+        .win-btn:hover { background: #d0d0d0; }
+        .win-btn:active {
+            border-top: 2px solid #000;
+            border-left: 2px solid #000;
+            border-right: 2px solid var(--win-light);
+            border-bottom: 2px solid var(--win-light);
+            padding: 11px 29px 9px 31px;
+        }
+
+        .explorer-container {
+            width: 100%;
+            max-width: 600px;
+            background: #ffffff;
+            border: 2px solid var(--win-shadow);
+            border-right-color: var(--win-light);
+            border-bottom-color: var(--win-light);
+            display: flex;
+            flex-direction: column;
+            box-shadow: inset -1px -1px 0 #000, inset 1px 1px 0 #808080;
+            flex: 1;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 5;
+        }
+
+        .explorer-header {
+            background: linear-gradient(90deg, #000080, #1084d0);
+            color: #ffffff;
+            padding: 4px 8px;
+            font-size: 12px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+        }
+
+        .explorer-header-title {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .win-btn-close-red {
+            background: #d4d0c8;
+            border-top: 1px solid var(--win-light);
+            border-left: 1px solid var(--win-light);
+            border-right: 1px solid #000;
+            border-bottom: 1px solid #000;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: #000;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .win-btn-close-red:hover {
+            background: #c91010;
+            color: #fff;
+        }
+        .win-btn-close-red:active {
+            border-top: 1px solid #000;
+            border-left: 1px solid #000;
+            border-right: 1px solid var(--win-light);
+            border-bottom: 1px solid var(--win-light);
+            padding-top: 2px;
+            padding-left: 2px;
+        }
+
+        .explorer-toolbar {
+            background: var(--win-gray);
+            padding: 4px;
+            border-bottom: 1px solid var(--win-shadow);
+            display: flex;
+            gap: 10px;
+            font-size: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .explorer-address {
+            flex: 1;
+            min-width: 150px;
+            background: #fff;
+            border: 1px inset var(--win-shadow);
+            padding: 2px 4px;
+            display: flex;
+            align-items: center;
+            font-family: "Tahoma", sans-serif;
+        }
+        .explorer-address span:last-child {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 100%;
+        }
+
+        .explorer-content {
+            padding: 15px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 14px;
+            flex: 1;
+            background: #ffffff;
+            overflow-y: auto;
+        }
+
+        .folder-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 6px;
+            border: 1px dotted transparent;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        .folder-item:hover {
+            background: rgba(0, 0, 128, 0.1);
+        }
+
+        .folder-item.selected {
+            background: #000080;
+            color: #ffffff;
+            border-color: #000080;
+        }
+
+        .folder-avatar {
+            width: 112px;
+            height: 112px;
+            object-fit: cover;
+            border-radius: 16px;
+            border: 3px solid #e2e8f0;
+            background: #f1f5f9;
+            transition: all 0.2s;
+            margin-bottom: 6px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.12);
+            cursor: pointer;
+        }
+        .folder-item:hover .folder-avatar {
+            transform: scale(1.02);
+            border-color: #000080;
+        }
+        .folder-item.selected .folder-avatar {
+            border-color: #ffffff;
+            box-shadow: 0 0 0 3px #000080;
+        }
+
+        .folder-name {
+            font-size: 11px;
+            text-align: center;
+            word-break: break-all;
+            padding: 2px 4px;
+            font-family: "SimSun", sans-serif;
+        }
+
+        .folder-item.selected .folder-name {
+            background: #000080;
+            color: #fff;
+        }
+
+        .explorer-statusbar {
+            background: var(--win-gray);
+            padding: 4px 10px;
+            border-top: 1px solid var(--win-light);
+            font-size: 12px;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            box-shadow: inset 0 1px 0 #fff;
+            min-height: 24px;
+        }
+
+        .status-desc {
+            color: #000080;
+            flex: 1;
+            margin-left: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(192, 192, 192, 0.8);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s;
+        }
+        .loading-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .loading-window {
+            background: var(--win-gray);
+            border: 2px solid var(--win-light);
+            border-right-color: #000;
+            border-bottom-color: #000;
+            width: 90%;
+            max-width: 300px;
+            padding: 2px;
+            box-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+        }
+
+        .loading-title {
+            background: var(--win-blue);
+            color: #fff;
+            padding: 2px 4px;
+            font-weight: bold;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .loading-content {
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 20px;
+            border: 1px inset var(--win-shadow);
+            background: #fff;
+            position: relative;
+        }
+
+        .progress-blocks {
+            display: flex;
+            height: 100%;
+            gap: 2px;
+            padding: 2px;
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+
+        .progress-block {
+            height: 100%;
+            width: 12px;
+            background: var(--win-blue);
+            opacity: 0;
+        }
+
+        /* ===== 大图查看遮罩 ===== */
+        .image-viewer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.85);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease;
+            cursor: pointer;
+        }
+        .image-viewer.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .image-viewer img {
+            max-width: 90vw;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+            cursor: default;
+        }
+
+        /* ===== 预览窗口（记事本风格） ===== */
+        .preview-window {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0, 0, 0, 0.35);
+            z-index: 40;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 15px;
+            animation: fadeIn 0.2s ease;
+        }
+        .preview-window.active {
+            display: flex;
+        }
+
+        .preview-dialog {
+            width: 100%;
+            max-width: 520px;
+            max-height: 90%;
+            background: var(--win-gray);
+            border: 2px solid var(--win-light);
+            border-right-color: #000;
+            border-bottom-color: #000;
+            box-shadow: 4px 4px 20px rgba(0,0,0,0.6);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .preview-titlebar {
+            background: var(--win-blue);
+            color: #fff;
+            padding: 5px 8px;
+            font-size: 13px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+            flex-shrink: 0;
+        }
+
+        .preview-menubar {
+            background: var(--win-gray);
+            padding: 3px 6px;
+            border-bottom: 1px solid var(--win-shadow);
+            font-size: 12px;
+            display: flex;
+            gap: 14px;
+            color: #333;
+            flex-shrink: 0;
+            user-select: none;
+        }
+        .preview-menubar span {
+            cursor: default;
+        }
+
+        .preview-content {
+            background: #fff;
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            font-family: "SimSun", "Microsoft YaHei", serif;
+            font-size: 13px;
+            line-height: 1.9;
+            color: #1a1a1a;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            min-height: 180px;
+            max-height: 45vh;
+        }
+        .preview-content .avatar-thumb {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+        .preview-content .avatar-thumb img {
+            max-width: 120px;
+            border-radius: 12px;
+            border: 2px solid #ccc;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+        .preview-content .avatar-thumb img:hover {
+            transform: scale(1.05);
+        }
+
+        /* ===== XP 经典滚动条 ===== */
+        .preview-content::-webkit-scrollbar,
+        .explorer-content::-webkit-scrollbar,
+        .page::-webkit-scrollbar,
+        #mainWindow::-webkit-scrollbar,
+        .window-container::-webkit-scrollbar,
+        body::-webkit-scrollbar,
+        html::-webkit-scrollbar {
+            width: 17px !important;
+            height: 17px !important;
+        }
+        .preview-content::-webkit-scrollbar-track,
+        .explorer-content::-webkit-scrollbar-track,
+        .page::-webkit-scrollbar-track,
+        #mainWindow::-webkit-scrollbar-track,
+        .window-container::-webkit-scrollbar-track,
+        body::-webkit-scrollbar-track,
+        html::-webkit-scrollbar-track {
+            background: #d4d0c8 !important;
+            border: 1px solid #aca899 !important;
+            box-shadow: inset 1px 1px 2px #808080 !important;
+        }
+        .preview-content::-webkit-scrollbar-thumb,
+        .explorer-content::-webkit-scrollbar-thumb,
+        .page::-webkit-scrollbar-thumb,
+        #mainWindow::-webkit-scrollbar-thumb,
+        .window-container::-webkit-scrollbar-thumb,
+        body::-webkit-scrollbar-thumb,
+        html::-webkit-scrollbar-thumb {
+            background: #c0c0c0 !important;
+            border-top: 1px solid #ffffff !important;
+            border-left: 1px solid #ffffff !important;
+            border-right: 1px solid #404040 !important;
+            border-bottom: 1px solid #404040 !important;
+            min-height: 30px !important;
+            box-shadow: inset -1px -1px 0px #a0a0a0, inset 1px 1px 0px #e8e8e8 !important;
+        }
+        .preview-content::-webkit-scrollbar-thumb:hover,
+        .explorer-content::-webkit-scrollbar-thumb:hover,
+        .page::-webkit-scrollbar-thumb:hover,
+        #mainWindow::-webkit-scrollbar-thumb:hover,
+        .window-container::-webkit-scrollbar-thumb:hover,
+        body::-webkit-scrollbar-thumb:hover,
+        html::-webkit-scrollbar-thumb:hover {
+            background: #d0d0d0 !important;
+        }
+        .preview-content::-webkit-scrollbar-thumb:active,
+        .explorer-content::-webkit-scrollbar-thumb:active,
+        .page::-webkit-scrollbar-thumb:active,
+        #mainWindow::-webkit-scrollbar-thumb:active,
+        .window-container::-webkit-scrollbar-thumb:active,
+        body::-webkit-scrollbar-thumb:active,
+        html::-webkit-scrollbar-thumb:active {
+            background: #b0b0b0 !important;
+            border-top: 1px solid #404040 !important;
+            border-left: 1px solid #404040 !important;
+            border-right: 1px solid #ffffff !important;
+            border-bottom: 1px solid #ffffff !important;
+            box-shadow: inset 1px 1px 2px #606060 !important;
+        }
+        .preview-content::-webkit-scrollbar-button:vertical:start:decrement,
+        .explorer-content::-webkit-scrollbar-button:vertical:start:decrement,
+        .page::-webkit-scrollbar-button:vertical:start:decrement,
+        #mainWindow::-webkit-scrollbar-button:vertical:start:decrement,
+        .window-container::-webkit-scrollbar-button:vertical:start:decrement,
+        body::-webkit-scrollbar-button:vertical:start:decrement,
+        html::-webkit-scrollbar-button:vertical:start:decrement {
+            display: block !important;
+            height: 17px !important;
+            width: 17px !important;
+            background: #c0c0c0 !important;
+            border-top: 1px solid #ffffff !important;
+            border-left: 1px solid #ffffff !important;
+            border-right: 1px solid #404040 !important;
+            border-bottom: 1px solid #808080 !important;
+            background-image: url('data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%2217%22%20height=%2217%22%3E%3Cpath%20d=%22M8.5%206%20L12.5%2010.5%20L4.5%2010.5%20Z%22%20fill=%22black%22/%3E%3C/svg%3E') !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
+            box-shadow: inset 1px 1px 0px #e8e8e8, inset -1px -1px 0px #a0a0a0 !important;
+        }
+        .preview-content::-webkit-scrollbar-button:vertical:start:decrement:active,
+        .explorer-content::-webkit-scrollbar-button:vertical:start:decrement:active,
+        .page::-webkit-scrollbar-button:vertical:start:decrement:active,
+        #mainWindow::-webkit-scrollbar-button:vertical:start:decrement:active,
+        .window-container::-webkit-scrollbar-button:vertical:start:decrement:active,
+        body::-webkit-scrollbar-button:vertical:start:decrement:active,
+        html::-webkit-scrollbar-button:vertical:start:decrement:active {
+            background: #b0b0b0 !important;
+            border-top: 1px solid #404040 !important;
+            border-left: 1px solid #404040 !important;
+            border-right: 1px solid #ffffff !important;
+            border-bottom: 1px solid #808080 !important;
+            background-image: url('data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%2217%22%20height=%2217%22%3E%3Cpath%20d=%22M9.5%207%20L13.5%2011.5%20L5.5%2011.5%20Z%22%20fill=%22black%22/%3E%3C/svg%3E') !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
+            box-shadow: inset 1px 1px 2px #606060 !important;
+        }
+        .preview-content::-webkit-scrollbar-button:vertical:end:increment,
+        .explorer-content::-webkit-scrollbar-button:vertical:end:increment,
+        .page::-webkit-scrollbar-button:vertical:end:increment,
+        #mainWindow::-webkit-scrollbar-button:vertical:end:increment,
+        .window-container::-webkit-scrollbar-button:vertical:end:increment,
+        body::-webkit-scrollbar-button:vertical:end:increment,
+        html::-webkit-scrollbar-button:vertical:end:increment {
+            display: block !important;
+            height: 17px !important;
+            width: 17px !important;
+            background: #c0c0c0 !important;
+            border-top: 1px solid #ffffff !important;
+            border-left: 1px solid #ffffff !important;
+            border-right: 1px solid #404040 !important;
+            border-bottom: 1px solid #404040 !important;
+            background-image: url('data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%2217%22%20height=%2217%22%3E%3Cpath%20d=%22M4.5%206.5%20L12.5%206.5%20L8.5%2011%20Z%22%20fill=%22black%22/%3E%3C/svg%3E') !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
+            box-shadow: inset 1px 1px 0px #e8e8e8, inset -1px -1px 0px #a0a0a0 !important;
+        }
+        .preview-content::-webkit-scrollbar-button:vertical:end:increment:active,
+        .explorer-content::-webkit-scrollbar-button:vertical:end:increment:active,
+        .page::-webkit-scrollbar-button:vertical:end:increment:active,
+        #mainWindow::-webkit-scrollbar-button:vertical:end:increment:active,
+        .window-container::-webkit-scrollbar-button:vertical:end:increment:active,
+        body::-webkit-scrollbar-button:vertical:end:increment:active,
+        html::-webkit-scrollbar-button:vertical:end:increment:active {
+            background: #b0b0b0 !important;
+            border-top: 1px solid #404040 !important;
+            border-left: 1px solid #404040 !important;
+            border-right: 1px solid #ffffff !important;
+            border-bottom: 1px solid #ffffff !important;
+            background-image: url('data:image/svg+xml,%3Csvg%20xmlns=%22http://www.w3.org/2000/svg%22%20width=%2217%22%20height=%2217%22%3E%3Cpath%20d=%22M5.5%207.5%20L13.5%207.5%20L9.5%2012%20Z%22%20fill=%22black%22/%3E%3C/svg%3E') !important;
+            background-repeat: no-repeat !important;
+            background-position: center !important;
+            box-shadow: inset 1px 1px 2px #606060 !important;
+        }
+        .preview-content::-webkit-scrollbar-corner,
+        .explorer-content::-webkit-scrollbar-corner,
+        .page::-webkit-scrollbar-corner,
+        #mainWindow::-webkit-scrollbar-corner,
+        .window-container::-webkit-scrollbar-corner,
+        body::-webkit-scrollbar-corner,
+        html::-webkit-scrollbar-corner {
+            background: #d4d0c8 !important;
+        }
+        .preview-content::-webkit-scrollbar-track-piece,
+        .explorer-content::-webkit-scrollbar-track-piece,
+        .page::-webkit-scrollbar-track-piece,
+        #mainWindow::-webkit-scrollbar-track-piece,
+        .window-container::-webkit-scrollbar-track-piece,
+        body::-webkit-scrollbar-track-piece,
+        html::-webkit-scrollbar-track-piece {
+            background: #d4d0c8 !important;
+        }
+        .preview-loading {
+            color: #808080;
+            text-align: center;
+            padding: 50px 0;
+            font-size: 14px;
+        }
+        .preview-loading::after {
+            content: "";
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            margin-left: 6px;
+            border: 2px solid var(--win-shadow);
+            border-top-color: var(--win-blue);
+            border-radius: 50%;
+            animation: previewSpin 0.8s linear infinite;
+            vertical-align: middle;
+        }
+        @keyframes previewSpin {
+            to { transform: rotate(360deg); }
+        }
+
+        .preview-error {
+            color: #c91010;
+            text-align: center;
+            padding: 40px 0;
+            font-size: 13px;
+            white-space: pre-wrap;
+        }
+
+        .preview-section-header {
+            font-weight: bold;
+            font-size: 12px;
+            color: #555;
+            margin: 10px 0 4px 0;
+            padding-bottom: 2px;
+            border-bottom: 1px dashed #ccc;
+        }
+
+        .preview-footer {
+            background: var(--win-gray);
+            padding: 10px 15px;
+            border-top: 1px solid var(--win-light);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
+            box-shadow: inset 0 1px 0 #fff;
+            flex-shrink: 0;
+        }
+
+        .preview-status {
+            font-size: 12px;
+            color: #333;
+            flex: 1;
+            margin-right: 10px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .preview-btn {
+            background: var(--win-gray);
+            border-top: 2px solid var(--win-light);
+            border-left: 2px solid var(--win-light);
+            border-right: 2px solid #000;
+            border-bottom: 2px solid #000;
+            padding: 6px 20px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #000;
+            cursor: pointer;
+            user-select: none;
+            font-family: "SimSun", sans-serif;
+            min-width: 90px;
+            text-align: center;
+        }
+        .preview-btn:hover { background: #d0d0d0; }
+        .preview-btn:active:not(:disabled) {
+            border-top: 2px solid #000;
+            border-left: 2px solid #000;
+            border-right: 2px solid var(--win-light);
+            border-bottom: 2px solid var(--win-light);
+            padding: 7px 19px 5px 21px;
+        }
+        .preview-btn:disabled {
+            color: #808080;
+            text-shadow: 1px 1px 0px #fff;
+            cursor: not-allowed;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 5px;
+            }
+            .window-container {
+                height: 98vh;
+                border-width: 1px;
+            }
+            .title-2008 {
+                font-size: 24px;
+                margin-bottom: 15px;
+            }
+            .page {
+                padding: 10px;
+            }
+            .cover-photo-frame {
+                margin-bottom: 20px;
+                padding: 8px;
+            }
+            .win-btn {
+                padding: 8px 20px;
+                font-size: 16px;
+            }
+            .vintage-calendar {
+                width: 50px;
+                top: 35px;
+                right: 10px;
+            }
+            .vintage-calendar-day { font-size: 18px; }
+            .vintage-calendar-month { font-size: 8px; }
+
+            .vintage-poster {
+                width: 90px;
+                bottom: 20px;
+                left: 10px;
+            }
+            .vintage-poster-title { font-size: 10px; }
+            .vintage-poster-sub { font-size: 8px; }
+
+            .vintage-note {
+                width: 80px;
+                height: 80px;
+                bottom: 20px;
+                right: 10px;
+                padding: 5px;
+            }
+            .vintage-note-text { font-size: 11px; }
+
+            .explorer-toolbar {
+                font-size: 11px;
+                gap: 5px;
+            }
+
+            .folder-avatar {
+                width: 80px;
+                height: 80px;
+            }
+            .explorer-content {
+                grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+                gap: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="window-container" id="mainWindow">
+        <div class="window-header">
+            <span>📁 MSN 记忆读取程序.exe</span>
+            <div class="window-header-controls">
+                <div class="win-btn-small" title="最小化">_</div>
+                <div class="win-btn-small" title="最大化">□</div>
+            </div>
+        </div>
+
+        <div class="vintage-calendar" title="时间仿佛停留在这一天">
+            <div class="vintage-calendar-header">2008年</div>
+            <div class="vintage-calendar-body">
+                <div class="vintage-calendar-day">04</div>
+                <div class="vintage-calendar-month">四月 AUGUST</div>
+            </div>
+        </div>
+
+        <div class="vintage-poster" title="街头随处可见的标语">
+            <div class="vintage-poster-content">
+                <div class="vintage-poster-title">北京欢迎你</div>
+                <div class="vintage-poster-sub">同一个世界 同一个梦想
+（手动选开场最后有全CG看）
+</div>
+            </div>
+        </div>
+
+        <div class="vintage-note" title="不知道是谁留下的纸条">
+            <div class="vintage-note-text">
+                涐們喓<br>①起赱丅呿...<br>~>_<~
+            </div>
+        </div>
+
+        <div id="pageCover" class="page active">
+            <div class="title-2008">欢迎回到 2008</div>
+
+            <div class="cover-photo-frame">
+                <div class="photo-inner">
+                    <span class="loading-text" id="imgLoadingText">正在载入图像...</span>
+                    <img id="galleryImage" src="https://raw.githubusercontent.com/moraincoppens-hue/Yachiy0/img/img/GIF-ezgif.com-optimize.gif" alt="Cover Image">
+                </div>
+                <div class="photo-controls">
+                    <button class="win-btn-nav" id="btnPrev">◀ 上一张</button>
+                    <div class="photo-caption" id="galleryCaption">★ 筒子楼留念 · 绝密档案 ★</div>
+                    <button class="win-btn-nav" id="btnNextImg">下一张 ▶</button>
+                </div>
+            </div>
+
+            <button class="win-btn" id="btnNextPage">
+                ▶ 启动载入程序
+            </button>
+        </div>
+
+        <div id="pageSelection" class="page">
+
+            <div class="explorer-container">
+                <div class="explorer-header">
+                    <div class="explorer-header-title">
+                        <span>📁</span>
+                        <span>📂 我的记忆档案</span>
+                    </div>
+                    <div class="win-btn-close-red" id="btnBackToCover" title="关闭并返回封面">X</div>
+                </div>
+
+                <div class="explorer-toolbar">
+                    <span>后退</span>
+                    <span>搜索</span>
+                    <span>文件夹</span>
+                    <div class="explorer-address">
+                        <span style="color:#808080; margin-right:5px;">地址(D)</span>
+                        <span>📂 我的记忆档案</span>
+                    </div>
+                </div>
+
+                <div class="explorer-content" id="folderContainer">
+                    <!-- 沈念 -->
+                    <div class="folder-item" data-uid="58" data-name="沈念" data-desc="隔壁班同学，12岁。肺癌被当气管炎治，是没说破的暗恋和拼死要救的白月光。">
+                        <img class="folder-avatar" src="https://raw.githubusercontent.com/zhamuqiu/setu/refs/heads/main/shen_nian_daily_3.png" alt="沈念">
+                        <div class="folder-name">沈念.memories</div>
+                    </div>
+
+                    <!-- 洪晓彤 -->
+                    <div class="folder-item" data-uid="25" data-name="洪晓彤" data-desc="母亲，36岁班主任。大孩子被母亲壳压着，既是母子也是她偶尔撒娇的对象。">
+                        <img class="folder-avatar" src="https://raw.githubusercontent.com/zhamuqiu/tongren2/refs/heads/main/hong_xiaotong_outing_5.png" alt="洪晓彤">
+                        <div class="folder-name">洪晓彤.memories</div>
+                    </div>
+
+                    <!-- 洪晓蕾 -->
+                    <div class="folder-item" data-uid="24" data-name="洪晓蕾" data-desc="大姐，16岁。十岁被迫当大人，嘴毒但手不停。是姐弟也是互损搭档。">
+                        <img class="folder-avatar" src="https://raw.githubusercontent.com/zhamuqiu/tongren2/refs/heads/main/hong_xiaolei_uniform_5.png" alt="洪晓蕾">
+                        <div class="folder-name">洪晓蕾.memories</div>
+                    </div>
+
+                    <!-- 洪晓花 -->
+                    <div class="folder-item" data-uid="23" data-name="洪晓花" data-desc="妹妹，10岁疯丫头。人没齐不动筷子。是兄妹也是她钻空子的对象。">
+                        <img class="folder-avatar" src="https://raw.githubusercontent.com/zhamuqiu/tongren2/refs/heads/main/hong_xiaohua_uniform_2.png" alt="洪晓花">
+                        <div class="folder-name">洪晓花.memories</div>
+                    </div>
+
+                    <!-- 苏雨夜 -->
+                    <div class="folder-item" data-uid="31" data-name="苏雨夜" data-desc="邻居苏姨，32岁主妇。话唠大姐，是邻居也是无意识想接近的人。">
+                        <img class="folder-avatar" src="https://raw.githubusercontent.com/zhamuqiu/tongren2/refs/heads/main/su_yuye_daily_5.png" alt="苏雨夜">
+                        <div class="folder-name">苏雨夜.memories</div>
+                    </div>
+
+                    <!-- 苏悦 -->
+                    <div class="folder-item" data-uid="16" data-name="苏悦" data-desc="青梅竹马，12岁假小子。爱显摆怕狗死不认，是发小也是她说不清的领地。">
+                        <img class="folder-avatar" src="https://raw.githubusercontent.com/zhamuqiu/tongren2/refs/heads/main/su_yue_outing_2.png" alt="苏悦">
+                        <div class="folder-name">苏悦.memories</div>
+                    </div>
+
+                    <!-- 李莉 -->
+                    <div class="folder-item" data-uid="0" data-name="李莉" data-desc="同桌，12岁。混血假洋鬼子胡同丫头，是谁都没说破的默契搭子。">
+                        <img class="folder-avatar" src="https://raw.githubusercontent.com/zhamuqiu/tongren2/refs/heads/main/li_li_outing_5.png" alt="李莉">
+                        <div class="folder-name">李莉.memories</div>
+                    </div>
+
+                    <!-- 林秀 -->
+                    <div class="folder-item" data-uid="32" data-name="林秀" data-desc="大姐闺蜜，16岁。蓝挑染暗恋者，是邻居常客也是大姐身边的影子。">
+                        <img class="folder-avatar" src="https://raw.githubusercontent.com/zhamuqiu/tongren2/refs/heads/main/lin_xiu_outing_1.png" alt="林秀">
+                        <div class="folder-name">林秀.memories</div>
+                    </div>
+
+                    <!-- 唐果 -->
+                    <div class="folder-item" data-uid="52" data-name="唐果" data-desc="四楼邻居，22岁吉他手。贫嘴懒散，是散装关心的闲人。">
+                        <img class="folder-avatar" src="https://raw.githubusercontent.com/zhamuqiu/tongren2/refs/heads/main/tang_guo_uniform_5.png" alt="唐果">
+                        <div class="folder-name">唐果.memories</div>
+                    </div>
+
+                    <!-- 赵梅 -->
+                    <div class="folder-item" data-uid="56" data-name="赵梅" data-desc="小卖部老板娘，23岁。人前朴实，人后被空虚折磨。是帮忙的邻居也是树洞。">
+                        <img class="folder-avatar" src="https://raw.githubusercontent.com/zhamuqiu/tongren2/refs/heads/main/zhao_mei_uniform_4.png" alt="赵梅">
+                        <div class="folder-name">赵梅.memories</div>
+                    </div>
+
+                    <!-- 蒋佩琴 -->
+                    <div class="folder-item" data-uid="62" data-name="蒋佩琴" data-desc="女校长，36岁。人前端庄威严，人后被性瘾与侵犯幻想折磨的熟妇。">
+                        <img class="folder-avatar" src="https://raw.githubusercontent.com/zhamuqiu/setu/refs/heads/main/jiang_peiqin_daily_2.png" alt="蒋佩琴">
+                        <div class="folder-name">蒋佩琴.memories</div>
+                    </div>
+
+                    <!-- 文馨 -->
+                    <div class="folder-item" data-uid="66" data-name="文馨" data-desc="四楼邻居，21岁，唐果家的暂住房客。白化病自杀后穿越到2008年的幽灵美术生。">
+                        <img class="folder-avatar" src="https://raw.githubusercontent.com/zhamuqiu/setu/refs/heads/main/wen_xin_outing_1.png" alt="文馨">
+                        <div class="folder-name">文馨.memories</div>
+                    </div>
+
+                    <!-- 邵婷 -->
+                    <div class="folder-item" data-uid="67" data-name="邵婷" data-desc="妹妹洪晓花的同班死对头，影碟店家的闺女。雌小鬼嘴贱爱挑衅。">
+                        <img class="folder-avatar" src="https://raw.githubusercontent.com/zhamuqiu/setu/refs/heads/main/shao_ting_outing_2.png" alt="邵婷">
+                        <div class="folder-name">邵婷.memories</div>
+                    </div>
+
+                    <!-- 新增：齐冰·齐雪 -->
+                    <div class="folder-item" data-uid="68" data-name="齐冰/齐雪" data-desc="齐冰是清冷端方的优等生，齐雪是叛逆带刺的小太妹。">
+                        <img class="folder-avatar" src="https://raw.githubusercontent.com/zhamuqiu/setu/refs/heads/main/998.png" alt="齐冰·齐雪">
+                        <div class="folder-name">齐冰·齐雪.memories</div>
+                    </div>
+
+                    <!-- 新增：陆青禾 -->
+                    <div class="folder-item" data-uid="69" data-name="陆青禾" data-desc="海淀某街道派出所见习片警，大院出身的警花，盘靓条顺却死要面子。">
+                        <img class="folder-avatar" src="https://raw.githubusercontent.com/zhamuqiu/setu/refs/heads/main/lu_qinghe_uniform_4.png" alt="陆青禾">
+                        <div class="folder-name">陆青禾.memories</div>
+                    </div>
+
+                    <!-- 新增：梁艳红 -->
+                    <div class="folder-item" data-uid="70" data-name="梁艳红" data-desc="胡同口发屋的老板娘。一头深栗红大波浪，身段丰腴，胸口沉甸甸压着件洗旧的工字背心。">
+                        <img class="folder-avatar" src="https://raw.githubusercontent.com/zhamuqiu/setu/refs/heads/main/liang_yanhong_uniform_1.png" alt="梁艳红">
+                        <div class="folder-name">梁艳红.memories</div>
+                    </div>
+
+                    <!-- 新增：钱萌萌 -->
+                    <div class="folder-item" data-uid="71" data-name="钱萌萌" data-desc="一个困在五年级女童壳子里的跑长途大车的糙汉亡爹。">
+                        <img class="folder-avatar" src="https://raw.githubusercontent.com/zhamuqiu/setu2/refs/heads/main/qian_mengmeng_uniform_5.png" alt="钱萌萌">
+                        <div class="folder-name">钱萌萌.memories</div>
+                    </div>
+
+                    <!-- 新增：马丽 -->
+                    <div class="folder-item" data-uid="72" data-name="马丽" data-desc="五楼邻居，早市卖菜与拉面馆帮工，带奶奶来京租最便宜顶楼的半文盲姑娘。">
+                        <img class="folder-avatar" src="https://raw.githubusercontent.com/zhamuqiu/setu2/refs/heads/main/ma_li_uniform_1.png" alt="马丽">
+                        <div class="folder-name">马丽.memories</div>
+                    </div>
+                </div>
+
+                <div class="explorer-statusbar">
+                    <span id="statusObjCount">18 个对象</span>
+                    <span id="statusDesc" class="status-desc" title="准备就绪">准备就绪</span>
+                </div>
+            </div>
+
+            <!-- ========== 预览窗口 ========== -->
+            <div id="previewWindow" class="preview-window">
+                <div class="preview-dialog">
+                    <div class="preview-titlebar">
+                        <span id="previewTitle">📝 记事本 - 记忆预览</span>
+                        <div class="win-btn-close-red" id="btnClosePreview" title="关闭">X</div>
+                    </div>
+                    <div class="preview-menubar">
+                        <span>文件(F)</span>
+                        <span>编辑(E)</span>
+                        <span>格式(O)</span>
+                        <span>查看(V)</span>
+                        <span>帮助(H)</span>
+                    </div>
+                    <div class="preview-content" id="previewContent">
+                        <div class="preview-loading">正在读取记忆档案</div>
+                    </div>
+                    <div class="preview-footer">
+                        <div class="preview-status" id="previewStatus">就绪</div>
+                        <button class="preview-btn" id="btnConfirmLoad" disabled>确认载入</button>
+                        <button class="preview-btn" id="btnCancelPreview">取消</button>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 15px; font-size: 12px; color: #64748b; font-family: SimSun; position: relative; z-index: 5;">
+                提示：点击头像预览角色开场白，预览窗口中点击头像可查看大图。
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 加载遮罩（独立于主容器，避免 transform 干扰） ========== -->
+    <div id="loadingOverlay" class="loading-overlay">
+        <div class="loading-window">
+            <div class="loading-title">正在读取档案...</div>
+            <div class="loading-content">
+                <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+                    <div style="font-size: 24px;">📄</div>
+                    <div style="font-size: 12px; flex:1;">
+                        <div>正在载入记忆节点...</div>
+                        <div id="loadingFileName" style="font-weight: bold; margin-top: 2px;">文件.memories</div>
+                    </div>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-blocks" id="progressBlocks">
+                        <!-- JS动态生成 -->
+                    </div>
+                </div>
+                <div style="align-self: flex-end; margin-top: 5px;">
+                    <button class="win-btn-small" style="width: auto; padding: 2px 10px;" onclick="cancelLoad()">取消</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== 大图查看器 ========== -->
+    <div id="imageViewer" class="image-viewer" onclick="closeImageViewer()">
+        <img id="viewerImage" src="" alt="查看大图">
+    </div>
+
+    <script type="module">
+        async function initMvuEnv() {
+            try {
+                if (typeof waitGlobalInitialized === 'function') {
+                    await waitGlobalInitialized('Mvu');
+                }
+            } catch(e) {
+                console.warn('不在酒馆 Mvu 环境，或初始化超时。');
+            }
+        }
+        initMvuEnv();
+
+        // ===== UID 绑定映射表 =====
+        // 世界书条目 UID -> 开场白分支索引 (swipe index)
+        // 如需增删角色或调整分支顺序，只需修改此表
+        const uidSwipeMap = {
+            58: 1,  // 沈念
+            25: 2,  // 洪晓彤
+            24: 3,  // 洪晓蕾
+            23: 4,  // 洪晓花
+            31: 5,  // 苏雨夜
+            16: 6,  // 苏悦
+            0:  7,  // 李莉
+            32: 8,  // 林秀
+            52: 9,  // 唐果
+            56: 10, // 赵梅
+            62: 11, // 蒋佩琴
+            66: 12, // 文馨
+            67: 13, // 邵婷
+            68: 14, // 齐冰·齐雪
+            69: 15, // 陆青禾
+            70: 16, // 梁艳红
+            71: 17, // 钱萌萌
+            72: 18  // 马丽
+        };
+
+        const galleryData = [
+            {
+                src: "https://raw.githubusercontent.com/moraincoppens-hue/Yachiy0/img/img/GIF-ezgif.com-optimize.gif",
+                caption: "★ 筒子楼留念 · 绝密档案 ★"
+            },
+            {
+                src: "https://raw.githubusercontent.com/moraincoppens-hue/Yachiy0/img/img/日常.webp",
+                caption: "IMG_002.JPG (日常抓拍)"
+            },
+            {
+                src: "https://raw.githubusercontent.com/moraincoppens-hue/Yachiy0/img/img/日常1.webp",
+                caption: "IMG_003.JPG (某天下午)"
+            },
+            // 新增图床中的 IMG_ 图片
+            {
+                src: "https://raw.githubusercontent.com/zhamuqiu/tongren/refs/heads/main/IMG_004全家福.png",
+                caption: "IMG_004 全家福"
+            },
+            {
+                src: "https://raw.githubusercontent.com/zhamuqiu/tongren/refs/heads/main/IMG_005苏悦一家.png",
+                caption: "IMG_005 苏悦一家"
+            },
+            {
+                src: "https://raw.githubusercontent.com/zhamuqiu/tongren/refs/heads/main/IMG_006李莉学习.png",
+                caption: "IMG_006 李莉学习"
+            },
+            {
+                src: "https://raw.githubusercontent.com/zhamuqiu/tongren/refs/heads/main/IMG_007赵梅小卖铺.png",
+                caption: "IMG_007 赵梅小卖铺"
+            },
+            {
+                src: "https://raw.githubusercontent.com/zhamuqiu/tongren/refs/heads/main/IMG_008李莉与沈念.png",
+                caption: "IMG_008 李莉与沈念"
+            },
+            {
+                src: "https://raw.githubusercontent.com/zhamuqiu/tongren/refs/heads/main/IMG_009蒋佩琴与洪晓彤.png",
+                caption: "IMG_009 蒋佩琴与洪晓彤"
+            },
+            {
+                src: "https://raw.githubusercontent.com/zhamuqiu/tongren/refs/heads/main/IMG_010唐果与文馨.png",
+                caption: "IMG_010 唐果与文馨"
+            },
+            {
+                src: "https://raw.githubusercontent.com/zhamuqiu/tongren/refs/heads/main/IMG_011筒子楼内部房间.png",
+                caption: "IMG_011 筒子楼内部房间"
+            },
+            {
+                src: "https://raw.githubusercontent.com/zhamuqiu/tongren/refs/heads/main/IMG_012筒子楼现状.png",
+                caption: "IMG_012 筒子楼现状"
+            }
+        ];
+
+        let currentImgIndex = 0;
+        const imgElement = document.getElementById('galleryImage');
+        const captionElement = document.getElementById('galleryCaption');
+        const btnPrev = document.getElementById('btnPrev');
+        const btnNextImg = document.getElementById('btnNextImg');
+        const loadingText = document.getElementById('imgLoadingText');
+
+        function updateGallery() {
+            btnPrev.disabled = currentImgIndex === 0;
+            btnNextImg.disabled = currentImgIndex === galleryData.length - 1;
+
+            imgElement.style.opacity = 0;
+            loadingText.style.display = 'block';
+            captionElement.innerText = "读取数据中...";
+
+            setTimeout(() => {
+                imgElement.src = galleryData[currentImgIndex].src;
+                captionElement.innerText = galleryData[currentImgIndex].caption;
+            }, 50);
+        }
+
+        imgElement.addEventListener('load', () => {
+            loadingText.style.display = 'none';
+            imgElement.style.opacity = 1;
+        });
+
+        imgElement.addEventListener('error', () => {
+            loadingText.innerText = "图片加载失败 (网络超时)";
+            loadingText.style.display = 'block';
+            loadingText.style.color = '#ef4444';
+        });
+
+        btnPrev.onclick = function() {
+            if (currentImgIndex > 0) {
+                currentImgIndex--;
+                updateGallery();
+            }
+        };
+
+        btnNextImg.onclick = function() {
+            if (currentImgIndex < galleryData.length - 1) {
+                currentImgIndex++;
+                updateGallery();
+            }
+        };
+
+        document.getElementById('btnNextPage').onclick = function() {
+            const win = document.getElementById('mainWindow');
+            win.style.transform = 'scale(0.98)';
+            setTimeout(() => {
+                document.getElementById('pageCover').classList.remove('active');
+                document.getElementById('pageSelection').classList.add('active');
+                win.style.transform = 'scale(1)';
+            }, 150);
+        };
+
+        document.getElementById('btnBackToCover').onclick = function() {
+            const win = document.getElementById('mainWindow');
+            win.style.transform = 'scale(0.98)';
+            setTimeout(() => {
+                document.getElementById('pageSelection').classList.remove('active');
+                document.getElementById('pageCover').classList.add('active');
+                win.style.transform = 'scale(1)';
+            }, 150);
+        };
+
+        const folders = document.querySelectorAll('.folder-item');
+        const statusDesc = document.getElementById('statusDesc');
+        let selectedFolder = null;
+        let loadTimer = null;
+        let lastTapTime = 0;
+
+        // ---------- 大图查看器 ----------
+        const viewer = document.getElementById('imageViewer');
+        const viewerImg = document.getElementById('viewerImage');
+
+        window.openImageViewer = function(src) {
+            viewerImg.src = src;
+            viewer.classList.add('active');
+        };
+
+        window.closeImageViewer = function() {
+            viewer.classList.remove('active');
+            viewerImg.src = ''; // 释放资源
+        };
+
+        // 点击遮罩关闭（已在元素上绑定 onclick）
+        // 阻止点击图片本身关闭（避免误触）
+        viewerImg.addEventListener('click', (e) => e.stopPropagation());
+
+        folders.forEach(folder => {
+            // 单击选中（点击整个卡片）
+            folder.addEventListener('click', (e) => {
+                // 点击头像由头像自身处理（弹出预览），这里只处理非头像区域
+                if (e.target.classList.contains('folder-avatar')) return;
+                folders.forEach(f => f.classList.remove('selected'));
+                folder.classList.add('selected');
+                selectedFolder = folder;
+                const desc = folder.getAttribute('data-desc');
+                const folderUid = folder.getAttribute('data-uid');
+                statusDesc.innerText = '[UID:' + folderUid + '] ' + desc;
+                statusDesc.title = desc;
+            });
+
+            // 双击 — 预览已在单击时打开，双击不做额外操作
+            folder.addEventListener('dblclick', (e) => {
+                // 预览已在单击触发，此处空操作
+            });
+
+            // 点击头像 → 弹出预览窗口（阻止冒泡，不触发卡片选中）
+            const avatar = folder.querySelector('.folder-avatar');
+            if (avatar) {
+                avatar.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    folders.forEach(f => f.classList.remove('selected'));
+                    folder.classList.add('selected');
+                    selectedFolder = folder;
+                    const desc = folder.getAttribute('data-desc');
+                    const folderUid = folder.getAttribute('data-uid');
+                    statusDesc.innerText = '[UID:' + folderUid + '] ' + desc;
+                    statusDesc.title = desc;
+                    openPreview(folder);
+                });
+            }
+
+            // 移动端：非头像区域仅选中
+            folder.addEventListener('touchend', (e) => {
+                if (e.target.classList.contains('folder-avatar')) return;
+                e.preventDefault();
+                folders.forEach(f => f.classList.remove('selected'));
+                folder.classList.add('selected');
+                selectedFolder = folder;
+                const desc = folder.getAttribute('data-desc');
+                const folderUid = folder.getAttribute('data-uid');
+                statusDesc.innerText = '[UID:' + folderUid + '] ' + desc;
+                statusDesc.title = desc;
+            });
+
+            // 移动端：点击头像 → 弹出预览窗口
+            if (avatar) {
+                avatar.addEventListener('touchend', (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                    folders.forEach(f => f.classList.remove('selected'));
+                    folder.classList.add('selected');
+                    selectedFolder = folder;
+                    const desc = folder.getAttribute('data-desc');
+                    const folderUid = folder.getAttribute('data-uid');
+                    statusDesc.innerText = '[UID:' + folderUid + '] ' + desc;
+                    statusDesc.title = desc;
+                    openPreview(folder);
+                });
+            }
+        });
+
+        document.getElementById('folderContainer').addEventListener('click', (e) => {
+            if(e.target.id === 'folderContainer') {
+                folders.forEach(f => f.classList.remove('selected'));
+                selectedFolder = null;
+                statusDesc.innerText = "准备就绪";
+                statusDesc.title = "准备就绪";
+            }
+        });
+
+        // ===== 预览窗口功能 =====
+        let currentPreviewFolder = null;
+
+        async function openPreview(folder) {
+            currentPreviewFolder = folder;
+            const name = folder.getAttribute('data-name');
+            const uid = folder.getAttribute('data-uid');
+            const fileName = folder.querySelector('.folder-name').innerText;
+            const desc = folder.getAttribute('data-desc');
+            const avatarSrc = folder.querySelector('.folder-avatar').getAttribute('src');
+
+            const pw = document.getElementById('previewWindow');
+            const pTitle = document.getElementById('previewTitle');
+            const pContent = document.getElementById('previewContent');
+            const pStatus = document.getElementById('previewStatus');
+            const btnConfirm = document.getElementById('btnConfirmLoad');
+
+            pTitle.innerText = '📝 记事本 - ' + name + '.txt';
+            pContent.innerHTML = '<div class="preview-loading">正在读取记忆档案</div>';
+            pStatus.innerText = '载入中...';
+            btnConfirm.disabled = true;
+            pw.classList.add('active');
+
+            const targetSwipeId = uidSwipeMap[parseInt(uid, 10)];
+            if (targetSwipeId === undefined) {
+                pContent.innerHTML = '<div class="preview-error">未找到 UID ' + uid + ' 对应的记忆分支。\n请检查 uidSwipeMap 映射表是否包含此角色。</div>';
+                pStatus.innerText = '错误：UID 未映射';
+                return;
+            }
+
+            pStatus.innerText = '分支索引: ' + targetSwipeId + ' | 读取中...';
+
+            try {
+                if (typeof getChatMessages === 'function') {
+                    const messages = await getChatMessages('0', { include_swipe: true });
+                    if (messages && messages[0] && messages[0].swipes && messages[0].swipes[targetSwipeId]) {
+                        const rawText = messages[0].swipes[targetSwipeId];
+                        const formattedText = formatPreviewText(rawText);
+                        // 在内容顶部添加头像缩略图
+                        const avatarHtml = `<div class="avatar-thumb"><img src="${avatarSrc}" onclick="openImageViewer('${avatarSrc}')" title="点击查看大图"></div>`;
+                        pContent.innerHTML = avatarHtml + formattedText;
+                        pStatus.innerText = '就绪 | 角色: ' + name + ' | 分支: ' + targetSwipeId;
+                        btnConfirm.disabled = false;
+                    } else {
+                        pContent.innerHTML = `<div class="avatar-thumb"><img src="${avatarSrc}" onclick="openImageViewer('${avatarSrc}')" title="点击查看大图"></div>
+                            <div class="preview-error">此角色的记忆分支（索引 ${targetSwipeId}）尚未生成。\n\n请先在酒馆中生成对应的开场白分支，然后再试。\n\n提示：在聊天界面点击右下角刷新按钮生成新的开场白分支。</div>`;
+                        pStatus.innerText = '分支未生成';
+                    }
+                } else {
+                    // 测试环境
+                    pContent.innerHTML = `<div class="avatar-thumb"><img src="${avatarSrc}" onclick="openImageViewer('${avatarSrc}')" title="点击查看大图"></div>
+                        <div class="preview-loading" style="color:#888;">[测试环境预览]\n\n角色: ${name}\nUID: ${uid}\n分支索引: ${targetSwipeId}\n\n此为测试环境，无法读取开场白内容。\n在 SillyTavern 中加载后可预览完整开场白。</div>`;
+                    pStatus.innerText = '测试环境';
+                    btnConfirm.disabled = false;
+                }
+            } catch (error) {
+                console.error('预览读取失败:', error);
+                pContent.innerHTML = `<div class="avatar-thumb"><img src="${avatarSrc}" onclick="openImageViewer('${avatarSrc}')" title="点击查看大图"></div>
+                    <div class="preview-error">读取失败: ${error.message}</div>`;
+                pStatus.innerText = '读取错误';
+            }
+        }
+
+        function formatPreviewText(text) {
+            var cleaned = text;
+            // 删除元数据块及其全部内容：rumor_block、vintage_post、Status_block、dream_body
+            cleaned = cleaned.replace(/<rumor_block>[\s\S]*?<\/rumor_block>/g, '');
+            cleaned = cleaned.replace(/<vintage_post>[\s\S]*?<\/vintage_post>/g, '');
+            cleaned = cleaned.replace(/<Status_block>[\s\S]*?<\/Status_block>/g, '');
+            cleaned = cleaned.replace(/<dream_body>[\s\S]*?<\/dream_body>/g, '');
+            cleaned = cleaned.replace(/<audit_check>[\s\S]*?<\/audit_check>/g, '');
+            // 移除其余 HTML 标签
+            cleaned = cleaned.replace(/<[^>]+>/g, '');
+            // 清理多余空行
+            cleaned = cleaned.replace(/\r\n/g, '\n');
+            cleaned = cleaned.replace(/\n{3,}/g, '\n\n');
+            cleaned = cleaned.trim();
+            return cleaned;
+        }
+
+        function closePreview() {
+            document.getElementById('previewWindow').classList.remove('active');
+            currentPreviewFolder = null;
+        }
+
+        function confirmLoad() {
+            if (!currentPreviewFolder) return;
+            const folder = currentPreviewFolder;
+            const name = folder.getAttribute('data-name');
+            const uid = folder.getAttribute('data-uid');
+            const fileName = folder.querySelector('.folder-name').innerText;
+            closePreview();
+            startLoad(name, fileName, uid);
+        }
+
+        // 预览窗口按钮绑定
+        document.getElementById('btnConfirmLoad').addEventListener('click', confirmLoad);
+        document.getElementById('btnCancelPreview').addEventListener('click', closePreview);
+        document.getElementById('btnClosePreview').addEventListener('click', closePreview);
+
+        // 点击遮罩关闭预览
+        document.getElementById('previewWindow').addEventListener('click', function(e) {
+            if (e.target === this) closePreview();
+        });
+
+        function startLoad(realName, fileName, uidStr) {
+            const uid = parseInt(uidStr, 10);
+            const targetSwipeId = uidSwipeMap[uid];
+
+            if (targetSwipeId === undefined) {
+                alert('\u672a\u627e\u5230 UID ' + uid + ' \u5bf9\u5e94\u7684\u8bb0\u5fc6\u5206\u652f\u3002\n\u8bf7\u68c0\u67e5 uidSwipeMap \u6620\u5c04\u8868\u662f\u5426\u5305\u542b\u6b64\u89d2\u8272\u3002');
+                return;
+            }
+
+            const overlay = document.getElementById('loadingOverlay');
+            const fileNameEl = document.getElementById('loadingFileName');
+            const progressBlocks = document.getElementById('progressBlocks');
+
+            fileNameEl.innerText = fileName;
+            overlay.classList.add('active');
+
+            progressBlocks.innerHTML = '';
+            for(let i=0; i<18; i++) {
+                const block = document.createElement('div');
+                block.className = 'progress-block';
+                progressBlocks.appendChild(block);
+            }
+
+            const blocks = document.querySelectorAll('.progress-block');
+            let currentBlock = 0;
+
+            loadTimer = setInterval(async () => {
+                if(currentBlock < blocks.length) {
+                    blocks[currentBlock].style.opacity = '1';
+                    currentBlock++;
+                } else {
+                    clearInterval(loadTimer);
+                    try {
+                        if (typeof getChatMessages === 'function' && typeof setChatMessage === 'function') {
+                            const messages = await getChatMessages('0', { include_swipe: true });
+                            if (messages && messages[0].swipes && messages[0].swipes[targetSwipeId]) {
+                                const targetSwipeMsg = messages[0].swipes[targetSwipeId];
+                                await setChatMessage(targetSwipeMsg, 0, {
+                                    swipe_id: targetSwipeId,
+                                    current: targetSwipeId,
+                                    refresh: 'display_and_render_current',
+                                });
+                                document.getElementById('mainWindow').style.display = 'none';
+                                overlay.classList.remove('active');
+                            } else {
+                                throw new Error(`未找到分支索引 ${targetSwipeId}（UID: ${uid}），请确认对应开场白已生成。`);
+                            }
+                        } else {
+                            alert(`[测试环境] 模拟切换开场白分支：\n角色：${realName}\nUID：${uid}\n目标分支索引：${targetSwipeId}`);
+                            overlay.classList.remove('active');
+                        }
+                    } catch (error) {
+                        console.error('记忆载入失败:', error);
+                        alert(`记忆载入失败: ${error.message}`);
+                        overlay.classList.remove('active');
+                    }
+                }
+            }, 80);
+        }
+
+        window.cancelLoad = function() {
+            if(loadTimer) clearInterval(loadTimer);
+            document.getElementById('loadingOverlay').classList.remove('active');
+        };
+
+        btnPrev.disabled = true;
+    </script>
+</body>
+</html>

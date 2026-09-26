@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --bg: #0b0a0f;
+            --text: #f3f0ff;
+            --muted: #9ea0b5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: transparent;
+            color: var(--text);
+            padding: 12px 8px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            max-width: 300px;
+            margin: 0 auto 8px;
+            padding: 0;
+        }
+
+        .item img {
+            width: 100%;
+            max-width: 300px;
+            border-radius: 6px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+            object-fit: cover;
+        }
+
+        .item .placeholder {
+            width: 100%;
+            max-width: 300px;
+            min-height: 360px;
+            border-radius: 6px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--muted);
+            font-size: 56px;
+            font-weight: 700;
+        }
+
+        .label {
+            color: var(--muted);
+            font-size: 13px;
+            letter-spacing: 0.04em;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="list"></div>
+
+    <script>
+        const baseUrlMap = {
+  'yeqingxuan': 'https://raw.githubusercontent.com/samlinxi/img/main/img',
+  'linqianhui': 'https://raw.githubusercontent.com/samlinxi/img/main/img',
+  'shenci': 'https://raw.githubusercontent.com/samlinxi/img/main/img',
+  'songzhi': 'https://raw.githubusercontent.com/samlinxi/img/main/img',
+  'sumanli': 'https://raw.githubusercontent.com/samlinxi/img/main/img',
+  'suqibai': 'https://raw.githubusercontent.com/samlinxi/img/main/img',
+  'liuyunshu': 'https://raw.githubusercontent.com/samlinxi/img/main/img',
+  'wangzhiyao': 'https://raw.githubusercontent.com/samlinxi/img/main/img',
+  'pangyongxuan': 'https://raw.githubusercontent.com/samlinxi/img/main/img',
+  'zhongxiaosi': 'https://raw.githubusercontent.com/samlinxi/img/main/img',
+  'tianyuxin': 'https://raw.githubusercontent.com/samlinxi/img/main/img',
+  'hina': 'https://raw.githubusercontent.com/samlinxi/img/main/img'
+};
+
+        const overrideUrls = {
+  'yeqingxuan_xingjiao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/yeqingxuan-xingjiao.png',
+  'yeqingxuan_houru': 'https://raw.githubusercontent.com/samlinxi/img/main/img/yeqingxuan-houru.png',
+  'yeqingxuan_koujiao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/yeqingxuan-koujiao.png',
+  'yeqingxuan_louniao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/yeqingxuan-louniao.png',
+  'yeqingxuan_nvshangwei': 'https://raw.githubusercontent.com/samlinxi/img/main/img/yeqingxuan-nvshangwei.png',
+  'yeqingxuan_yinbuzipai': 'https://raw.githubusercontent.com/samlinxi/img/main/img/yeqingxuan-yinbuzipai.png',
+  'linqianhui_xingjiao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/linqianhui_xingjiao.png',
+  'linqianhui_houru': 'https://raw.githubusercontent.com/samlinxi/img/main/img/linqianhui_houru.png',
+  'linqianhui_koujiao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/linqianhui_koujiao.png',
+  'linqianhui_louniao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/linqianhui_louniao.png',
+  'linqianhui_nvshangwei': 'https://raw.githubusercontent.com/samlinxi/img/main/img/linqianhui_nvshangwei.png',
+  'linqianhui_yinbuzipai': 'https://raw.githubusercontent.com/samlinxi/img/main/img/linqianhui_yinbuzipai.png',
+  'shenci_xingjiao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/shenci_xingjiao.png',
+  'shenci_houru': 'https://raw.githubusercontent.com/samlinxi/img/main/img/shenci_houru.png',
+  'shenci_koujiao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/shenci_koujiao.png',
+  'shenci_louniao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/shenci_louniao.png',
+  'shenci_nvshangwei': 'https://raw.githubusercontent.com/samlinxi/img/main/img/shenci_nvshangwei.png',
+  'shenci_yinbuzipai': 'https://raw.githubusercontent.com/samlinxi/img/main/img/shenci_yinbuzipai.png',
+  'songzhi_xingjiao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/songzhi_xingjiao.png',
+  'songzhi_houru': 'https://raw.githubusercontent.com/samlinxi/img/main/img/songzhi_houru.png',
+  'songzhi_koujiao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/songzhi_koujiao.png',
+  'songzhi_louniao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/songzhi_louniao.png',
+  'songzhi_nvshangwei': 'https://raw.githubusercontent.com/samlinxi/img/main/img/songzhi_nvshangwei.png',
+  'songzhi_yinbuzipai': 'https://raw.githubusercontent.com/samlinxi/img/main/img/songzhi_yingbuzipai.png',
+  'sumanli_xingjiao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/sumanli_xingjiao.png',
+  'sumanli_houru': 'https://raw.githubusercontent.com/samlinxi/img/main/img/sumanli_houru.png',
+  'sumanli_koujiao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/sumanli_koujiao.png',
+  'sumanli_louniao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/sumanli_louniao.png',
+  'sumanli_nvshangwei': 'https://raw.githubusercontent.com/samlinxi/img/main/img/sumanli_nvshangwei.png',
+  'sumanli_yinbuzipai': 'https://raw.githubusercontent.com/samlinxi/img/main/img/sumanli_yinbuzipai.png',
+  'suqibai_xingjiao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/suqibai_xingjiao.png',
+  'suqibai_houru': 'https://raw.githubusercontent.com/samlinxi/img/main/img/suqibai_houru.png',
+  'suqibai_koujiao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/suqibai_koujiao.png',
+  'suqibai_louniao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/suqibai_louniao.png',
+  'suqibai_nvshangwei': 'https://raw.githubusercontent.com/samlinxi/img/main/img/suqibai_nvshangwei.png',
+  'suqibai_yinbuzipai': 'https://raw.githubusercontent.com/samlinxi/img/main/img/suqibai_yinbuzipai.png',
+  'liuyunshu_xingjiao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/liuyunshu_xingjiao.png',
+  'liuyunshu_houru': 'https://raw.githubusercontent.com/samlinxi/img/main/img/liuyunshu_houru.png',
+  'liuyunshu_koujiao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/liuyunshu_koujiao.png',
+  'liuyunshu_louniao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/liuyunshu_louniao.png',
+  'liuyunshu_nvshangwei': 'https://raw.githubusercontent.com/samlinxi/img/main/img/liuyunshu_nvshangwei.png',
+  'liuyunshu_yinbuzipai': 'https://raw.githubusercontent.com/samlinxi/img/main/img/liuyunshu_yinbuzipai.png',
+  'yeqingxuan_xingjiaoneishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/yeqingxuan-xingjiaoneishe.png',
+  'yeqingxuan_houruneishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/yeqingxuan-houruneishe.png',
+  'yeqingxuan_nvshangweineishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/yeqingxuan-nvshangweineishe.png',
+  'yeqingxuan_koushe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/yeqingxuan-koushe.png',
+  'yeqingxuan_yanshe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/yeqingxuan-yanshe.png',
+  'linqianhui_xingjiaoneishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/linqianhui_xingjiaoneishe.png',
+  'linqianhui_houruneishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/linqianhui_houruneishe.png',
+  'linqianhui_nvshangweineishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/linqianhui_nvshangweineishe.png',
+  'linqianhui_koushe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/linqianhui_koushe.png',
+  'linqianhui_yanshe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/linqianhui_yanshe.png',
+  'shenci_xingjiaoneishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/shenci_xingjiaoneishe.png',
+  'shenci_houruneishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/shenci_houruneishe.png',
+  'shenci_nvshangweineishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/shenci_nvshangweineishe.png',
+  'shenci_koushe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/shenci_koushe.png',
+  'shenci_yanshe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/shenci_yanshe.png',
+  'songzhi_xingjiaoneishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/songzhi_xingjiaoneishe.png',
+  'songzhi_houruneishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/songzhi_houruneishe.png',
+  'songzhi_nvshangweineishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/songzhi_nvshangweineishe.png',
+  'songzhi_koushe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/songzhi_koushe.png',
+  'songzhi_yanshe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/songzhi_yanshe.png',
+  'sumanli_xingjiaoneishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/sumanli_xingjiaoneishe.png',
+  'sumanli_houruneishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/sumanli_houruneishe.png',
+  'sumanli_nvshangweineishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/sumanli_nvshangweineishe.png',
+  'sumanli_koushe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/sumanli_koushe.png',
+  'sumanli_yanshe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/sumanli_yanshe.png',
+  'suqibai_xingjiaoneishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/suqibai_xingjiaoneishe.png',
+  'suqibai_houruneishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/suqibai_houruneishe.png',
+  'suqibai_nvshangweineishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/suqibai_nvshangweineishe.png',
+  'suqibai_koushe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/suqibai_koushe.png',
+  'suqibai_yanshe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/suqibai_yanshe.png',
+  'liuyunshu_xingjiaoneishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/liuyunshu_xingjiaoneishe.png',
+  'liuyunshu_houruneishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/liuyunshu_houruneishe.png',
+  'liuyunshu_nvshangweineishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/liuyunshu_nvshangweineishe.png',
+  'liuyunshu_koushe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/liuyunshu_koushe.png',
+  'liuyunshu_yanshe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/liuyunshu_yanshe.png',
+  'wangzhiyao_xingjiao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/wangzhiyao-xingjiao.png',
+  'wangzhiyao_houru': 'https://raw.githubusercontent.com/samlinxi/img/main/img/wangzhiyao-houru.png',
+  'wangzhiyao_koujiao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/wangzhiyao-koujiao.png',
+  'wangzhiyao_louniao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/wangzhiyao-louniao.png',
+  'wangzhiyao_nvshangwei': 'https://raw.githubusercontent.com/samlinxi/img/main/img/wangzhiyao-nvshangwei.png',
+  'wangzhiyao_yinbuzipai': 'https://raw.githubusercontent.com/samlinxi/img/main/img/wangzhiyao-yinbuzipai.png',
+  'wangzhiyao_xingjiaoneishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/wangzhiyao-xingjiaoneishe.png',
+  'wangzhiyao_houruneishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/wangzhiyao-houruneishe.png',
+  'wangzhiyao_nvshangweineishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/wangzhiyao-nvshangweineishe.png',
+  'wangzhiyao_koushe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/wangzhiyao-koushe.png',
+  'wangzhiyao_yanshe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/wangzhiyao-yanshe.png',
+  'yeqingxuan_69': 'https://raw.githubusercontent.com/samlinxi/img/main/img/yeqingxuan-69.png',
+  'linqianhui_69': 'https://raw.githubusercontent.com/samlinxi/img/main/img/linqianhui_69.png',
+  'shenci_69': 'https://raw.githubusercontent.com/samlinxi/img/main/img/shenci_69.png',
+  'songzhi_69': 'https://raw.githubusercontent.com/samlinxi/img/main/img/songzhi_69.png',
+  'sumanli_69': 'https://raw.githubusercontent.com/samlinxi/img/main/img/sumanli_69.png',
+  'suqibai_69': 'https://raw.githubusercontent.com/samlinxi/img/main/img/suqibai_69.png',
+  'liuyunshu_69': 'https://raw.githubusercontent.com/samlinxi/img/main/img/liuyunshu_69.png',
+  'wangzhiyao_69': 'https://raw.githubusercontent.com/samlinxi/img/main/img/wangzhiyao-69.png',
+  'pangyongxuan_xingjiao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/pangyongxuan_xingjiao.png',
+  'pangyongxuan_houru': 'https://raw.githubusercontent.com/samlinxi/img/main/img/pangyongxuan_houru.png',
+  'pangyongxuan_koujiao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/pangyongxuan_koujiao.png',
+  'pangyongxuan_louniao': 'https://raw.githubusercontent.com/samlinxi/img/main/img/pangyongxuan_louniao.png',
+  'pangyongxuan_nvshangwei': 'https://raw.githubusercontent.com/samlinxi/img/main/img/pangyongxuan_nvshangwei.png',
+  'pangyongxuan_yinbuzipai': 'https://raw.githubusercontent.com/samlinxi/img/main/img/pangyongxuan_yinbuzipai.png',
+  'pangyongxuan_xingjiaoneishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/pangyongxuan_xingjiaoneishe.png',
+  'pangyongxuan_houruneishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/pangyongxuan_houruneishe.png',
+  'pangyongxuan_nvshangweineishe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/pangyongxuan_nvshangweineishe.png',
+  'pangyongxuan_koushe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/pangyongxuan_koushe.png',
+  'pangyongxuan_yanshe': 'https://raw.githubusercontent.com/samlinxi/img/main/img/pangyongxuan_yanshe.png',
+  'pangyongxuan_69': 'https://raw.githubusercontent.com/samlinxi/img/main/img/pangyongxuan_69.png'
+};
+
+        const variants = {
+  '69': '69',
+  '性交': 'xingjiao',
+  '后入': 'houru',
+  '口交': 'koujiao',
+  '放尿': 'louniao',
+  '女上位': 'nvshangwei',
+  '事后拍照': 'yinbuzipai',
+  '内射（正常）': 'xingjiaoneishe',
+  '内射（后入）': 'houruneishe',
+  '内射（女上位）': 'nvshangweineishe',
+  '口射': 'koushe',
+  '颜射': 'yanshe',
+  '站立位后入': 'houruzhanli',
+  '内射（站立位后入）': 'houruzhanlineishe',
+  '面对面站立位': 'zhengmianzhanli',
+  '内射（面对面站立位）': 'zhengmianzhanlineishe',
+  '乳交': 'rujiao',
+  '射精（乳交）': 'rujiaoshejing',
+  '内射事后清理': 'neisheqingli',
+  '手交': 'shoujiao'
+};
+
+        const characters = {
+  '叶轻璇': 'yeqingxuan',
+  '林千惠': 'linqianhui',
+  '沈辞': 'shenci',
+  '宋稚': 'songzhi',
+  '苏曼丽': 'sumanli',
+  '苏启白': 'suqibai',
+  '刘云舒': 'liuyunshu',
+  '王知遥': 'wangzhiyao',
+  '庞咏萱': 'pangyongxuan',
+  '钟晓司': 'zhongxiaosi',
+  '田雨欣': 'tianyuxin',
+  '绫小路阳菜': 'hina'
+};
+
+        const fallbackAvatars = {
+  'yeqingxuan': '叶',
+  'linqianhui': '林',
+  'shenci': '沈',
+  'songzhi': '宋',
+  'sumanli': '苏',
+  'suqibai': '白',
+  'liuyunshu': '刘',
+  'wangzhiyao': '王',
+  'pangyongxuan': '庞',
+  'zhongxiaosi': '钟',
+  'tianyuxin': '田',
+  'hina': '绫'
+};
+
+        const sceneText = `$1`;
+
+        const canonicalNames = Object.keys(characters);
+
+        function normalizeName(value) {
+            return (value || '').replace(/\s+/g, '').trim();
+        }
+
+        function getUniqueCharacters(value) {
+            return Array.from(new Set(normalizeName(value).split('').filter(Boolean)));
+        }
+
+        function getCharacterCoverage(rawName, candidateName) {
+            const targetChars = getUniqueCharacters(rawName);
+            const candidateChars = getUniqueCharacters(candidateName);
+            if (targetChars.length === 0 || candidateChars.length === 0) {
+                return { matchedCount: 0, requiredCount: 0, coverage: 0 };
+            }
+
+            const targetSet = new Set(targetChars);
+            const matchedCount = candidateChars.filter(char => targetSet.has(char)).length;
+            const requiredCount = candidateChars.length >= 3 ? 2 : candidateChars.length;
+
+            return {
+                matchedCount,
+                requiredCount,
+                coverage: matchedCount / candidateChars.length
+            };
+        }
+
+        function levenshteinDistance(a, b) {
+            const s = normalizeName(a);
+            const t = normalizeName(b);
+            const m = s.length;
+            const n = t.length;
+            if (m === 0) return n;
+            if (n === 0) return m;
+
+            const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+            for (let i = 0; i <= m; i++) dp[i][0] = i;
+            for (let j = 0; j <= n; j++) dp[0][j] = j;
+
+            for (let i = 1; i <= m; i++) {
+                for (let j = 1; j <= n; j++) {
+                    const cost = s[i - 1] === t[j - 1] ? 0 : 1;
+                    dp[i][j] = Math.min(
+                        dp[i - 1][j] + 1,
+                        dp[i][j - 1] + 1,
+                        dp[i - 1][j - 1] + cost
+                    );
+                }
+            }
+
+            return dp[m][n];
+        }
+
+        function resolveName(rawName) {
+            const target = normalizeName(rawName);
+            if (!target) return null;
+
+            if (canonicalNames.includes(target)) {
+                return target;
+            }
+
+            let coverageBestNames = [];
+            let coverageBestScore = -1;
+            let coverageBestMatchedCount = -1;
+
+            for (const candidate of canonicalNames) {
+                const { matchedCount, requiredCount, coverage } = getCharacterCoverage(target, candidate);
+                if (matchedCount < requiredCount) {
+                    continue;
+                }
+
+                if (
+                    coverage > coverageBestScore ||
+                    (coverage === coverageBestScore && matchedCount > coverageBestMatchedCount)
+                ) {
+                    coverageBestNames = [candidate];
+                    coverageBestScore = coverage;
+                    coverageBestMatchedCount = matchedCount;
+                } else if (coverage === coverageBestScore && matchedCount === coverageBestMatchedCount) {
+                    coverageBestNames.push(candidate);
+                }
+            }
+
+            if (coverageBestNames.length === 1) {
+                return coverageBestNames[0];
+            }
+
+            let bestNames = [];
+            let bestDistance = Infinity;
+
+            for (const candidate of canonicalNames) {
+                const dist = levenshteinDistance(target, candidate);
+                if (dist < bestDistance) {
+                    bestDistance = dist;
+                    bestNames = [candidate];
+                } else if (dist === bestDistance) {
+                    bestNames.push(candidate);
+                }
+            }
+
+            if (bestNames.length === 1) {
+                const limit = Math.max(1, Math.ceil(Math.min(target.length, bestNames[0].length) * 0.4));
+                return bestDistance <= limit ? bestNames[0] : null;
+            }
+            
+            return null;
+        }
+
+        function parseLines() {
+            const blocks = [];
+            const re = /<environment_details>([\s\S]*?)<\/environment_details>/gm;
+            let m;
+            while ((m = re.exec(sceneText)) !== null) {
+                blocks.push(m[1]);
+            }
+            if (blocks.length === 0) blocks.push(sceneText);
+
+            const lines = [];
+            for (const b of blocks) {
+                const match = b.match(/在场角色[：:]\s*([\s\S]*?)(?=\n\n|$)/);
+                if (!match) continue;
+                const segLines = match[1]
+                    .split('\n')
+                    .map(l => l.trim())
+                    .filter(l => l.startsWith('-'))
+                    .map(l => l.replace(/^\-\s*/, ''));
+                lines.push(...segLines);
+            }
+            return lines;
+        }
+
+        function buildItems(lines) {
+            const items = [];
+            for (const line of lines) {
+                const parts = line.split('|').map(s => s.trim());
+                if (parts.length < 2) continue;
+                const name = resolveName(parts[0]);
+                const action = parts[1];
+                if (!name || !characters[name] || !variants[action]) continue;
+                items.push({ code: characters[name], label: action, key: variants[action] });
+            }
+            return items;
+        }
+
+        function render(items) {
+            const list = document.getElementById('list');
+            list.innerHTML = items.map(item => {
+                const base = baseUrlMap[item.code];
+                let src = base !== 'WAITING_FOR_IMAGE_HOST' ? `${base}/${item.code}_${item.key}.png` : '';
+                if (overrideUrls[`${item.code}_${item.key}`]) {
+                    src = overrideUrls[`${item.code}_${item.key}`];
+                }
+                return `
+                    <div class="item">
+                        ${src
+                        ? `<img src="${src}" alt="${item.label}" loading="lazy">`
+                        : `<div class="placeholder">${fallbackAvatars[item.code] || '?'}</div>`}
+                        <div class="label">${item.label}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        render(buildItems(parseLines()));
+    </script>
+</body>
+
+</html>

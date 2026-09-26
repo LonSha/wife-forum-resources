@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <style>
+:root{
+  --st-ink:#1b1110;--st-wine:#632b2a;--st-wine2:#8d4740;
+  --st-gold:#c7a56a;--st-gold2:#ead29a;--st-paper:#f5ecdc;
+  --st-paper2:#e9dbc6;--st-jade:#54756a;--st-text:#352923;--st-muted:#8b7768;
+}
+*{box-sizing:border-box}
+body{margin:0;padding:12px 6px 24px;background:transparent;font-family:"STZhongsong","Songti SC","Noto Serif SC",serif;color:var(--st-text)}
+.st-multi-status-box{position:relative;max-width:1120px;margin:16px auto;overflow:hidden;border:1px solid var(--st-gold);border-radius:14px;background:linear-gradient(135deg,#211313,#120b0b);box-shadow:0 0 0 3px rgba(199,165,106,.12),0 24px 70px rgba(0,0,0,.42)}
+.st-multi-status-box:before{content:"";position:absolute;inset:10px;border:1px solid rgba(234,210,154,.2);pointer-events:none;z-index:5;border-radius:8px}
+.st-multi-status-box:after{content:"❖  人 物 档 案  ❖";position:absolute;top:0;left:50%;transform:translateX(-50%);z-index:8;padding:9px 34px;color:var(--st-gold2);letter-spacing:7px;font-weight:700;font-size:15px;background:linear-gradient(135deg,#351817,#75332d);border:1px solid var(--st-gold);border-radius:0 0 8px 8px;box-shadow:0 8px 20px rgba(0,0,0,.28);white-space:nowrap}
+.st-char-tabs{display:flex;flex-wrap:wrap;gap:8px;padding:40px 22px 14px;background:linear-gradient(90deg,#130b0b,#542420,#130b0b);border-bottom:1px solid rgba(199,165,106,.45)}
+.st-char-tab{position:relative;padding:7px 18px;color:#d9c8ae;border:1px solid rgba(199,165,106,.45);border-radius:999px;cursor:pointer;font-size:13px;letter-spacing:1px;background:rgba(255,255,255,.04);transition:.25s}
+.st-char-tab:hover{transform:translateY(-1px);border-color:var(--st-gold2)}
+.st-char-tab.active{color:#fff0c8;background:linear-gradient(135deg,var(--st-wine),#9a5147);border-color:var(--st-gold);box-shadow:0 5px 16px rgba(0,0,0,.25)}
+.st-status-content{display:grid;grid-template-columns:minmax(300px,42%) 1fr;min-height:620px;background:var(--st-paper)}
+.st-avatar-section{position:relative;min-height:620px;overflow:hidden;background:#110908;border-right:1px solid var(--st-gold);box-shadow:inset 0 0 80px 20px #110908;}
+.st-status-avatar-bg{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(60px) brightness(0.15) saturate(0.5);opacity:0.6;z-index:1;pointer-events:none;transition:src 0.3s}
+.st-status-avatar{position:relative;z-index:2;width:100%;height:100%;min-height:620px;display:block;object-fit:contain;object-position:center center;cursor:pointer;filter:saturate(.92) contrast(1.04) drop-shadow(0 15px 25px rgba(0,0,0,0.8));transition:transform .55s ease,filter .35s ease}
+.st-status-avatar:hover{transform:scale(1.025);filter:saturate(1.04) contrast(1.06) drop-shadow(0 20px 35px rgba(0,0,0,0.9))}
+
+/* 顶部和底部氛围栏 */
+.st-avatar-top-bar{position:absolute;top:0;left:0;width:100%;display:flex;justify-content:space-between;padding:25px 24px;background:linear-gradient(to bottom, rgba(17,9,8,0.95) 0%, transparent 100%);box-sizing:border-box;z-index:3;pointer-events:none;color:var(--st-gold2);font-size:13px;letter-spacing:2px;text-shadow:0 2px 5px rgba(0,0,0,0.8);}
+.st-avatar-bottom-bar{position:absolute;bottom:0;left:0;width:100%;padding:70px 24px 25px;background:linear-gradient(to top, rgba(17,9,8,0.95) 0%, transparent 100%);box-sizing:border-box;z-index:3;pointer-events:none;color:var(--st-paper);font-size:14px;text-align:center;letter-spacing:2px;font-style:italic;text-shadow:0 2px 5px rgba(0,0,0,0.8);}
+
+.st-gallery-btn{position:absolute;z-index:4;left:24px;bottom:80px;padding:10px 18px;color:#f5e3b8;background:linear-gradient(135deg,rgba(59,27,25,0.8),rgba(119,52,46,0.8));border:1px solid rgba(199,165,106,0.8);border-radius:5px;box-shadow:0 8px 22px rgba(0,0,0,.35);backdrop-filter:blur(4px);cursor:pointer;letter-spacing:2px;transition:.25s;font-size:13px;}
+.st-gallery-btn:hover{transform:translateY(-2px);filter:brightness(1.1);background:linear-gradient(135deg,rgba(59,27,25,1),rgba(119,52,46,1));}
+
+.st-info-section{position:relative;padding:58px 34px 30px;background:radial-gradient(circle at 100% 0,rgba(199,165,106,.2),transparent 33%),repeating-linear-gradient(0deg,transparent,transparent 4px,rgba(80,50,30,.018) 5px),linear-gradient(135deg,var(--st-paper),var(--st-paper2));overflow:auto}
+.st-info-section:before{content:"";position:absolute;left:0;top:0;width:100%;height:7px;background:linear-gradient(90deg,transparent,var(--st-gold),transparent);opacity:.7}
+.st-profile-head{padding-bottom:18px;margin-bottom:16px;border-bottom:1px solid rgba(135,98,63,.28)}
+.st-profile-name{font-size:44px;font-weight:800;letter-spacing:8px;color:#30201b;line-height:1.1;text-shadow:0 2px 0 rgba(255,255,255,.7)}
+.st-profile-sub{margin-top:9px;color:#9a7659;font-size:12px;letter-spacing:7px;font-family:Georgia,serif}
+.st-core-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:18px 0}
+.st-core-card{padding:12px 10px;text-align:center;background:rgba(255,255,255,.5);border:1px solid rgba(173,132,82,.42);box-shadow:0 5px 16px rgba(80,48,25,.07);border-radius:7px}
+.st-core-label{display:block;color:#9b7c61;font-size:11px;letter-spacing:2px;margin-bottom:7px}
+.st-core-value{display:block;color:#3b2922;font-weight:700;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.st-core-card:nth-child(1) .st-core-value{color:#8c4050}.st-core-card:nth-child(2) .st-core-value{color:#8a2633}.st-core-card:nth-child(3) .st-core-value{color:#8b672d}
+.st-favor-bar{height:5px;margin-top:9px;border-radius:999px;background:rgba(70,40,30,.12);overflow:hidden}.st-favor-fill{display:block;height:100%;width:95%;background:linear-gradient(90deg,var(--st-jade),var(--st-gold),#9b3e46);border-radius:inherit}
+.st-status-thought{position:relative;margin:18px 0 16px;padding:22px 20px 17px;color:#49362d;line-height:1.8;background:rgba(255,255,255,.52);border:1px solid rgba(173,132,82,.42);box-shadow:inset 0 0 28px rgba(150,105,65,.035)}
+.st-status-thought:before{content:"❖ 心 中 所 念 ❖";position:absolute;top:-12px;left:18px;padding:5px 13px;color:#f3dfb4;background:linear-gradient(135deg,#3d1b18,#74322b);border:1px solid var(--st-gold);font-size:11px;letter-spacing:2px}
+.st-status-thought span:last-child{font-style:italic;font-size:15px}
+.st-status-grid{display:grid;grid-template-columns:112px minmax(0,1fr);border-top:1px solid rgba(145,105,65,.22)}
+.st-status-label,.st-status-value{padding:11px 8px;border-bottom:1px dashed rgba(145,105,65,.24);line-height:1.6}
+.st-status-label{color:#927152;font-weight:700;letter-spacing:2px}.st-status-label:before{content:"◆";font-size:8px;color:var(--st-gold);margin-right:8px}.st-status-value{color:#3a2b24;word-break:break-word}
+.st-status-value:hover{color:#6c2928}
+.st-global-modal{display:none;position:fixed;inset:0;background:rgba(13,7,6,.84);z-index:99999;justify-content:center;align-items:center;backdrop-filter:blur(9px)}
+.st-g-content{width:min(920px,92vw);height:min(78vh,760px);display:flex;flex-direction:column;overflow:hidden;background:linear-gradient(135deg,#f2e7d5,#dfcdb5);border:3px double var(--st-gold);border-radius:10px;box-shadow:0 30px 100px rgba(0,0,0,.7)}
+.st-g-header{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;background:linear-gradient(90deg,#24110f,#6d3029,#24110f);border-bottom:1px solid var(--st-gold)}.st-g-title{color:var(--st-gold2);font-weight:700;letter-spacing:4px}.st-g-close{color:#fff1cf;cursor:pointer;font-size:25px;line-height:1}
+.st-g-tabs{display:flex;background:rgba(255,255,255,.38);padding:12px;gap:10px}.st-g-tab{flex:1;padding:10px 0;text-align:center;cursor:pointer;color:#765b47;border:1px solid rgba(173,132,82,.45);border-radius:4px;transition:.2s}.st-g-tab.active{color:#fff0c5;background:linear-gradient(135deg,#592521,#874137);border-color:var(--st-gold)}
+.st-g-body{flex:1;overflow-y:auto;padding:22px;display:flex;flex-wrap:wrap;gap:15px;justify-content:center;align-content:flex-start}.st-g-img{height:235px;max-width:100%;border:1px solid rgba(173,132,82,.55);border-radius:6px;object-fit:cover;cursor:pointer;transition:.25s;box-shadow:0 7px 18px rgba(60,30,15,.16)}.st-g-img:hover{transform:translateY(-3px) scale(1.015);border-color:var(--st-gold)}
+@media(max-width:760px){.st-status-content{grid-template-columns:1fr}.st-avatar-section{min-height:500px;border-right:0;border-bottom:1px solid var(--st-gold)}.st-status-avatar{min-height:500px}.st-info-section{padding:52px 18px 25px}.st-profile-name{font-size:34px}.st-core-cards{gap:6px}.st-core-value{font-size:13px}.st-char-tabs{padding-left:12px}.st-multi-status-box:after{font-size:12px;letter-spacing:4px}.st-status-grid{grid-template-columns:92px 1fr}.st-avatar-top-bar, .st-avatar-bottom-bar{padding:15px}.st-gallery-btn{bottom:60px;left:15px;padding:8px 14px;font-size:12px}}
+</style>
+</head>
+<body>
+
+<div class="st-multi-status-marker"></div>
+
+<script>
+(function() {
+    // 【图片配置字典】
+    const GLOBAL_IMAGES = {
+        "裴韫之": {
+            sfw: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/penguin-draw-1788717434227.png",
+            sfw_toggled: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之常服敞开.png",
+            nsfw: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/penguin-draw-1788718404610.png",
+            nsfw_toggled: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/penguin-draw-1788718514877.png",
+            gallery: {
+                lihui: [
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/penguin-draw-1788717434227.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之常服敞开.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/penguin-draw-1788718404610.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/penguin-draw-1788718514877.png"
+                ],
+                daily: [
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之告白.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之剑客.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之诱惑.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之烧饭.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之街道.webp"
+                ],
+                nsfw: [
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之n26fw/裴韫之n26fw/-6.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之n26fw/裴韫之n26fw/-2.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之n26fw/裴韫之n26fw/-10.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之n26fw/裴韫之n26fw/-5.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之n26fw/裴韫之n26fw/-11.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之n26fw/裴韫之n26fw/-1.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之n26fw/裴韫之n26fw/-8.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之n26fw/裴韫之n26fw/-7.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之n26fw/裴韫之n26fw/-9.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之n26fw/裴韫之n26fw/.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之n26fw/裴韫之n26fw/-4.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/裴韫之n26fw/裴韫之n26fw/-3.png"
+                ]
+            }
+        },
+        "楚秀": {
+            sfw: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/-4.png",
+            sfw_toggled: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/-5.png",
+            nsfw: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/-8.webp",
+            nsfw_toggled: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/.webp",
+            gallery: {
+                lihui: [
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/-4.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/-5.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/-8.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/.webp"
+                ],
+                daily: [
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E6%A5%9A%E7%A7%80/%E6%A5%9A%E7%A7%80/-2.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E6%A5%9A%E7%A7%80/%E6%A5%9A%E7%A7%80/-6.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E6%A5%9A%E7%A7%80/%E6%A5%9A%E7%A7%80/-1.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/-3.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/-7.png"
+                ],
+                nsfw: [
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/-7.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/-3.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/-11.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/9月13号-1.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/-5.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/-9.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/9月13号.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/-8.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/9月13号-2.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/-4.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/楚秀/楚秀/-10.png"
+                ]
+            }
+        },
+        "梁钰虎": {
+            sfw: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁钰虎/梁钰虎/9月14号-1.png",
+            sfw_toggled: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E6%A2%81%E9%92%B0%E8%99%8E/%E6%A2%81%E9%92%B0%E8%99%8E/-8.png",
+            nsfw: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁钰虎/梁钰虎/9月14号-2.png",
+            nsfw_toggled: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁钰虎/梁钰虎/9月14号.png",
+            gallery: {
+                lihui: [
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁钰虎/梁钰虎/9月14号-1.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E6%A2%81%E9%92%B0%E8%99%8E/%E6%A2%81%E9%92%B0%E8%99%8E/-8.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁钰虎/梁钰虎/9月14号-2.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁钰虎/梁钰虎/9月14号.png"
+                ],
+                daily: [
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E6%A2%81%E9%92%B0%E8%99%8E/%E6%A2%81%E9%92%B0%E8%99%8E/-1.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁钰虎/梁钰虎/丹青图.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E6%A2%81%E9%92%B0%E8%99%8E/%E6%A2%81%E9%92%B0%E8%99%8E/-2.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁钰虎/梁钰虎/-7.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁钰虎/梁钰虎/9月14号特殊图.png"
+                ],
+                nsfw: [
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E6%A2%81%E9%92%B0%E8%99%8E/%E6%A2%81%E9%92%B0%E8%99%8E/-6.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E5%8F%A3%E4%BA%A4.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E6%A2%81%E9%92%B0%E8%99%8E/%E6%A2%81%E9%92%B0%E8%99%8E/-3.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E6%A2%81%E9%92%B0%E8%99%8E/%E6%A2%81%E9%92%B0%E8%99%8E/%E8%82%9B%E4%BA%A4%E5%A6%A9%E5%AA%9A%E7%89%88.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E6%A2%81%E9%92%B0%E8%99%8E/%E6%A2%81%E9%92%B0%E8%99%8E/-5.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁钰虎/梁钰虎/-10.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E6%A2%81%E9%92%B0%E8%99%8E/%E6%A2%81%E9%92%B0%E8%99%8E/%E7%AB%99%E7%AB%8B%E6%80%A7%E4%BA%A4.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁钰虎/梁钰虎/-7.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E6%A2%81%E9%92%B0%E8%99%8E/%E6%A2%81%E9%92%B0%E8%99%8E/%E9%87%8E%E6%88%98.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E6%A2%81%E9%92%B0%E8%99%8E/%E6%A2%81%E9%92%B0%E8%99%8E/%E9%AB%98%E6%BD%AE.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁钰虎/梁钰虎/-9.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E6%A2%81%E9%92%B0%E8%99%8E/%E6%A2%81%E9%92%B0%E8%99%8E/%E8%87%AA%E6%85%B0.png"
+                ]
+            }
+        },
+        "梁玉翎": {
+            sfw: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n26fw/梁玉翎n26fw/-3.png",
+            sfw_toggled: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n26fw/梁玉翎n26fw/-4.png",
+            nsfw: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎/梁玉翎/9月14号-1.png",
+            nsfw_toggled: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎/梁玉翎/9月14号.png",
+            gallery: {
+                lihui: [
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n26fw/梁玉翎n26fw/-3.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n26fw/梁玉翎n26fw/-4.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎/梁玉翎/9月14号-1.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎/梁玉翎/9月14号.png"
+                ],
+                daily: [
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎/梁玉翎/9月14号特殊图-2.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n26fw/梁玉翎n26fw/-2.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n26fw/梁玉翎n26fw/-1.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎/梁玉翎/9月14号特殊图-1.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎/梁玉翎/9月14号特殊图.webp"
+                ],
+                nsfw: [
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n5fw/梁玉翎n5fw/.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n5fw/梁玉翎n5fw/-8.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n5fw/梁玉翎n5fw/-4.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n5fw/梁玉翎n5fw/-5.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n5fw/梁玉翎n5fw/-11.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n5fw/梁玉翎n5fw/-10.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n5fw/梁玉翎n5fw/-2.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n5fw/梁玉翎n5fw/-7.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n5fw/梁玉翎n5fw/-1.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n5fw/梁玉翎n5fw/-6.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n5fw/梁玉翎n5fw/-9.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/梁玉翎n5fw/梁玉翎n5fw/-3.webp"
+                ]
+            }
+        },
+        "萧归鸾": {
+            sfw: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E8%90%A7%E5%BD%92%E9%B8%BE/%E8%90%A7%E5%BD%92%E9%B8%BE/-9.png",
+            sfw_toggled: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E8%90%A7%E5%BD%92%E9%B8%BE/%E8%90%A7%E5%BD%92%E9%B8%BE/-8.png",
+            nsfw: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E8%90%A7%E5%BD%92%E9%B8%BE/%E8%90%A7%E5%BD%92%E9%B8%BE/-5.png",
+            nsfw_toggled: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E8%90%A7%E5%BD%92%E9%B8%BE/%E8%90%A7%E5%BD%92%E9%B8%BE/-4.png",
+            gallery: {
+                lihui: [
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E8%90%A7%E5%BD%92%E9%B8%BE/%E8%90%A7%E5%BD%92%E9%B8%BE/-9.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E8%90%A7%E5%BD%92%E9%B8%BE/%E8%90%A7%E5%BD%92%E9%B8%BE/-8.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E8%90%A7%E5%BD%92%E9%B8%BE/%E8%90%A7%E5%BD%92%E9%B8%BE/-5.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E8%90%A7%E5%BD%92%E9%B8%BE/%E8%90%A7%E5%BD%92%E9%B8%BE/-4.png"
+                ],
+                daily: [
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/-2.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/-1.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E8%90%A7%E5%BD%92%E9%B8%BE/%E8%90%A7%E5%BD%92%E9%B8%BE/-3.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/-7.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/9月14号特殊图.png"
+                ],
+                nsfw: [
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/2026/9/13-6.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/2026/9月13号.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/2026/9/13-3.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/肛交.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/2026/9/13-5.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/2026/9/13-4.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E8%90%A7%E5%BD%92%E9%B8%BE/%E8%90%A7%E5%BD%92%E9%B8%BE/2026/9/13-1.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/-11.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/2026/9/13.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/-10.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/沐浴.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧归鸾/萧归鸾/2026/9/13-2.png"
+                ]
+            }
+        },
+        "池璇": {
+            sfw: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-14.webp",
+            sfw_toggled: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-15.webp",
+            nsfw: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-16.webp",
+            nsfw_toggled: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-20.webp",
+            gallery: {
+                lihui: [
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-14.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-15.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-16.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-20.webp"
+                ],
+                daily: [
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-17.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-13.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-8.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-19.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-18.webp"
+                ],
+                nsfw: [
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-4.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-5.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-9.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-1.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-6.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-11.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-12.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-7.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-2.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-3.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/池璇/池璇/-10.png"
+                ]
+            }
+        },
+        "司空也静": {
+            sfw: "https://i.postimg.cc/vTMdwHr3/fixed-Prompt-artist-soejima-shigenori-artist-z3zz4-misaka-12003-s-1820065271.png",
+            sfw_toggled: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/_fixedPrompt__%20_%20artist_soejima%20shigenori%2C%20%5B%5B%5B%5Bartist_z3zz4%5D%5D%5D%5D%2C%20%5B%5B%5Bmisaka_12003%20s-1820065271%20(1).png",
+            nsfw: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E5%8F%B8%E7%A9%BA%E4%B9%9F%E9%9D%99/%E5%8F%B8%E7%A9%BA%E4%B9%9F%E9%9D%99/9%E6%9C%8817%E6%97%A5.webp",
+            nsfw_toggled: "https://i.postimg.cc/GtQnLwzC/si-kong-chi-luo.webp",
+            gallery: {
+                lihui: [
+                    "https://i.postimg.cc/vTMdwHr3/fixed-Prompt-artist-soejima-shigenori-artist-z3zz4-misaka-12003-s-1820065271.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/_fixedPrompt__%20_%20artist_soejima%20shigenori%2C%20%5B%5B%5B%5Bartist_z3zz4%5D%5D%5D%5D%2C%20%5B%5B%5Bmisaka_12003%20s-1820065271%20(1).png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E5%8F%B8%E7%A9%BA%E4%B9%9F%E9%9D%99/%E5%8F%B8%E7%A9%BA%E4%B9%9F%E9%9D%99/9%E6%9C%8817%E6%97%A5.webp",
+                    "https://i.postimg.cc/GtQnLwzC/si-kong-chi-luo.webp"
+                ],
+                daily: [
+                    "https://i.postimg.cc/1zqxgNMb/gao-bai.webp",
+                    "https://i.postimg.cc/ZRtG6KMR/guan-xing-tu.webp",
+                    "https://i.postimg.cc/W3GQ8LBF/fixed-Prompt-artist-soejima-shigenori-artist-z3zz4-misaka-12003-s-1820065271-(12).webp",
+                    "https://i.postimg.cc/W3GQ8LBS/fixed-Prompt-artist-soejima-shigenori-artist-z3zz4-misaka-12003-s-1820065271-(6).webp",
+                    "https://i.postimg.cc/WzsxfYj3/fixed-Prompt-artist-soejima-shigenori-artist-z3zz4-misaka-12003-s-1820065271-(4).webp"
+                ],
+                nsfw: [
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/_fixedPrompt__%20_%20artist_soejima%20shigenori%2C%20%5B%5B%5B%5Bartist_z3zz4%5D%5D%5D%5D%2C%20%5B%5B%5Bmisaka_12003%20s-1820065271%20(1).webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E5%8F%B8%E7%A9%BA%E4%B9%9F%E9%9D%99/%E5%8F%B8%E7%A9%BA%E4%B9%9F%E9%9D%99/%E5%8F%A3%E4%BA%A4.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E5%8F%B8%E7%A9%BA%E4%B9%9F%E9%9D%99/%E5%8F%B8%E7%A9%BA%E4%B9%9F%E9%9D%99/%E8%B6%B3%E4%BA%A4.webp",
+                    "https://i.postimg.cc/hPcpT74H/gang-jiao.webp",
+                    "https://i.postimg.cc/sx9mb3mw/fixed-Prompt-artist-soejima-shigenori-artist-z3zz4-misaka-12003-s-1820065271-(5).webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E5%8F%B8%E7%A9%BA%E4%B9%9F%E9%9D%99/%E5%8F%B8%E7%A9%BA%E4%B9%9F%E9%9D%99/%E5%A5%B3%E4%B8%8A.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/%E5%8F%B8%E7%A9%BA%E4%B9%9F%E9%9D%99/%E5%8F%B8%E7%A9%BA%E4%B9%9F%E9%9D%99/%E7%AB%99%E7%AB%8B%E6%80%A7%E4%BA%A4.webp",
+                    "https://i.postimg.cc/KvfQNvR7/hou-ru.webp",
+                    "https://i.postimg.cc/Dz9cZSYg/ye-zhan.webp",
+                    "https://i.postimg.cc/RVdGRVN0/gao-chao.webp",
+                    "https://i.postimg.cc/rwpjYXrj/mu-yu.webp",
+                    "https://i.postimg.cc/9XGLDB2B/fixed-Prompt-artist-soejima-shigenori-artist-z3zz4-misaka-12003-s-1820065271-(2).webp"
+                ]
+            }
+        },
+        "梁璎珞": {
+            sfw: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/立绘正式版.png",
+            sfw_toggled: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/半敞开正式版.webp",
+            nsfw: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/肚兜正式版.webp",
+            nsfw_toggled: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/赤裸正式版.webp",
+            gallery: {
+                lihui: [
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/立绘正式版.png",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/半敞开正式版.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/肚兜正式版.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/赤裸正式版.webp"
+                ],
+                daily: [
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/_fixedPrompt__%20_%20artist_soejima%20shigenori%2C%20%5B%5B%5B%5Bartist_z3zz4%5D%5D%5D%5D%2C%20%5B%5B%5Bmisaka_12003%20s-2935766906%20(33).webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/_fixedPrompt__%20_%20artist_soejima%20shigenori%2C%20%5B%5B%5B%5Bartist_z3zz4%5D%5D%5D%5D%2C%20%5B%5B%5Bmisaka_12003%20s-2935766906%20(37).webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/_fixedPrompt__%20_%20artist_soejima%20shigenori%2C%20%5B%5B%5B%5Bartist_z3zz4%5D%5D%5D%5D%2C%20%5B%5B%5Bmisaka_12003%20s-2935766906%20(41).webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/_fixedPrompt__%20_%20artist_soejima%20shigenori%2C%20%5B%5B%5B%5Bartist_z3zz4%5D%5D%5D%5D%2C%20%5B%5B%5Bmisaka_12003%20s-2935766906%20(44).webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/_fixedPrompt__%20_%20artist_soejima%20shigenori%2C%20%5B%5B%5B%5Bartist_z3zz4%5D%5D%5D%5D%2C%20%5B%5B%5Bmisaka_12003%20s-2935766906%20(42).webp"
+                ],
+                nsfw: [
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/性交i字形.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/口交.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/足交.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/肛交.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/乳交.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/女上.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/__fixedPrompt__%20_%20artist_soejima%20shigenori%2C%20%5B%5B%5B%5Bartist_z3zz4%5D%5D%5D%5D%2C%20%5B%5B%5Bmisaka_1200%20s-2935766906%20(3).webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/后入.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/野战.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/高潮.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/沐浴.webp",
+                    "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/自慰.webp"
+                ]
+            }
+        },
+        "华素纨": {
+            sfw: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-10.webp",
+            sfw_toggled: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-5.webp",
+            nsfw: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-6.webp",
+            nsfw_toggled: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-7.webp",
+            gallery: {
+                lihui: [
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-10.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-5.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-6.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-7.webp"
+                ],
+                daily: [
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/.png",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-8.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-2.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-9.png",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-11.webp"
+                ],
+                nsfw: [
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-19.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-15.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-1.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-14.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-18.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-17.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-4.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-12.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-20.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-13.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-16.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/.webp"
+                ]
+            }
+        },
+        "萧玉颜": {
+            sfw: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-17.webp",
+            sfw_toggled: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-18.webp",
+            nsfw: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-19.webp",
+            nsfw_toggled: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-20.webp",
+            gallery: {
+                lihui: [
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-17.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-18.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-19.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-20.webp"
+                ],
+                daily: [
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/华素纨/华素纨/-3.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-1.png",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-7.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-5.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-16.webp"
+                ],
+                nsfw: [
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-11.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-6.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-15.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-2.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-10.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-9.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-13.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-4.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-12.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-3.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-8.webp",
+                "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/萧玉颜/萧玉颜/-14.webp"
+                ]
+            }
+        }
+    };
+
+    // 预注入相册外层结构
+    if (!document.getElementById('st-global-gallery-modal')) {
+        const modalHtml = `
+        
+        <div class="st-global-modal" id="st-global-gallery-modal">
+            <div class="st-g-content">
+                <div class="st-g-header">
+                    <div class="st-g-title" id="st-g-title">角色相册</div>
+                    <div class="st-g-close" onclick="document.getElementById('st-global-gallery-modal').style.display='none'">&times;</div>
+                </div>
+                <div class="st-g-tabs">
+                    <div class="st-g-tab active" id="tab-lihui">立绘</div>
+                    <div class="st-g-tab" id="tab-daily">日常</div>
+                    <div class="st-g-tab" id="tab-nsfw">NSFW</div>
+                </div>
+                <div class="st-g-body" id="st-g-body"></div>
+            </div>
+        </div>`;
+        document.body.insertAdjacentHTML('beforeend', modalHtml);
+    }
+
+    // 1. 获取输入文本并清洗掉多余的反斜杠
+    let rawData = `$1`;
+    rawData = rawData.replace(/\\</g, '<').replace(/\\>/g, '>');
+
+    // 2. 解析清洗后的 XML
+    const charRegex = /<Character>([\s\S]*?)<\/Character>/g;
+    const characters = [];
+    let match;
+    while ((match = charRegex.exec(rawData)) !== null) {
+        const text = match[1];
+        const extract = (tag) => {
+            const res = text.match(new RegExp(`<${tag}>([\\s\\S]*?)<\\/${tag}>`));
+            return res ? res[1].trim() : "未知";
+        };
+        characters.push({
+            name: extract('Name'), favor: extract('Favor'), relation: extract('Relation'),
+            mood: extract('Mood'), cloth: extract('Cloth'), loc: extract('Loc'),
+            time: extract('Time'), weather: extract('Weather'),
+            thought: extract('Thought'), realm: extract('Realm'), state: extract('State'),
+            action: extract('Action'), attitude: extract('Attitude'), scene: extract('Scene')
+        });
+    }
+
+    // 3. 渲染 DOM
+    const markers = document.querySelectorAll('.st-multi-status-marker');
+    if (markers.length === 0 || characters.length === 0) return;
+    const root = markers[markers.length - 1];
+    root.className = 'st-multi-status-box';
+
+    root.innerHTML = `
+        <div class="st-char-tabs" id="tabs-${root.id}"></div>
+        <div class="st-status-content" id="content-${root.id}"></div>
+    `;
+    
+    const tabsContainer = root.querySelector('.st-char-tabs');
+    const contentContainer = root.querySelector('.st-status-content');
+
+    const renderCharacter = (index) => {
+        const data = characters[index];
+        const imgConfig = GLOBAL_IMAGES[data.name] || { sfw:'', sfw_toggled:'', nsfw:'', nsfw_toggled:'', gallery:{lihui:[],daily:[],nsfw:[]} };
+        
+        const isNSFW = data.scene.toUpperCase() === 'NSFW';
+        const currentMainImg = isNSFW ? imgConfig.nsfw : imgConfig.sfw;
+        const currentToggledImg = isNSFW ? imgConfig.nsfw_toggled : imgConfig.sfw_toggled;
+        
+        Array.from(tabsContainer.children).forEach((btn, i) => {
+            btn.className = 'st-char-tab' + (i === index ? ' active' : '');
+        });
+
+        contentContainer.innerHTML = `
+            <div class="st-avatar-section">
+                <img class="st-status-avatar-bg" src="${currentMainImg}">
+                <img class="st-status-avatar" title="点击切换立绘状态"
+                     src="${currentMainImg}"
+                     data-original="${currentMainImg}"
+                     data-toggled="${currentToggledImg}"
+                     data-state="normal">
+                
+                <!-- 顶栏：地点和时间天气 -->
+                <div class="st-avatar-top-bar">
+                    <span>❖ 当前所在：${data.loc}</span>
+                    <span>❖ ${data.time} · ${data.weather}</span>
+                </div>
+                <!-- 底栏：状态与情绪 -->
+                <div class="st-avatar-bottom-bar">
+                    此刻心境：${data.mood}
+                </div>
+
+                <div class="st-gallery-btn">✦ 打开人物画卷 ✦</div>
+            </div>
+
+            <div class="st-info-section">
+                <div class="st-profile-head">
+                    <div class="st-profile-name">${data.name}</div>
+                    <div class="st-profile-sub">CHARACTER · ANCIENT ROMANCE PROFILE</div>
+                </div>
+
+                <div class="st-core-cards">
+                    <div class="st-core-card">
+                        <span class="st-core-label">心 绪</span>
+                        <span class="st-core-value">${data.mood}</span>
+                    </div>
+                    <div class="st-core-card">
+                        <span class="st-core-label">好 感</span>
+                        <span class="st-core-value">${data.favor}</span>
+                        <div class="st-favor-bar"><span class="st-favor-fill"></span></div>
+                    </div>
+                    <div class="st-core-card">
+                        <span class="st-core-label">境 界</span>
+                        <span class="st-core-value">${data.realm}</span>
+                    </div>
+                </div>
+
+                <div class="st-status-thought">
+                    「<span>${data.thought}</span>」
+                </div>
+
+                <div class="st-status-grid">
+                    <div class="st-status-label">角色名</div><div class="st-status-value">${data.name}</div>
+                    <div class="st-status-label">好感度</div><div class="st-status-value">${data.favor}</div>
+                    <div class="st-status-label">关系阶段</div><div class="st-status-value">${data.relation}</div>
+                    <div class="st-status-label">心情</div><div class="st-status-value">${data.mood}</div>
+                    <div class="st-status-label">穿着</div><div class="st-status-value">${data.cloth}</div>
+                    <div class="st-status-label">当前位置</div><div class="st-status-value">${data.loc}</div>
+                    <div class="st-status-label">时间天气</div><div class="st-status-value">${data.time} · ${data.weather}</div>
+                    <div class="st-status-label">武功境界</div><div class="st-status-value">${data.realm}</div>
+                    <div class="st-status-label">身体状态</div><div class="st-status-value">${data.state}</div>
+                    <div class="st-status-label">当前行动</div><div class="st-status-value">${data.action}</div>
+                    <div class="st-status-label">交互态度</div><div class="st-status-value">${data.attitude}</div>
+                </div>
+            </div>
+        `;
+
+        const avatarImg = contentContainer.querySelector('.st-status-avatar');
+        const avatarBgImg = contentContainer.querySelector('.st-status-avatar-bg');
+        
+        avatarImg.onclick = function() {
+            if (this.dataset.state === "normal") {
+                this.src = this.dataset.toggled;
+                if (avatarBgImg) avatarBgImg.src = this.dataset.toggled;
+                this.dataset.state = "toggled";
+            } else {
+                this.src = this.dataset.original;
+                if (avatarBgImg) avatarBgImg.src = this.dataset.original;
+                this.dataset.state = "normal";
+            }
+        };
+
+        contentContainer.querySelector('.st-gallery-btn').onclick = function() {
+            const modal = document.getElementById('st-global-gallery-modal');
+            document.getElementById('st-g-title').innerText = `${data.name} 的专属相册`;
+            modal.style.display = 'flex';
+            
+            const bindTab = (tabId, category) => {
+                const tab = document.getElementById(tabId);
+                tab.onclick = () => {
+                    document.querySelectorAll('.st-g-tab').forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    const urls = imgConfig.gallery[category] || [];
+                    document.getElementById('st-g-body').innerHTML = urls.length > 0 
+                        ? urls.map(url => `<img class="st-g-img" src="${url}" onclick="window.open('${url}', '_blank')">`).join('')
+                        : `<div style="color:#777; margin-top:50px;">暂无图片</div>`;
+                };
+            };
+            
+            bindTab('tab-lihui', 'lihui');
+            bindTab('tab-daily', 'daily');
+            bindTab('tab-nsfw', 'nsfw');
+            
+            document.getElementById('tab-lihui').click();
+        };
+    };
+
+    characters.forEach((char, index) => {
+        const btn = document.createElement('div');
+        btn.innerText = char.name;
+        btn.onclick = () => renderCharacter(index);
+        tabsContainer.appendChild(btn);
+    });
+
+    if (characters.length > 0) renderCharacter(0);
+})();
+</script>
+</body>
+</html>

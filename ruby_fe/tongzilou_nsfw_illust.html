@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --bg: #0b0a0f;
+            --text: #f3f0ff;
+            --muted: #9ea0b5;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: transparent;
+            color: var(--text);
+            padding: 12px 8px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            max-width: 300px;
+            margin: 0 auto 8px;
+            padding: 0;
+        }
+
+        /* 图片包装器，现在整个区域都可以点击 */
+        .img-wrapper {
+            position: relative;
+            width: 100%;
+            max-width: 300px;
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.3);
+            background: #1a1a2e;
+            min-height: 360px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer; /* 提示可以点击 */
+            user-select: none; /* 防止连续点击时选中图片 */
+            -webkit-user-drag: none;
+            transition: transform 0.1s ease;
+        }
+
+        /* 点击时的小动画反馈 */
+        .img-wrapper:active {
+            transform: scale(0.98);
+        }
+
+        .img-wrapper img {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            display: block;
+            pointer-events: none; /* 让点击事件穿透到父容器 */
+        }
+
+        .img-wrapper .placeholder {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--muted);
+            font-size: 56px;
+            font-weight: 700;
+            pointer-events: none;
+        }
+
+        .item .error-msg {
+            color: #ff6b6b;
+            font-size: 12px;
+            margin-top: 4px;
+            background: rgba(255,0,0,0.1);
+            padding: 4px 12px;
+            border-radius: 4px;
+        }
+
+        .label {
+            color: var(--muted);
+            font-size: 13px;
+            letter-spacing: 0.04em;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="list"></div>
+
+    <script>
+        /* ================================================================
+           1. 角色与图床映射（支持差分 1~5）
+           ================================================================ */
+        var BASE_URL = 'https://raw.githubusercontent.com/zhamuqiu/tongren2/refs/heads/main';
+        var NEW_BASE_URL = 'https://raw.githubusercontent.com/zhamuqiu/setu/refs/heads/main';
+        var SETU2_BASE_URL = 'https://raw.githubusercontent.com/zhamuqiu/setu2/refs/heads/main';
+
+        var characters = {
+            '洪晓花': 'hong_xiaohua',
+            '洪晓蕾': 'hong_xiaolei',
+            '洪晓彤': 'hong_xiaotong',
+            '苏雨夜': 'su_yuye',
+            '苏悦': 'su_yue',
+            '李莉': 'li_li',
+            '林秀': 'lin_xiu',
+            '唐果': 'tang_guo',
+            '赵梅': 'zhao_mei',
+            '沈念': 'shen_nian',
+            '蒋佩琴': 'jiang_peiqin',
+            '文馨': 'wen_xin',
+            '邵婷': 'shao_ting',
+            '齐冰': 'qi_bing',
+            '齐雪': 'qi_xue',
+            '陆青禾': 'lu_qinghe',
+            '梁艳红': 'liang_yanhong',
+            '钱萌萌': 'qian_mengmeng',
+            '马丽': 'ma_li'
+        };
+
+        var variants = {
+            /* 原有 */
+            '调教': 'bondage',
+            '自慰': 'masturbation',
+            '口交': 'blowjob',
+            '足交': 'footjob',
+            '性交': 'sex',
+            '肛交': 'anal',
+            '高潮': 'orgasm',
+            '露出': 'exhibition',
+            '户外露出': 'outdoor_exposure',
+            '室内露出': 'indoor_exposure',
+            '乳交': 'titfuck',
+            '撸管': 'jerkoff',
+            /* 新增 */
+            '内衣': 'underwear',
+            '道具': 'toy',
+            '阴部展示': 'spread',
+            '服从': 'submission'
+        };
+
+        var fallbackAvatars = {
+            'hong_xiaohua': '花',
+            'hong_xiaolei': '蕾',
+            'hong_xiaotong': '彤',
+            'su_yuye': '夜',
+            'su_yue': '悦',
+            'li_li': '莉',
+            'lin_xiu': '秀',
+            'tang_guo': '果',
+            'zhao_mei': '梅',
+            'shen_nian': '念',
+            'jiang_peiqin': '琴',
+            'wen_xin': '馨',
+            'shao_ting': '婷',
+            'qi_bing': '冰',
+            'qi_xue': '雪',
+            'lu_qinghe': '禾',
+            'liang_yanhong': '红',
+            'qian_mengmeng': '萌',
+            'ma_li': '丽'
+        };
+
+        /* 差分数量 */
+        var DIFF_COUNT = 5;
+
+        /* 需要走新图床的角色 */
+        var NEW_ROLES = ['shen_nian', 'jiang_peiqin', 'wen_xin', 'shao_ting', 'qi_bing', 'qi_xue', 'lu_qinghe', 'liang_yanhong'];
+        /* 需要走新图床的栏目 */
+        var NEW_ACTIONS = ['underwear', 'toy', 'spread', 'submission'];
+        /* 使用 setu2 图床的角色 */
+        var SETU2_ROLES = ['qian_mengmeng', 'ma_li'];
+
+        /* 全局保存解析出的项目，方便点击时更新 */
+        var globalItems = [];
+
+        /* ================================================================
+           2. 辅助函数：根据索引获取图片 URL
+           ================================================================ */
+        function getDiffUrl(charId, actionKey, idx) {
+            var baseUrl = BASE_URL;
+            if (SETU2_ROLES.includes(charId)) {
+                baseUrl = SETU2_BASE_URL;
+            } else if (NEW_ROLES.includes(charId) || NEW_ACTIONS.includes(actionKey)) {
+                baseUrl = NEW_BASE_URL;
+            }
+            return baseUrl + '/' + charId + '_' + actionKey + '_' + idx + '.png';
+        }
+
+        /* ================================================================
+           3. 点击切换图片逻辑
+           ================================================================ */
+        window.changePage = function(itemIndex, delta) {
+            var item = globalItems[itemIndex];
+            if (!item) return;
+
+            /* 更新索引，实现循环翻页（单向点击通常 delta 传 1） */
+            item.currentIdx = item.currentIdx + delta;
+            if (item.currentIdx > DIFF_COUNT) {
+                item.currentIdx = 1;
+            } else if (item.currentIdx < 1) {
+                item.currentIdx = DIFF_COUNT;
+            }
+
+            /* 更新图片 src */
+            var newSrc = getDiffUrl(item.code, item.actionKey, item.currentIdx);
+            var imgElement = document.getElementById('img-' + itemIndex);
+            var placeholderElement = document.getElementById('placeholder-' + itemIndex);
+
+            if (imgElement) {
+                /* 切换图片时先重置显示状态 */
+                imgElement.style.display = 'block';
+                if(placeholderElement) placeholderElement.style.display = 'none';
+
+                imgElement.src = newSrc;
+            }
+        };
+
+        /* ================================================================
+           4. 解析环境详情块
+           ================================================================ */
+        /* 数据源：TavernHelper 自取本条消息正文（对齐同仓 bulletin 范式） */
+        function getMessageText() {
+            try {
+                if (typeof getChatMessages === 'function' && typeof getCurrentMessageId === 'function') {
+                    var msgs = getChatMessages(getCurrentMessageId());
+                    if (msgs && msgs.length) {
+                        var mm = msgs[0];
+                        return (typeof mm === 'string' ? mm : (mm && mm.message) || '') || '';
+                    }
+                }
+            } catch (e) { console.warn('[NSFW插图] 取消息失败:', e); }
+            return '';
+        }
+        var sceneText = getMessageText();
+        console.log('[NSFW插图] 原始内容:', sceneText);
+
+        function parseLines() {
+            var blocks = [];
+            var re = /<environment_details>([\s\S]*?)<\/environment_details>/gm;
+            var m;
+            while ((m = re.exec(sceneText)) !== null) {
+                blocks.push(m[1]);
+            }
+            if (blocks.length === 0) blocks.push(sceneText);
+
+            console.log('[NSFW插图] 解析到块数:', blocks.length);
+
+            var lines = [];
+            for (var i = 0; i < blocks.length; i++) {
+                var b = blocks[i];
+                var match = b.match(/在场角色[：:]\s*([\s\S]*?)(?=\n\n|$)/);
+                if (!match) {
+                    console.warn('[NSFW插图] 未找到"在场角色"段落:', b);
+                    continue;
+                }
+                var segLines = match[1]
+                    .split('\n')
+                    .map(function(l) { return l.trim(); })
+                    .filter(function(l) { return l.startsWith('-'); })
+                    .map(function(l) { return l.replace(/^\-\s*/, ''); });
+                lines.push.apply(lines, segLines);
+            }
+
+            console.log('[NSFW插图] 解析到角色行:', lines);
+            return lines;
+        }
+
+        function buildItems(lines) {
+            var items = [];
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i];
+                var parts = line.split('|').map(function(s) { return s.trim(); });
+                if (parts.length < 2) {
+                    console.warn('[NSFW插图] 格式错误，跳过:', line);
+                    continue;
+                }
+                var name = parts[0];
+                var action = parts[1];
+
+                if (!characters[name]) {
+                    console.warn('[NSFW插图] 未知角色:', name);
+                    continue;
+                }
+                if (!variants[action]) {
+                    console.warn('[NSFW插图] 未知动作:', action);
+                    continue;
+                }
+
+                var code = characters[name];
+                var key = variants[action];
+                /* 初始随机一张差分图 (1~5) */
+                var initialIdx = Math.floor(Math.random() * DIFF_COUNT) + 1;
+
+                items.push({
+                    id: items.length, /* 用于绑定DOM元素的索引 */
+                    code: code,
+                    actionKey: key,
+                    label: action,
+                    name: name,
+                    currentIdx: initialIdx
+                });
+            }
+            return items;
+        }
+
+        function render(items) {
+            var list = document.getElementById('list');
+
+            if (items.length === 0) {
+                list.innerHTML = '';
+                return;
+            }
+
+            list.innerHTML = items.map(function(item) {
+                var currentSrc = getDiffUrl(item.code, item.actionKey, item.currentIdx);
+                /* 将 onclick 事件绑定到 img-wrapper 上，点击即可切换下一张 (+1) */
+                return `
+                    <div class="item">
+                        <div class="img-wrapper" onclick="changePage(${item.id}, 1)">
+                            <img id="img-${item.id}" src="${currentSrc}" alt="${item.label}" loading="lazy"
+                                 onerror="this.style.display='none'; document.getElementById('placeholder-${item.id}').style.display='flex';">
+                            <div id="placeholder-${item.id}" class="placeholder" style="display:none;">${fallbackAvatars[item.code] || '?'}</div>
+                        </div>
+                        <div class="label">${item.name} · ${item.label}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        /* 执行 */
+        function __tzlNsfwStart() {
+            try {
+                if (!sceneText) {
+                    sceneText = getMessageText();
+                }
+                var lines = parseLines();
+                globalItems = buildItems(lines);
+                render(globalItems);
+            } catch (e) {
+                console.warn('[NSFW插图] 渲染异常:', e);
+            }
+        }
+        if (typeof $ !== 'undefined') $(__tzlNsfwStart);
+        else document.addEventListener('DOMContentLoaded', __tzlNsfwStart);
+    </script>
+</body>
+
+</html>

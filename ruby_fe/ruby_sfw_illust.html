@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <style>
+:root{--surface:rgba(255,255,255,0.45);--surface-strong:rgba(255,255,255,0.75);--ink:#332827;--muted:#8b7d7b;--line:rgba(255,255,255,0.4);--accent:#d88970;--accent-2:#8aa7c1;--shadow:0 16px 40px rgba(40,27,26,0.08);--glow:0 0 20px rgba(216,137,112,0.15);}
+/* === Scene Type Themes === */.scene-info-panel[data-scene="NSFW"]{--accent:#c4476a;--accent-2:#7a3050;--ink:#2a1a1f;--shadow:0 16px 40px rgba(60,20,30,0.12);--glow:0 0 20px rgba(196,71,106,0.15);}.scene-info-panel[data-scene="NSFW"]::before{background:radial-gradient(circle at 70% 30%,rgba(196,71,106,0.25),transparent 40%),radial-gradient(circle at 30% 70%,rgba(122,48,80,0.25),transparent 40%);}.scene-info-panel[data-scene="NSFW"] .meta-dot{background:linear-gradient(135deg,#c4476a,#ff6b9e);box-shadow:0 0 8px #c4476a;}.scene-info-panel[data-scene="NSFW"] .action-button:hover{color:var(--ink);}
+/* === Time-of-Day Themes === */.scene-info-panel[data-timeofday="dawn"]::before{background:radial-gradient(circle at 70% 30%,rgba(255,180,120,0.28),transparent 40%),radial-gradient(circle at 30% 70%,rgba(255,200,150,0.15),transparent 40%);}.scene-info-panel[data-timeofday="morning"]::before{background:radial-gradient(circle at 70% 30%,rgba(255,220,100,0.25),transparent 40%),radial-gradient(circle at 30% 70%,rgba(180,230,255,0.18),transparent 40%);}.scene-info-panel[data-timeofday="noon"]::before{background:radial-gradient(circle at 70% 30%,rgba(255,240,180,0.22),transparent 40%),radial-gradient(circle at 30% 70%,rgba(200,230,255,0.15),transparent 40%);}.scene-info-panel[data-timeofday="afternoon"]::before{background:radial-gradient(circle at 70% 30%,rgba(255,170,90,0.25),transparent 40%),radial-gradient(circle at 30% 70%,rgba(200,140,200,0.18),transparent 40%);}.scene-info-panel[data-timeofday="dusk"]::before{background:radial-gradient(circle at 70% 30%,rgba(255,120,80,0.30),transparent 40%),radial-gradient(circle at 30% 70%,rgba(150,100,180,0.20),transparent 40%);}.scene-info-panel[data-timeofday="evening"]::before{background:radial-gradient(circle at 70% 30%,rgba(100,80,180,0.25),transparent 40%),radial-gradient(circle at 30% 70%,rgba(60,40,120,0.18),transparent 40%);}.scene-info-panel[data-timeofday="night"]::before{background:radial-gradient(circle at 70% 30%,rgba(60,50,120,0.30),transparent 40%),radial-gradient(circle at 30% 70%,rgba(30,20,80,0.22),transparent 40%);}.scene-info-panel[data-timeofday="latenight"]::before{background:radial-gradient(circle at 70% 30%,rgba(40,30,80,0.35),transparent 40%),radial-gradient(circle at 30% 70%,rgba(20,10,50,0.25),transparent 40%);}
+/* === Weather Effects === */.scene-info-panel[data-weather="rain"]::after{content:"";position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(180deg,rgba(100,150,200,0.06),transparent 50%);pointer-events:none;z-index:0;}.scene-info-panel[data-weather="snow"]::after{content:"";position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(180deg,rgba(255,255,255,0.10),transparent 50%);pointer-events:none;z-index:0;}.scene-info-panel[data-weather="fog"]::after{content:"";position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(180deg,rgba(200,200,210,0.10),transparent 60%);pointer-events:none;z-index:0;}.scene-info-panel[data-weather="storm"]::after{content:"";position:absolute;top:0;left:0;width:100%;height:100%;background:linear-gradient(180deg,rgba(80,80,120,0.12),transparent 50%);pointer-events:none;z-index:0;}*{margin:0;padding:0;box-sizing:border-box;}body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:transparent;color:var(--ink);}.scene-card-wrapper{position:relative;width:100%;}.scene-info-panel{position:relative;margin:20px auto;max-width:1040px;border-radius:24px;border:1px solid var(--line);border-top:1px solid rgba(255,255,255,0.8);border-left:1px solid rgba(255,255,255,0.8);background:linear-gradient( 135deg,rgba(255,255,255,0.7) 0%,rgba(255,255,255,0.3) 100% );backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);box-shadow:var(--shadow);overflow:hidden;transition:all 0.3s ease;}.scene-info-panel::before{content:"";position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient( circle at 70% 30%,rgba(216,137,112,0.25),transparent 40% ),radial-gradient( circle at 30% 70%,rgba(138,167,193,0.25),transparent 40% );pointer-events:none;z-index:0;animation:drift 20s infinite alternate ease-in-out;}@keyframes drift{0%{transform:translateY(0) rotate(0deg);}100%{transform:translateY(30px) rotate(8deg);}}.scene-inner{position:relative;z-index:1;}.scene-header{padding:24px 28px 20px;border-bottom:1px solid rgba(255,255,255,0.3);display:flex;flex-direction:column;align-items:center;}.scene-title-ribbon{display:none;}.scene-meta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;width:100%;}.meta-row{display:inline-flex;align-items:center;gap:10px;padding:10px 18px;border-radius:20px;background:var(--surface-strong);border:1px solid rgba(255,255,255,0.9);color:var(--ink);font-size:14px;font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,0.03),inset 0 1px 1px rgba(255,255,255,1);transition:transform 0.2s,box-shadow 0.2s;}.meta-row:hover{transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,0,0,0.06),inset 0 1px 1px rgba(255,255,255,1);}.meta-dot{width:8px;height:8px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#ff9eb5);box-shadow:0 0 8px var(--accent);animation:pulse 2s infinite;}@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(216,137,112,0.5);}70%{box-shadow:0 0 0 8px rgba(216,137,112,0);}100%{box-shadow:0 0 0 0 rgba(216,137,112,0);}}.controls-container{display:flex;gap:12px;margin-top:20px;flex-wrap:wrap;justify-content:center;}.action-button{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:10px 20px;border-radius:24px;border:1px solid rgba(255,255,255,0.8);background:linear-gradient( 180deg,rgba(255,255,255,0.95) 0%,rgba(255,255,255,0.7) 100% );color:#5c4b4a;font-weight:600;font-size:14px;cursor:pointer;transition:all 0.2s ease;box-shadow:0 4px 12px rgba(40,27,26,0.05);}.action-button:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(40,27,26,0.08);color:var(--ink);background:#fff;}.collapse-icon{width:16px;height:16px;transition:transform 0.3s cubic-bezier(0.4,0,0.2,1);}.collapse-icon svg{width:100%;height:100%;fill:currentColor;}.collapse-icon.collapsed{transform:rotate(180deg);}.character-container{padding:28px;max-height:4000px;overflow:hidden;transition:max-height 0.4s cubic-bezier(0.4,0,0.2,1),padding 0.4s ease,opacity 0.4s;opacity:1;}.character-container.collapsed{max-height:0;padding-top:0;padding-bottom:0;opacity:0;}.character-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;}.character-card{perspective:1200px;cursor:pointer;position:relative;margin:0 auto;max-width:250px;width:100%;}.card-inner{position:relative;width:100%;transition:transform 0.8s cubic-bezier(0.34,1.56,0.64,1);transform-style:preserve-3d;box-shadow:0 8px 24px rgba(0,0,0,0.06);border-radius:20px;}.character-card:hover .card-inner{box-shadow:0 20px 40px rgba(0,0,0,0.12);transform:translateY(-8px);}.character-card.is-flipped:hover .card-inner{transform:translateY(-8px) rotateY(180deg);}.character-card.is-flipped .card-inner{transform:rotateY(180deg);}.card-front{position:relative;z-index:2;transform:rotateY(0deg);}.card-back{position:absolute;top:0;left:0;width:100%;height:100%;transform:rotateY(180deg);}.card-face{border-color:rgba(255,255,255,0.6);transition:border-color 0.4s;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;overflow:hidden;border:1px solid rgba(255,255,255,0.6);border-top:1px solid rgba(255,255,255,0.9);border-left:1px solid rgba(255,255,255,0.9);background:linear-gradient( 135deg,rgba(255,255,255,0.8),rgba(255,255,255,0.4) );display:flex;flex-direction:column;}.character-avatar{width:100%;aspect-ratio:5 / 8;overflow:hidden;background:linear-gradient(180deg,#fdfbf9 0%,#f1ebe5 100%);position:relative;}.character-avatar img{width:100%;height:100%;object-fit:cover;object-position:center top;animation:dc-portrait-breathe 4s ease-in-out infinite;transition:transform 0.4s ease}
+@keyframes dc-portrait-breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.03)}}.character-card:hover .character-avatar img{animation:none;transform:scale(1.04)}
+/* === Card entrance === */.character-card{animation:cardIn 0.6s cubic-bezier(0.34,1.56,0.64,1) both;}@keyframes cardIn{0%{opacity:0;transform:translateY(20px) scale(0.95);}100%{opacity:1;transform:translateY(0) scale(1);}}
+/* === Name slide-in === */.character-name{animation:nameSlide 0.5s ease-out 0.2s both;}@keyframes nameSlide{0%{opacity:0;transform:translateX(-10px);}100%{opacity:1;transform:translateX(0);}}.character-avatar-fallback{display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:64px;color:rgba(136,117,114,0.4);font-weight:900;}.character-name{padding:16px;text-align:center;font-size:16px;font-weight:700;color:var(--ink);letter-spacing:1px;background:rgba(255,255,255,0.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-top:1px solid rgba(255,255,255,0.5);flex-grow:1;}.flip-hint{position:absolute;top:12px;right:12px;width:32px;height:32px;background:rgba(255,255,255,0.85);backdrop-filter:blur(4px);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.1);opacity:0;transform:translateY(-10px) rotate(0deg);transition:all 0.4s cubic-bezier(0.34,1.56,0.64,1);z-index:10;}.character-card:hover .flip-hint{opacity:1;transform:translateY(0) rotate(90deg);}.flip-hint svg{width:16px;height:16px;fill:var(--accent);}@media (max-width:860px){.character-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:20px;}}@media (max-width:560px){.scene-info-panel{margin:12px;border-radius:20px;}.scene-header{padding:20px 16px 16px;}.character-container{padding:20px 16px;}.scene-meta{flex-direction:column;align-items:stretch;}.meta-row{justify-content:center;}.character-grid{grid-template-columns:1fr;gap:20px;}.flip-hint{opacity:0.7;transform:translateY(0) rotate(0deg);}}
+    </style>
+  </head>
+
+  <body>
+    <div class="scene-card-wrapper">
+      <div class="scene-info-panel">
+        <div class="scene-inner">
+          <div class="scene-header">
+            <div class="scene-title-ribbon">Scene Visual</div>
+            <div class="scene-meta scene-meta-container"></div>
+            <div class="controls-container">
+              <button class="action-button collapse-btn">
+                <div class="collapse-icon">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M7.41 8.59 12 13.17l4.59-4.58L18 10l-6 6-6-6z"></path>
+                  </svg>
+                </div>
+                <span class="collapse-text">收起立绘</span>
+              </button>
+              <button class="action-button switch-version-btn">
+                <span class="version-text">🔄 翻转全部立绘</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="character-container"></div>
+        </div>
+      </div>
+
+      <div id="scene-data-raw" style="display: none">$1</div>
+      <script>
+const GH="https://raw.githubusercontent.com/";
+const R0=GH+"zhamuqiu/tongren2/refs/heads/main";
+const R1=GH+"LonSha/xiancheng/main";
+const R2=GH+"roxysl521-droid/linanan_xiaoma/main";
+const R3=GH+"xm212617-code/-/e618684d9d3ec0f61098e77caa94790280172fce";
+const R4=GH+"vmkudz-sys/my-image-bed/main/lin_jia_daily.png";
+
+        (function () {
+          const scripts = document.getElementsByTagName("script");
+          const currentScript = scripts[scripts.length - 1];
+          const wrapper = currentScript.parentElement;
+
+          const metaContainer = wrapper.querySelector(".scene-meta-container");
+          const charContainer = wrapper.querySelector(".character-container");
+          const collapseBtn = wrapper.querySelector(".collapse-btn");
+          const collapseIcon = wrapper.querySelector(".collapse-icon");
+          const collapseText = wrapper.querySelector(".collapse-text");
+          const switchVersionBtn = wrapper.querySelector(".switch-version-btn");
+          const versionText = wrapper.querySelector(".version-text");
+
+          let isGloballyFlipped = false;
+
+          const sceneText = document.getElementById("scene-data-raw").textContent;
+
+          const CHAR_COLOR_MAP={'丁曼红':'#a06080','南梦秋':'#7a9ebf','艾洛伊':'#d4a5a5','沈辞':'#8aa8c8','云伊':'#b0d0f0','伦欣桐':'#50c878','兰叶':'#c87060','兰心':'#c8b0d0','刘予安':'#f47070','刘恩泽':'#c8a0c0','刘祈音':'#e8855a','刘福堂':'#8a7a6a','吴海文':'#70c0a0','周灵':'#8898b0','周语彤':'#d63384','唐蜜':'#f0a050','夏祈':'#9eb8c8','孙琦':'#7eb8a0','孙瑞希':'#e870a0','孙翌童':'#f4a847','孙苑清':'#b0b8c8','安春生':'#e8a890','安琳':'#e8a0a8','庞咏萱':'#f490a8','庞颖':'#c8a080','张子薇':'#ff6b6b','张薇薇':'#e0c0a0','文澜':'#b8c4e8','文素':'#d0b890','文茜':'#c8b8a0','文馨':'#e0e0ff','文鸢':'#f48060','方敏':'#f4b8a0','明香香':'#ff6b35','智允':'#d0c0b0','朱城':'#9a8a7a','罗可可':'#f0a0c0','朱清':'#c06080','朱玥':'#88c8a8','李南星':'#f0b232','杨小雪':'#c8d8e8','林听晚':'#a0b8d8','林墨':'#98b8a0','林安安':'#ff9ecd','林沐宜':'#a0c0a8','林葭':'#80a890','林见夏':'#e87060','林野':'#88a080','林闻夏':'#b0a8c0','柳青':'#f47b67','江静屿':'#7090c0','汤倩':'#a8a0c0','汤加琳':'#ffb86c','沈幼楚':'#a8c8e8','沈漾':'#a8d0e0','沈静宜':'#8a9db0','沛涵':'#d0a8b8','洪欣彤':'#ff80c0','海霖':'#80a0a8','淑静':'#b8b8a0','温若宁':'#c8b8d8','源丽萍':'#d09050','独孤春儿':'#e8f0a0','珞曼':'#a08090','珞珈':'#f0d090','珞花':'#c87ea0','白晓雪':'#e8e0d0','祝佩玲':'#b07860','祝叶谷':'#c89860','祝绝响':'#c8a090','胡静':'#c4956a','芍药':'#a8a890','苏晚棠':'#e8a0c0','苏紫宁':'#b88cf0','苏雨':'#6ab0a8','荣柔柔':'#e8b8d0','萧容鱼':'#d4a0a0','董世青':'#8a6a5a','裴姝权':'#c898d8','让娜':'#e8e0c0','让娜·库兹涅佐娃':'#e8e0c0','许愿':'#e8c878','许愿/许愿姬':'#e8c878','许愿姬':'#e8c878','许明薇':'#a89080','贺玲':'#f47860','赵小满':'#f0c080','赵自由':'#688090','赵诗晴':'#d8a080','赵雅琴':'#d0a060','那可':'#9888a0','郭雨瑶':'#a8c0e8','金宁':'#c8a050','金晶晶':'#ff9a76','阳灿':'#f4a090','陈书婷':'#8a8090','陈思雨':'#5ec8a8','陈晓北':'#a8d8a8','陈莹莹':'#d8a8c8','雅陶':'#a89070','韦青青':'#7eb050','韩冰娇':'#7eb8da','韩真真':'#d07070','马琪':'#a070a0','马青青':'#f0c060','魏莱':'#c0c0e0','陈浩':'#c0a870','黄淑仪':'#e8a87c','黎昭':'#90b8d0','林悦':'#f0a8c8'};
+          const HAI_TANG_IDS = { gu_haitang:1, jing_yuan:1, gao_wen:1, zhu_yi:1, li_shuang_zhu:1, he_jia:1, shen_yan:1 };
+          const HAI_TANG_BASES = {
+            gu_haitang: "https://raw.githubusercontent.com/ningj8622-coder/-1/bd8943a78c86b0d67faad6238f8a680c0ad1db2e",
+            jing_yuan: "https://raw.githubusercontent.com/ningj8622-coder/-1/b9f884328a89cdbba1938ca6be7a4986a8b63fb7",
+            gao_wen: "https://raw.githubusercontent.com/ningj8622-coder/-1/e5075b9352cd8ac1146681af8fa94bbc277a1c61",
+            zhu_yi: "https://raw.githubusercontent.com/ningj8622-coder/-1/9012bfccbb590cfc362f732a8c63e6163b95e543",
+            li_shuang_zhu: "https://raw.githubusercontent.com/ningj8622-coder/-1/a942000f73593242f73e03c978530242b71046d3",
+            he_jia: "https://raw.githubusercontent.com/ningj8622-coder/-1/c374082b8f4787a909aa0851d31a080f635abd33",
+            shen_yan: "https://raw.githubusercontent.com/xuanyuy2019-ops/Image/main/shenyan3",
+            ai_luo_yi: "https://raw.githubusercontent.com/ningj8622-coder/-1/83c321febee6cb540c01f55e66a807c6da1abbe0"
+          };
+          const HT_CATEGORY_ALIASES = { 制服: "uniform", 日常: "daily", 外出: "outing", 调教: "training", 赤裸: "naked" };
+          const HT_EMOTION_ALIASES = { 平然: "calm", 开心: "happy", 忍耐: "distress", 迷离: "dazed" };
+          function htCategory(v) { v = (v || "").trim(); return HT_CATEGORY_ALIASES[v] || "daily"; }
+          function htEmotion(v) { v = (v || "").trim(); return HT_EMOTION_ALIASES[v] || "calm"; }
+          const fallbackAvatars = {
+            云伊: "Y",沛涵: "P",孙翌童: "S",张子薇: "Z",柳青: "L",李南星: "N",
+            金晶晶: "J",汤加琳: "T",胡静: "H",兰叶: "Y",黄淑仪: "S",陈晓北: "X",
+            珞珈: "L",珞花: "L","『珞珈』": "L","珞珈(大)": "珞","珞珈（大）": "珞","珞珈（不辞而别版）": "珞",赵雅琴: "Z",文素: "W",让娜: "R",
+            庞咏萱: "P",祝佩玲: "Z",林安安: "L",吴海文: "W",孙瑞希: "S",祝叶谷: "Z",
+            伦欣桐: "L",文馨: "W",文澜: "W",洪欣彤: "H",贺玲: "H",苏雨: "苏",
+            陈书婷: "陈",马琪: "M",源丽萍: "Y",明香香: "M",温若宁: "W",周灵: "周",
+            庞颖: "庞",独孤春儿: "独",韩真真: "韩",朱清: "朱",张薇薇: "张",汤倩: "汤",
+            雅陶: "雅",马青青: "马",文鸢: "鸢",董世青: "董",陈莹莹: "陈",
+            "林安安（小马）": "林",安春生: "安",那可: "那",芍药: "芍",金宁: "金",
+            "文素（大）": "文","文素（大）（县1u版）": "文",孙苑清: "孙",海霖: "H",赵小满: "赵",赵自由: "赵",
+            林沐宜: "林",丁曼红: "丁",方敏: "方",陈思雨: "C",苏紫宁: "S",沈漾: "S",
+            许明薇: "X",刘予安: "L",荣柔柔: "R",韩冰娇: "H",郭雨瑶: "G",刘祈音: "刘",
+            苏晚棠: "S",周语彤: "周",白晓雪: "白",朱玥: "玥",祝绝响: "祝",
+            林闻夏: "林",林葭: "林",许愿姬: "许",许愿: "许",林墨: "林",阳灿: "阳",
+            安琳: "安",淑静: "淑",兰心: "兰",孙琦: "孙",赵诗晴: "赵",韦青青: "韦",
+            萧容鱼: "萧",魏莱: "魏",沈幼楚: "楚",沈静宜: "沈",文茜: "文",珞曼: "珞",
+            唐蜜: "唐",夏祈: "夏",杨小雪: "杨",裴姝权: "裴",智允: "智",江静屿: "江",罗可可: "罗",
+            黎昭: "黎",
+            林悦: "林",董釉月: "釉",
+            '顾海棠': '棠','景媛': '媛','高雯': '雯','朱艺': '艺','李双洙': '洙','禾佳': '佳','沈雁': '雁',};
+
+          const nameToIdMap = {
+            萧忆柔: "xiao_yirou",何美琳: "he_meilin",郭亚楠: "guo_yanan",董曼婷: "dong_manting",金善: "jin_shan",张静雅: "zhang_jingya",沫佳佳: "mo_jiajia",沈泉: "shen_quan",沈以宁: "shen_yining",孙雨桐: "sun_yutong",
+            云伊: "yunyi",沛涵: "peihan",孙翌童: "sun_yitong",张子薇: "zhang_ziwei",
+            柳青: "liu_qing",李南星: "li_nanxing",陈思雨: "chen_si_yu",苏紫宁: "su_zi_ning",
+            沈漾: "shen_yang",许明薇: "xu_mingwei",刘予安: "liu_yuan",荣柔柔: "rong_rourou",
+            韩冰娇: "han_bingjiao",刘祈音: "liu_qiyin",郭雨瑶: "guo_yuyao",金晶晶: "jin_jingjing",
+            汤加琳: "tang_jialin",胡静: "hu_jing",兰叶: "lan_ye",黄淑仪: "huang_shuyi",
+            陈晓北: "chen_xiaobei",珞珈: "luo_jia",珞花: "luo_hua","『珞珈』": "luo_hua",
+            赵雅琴: "zhao_yaqin",文素: "wen_su",让娜: "rang_na",庞咏萱: "pang_yongxuan",
+            祝佩玲: "zhu_peiling",林安安: "lin_anan",吴海文: "wu_haiwen",孙瑞希: "sun_ruixi",
+            祝叶谷: "zhu_yegu",伦欣桐: "lun_xintong",文馨: "wen_xin",文澜: "wen_lan",
+            洪欣彤: "hong_xintong",贺玲: "he_ling",苏雨: "suyu",陈书婷: "chen_shuting",
+            马琪: "ma_qi",源丽萍: "yuan_liping",明香香: "ming_xiangxiang",丁曼红: "ding_manhong",
+            温若宁: "wen_ruoning",周灵: "zhou_ling",庞颖: "pang_ying",独孤春儿: "dugu_chuner",
+            韩真真: "han_zhenzhen",朱清: "zhu_qing",张薇薇: "zhang_weiwei",汤倩: "tang_qian",
+            雅陶: "ya_tao",马青青: "ma_qingqing",文鸢: "wen_yuan",董世青: "dong_shiqing",
+            陈莹莹: "chen_yingying","林安安（小马）": "lin_anan_xiaoma",安春生: "an_chunsheng",
+            那可: "nake",芍药: "shaoyao",金宁: "jin_ning","文素（大）": "wen_su_da","文素（大）（县1u版）": "wen_su_da",
+            孙苑清: "sun_yuanqing",海霖: "hai_lin",赵小满: "zhao_xiaoman",赵自由: "zhao_ziyou",
+            林沐宜: "lin_muyi",方敏: "fang_min",苏晚棠: "su_wantang",周语彤: "zhou_yutong",
+            白晓雪: "bai_xiaoxue",朱玥: "zhu_yue",祝绝响: "zhu_juexiang",林闻夏: "wen_xia",
+            林葭: "lin_jia",许愿姬: "xu_yuanji",许愿: "xu_yuan",林墨: "lin_mo",阳灿: "yang_can",
+            安琳: "anlin",淑静: "shujing",兰心: "lanxin",孙琦: "sunqi",赵诗晴: "zhao_shiqing",
+            韦青青: "weiqingqing",萧容鱼: "xiao_rongyu",魏莱: "wei_lai",沈幼楚: "shen_youchu",
+            沈静宜: "shen_jingyi",文茜: "wen_qian",珞曼: "luo_man",唐蜜: "tang_mi",
+            夏祈: "xia_qi",杨小雪: "yang_xiaoxue",裴姝权: "pei_shuquan",智允: "zhi_yun",
+            江静屿: "jiang_jingyu",罗可可: "luo_ke_ke",黎昭: "li_zhao",
+            林悦: "lin_yue","珞珈(大)": "luo_jia27","珞珈（大）": "luo_jia27","珞珈(不辞而别版)": "luo_jia27","珞珈（不辞而别版）": "luo_jia27",
+"大珞花": "da_luo_hua",董釉月: "dong_youyue",顾海棠: "gu_haitang",景媛: "jing_yuan",高雯: "gao_wen",朱艺: "zhu_yi",李双洙: "li_shuang_zhu",禾佳: "he_jia",沈雁: "shen_yan",南梦秋: "nan_mengqiu",艾洛伊: "ai_luo_yi",沈辞: "shenci"
+          };
+
+          const canonicalNames = Object.keys(nameToIdMap);
+          const variantAliases = {
+            制服: "uniform",外出: "outing",日常: "daily",居家: "daily",赤裸: "nsfw",内衣: "underwear",上学: "shangxue",运动: "sport"
+          };
+
+          const baseV1 = {
+            sun_yitong: R3,zhang_ziwei: R3,liu_qing: R3,li_nanxing: R3,
+            jin_jingjing: GH+"xm212617-code/-/cb33b9d2f9eaea67d40e008de2e84ea9ccfb9dd9",
+            tang_jialin: GH+"xm212617-code/-/bab371f966c4a1ad10aeee4c285f4382d3d93863",
+            hu_jing: GH+"xm212617-code/-/533f66d0d1f93768dfcd5fe7aa8621602b8f7f85",
+            lan_ye: GH+"xm212617-code/-/56dac2f4159c16748445600c5a5b4e9147c074a7",
+            huang_shuyi: GH+"xm212617-code/-/434db2d525c8312e1b6f83dfc001b30a11ed0ede",
+            chen_xiaobei: GH+"xm212617-code/-/e50bef3dca86eede99229a3d4393c0a8200a15da",
+            luo_jia: GH+"xm212617-code/-/906a985b1bb327fea740a6576809e276c65ebc96",
+            luo_jia27: GH+"HaoX520/-/main/luo_jia27", da_luo_hua: GH+"xuanyuy2019-ops/Image/main/han",
+            zhao_yaqin: GH+"xm212617-code/-/2701373f7349c16114efacca1ef972fd100db404",
+            wen_su: GH+"xm212617-code/-/9a70bb527c32f8fb3f195e5924c411794b947128",
+            rang_na: GH+"xm212617-code/-/405b9c6a2363e8ec841c5950f3a99323851642b4",
+            pang_yongxuan: GH+"xm212617-code/-/312181e0d272d99602c5115426befc1c98871dac",
+            shenci: GH+"samlinxi/img/-/main/img"
+          };
+
+          const baseV2 = {
+            sun_yitong: GH+"ningj8622-coder/-1/56e321c094ebeae18125450ecb7c91c64e1c75e5",
+            zhang_ziwei: GH+"ningj8622-coder/-1/61b4b92a7c0ddd361fdcfa174fc1e97a398c6bd7",
+            liu_qing: GH+"ningj8622-coder/-1/03829b288b27ce3f46753b7eb325dc3031c7999c",
+            li_nanxing: GH+"ningj8622-coder/-1/19f1a4a98e8976e441133de769dda730670a6b7c",
+            jin_jingjing: GH+"ningj8622-coder/-1/e6f825ab04b087e070a9f07f93cb73bb6fa14286",
+            tang_jialin: GH+"ningj8622-coder/-1/3629590f981d36cc68e3d1696349dd1de13b32b5",
+            hu_jing: GH+"ningj8622-coder/-1/1de1c22e45edb7830cd909de7cfbcb1877f13cea",
+            lan_ye: GH+"ningj8622-coder/-1/68e7f30618d184cc66949de0fa68b45b83c49c5f",
+            huang_shuyi: GH+"ningj8622-coder/-1/c9fe2a07a5e423f6624e97124dd0c74235440a93",
+            chen_xiaobei: GH+"ningj8622-coder/-1/eee6f3d0f905b743625293d4f56090311c667003",
+            luo_jia: GH+"ningj8622-coder/-1/60ed3af6fbe22efcae102489306d9fab8e108863",
+            luo_jia27: GH+"HaoX520/-/main/luo_jia27",
+            zhao_yaqin: GH+"ningj8622-coder/-1/f7773d9105f8fbf6254406315ab0a65fa3900cd3",
+            wen_su: GH+"ningj8622-coder/-1/082b654b3c6653ee32314e0343bf5d0dc0429a3d",
+            rang_na: GH+"ningj8622-coder/-1/32eb10d95e136df704d167d01bf1f7038fcf7e5a",
+            pang_yongxuan: GH+"ningj8622-coder/-1/c749b592ebaf6044127cd98fe8051639362a2040",
+            shenci: GH+"samlinxi/img/-/main/img"
+          };
+
+          const baseCommon = {
+            nan_mengqiu: "https://i.postimg.cc",
+            zhou_yutong: R0,bai_xiaoxue: R0,
+            han_bingjiao: GH+"xuanyuy2019-ops/Image/main/han/sfw",
+            guo_yuyao: GH+"Alunamin/xiancheng/main/guo_yuyao",
+            liu_qiyin: GH+"Alunamin/xiancheng/main/liu_qiyin",
+            luo_hua: GH+"xuanyuy2019-ops/Image/main/han",
+            liu_yuan: R0,xu_mingwei: R0,rong_rourou: R0,
+            shen_yang: GH+"AliceNekoqqq/Pic/master/img",
+            su_zi_ning: R2,chen_si_yu: R2,
+            yunyi: GH+"KronosXup/bangshou-art/main/yunyi",
+            peihan: GH+"KronosXup/bangshou-art/main/peihan",
+            zhu_peiling: GH+"xm212617-code/-/0d4a190e2d2e33f49455593975c7ec53fa91faab",
+            lin_anan: GH+"xm212617-code/-/1b9e52ffecb0e75a013964b85282e65588db7168",
+            wu_haiwen: GH+"xm212617-code/-/0381ce2b377901d357c010fcd23a1989b0024384",
+            sun_ruixi: GH+"xm212617-code/-/ccf87ce04045ddd68967aee30bef021d44fafd6d",
+            zhu_yegu: GH+"xm212617-code/-/1fb85db6d57b7ec7705543aacbaa1e5b92d3d303",
+            lun_xintong: GH+"duonglanoanh503-code/-/ef624a92337bc56159e82e5fe2d862a669b9b8b9",
+            wen_xin: GH+"duonglanoanh503-code/-/b90d73298806755d2272f0c8a80771d4665a5712",
+            wen_lan: GH+"duonglanoanh503-code/-/b27295ffa77f14f97a7f03eb82e55c184e81a040",
+            hong_xintong: GH+"duonglanoanh503-code/-/d86430fb7ea0109a8a594a52162225f3cc729beb",
+            he_ling: GH+"duonglanoanh503-code/-/bd10a003f0e42e1fb78c99af19b5e33561760dc0",
+            suyu: R0,chen_shuting: R0,ma_qi: R0,yuan_liping: R0,ming_xiangxiang: R0,
+            wen_ruoning: R0,
+            zhou_ling: GH+"duonglanoanh503-code/-/3c76be53e4d7c74aa27241ea4c32d405270f06f9",
+            pang_ying: GH+"duonglanoanh503-code/-/c473aa71af653948434c690ef74eeb76990f2b79",
+            dugu_chuner: GH+"duonglanoanh503-code/-/67d4f29d81f3b33f08600df4ebb8f6713a4c8e97",
+            han_zhenzhen: GH+"duonglanoanh503-code/-/05b8ba0a3251ec6b7512198700a778407ec81338",
+            zhu_qing: GH+"duonglanoanh503-code/-/a60df006222d2456375d4a4a82cccb5c891637c6",
+            zhang_weiwei: GH+"duonglanoanh503-code/-/2bf4f2541f5b92134bad72276e0c25ec11cf49a7",
+            tang_qian: GH+"duonglanoanh503-code/-/f014ec4c445df74500b1f5af6f181eab91b6ebd8",
+            ya_tao: GH+"duonglanoanh503-code/-/120acb564978aeb91f907320dbae32384dbad0d9",
+            ma_qingqing: GH+"duonglanoanh503-code/-/8195007a0f25527f04922b22e343d6f0e52471fa",
+            wen_yuan: GH+"duonglanoanh503-code/-/387d9f4f74c153f88c0303dbcf5c55e12ae06166",
+            dong_shiqing: GH+"duonglanoanh503-code/-/4067b674693f175f4052f3264843b86ea160a71e",
+            chen_yingying: GH+"duonglanoanh503-code/-/b772f1238d8f170b52bd87d407e13a9609aec57c",
+            lin_anan_xiaoma: R2,
+            an_chunsheng: GH+"duonglanoanh503-code/-/f3401d447cb94253263c62c97779d95437c1432c",
+            nake: GH+"duonglanoanh503-code/-/fec4c0286db909a1576ddd3745856a3fadb7271f",
+            shaoyao: GH+"duonglanoanh503-code/-/0c71e47b316ce95a47200d04fc469a363fad0f29",
+            dong_youyue: GH+"q969833-web/youyue-photo1/main",
+            jin_ning: GH+"duonglanoanh503-code/-/7d558a056af4cbe5d8d804d67505c80fc4bd88da",
+            wen_su_da: R2,
+            sun_yuanqing: GH+"duonglanoanh503-code/-/ca331f322201fe954018568f01494a5de324936d",
+            hai_lin: GH+"duonglanoanh503-code/-/c5c8255226ee5f321b5251974333cdd3fac546fe",
+            zhao_xiaoman: R0,zhao_ziyou: R0,lin_muyi: R0,ding_manhong: R0,fang_min: R0,
+            su_wantang: R2,
+            zhu_yue: GH+"HaoX520/-/refs/heads/main/zhu_yue",
+            zhu_juexiang: GH+"HaoX520/-/refs/heads/main/zhu_juexiang",
+            wen_xia: GH+"vmkudz-sys/my-image-bed/main",
+            lin_jia: GH+"vmkudz-sys/my-image-bed/main",
+            xu_yuanji: GH+"xuanyuy2019-ops/Image/main/shenyan",
+            xu_yuan: GH+"xuanyuy2019-ops/Image/main/shenyan",
+            lin_mo: GH+"moraincoppens-hue/Yachiy0/img/img",
+            yang_can: GH+"yiliya443290-a11y/-/main",
+            anlin: GH+"xm212617-code/-/666daf0c5d5831009fc91f5009e4bba5cbbcba6b",
+            shujing: GH+"xm212617-code/-/b6d31a1e2acf200b038a68233a9d1b726c0a4b13",
+            lanxin: GH+"duonglanoanh503-code/-/c242d95f0061c1d51eaecf07be6b9e41f931dc82",
+            sunqi: GH+"duonglanoanh503-code/-/a732fb2afff13c00609e7e2adc5d193d1485192a",
+            zhao_shiqing: GH+"495996581-coder/image/main/xiancheng",
+            weiqingqing: GH+"xs19890106-bot/image-host/refs/heads/main",
+            xiao_rongyu: R1,wei_lai: R1,shen_youchu: R1,shen_jingyi: R1,
+            wen_qian: R1,luo_man: R1,tang_mi: GH+"HaoX520/-/refs/heads/main/tang_mi",xia_qi: R1,yang_xiaoxue: R1,pei_shuquan: R1,
+            zhi_yun: GH+"ningj8622-coder/-1/554d68072b068abbc69fcffc9e1ce657af209c21",luo_ke_ke: GH+"ningj8622-coder/-1/8ce3b51cff803e8db22e90b8639b1cd6a6efcd8d",
+            jiang_jingyu: R1,
+            li_zhao: R1,
+            lin_yue: GH+"ningj8622-coder/-1/1b8b808c9bbfc79ba68476dfd4342312d15dbc5d"
+          };
+
+          const charOverrides = {
+            pang_yongxuan: { shangxue: "https://raw.githubusercontent.com/samlinxi/img/main/img/pangyongxuan_shangxue.png" },
+            
+            nan_mengqiu: { uniform: "https://i.postimg.cc/RZ41NyVb/2026nian09yue05ri21dian35fen46miao.webp", daily: "https://i.postimg.cc/QMncYMgq/2026nian09yue05ri21dian56fen51miao.webp", outing: "https://i.postimg.cc/fLtmGhB3/2026nian09yue05ri22dian02fen40miao.webp", nsfw: "https://i.postimg.cc/HxqXHPhR/2026nian09yue05ri22dian12fen12miao.webp" }, da_luo_hua: {},
+            han_bingjiao: {},guo_yuyao: {},liu_qiyin: {},liu_yuan: {},xu_mingwei: {},rong_rourou: {},
+            shen_yang: {
+              daily: GH+"AliceNekoqqq/Pic/master/img/1.png",
+              uniform: GH+"AliceNekoqqq/Pic/master/img/2.png",
+              orgasm: GH+"AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE_%E9%AB%98%E6%BD%AE.png",
+              anal: GH+"AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE_%E8%82%9B%E4%BA%A4.png",
+              sex: GH+"AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE-%E6%80%A7%E4%BA%A4.png",
+              holding_pee: GH+"AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE-%E6%86%8B%E5%B0%BF.png",
+              footjob: GH+"AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE-%E8%B6%B3%E4%BA%A4.png",
+              blowjob: GH+"AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE-%E5%8F%A3%E4%BA%A4.png",
+              indoor_selfie: GH+"AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE_%E5%AE%A4%E5%86%85%E9%9C%B2%E5%87%BA%E8%87%AA%E6%8B%8D.png",
+              outdoor_selfie: GH+"AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE-%E6%88%B7%E5%A4%96%E9%9C%B2%E5%87%BA%E8%87%AA%E6%8B%8D.png",
+              nude_selfie: GH+"AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE-%E5%85%A8%E8%A3%B8%E8%87%AA%E6%8B%8D.png",
+              vulva_selfie: GH+"AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE-%E9%98%B4%E9%83%A8%E8%87%AA%E6%8B%8D.png",
+              exhibition: GH+"AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE-%E9%9C%B2%E5%87%BA.png",
+              training: GH+"AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE-%E8%B0%83%E6%95%99.png",
+              anal_training: GH+"AliceNekoqqq/Pic/master/img/%E6%B2%88%E6%BC%BE_%E8%82%9B%E9%97%A8%E8%B0%83%E6%95%99.png",
+              nsfw: GH+"AliceNekoqqq/Pic/master/img/3.png"
+            },
+            su_zi_ning: {},
+            sun_ruixi: {
+              exhibition: GH+"xm212617-code/-/ccf87ce04045ddd68967aee30bef021d44fafd6d/sun_ruixi_exposure.png",
+              outdoor_selfie: GH+"xm212617-code/-/ccf87ce04045ddd68967aee30bef021d44fafd6d/sun_ruixi_outdoor_exposure_selfie.png",
+              indoor_selfie: GH+"xm212617-code/-/ccf87ce04045ddd68967aee30bef021d44fafd6d/sun_ruixi_indoor_exposure_selfie.png"
+            },
+            zhou_yutong: {
+              uniform: GH+"zhamuqiu/tongren2/refs/heads/main/zhou_yutong_uniform.png",
+              outing: GH+"zhamuqiu/tongren2/refs/heads/main/zhou_yutong_outing.png",
+              daily: GH+"zhamuqiu/tongren2/refs/heads/main/zhou_yutong_daily.png",
+              nsfw: GH+"zhamuqiu/tongren2/refs/heads/main/zhou_yutong_nsfw.png"
+            },
+            zhu_yue: {
+              outing: GH+"HaoX520/-/refs/heads/main/zhu_yue/zhu_yue_outgoing.png",
+              underwear: GH+"HaoX520/-/refs/heads/main/zhu_yue/zhu_yue_daily.png",
+              outdoor_selfie: GH+"HaoX520/-/refs/heads/main/zhu_yue/zhu_yue_nude_selfie.png",
+              indoor_selfie: GH+"HaoX520/-/refs/heads/main/zhu_yue/zhu_yue_outdoor_selfie.png",
+              nude_selfie: GH+"HaoX520/-/refs/heads/main/zhu_yue/zhu_yue_vulva_selfie.png"
+            },
+            zhu_juexiang: {
+              outing: GH+"HaoX520/-/refs/heads/main/zhu_juexiang/zhu_juexiang_outgoing.png",
+              outdoor_selfie: GH+"HaoX520/-/refs/heads/main/zhu_juexiang/zhu_juexiang_nude_selfie.png",
+              indoor_selfie: GH+"HaoX520/-/refs/heads/main/zhu_juexiang/zhu_juexiang_outdoor_selfie.png",
+              nude_selfie: GH+"HaoX520/-/refs/heads/main/zhu_juexiang/zhu_juexiang_selfie.png"
+            },
+            xu_yuanji: {},xu_yuan: {},anlin: {},shujing: {},lanxin: {},sunqi: {},
+            lin_jia: {uniform: R4, outing: R4, underwear: R4},
+            wen_xia: {
+              uniform: GH+"vmkudz-sys/my-image-bed/main/lin_wenxia_uniform.png",
+              outing: GH+"vmkudz-sys/my-image-bed/main/lin_wenxia_outing.png",
+              underwear: GH+"vmkudz-sys/my-image-bed/main/lin_wenxia_daily.png"
+            },
+            zhi_yun: {
+              uniform: GH+"ningj8622-coder/-1/554d68072b068abbc69fcffc9e1ce657af209c21/zhi_yun_uniform.png",luo_ke_ke: {},
+              outing: GH+"ningj8622-coder/-1/554d68072b068abbc69fcffc9e1ce657af209c21/zhi_yun_daily.png",
+              daily: GH+"ningj8622-coder/-1/554d68072b068abbc69fcffc9e1ce657af209c21/zhi_yun_outing.png",
+              nsfw: GH+"ningj8622-coder/-1/554d68072b068abbc69fcffc9e1ce657af209c21/zhi_yun_nsfw.png"
+            },
+            jiang_jingyu: {
+                uniform: R1 + "/jiang_jingyu_uniform.png",
+                outing: R1 + "/jiang_jingyu_outing.png",
+                daily: R1 + "/jiang_jingyu_daily.png",
+                nsfw: R1 + "/jiang_jingyu_nsfw.png"
+            },
+            li_zhao: {
+                uniform: R1 + "/li_zhao_uniform.png",
+                outing: R1 + "/li_zhao_outing.png",
+                daily: R1 + "/li_zhao_daily.png",
+                nsfw: R1 + "/li_zhao_nsfw.png"
+            },
+            tang_mi: {
+                exhibition: GH+"HaoX520/-/refs/heads/main/tang_mi/tang_mi__exhibition.png",
+                vulva_selfie: GH+"HaoX520/-/refs/heads/main/tang_mi/tang_mi_vulva_selfie.png"
+            }
+          };
+
+          function normalizeName(value) {
+            return (value || "").replace(/\s+/g, "").trim();
+          }
+          function getUniqueCharacters(value) {
+            return Array.from(new Set(normalizeName(value).split("").filter(Boolean)));
+          }
+          function getCharacterCoverage(rawName, candidateName) {
+            const targetChars = getUniqueCharacters(rawName);
+            const candidateChars = getUniqueCharacters(candidateName);
+            if (targetChars.length === 0 || candidateChars.length === 0)
+              return { matchedCount: 0, requiredCount: 0, coverage: 0 };
+            const targetSet = new Set(targetChars);
+            const matchedCount = candidateChars.filter((char) => targetSet.has(char)).length;
+            const requiredCount = candidateChars.length >= 3 ? 2 : candidateChars.length;
+            return { matchedCount, requiredCount, coverage: matchedCount / candidateChars.length };
+          }
+          function levenshteinDistance(a, b) {
+            const s = normalizeName(a);
+            const t = normalizeName(b);
+            const m = s.length, n = t.length;
+            if (m === 0) return n;
+            if (n === 0) return m;
+            const dp = Array.from({ length: m + 1 }, () => new Array(n + 1).fill(0));
+            for (let i = 0; i <= m; i++) dp[i][0] = i;
+            for (let j = 0; j <= n; j++) dp[0][j] = j;
+            for (let i = 1; i <= m; i++) {
+              for (let j = 1; j <= n; j++) {
+                const cost = s[i - 1] === t[j - 1] ? 0 : 1;
+                dp[i][j] = Math.min(dp[i - 1][j] + 1, dp[i][j - 1] + 1, dp[i - 1][j - 1] + cost);
+              }
+            }
+            return dp[m][n];
+          }
+          function resolveName(rawName) {
+            const target = normalizeName(rawName);
+            if (!target) return null;
+            if (canonicalNames.includes(target)) return target;
+            let coverageBestNames = [], coverageBestScore = -1, coverageBestMatchedCount = -1;
+            for (const candidate of canonicalNames) {
+              const { matchedCount, requiredCount, coverage } = getCharacterCoverage(target, candidate);
+              if (matchedCount < requiredCount) continue;
+              if (coverage > coverageBestScore || (coverage === coverageBestScore && matchedCount > coverageBestMatchedCount)) {
+                coverageBestNames = [candidate];
+                coverageBestScore = coverage;
+                coverageBestMatchedCount = matchedCount;
+              } else if (coverage === coverageBestScore && matchedCount === coverageBestMatchedCount) {
+                coverageBestNames.push(candidate);
+              }
+            }
+            if (coverageBestNames.length === 1) return coverageBestNames[0];
+            let bestNames = [], bestDistance = Infinity;
+            for (const candidate of canonicalNames) {
+              const dist = levenshteinDistance(target, candidate);
+              if (dist < bestDistance) {
+                bestDistance = dist;
+                bestNames = [candidate];
+              } else if (dist === bestDistance) {
+                bestNames.push(candidate);
+              }
+            }
+            if (bestNames.length === 1) {
+              const limit = Math.max(1, Math.ceil(Math.min(target.length, bestNames[0].length) * 0.4));
+              return bestDistance <= limit ? bestNames[0] : null;
+            }
+            return MODULE_PORTRAITS[target] ? target : null;
+          }
+          function resolveVariant(rawVariant, sceneType) {
+            const value = (rawVariant || "").trim();
+            if (variantAliases[value]) return variantAliases[value];
+            return sceneType === "NSFW" ? "nsfw" : "daily";
+          }
+          function parseScene(text) {
+            const locationMatch = text.match(/地点[：:]\s*(.+)/);
+            const timeMatch = text.match(/时间[：:]\s*(.+)/);
+            const sceneTypeMatch = text.match(/场景类型[：:]\s*(SFW|NSFW)/i);
+            const charactersMatch = text.match(/在场角色[：:]\s*([\s\S]*?)(?=\n\n|\n<\/SceneInfo>|<\/SceneInfo>|$)/);
+            const sceneType = sceneTypeMatch ? sceneTypeMatch[1].trim().toUpperCase() : "SFW";
+            const location = locationMatch ? locationMatch[1].trim() : "未知地点";
+            const fullTime = timeMatch ? timeMatch[1].trim() : "";
+            let dateStr = "", weekdayStr = "", timeStr = "";
+            if (fullTime) {
+              const detailMatch = fullTime.match(/(\d{4})年(\d{1,2})月(\d{1,2})日\s*(周[一二三四五六日])\s*([上中下]午|傍晚|晚上|深夜)\s*(\d{1,2}:\d{2})/);
+              if (detailMatch) {
+                dateStr = detailMatch[1] + "年" + detailMatch[2] + "月" + detailMatch[3] + "日";
+                weekdayStr = detailMatch[4];
+                timeStr = detailMatch[5] + " " + detailMatch[6];
+              } else {
+                dateStr = fullTime;
+              }
+            }
+            let characters = [];
+            if (charactersMatch) {
+              characters = charactersMatch[1].split("\n").map(function(line) { return line.trim(); })
+                .filter(function(line) { return line.startsWith("-"); })
+                .map(function(line) { return line.replace(/^\-\s*/, "").trim(); })
+                .map(function(line) {
+                  var parts = line.split("|").map(function(item) { return item.trim(); });
+                  var resolvedName = resolveName(parts[0]);
+                  if (!resolvedName) return null;
+                  if (HAI_TANG_IDS[nameToIdMap[resolvedName]]) { return { name: resolvedName, variant: htCategory(parts[1]), emotion: htEmotion(parts[2]) }; }
+                  return { name: resolvedName, variant: resolveVariant(parts[1], sceneType) };
+                })
+                .filter(function(item) { return item !== null; });
+            }
+            return { location: location, dateStr: dateStr, weekdayStr: weekdayStr, timeStr: timeStr, sceneType: sceneType, characters: characters };
+          }
+          function mCat(x) { return "https://files.catbox.moe/" + x; }
+          var MIRROR_BASE = GH + "LonSha/wife-forum-resources@main/xm212617_mirror/";
+          function mMirror(id, v) { return MIRROR_BASE + id + "_" + v + ".png"; }
+          var MO_FILES = ["splr7c.png","9iugyi.png","vkf5yp.png","8j81a7.png","cnyj0d.png","xich78.png","helkmk.png","tcvb7o.png","m8vgl5.png","0msk97.png","vlyyjb.png"];
+          var moIdx = 0;
+          function moState() { return { url: mCat(MO_FILES[moIdx]), click: [["下一张", "x"]] }; }
+          function xyFn(suit, emo) {
+            var suitMap = { "西装": "suit", "私服": "casual", "睡衣": "nightgown", "情趣": "lingerie", "suit": "suit", "casual": "casual", "nightgown": "nightgown", "lingerie": "lingerie", "daily": "casual", "nsfw": "lingerie", "underwear": "lingerie", "outing": "casual" };
+            var s = suitMap[suit] || "casual";
+            var emap = { "平然": "normal", "烦躁": "annoyed", "犹豫": "hesitant", "满足": "content", "渴求": "craving", "顺从": "submissive", "迷醉": "ecstatic", "诱惑": "seductive" };
+            var ee = emap[emo] || "normal";
+            var base = (s === "casual" || s === "lingerie") ? "16e53b80269d6df21eea889fbb4c2aada1e59b6d" : "bf4cf4966c826b6bf805159576ebb408d7c9ca5c";
+            var slots = [];
+            for (var k in emap) { slots.push([suit, k]); }
+            return { url: GH + "xm212617-code/-/" + base + "/xiao_yirou_" + s + "_" + ee + ".png", click: slots };
+          }
+          var KJ_EMAP = { "平然": "normal", "烦躁": "annoyed", "犹豫": "hesitant", "满足": "content", "渴求": "craving", "顺从": "submissive", "迷醉": "ecstatic", "诱惑": "seductive" };
+          var KJ_SUIT = { "制服": "uniform", "私服": "casual", "内衣": "lingerie", "运动": "yoga", "uniform": "uniform", "casual": "casual", "lingerie": "lingerie", "yoga": "yoga", "daily": "casual", "nsfw": "lingerie", "underwear": "lingerie", "outing": "casual", "sport": "yoga" };
+          var KJ_RAW = { "uniform": "制服", "casual": "私服", "lingerie": "内衣", "yoga": "运动", "daily": "私服", "nsfw": "内衣", "underwear": "内衣", "outing": "私服", "sport": "运动" };
+          function kjFn(prefix, bases) {
+            return function(v, emo) {
+              var s = KJ_SUIT[v] || "casual";
+              var ee = KJ_EMAP[emo] || "normal";
+              var raw = KJ_RAW[s] || "私服";
+              var slots = [];
+              for (var k in KJ_EMAP) { slots.push([raw, k]); }
+              return { url: bases[s] + "/" + prefix + "_" + s + "_" + ee + ".png", click: slots };
+            };
+          }
+          function mirFn(id) { return function(v) { var nude = (v === "赤裸" || v === "nsfw"); return { url: mMirror(id, nude ? "nude" : "daily"), click: [[nude ? "日常" : "赤裸", "x"]] }; }; }
+          var MODULE_PORTRAITS = {
+            xiao_yirou: xyFn,
+            he_meilin: mirFn("he_meilin"),
+            guo_yanan: mirFn("guo_yanan"),
+            dong_manting: mirFn("dong_manting"),
+            jin_shan: mirFn("jin_shan"),
+            zhang_jingya: mirFn("zhang_jingya"),
+            shen_quan: mirFn("shen_quan"),
+            shen_yining: kjFn("shen_yining", { uniform: GH + "xm212617-code/-/a3e0a67bf181b6aee42db63355a25a7443d1dd40", casual: GH + "xm212617-code/-/10478c71c451cdb0820ed7ac7b4bd9646d233383", lingerie: GH + "xm212617-code/-/e4c277e7cb56ccdb7cecddc9625103d14c004a53", yoga: GH + "xm212617-code/-/9b4e059ac362ac2dbb271d86f943878adaab2088" }),
+            sun_yutong: kjFn("sun_yutong", { uniform: GH + "xm212617-code/-/9d119415953dfee7198f7f1df750e3748d1acf84", casual: GH + "xm212617-code/-/9d119415953dfee7198f7f1df750e3748d1acf84", lingerie: GH + "xm212617-code/-/9d119415953dfee7198f7f1df750e3748d1acf84", yoga: GH + "xm212617-code/-/9d119415953dfee7198f7f1df750e3748d1acf84" }),
+            mo_jiajia: function(v) { if (v === "下一张") { moIdx = (moIdx + 1) % MO_FILES.length; } else { moIdx = 0; } return moState(); }
+          };
+          function getImageUrlInternal(charName, variant, v, emotion) {
+            var charId = nameToIdMap[charName];
+            if (!charId) return null;
+            if (HAI_TANG_BASES[charId]) { return HAI_TANG_BASES[charId] + "/" + charId + "_" + variant + "_" + (emotion || "calm") + ".png"; }
+            var base = null;
+            if (v === 0) {
+              base = baseV1[charId] || baseCommon[charId];
+            } else {
+              base = baseV2[charId] || baseCommon[charId];
+            }
+            if (!base) return null;
+            if (v === 0 && charId === "sun_yitong" && variant === "uniform") {
+              return GH + "xm212617-code/-/428e7699609ca4d1ee954aac585276141cedc0e8/sun_yitong_uniform.png";
+            }
+            if (v === 0 && charId === "lan_ye" && variant === "nsfw") {
+              return base + "/lan_ye_nude.png";
+            }
+            if (v === 1 && charId === 'wen_xia') {
+              return GH + 'vmkudz-sys/my-image-bed/main/lin_wenxia_' + variant + '.png';
+            }
+            if (charOverrides[charId] && charOverrides[charId][variant]) {
+              return charOverrides[charId][variant];
+            }
+            if (charId === 'pei_shuquan' && variant === 'uniform') {
+              var ver = Math.random() > 0.5 ? '' : '2';
+              return base + '/pei_shuquan_uniform' + ver + '.png';
+            }
+            if (charId === 'lin_jia' || charId === 'wen_xia') {
+              var versions = ['', '2', '3', '4', '5', '6', '7', '8'];
+              var ver = versions[Math.floor(Math.random() * versions.length)];
+              return base + '/' + charId + ver + '_' + variant + '.png';
+            }
+            return base + '/' + charId + '_' + variant + '.png';
+          }
+
+          var parsed = parseScene(sceneText);
+
+          /* Apply scene type theme */
+          var scenePanel = wrapper.querySelector('.scene-info-panel');
+          if (scenePanel && parsed.sceneType) {
+            scenePanel.setAttribute('data-scene', parsed.sceneType);
+          }
+
+          /* Apply time-of-day theme */
+          function getTimeOfDay(timeStr) {
+            if (!timeStr) return 'day';
+            var hour = 12;
+            var m = timeStr.match(/(\d{1,2}):(\d{2})/);
+            if (m) hour = parseInt(m[1]);
+            var period = timeStr.match(/(凌晨|清晨|早晨|早上|上午|中午|正午|下午|傍晚|晚上|晚|深夜)/);
+            var p = period ? period[1] : '';
+            if (p === '凌晨' || p === '深夜' || (p === '晚上' && hour >= 22) || (p === '晚' && hour >= 22)) return 'latenight';
+            if (p === '晚上' || p === '晚' || (p === '傍晚') || (hour >= 18 && hour < 22)) return 'night';
+            if (p === '傍晚' || (p === '下午' && hour >= 16)) return 'dusk';
+            if (p === '下午' || (p === '放学') || (p === '放学后')) return 'afternoon';
+            if (p === '中午' || p === '正午') return 'noon';
+            if (p === '上午') return 'morning';
+            if (p === '凌晨' || p === '清晨' || p === '早晨' || p === '早上') return 'dawn';
+            if (hour >= 0 && hour < 5) return 'latenight';
+            if (hour >= 5 && hour < 8) return 'dawn';
+            if (hour >= 8 && hour < 12) return 'morning';
+            if (hour >= 12 && hour < 14) return 'noon';
+            if (hour >= 14 && hour < 17) return 'afternoon';
+            if (hour >= 17 && hour < 19) return 'dusk';
+            if (hour >= 19 && hour < 23) return 'night';
+            return 'latenight';
+          }
+
+          /* Apply weather theme (from location/scene text, excluding character names) */
+          function getWeatherFromScene(sceneText) {
+            /* Exclude character names that contain weather-related characters */
+            var excludeNames = ['杨小雪','白晓雪','苏雨','云伊','陈思雨','郭雨瑶','赵诗晴','韩冰娇','沈漾','沈幼楚','林听晚','沈静宜','温若宁','海霖','夏祈','赵小满','赵自由'];
+            var lines = sceneText.split('\n');
+            for (var li = 0; li < lines.length; li++) {
+              var line = lines[li].trim();
+              /* Only check location and time lines, skip character lines */
+              if (line.indexOf('在场角色') >= 0) break;
+              if (line.indexOf('地点') >= 0 || line.indexOf('时间') >= 0) {
+                /* Check for weather keywords in non-character context */
+                var lowerLine = line.toLowerCase();
+                if (line.indexOf('暴雨') >= 0 || line.indexOf('大雨') >= 0 || line.indexOf('雷阵雨') >= 0 || line.indexOf('雷雨') >= 0) return 'storm';
+                if (line.indexOf('小雨') >= 0 || line.indexOf('中雨') >= 0 || line.indexOf('阵雨') >= 0 || line.indexOf('毛毛雨') >= 0) return 'rain';
+                if (line.indexOf('下雪') >= 0 || line.indexOf('小雪') >= 0 || line.indexOf('大雪') >= 0 || line.indexOf('暴雪') >= 0 || line.indexOf('飘雪') >= 0) return 'snow';
+                if (line.indexOf('大雾') >= 0 || line.indexOf('雾') >= 0) return 'fog';
+              }
+            }
+            /* Also check the full scene text for explicit weather field */
+            var weatherMatch = sceneText.match(/天气[：:]\s*(.+)/);
+            if (weatherMatch) {
+              var w = weatherMatch[1];
+              if (w.indexOf('雨') >= 0 && w.indexOf('雷') >= 0) return 'storm';
+              if (w.indexOf('雨') >= 0) return 'rain';
+              if (w.indexOf('雪') >= 0) return 'snow';
+              if (w.indexOf('雾') >= 0) return 'fog';
+            }
+            return null;
+          }
+
+          var timeOfDay = getTimeOfDay(parsed.timeStr || '');
+          if (scenePanel) {
+            scenePanel.setAttribute('data-timeofday', timeOfDay);
+          }
+          var weather = getWeatherFromScene(sceneText);
+          if (weather && scenePanel) {
+            scenePanel.setAttribute('data-weather', weather);
+          }
+
+          if (parsed.dateStr)
+            metaContainer.innerHTML += '<div class="meta-row"><span class="meta-dot"></span><span>' + parsed.dateStr + (parsed.weekdayStr ? ' ' + parsed.weekdayStr : '') + '</span></div>';
+          if (parsed.timeStr)
+            metaContainer.innerHTML += '<div class="meta-row"><span class="meta-dot"></span><span>' + parsed.timeStr + '</span></div>';
+          if (parsed.location)
+            metaContainer.innerHTML += '<div class="meta-row"><span class="meta-dot"></span><span>' + parsed.location + '</span></div>';
+
+          function renderCharacters() {
+            if (parsed.characters.length > 0) {
+              var displayChars = parsed.characters.slice(0, 3);
+              charContainer.innerHTML = '<div class="character-grid">' + displayChars.map(function(char) {
+                var fallbackVar = parsed.sceneType === "NSFW" ? "nsfw" : "daily";
+                var targetVariant = char.variant || fallbackVar;
+                var xpId = nameToIdMap[char.name];
+                var xp = (xpId && MODULE_PORTRAITS[xpId]) ? MODULE_PORTRAITS[xpId](targetVariant, char.emotion || "平然", parsed.sceneType) : null;
+                var urlV1 = xp ? xp.url : (getImageUrlInternal(char.name, targetVariant, 0, char.emotion) || getImageUrlInternal(char.name, fallbackVar, 0, char.emotion));
+                var urlV2 = xp ? xp.url : (getImageUrlInternal(char.name, targetVariant, 1, char.emotion) || getImageUrlInternal(char.name, fallbackVar, 1, char.emotion));
+                var frontUrl = urlV1;
+                var backUrl = urlV2;
+                var frontAlt = "V1";
+                var backAlt = "V2";
+                if (urlV1 && urlV2 && urlV1 !== urlV2) {
+                  if (Math.random() > 0.5) {
+                    frontUrl = urlV2;
+                    backUrl = urlV1;
+                    frontAlt = "V2";
+                    backAlt = "V1";
+                  }
+                }
+                var flipClass = isGloballyFlipped ? "is-flipped" : "";
+                var fallbackText = fallbackAvatars[char.name] || "?";
+                var charColor = CHAR_COLOR_MAP[char.name] || null;
+                return '<div class="character-card ' + flipClass + '" onclick="this.classList.toggle(\'is-flipped\')">' +
+                  '<div class="card-inner" style="border-color:' + (charColor ? charColor + '60' : 'rgba(255,255,255,0.6)') + ';">' +
+                  '<div class="card-face card-front">' +
+                  '<div class="flip-hint" style="' + (charColor ? 'background:' + charColor + '30;' : '') + '"><svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z" fill="' + (charColor || 'var(--accent)') + '"/></svg></div>' +
+                  '<div class="character-avatar">' +
+                  (frontUrl ? '<img' + (xp ? ' data-xp="' + xpId + '" data-clicks="' + xp.click.map(function(p) { return p.join(":"); }).join("|") + '"' : '') + ' src="' + frontUrl + '" alt="' + char.name + ' ' + frontAlt + '" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';"><div class="character-avatar-fallback" style="display:none;">' + fallbackText + '</div>' : '<div class="character-avatar-fallback" style="color:' + (charColor || 'rgba(136,117,114,0.4)') + ';">' + fallbackText + '</div>') +
+                  '</div>' +
+                  '<div class="character-name" style="color:' + (charColor || 'var(--ink)') + ';">' + char.name + '</div>' +
+                  '</div>' +
+                  '<div class="card-face card-back">' +
+                  '<div class="flip-hint" style="' + (charColor ? 'background:' + charColor + '30;' : '') + '"><svg viewBox="0 0 24 24"><path d="M12 4V1L8 5l4 4V6c3.31 0 6 2.69 6 6 0 1.01-.25 1.97-.7 2.8l1.46 1.46C19.54 15.03 20 13.57 20 12c0-4.42-3.58-8-8-8zm0 14c-3.31 0-6-2.69-6-6 0-1.01.25-1.97.7-2.8L5.24 7.74C4.46 8.97 4 10.43 4 12c0 4.42 3.58 8 8 8v3l4-4-4-4v3z" fill="' + (charColor || 'var(--accent)') + '"/></svg></div>' +
+                  '<div class="character-avatar">' +
+                  (backUrl ? '<img' + (xp ? ' data-xp="' + xpId + '" data-clicks="' + xp.click.map(function(p) { return p.join(":"); }).join("|") + '"' : '') + ' src="' + backUrl + '" alt="' + char.name + ' ' + backAlt + '" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'flex\';"><div class="character-avatar-fallback" style="display:none;">' + fallbackText + '</div>' : '<div class="character-avatar-fallback" style="color:' + (charColor || 'rgba(136,117,114,0.4)') + ';">' + fallbackText + '</div>') +
+                  '</div>' +
+                  '<div class="character-name" style="color:' + (charColor || 'var(--ink)') + ';">' + char.name + '</div>' +
+                  '</div>' +
+                  '</div>' +
+                  '</div>';
+              }).join('') + '</div>';
+            }
+          }
+
+          renderCharacters();
+          collapseBtn.onclick = function() {
+            charContainer.classList.toggle("collapsed");
+            collapseIcon.classList.toggle("collapsed");
+            collapseText.textContent = charContainer.classList.contains("collapsed") ? "展开立绘" : "收起立绘";
+          };
+
+          switchVersionBtn.onclick = function() {
+            isGloballyFlipped = !isGloballyFlipped;
+            var cards = wrapper.querySelectorAll(".character-card");
+            if (isGloballyFlipped) {
+              versionText.textContent = "🔄 恢复初始立绘";
+              cards.forEach(function(card, index) {
+                setTimeout(function() { card.classList.add("is-flipped"); }, index * 80);
+              });
+            } else {
+              versionText.textContent = "🔄 翻转全部立绘";
+              cards.forEach(function(card, index) {
+                setTimeout(function() { card.classList.remove("is-flipped"); }, index * 80);
+              });
+            }
+          };
+
+          document.addEventListener("click", function(ev) {
+            var img = ev.target && ev.target.closest ? ev.target.closest("img[data-clicks]") : null;
+            if (!img) return;
+            var xpId2 = img.getAttribute("data-xp");
+            if (!xpId2 || !MODULE_PORTRAITS[xpId2]) return;
+            var list = img.getAttribute("data-clicks").split("|");
+            if (!list.length) return;
+            var idx = (parseInt(img.getAttribute("data-idx") || "0", 10) + 1) % list.length;
+            img.setAttribute("data-idx", String(idx));
+            var slot = list[idx].split(":");
+            var nx = MODULE_PORTRAITS[xpId2](slot[0], slot[1], parsed.sceneType);
+            if (nx && nx.url) img.src = nx.url;
+          });
+        })();
+      </script>
+    </div>
+  </body>
+</html>
