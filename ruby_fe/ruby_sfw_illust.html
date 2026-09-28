@@ -66,7 +66,7 @@ const R4=GH+"vmkudz-sys/my-image-bed/main/lin_jia_daily.png";
 
           const sceneText = document.getElementById("scene-data-raw").textContent;
 
-          const CHAR_COLOR_MAP={'丁曼红':'#a06080','南梦秋':'#7a9ebf','艾洛伊':'#d4a5a5','沈辞':'#8aa8c8','云伊':'#b0d0f0','伦欣桐':'#50c878','兰叶':'#c87060','兰心':'#c8b0d0','刘予安':'#f47070','刘恩泽':'#c8a0c0','刘祈音':'#e8855a','刘福堂':'#8a7a6a','吴海文':'#70c0a0','周灵':'#8898b0','周语彤':'#d63384','唐蜜':'#f0a050','夏祈':'#9eb8c8','孙琦':'#7eb8a0','孙瑞希':'#e870a0','孙翌童':'#f4a847','孙苑清':'#b0b8c8','安春生':'#e8a890','安琳':'#e8a0a8','庞咏萱':'#f490a8','庞颖':'#c8a080','张子薇':'#ff6b6b','张薇薇':'#e0c0a0','文澜':'#b8c4e8','文素':'#d0b890','文茜':'#c8b8a0','文馨':'#e0e0ff','文鸢':'#f48060','方敏':'#f4b8a0','明香香':'#ff6b35','智允':'#d0c0b0','朱城':'#9a8a7a','罗可可':'#f0a0c0','朱清':'#c06080','朱玥':'#88c8a8','李南星':'#f0b232','杨小雪':'#c8d8e8','林听晚':'#a0b8d8','林墨':'#98b8a0','林安安':'#ff9ecd','林沐宜':'#a0c0a8','林葭':'#80a890','林见夏':'#e87060','林野':'#88a080','林闻夏':'#b0a8c0','柳青':'#f47b67','江静屿':'#7090c0','汤倩':'#a8a0c0','汤加琳':'#ffb86c','沈幼楚':'#a8c8e8','沈漾':'#a8d0e0','沈静宜':'#8a9db0','沛涵':'#d0a8b8','洪欣彤':'#ff80c0','海霖':'#80a0a8','淑静':'#b8b8a0','温若宁':'#c8b8d8','源丽萍':'#d09050','独孤春儿':'#e8f0a0','珞曼':'#a08090','珞珈':'#f0d090','珞花':'#c87ea0','白晓雪':'#e8e0d0','祝佩玲':'#b07860','祝叶谷':'#c89860','祝绝响':'#c8a090','胡静':'#c4956a','芍药':'#a8a890','苏晚棠':'#e8a0c0','苏紫宁':'#b88cf0','苏雨':'#6ab0a8','荣柔柔':'#e8b8d0','萧容鱼':'#d4a0a0','董世青':'#8a6a5a','裴姝权':'#c898d8','让娜':'#e8e0c0','让娜·库兹涅佐娃':'#e8e0c0','许愿':'#e8c878','许愿/许愿姬':'#e8c878','许愿姬':'#e8c878','许明薇':'#a89080','贺玲':'#f47860','赵小满':'#f0c080','赵自由':'#688090','赵诗晴':'#d8a080','赵雅琴':'#d0a060','那可':'#9888a0','郭雨瑶':'#a8c0e8','金宁':'#c8a050','金晶晶':'#ff9a76','阳灿':'#f4a090','陈书婷':'#8a8090','陈思雨':'#5ec8a8','陈晓北':'#a8d8a8','陈莹莹':'#d8a8c8','雅陶':'#a89070','韦青青':'#7eb050','韩冰娇':'#7eb8da','韩真真':'#d07070','马琪':'#a070a0','马青青':'#f0c060','魏莱':'#c0c0e0','陈浩':'#c0a870','黄淑仪':'#e8a87c','黎昭':'#90b8d0','林悦':'#f0a8c8'};
+          const CHAR_COLOR_MAP={'丁曼红':'#a06080','南梦秋':'#7a9ebf','艾洛伊':'#d4a5a5','沈辞':'#8aa8c8','云伊':'#b0d0f0','伦欣桐':'#50c878','兰叶':'#c87060','兰心':'#c8b0d0','刘予安':'#f47070','刘恩泽':'#c8a0c0','刘祈音':'#e8855a','刘福堂':'#8a7a6a','吴海文':'#70c0a0','周灵':'#8898b0','周语彤':'#d63384','唐蜜':'#f0a050','夏祈':'#9eb8c8','孙琦':'#7eb8a0','孙瑞希':'#e870a0','孙翌童':'#f4a847','孙苑清':'#b0b8c8','安春生':'#e8a890','安琳':'#e8a0a8','庞咏萱':'#f490a8','庞颖':'#c8a080','张子薇':'#ff6b6b','张薇薇':'#e0c0a0','文澜':'#b8c4e8','文素':'#d0b890','文茜':'#c8b8a0','文馨':'#e0e0ff','文鸢':'#f48060','方敏':'#f4b8a0','明香香':'#ff6b35','智允':'#d0c0b0','朱城':'#9a8a7a','罗可可':'#f0a0c0','朱清':'#c06080','朱玥':'#88c8a8','李南星':'#f0b232','杨小雪':'#c8d8e8','林听晚':'#a0b8d8','林墨':'#98b8a0','林安安':'#ff9ecd','林沐宜':'#a0c0a8','林葭':'#80a890','林见夏':'#e87060','林野':'#88a080','林闻夏':'#b0a8c0','柳青':'#f47b67','江静屿':'#7090c0','汤倩':'#a8a0c0','汤加琳':'#ffb86c','沈幼楚':'#a8c8e8','沈漾':'#a8d0e0','沈静宜':'#8a9db0','沛涵':'#d0a8b8','洪欣彤':'#ff80c0','海霖':'#80a0a8','淑静':'#b8b8a0','温若宁':'#c8b8d8','源丽萍':'#d09050','独孤春儿':'#e8f0a0','珞曼':'#a08090','珞珈':'#f0d090','珞花':'#c87ea0','白晓雪':'#e8e0d0','祝佩玲':'#b07860','祝叶谷':'#c89860','祝绝响':'#c8a090','胡静':'#c4956a','芍药':'#a8a890','苏晚棠':'#e8a0c0','苏紫宁':'#b88cf0','苏雨':'#6ab0a8','荣柔柔':'#e8b8d0','萧容鱼':'#d4a0a0','董世青':'#8a6a5a','裴姝权':'#c898d8','让娜':'#e8e0c0','让娜·库兹涅佐娃':'#e8e0c0','许愿':'#e8c878','许愿/许愿姬':'#e8c878','许愿姬':'#e8c878','许明薇':'#a89080','贺玲':'#f47860','赵小满':'#f0c080','赵自由':'#688090','赵诗晴':'#d8a080','赵雅琴':'#d0a060','那可':'#9888a0','郭雨瑶':'#a8c0e8','金宁':'#c8a050','金晶晶':'#ff9a76','阳灿':'#f4a090','陈书婷':'#8a8090','陈思雨':'#5ec8a8','陈晓北':'#a8d8a8','陈莹莹':'#d8a8c8','雅陶':'#a89070','韦青青':'#7eb050','韩冰娇':'#7eb8da','韩真真':'#d07070','马琪':'#a070a0','马青青':'#f0c060','魏莱':'#c0c0e0','陈浩':'#c0a870','黄淑仪':'#e8a87c','黎昭':'#90b8d0','林悦':'#f0a8c8','闻轻絮':'#c3d0da'};
           const HAI_TANG_IDS = { gu_haitang:1, jing_yuan:1, gao_wen:1, zhu_yi:1, li_shuang_zhu:1, he_jia:1, shen_yan:1 };
           const HAI_TANG_BASES = {
             gu_haitang: "https://raw.githubusercontent.com/ningj8622-coder/-1/bd8943a78c86b0d67faad6238f8a680c0ad1db2e",
@@ -101,7 +101,7 @@ const R4=GH+"vmkudz-sys/my-image-bed/main/lin_jia_daily.png";
             萧容鱼: "萧",魏莱: "魏",沈幼楚: "楚",沈静宜: "沈",文茜: "文",珞曼: "珞",
             唐蜜: "唐",夏祈: "夏",杨小雪: "杨",裴姝权: "裴",智允: "智",江静屿: "江",罗可可: "罗",
             黎昭: "黎",
-            林悦: "林",董釉月: "釉",
+            林悦: "林",董釉月: "釉",闻轻絮: "闻",
             '顾海棠': '棠','景媛': '媛','高雯': '雯','朱艺': '艺','李双洙': '洙','禾佳': '佳','沈雁': '雁',};
 
           const nameToIdMap = {
@@ -132,7 +132,7 @@ const R4=GH+"vmkudz-sys/my-image-bed/main/lin_jia_daily.png";
             夏祈: "xia_qi",杨小雪: "yang_xiaoxue",裴姝权: "pei_shuquan",智允: "zhi_yun",
             江静屿: "jiang_jingyu",罗可可: "luo_ke_ke",黎昭: "li_zhao",
             林悦: "lin_yue","珞珈(大)": "luo_jia27","珞珈（大）": "luo_jia27","珞珈(不辞而别版)": "luo_jia27","珞珈（不辞而别版）": "luo_jia27",
-"大珞花": "da_luo_hua",董釉月: "dong_youyue",顾海棠: "gu_haitang",景媛: "jing_yuan",高雯: "gao_wen",朱艺: "zhu_yi",李双洙: "li_shuang_zhu",禾佳: "he_jia",沈雁: "shen_yan",南梦秋: "nan_mengqiu",艾洛伊: "ai_luo_yi",沈辞: "shenci"
+"大珞花": "da_luo_hua",董釉月: "dong_youyue",顾海棠: "gu_haitang",景媛: "jing_yuan",高雯: "gao_wen",朱艺: "zhu_yi",李双洙: "li_shuang_zhu",禾佳: "he_jia",沈雁: "shen_yan",南梦秋: "nan_mengqiu",闻轻絮: "wen_qingxu",艾洛伊: "ai_luo_yi",沈辞: "shenci"
           };
 
           const canonicalNames = Object.keys(nameToIdMap);
@@ -178,7 +178,8 @@ const R4=GH+"vmkudz-sys/my-image-bed/main/lin_jia_daily.png";
           };
 
           const baseCommon = {
-            nan_mengqiu: "https://i.postimg.cc",
+            nan_mengqiu: GH+"zhang7410852-ctrl/-/main/南梦秋/南梦秋",
+            wen_qingxu: GH+"zhang7410852-ctrl/-/main/闻轻絮/闻轻絮",
             zhou_yutong: R0,bai_xiaoxue: R0,
             han_bingjiao: GH+"xuanyuy2019-ops/Image/main/han/sfw",
             guo_yuyao: GH+"Alunamin/xiancheng/main/guo_yuyao",
@@ -249,7 +250,8 @@ const R4=GH+"vmkudz-sys/my-image-bed/main/lin_jia_daily.png";
           const charOverrides = {
             pang_yongxuan: { shangxue: "https://raw.githubusercontent.com/samlinxi/img/main/img/pangyongxuan_shangxue.png" },
             
-            nan_mengqiu: { uniform: "https://i.postimg.cc/RZ41NyVb/2026nian09yue05ri21dian35fen46miao.webp", daily: "https://i.postimg.cc/QMncYMgq/2026nian09yue05ri21dian56fen51miao.webp", outing: "https://i.postimg.cc/fLtmGhB3/2026nian09yue05ri22dian02fen40miao.webp", nsfw: "https://i.postimg.cc/HxqXHPhR/2026nian09yue05ri22dian12fen12miao.webp" }, da_luo_hua: {},
+            nan_mengqiu: { uniform: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/南梦秋/南梦秋/-3.webp", daily: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/南梦秋/南梦秋/.webp", outing: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/南梦秋/南梦秋/-1.webp", nsfw: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/南梦秋/南梦秋/-2.webp" },
+            wen_qingxu: { uniform: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/闻轻絮/闻轻絮/-6.png", daily: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/闻轻絮/闻轻絮/-3.png", outing: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/闻轻絮/闻轻絮/-8.png", nsfw: "https://raw.githubusercontent.com/zhang7410852-ctrl/-/main/闻轻絮/闻轻絮/-7.png" }, da_luo_hua: {},
             han_bingjiao: {},guo_yuyao: {},liu_qiyin: {},liu_yuan: {},xu_mingwei: {},rong_rourou: {},
             shen_yang: {
               daily: GH+"AliceNekoqqq/Pic/master/img/1.png",
