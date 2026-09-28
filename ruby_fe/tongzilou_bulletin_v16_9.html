@@ -1686,6 +1686,8 @@
 
             const NEW_BASE_URL = 'https://raw.githubusercontent.com/zhamuqiu/setu/refs/heads/main';
             const TONGREN2_BASE_URL = 'https://raw.githubusercontent.com/zhamuqiu/tongren2/refs/heads/main';
+            const SETU2_BASE_URL = 'https://raw.githubusercontent.com/zhamuqiu/setu2/refs/heads/main';
+            const SETU2_CHARS = ['钱萌萌', '马丽', '戴安娜'];
             const NINE_CHARS = ['赵梅', '唐果', '林秀', '洪晓彤', '苏悦', '苏雨夜', '洪晓花', '洪晓蕾', '李莉'];
             const SPECIAL_CHARS = ['沈念', '蒋佩琴', '文馨', '邵婷', '齐冰', '齐雪'];
 
@@ -1694,6 +1696,8 @@
                 baseUrl = NEW_BASE_URL;
             } else if (NINE_CHARS.includes(charName)) {
                 baseUrl = TONGREN2_BASE_URL;
+            } else if (SETU2_CHARS.includes(charName)) {
+                baseUrl = SETU2_BASE_URL;
             } else if (SPECIAL_CHARS.includes(charName)) {
                 baseUrl = NEW_BASE_URL;
             } else {
@@ -1715,7 +1719,10 @@
                 '文馨': 'wen_xin',
                 '邵婷': 'shao_ting',
                 '齐冰': 'qi_bing',
-                '齐雪': 'qi_xue'
+                '齐雪': 'qi_xue',
+                '钱萌萌': 'qian_mengmeng',
+                '马丽': 'ma_li',
+                '戴安娜': 'dai_anna'
             };
             const prefix = pinyinMap[charName] || 'hong_xiaohua';
 
