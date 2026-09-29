@@ -898,11 +898,45 @@ const GH = "https://raw.githubusercontent.com/";
     const R47 = GH + "ningj8622-coder/-1/97367ebbc5037756d775fbbdb3cb46e997e43231";
     const R48 = GH + "ningj8622-coder/-1/ae641aea627547d8f430dc214060aea739efa237";
     const R49 = GH + "ningj8622-coder/-1/e614b8e4ead1096c14ae2e74ebb8c11452743078"; /* preg */
+const ZQ = GH+"xuanyuy2019-ops/Image/main/zhangqi";
 
     // ==========================================
     // 🔮 预设配置区
     // ==========================================
     const VARIANT_PRESETS = {
+      zhangqi: {
+        label: "张琪组",
+        sfw: [
+          { key: "uniform", label: "制服" },
+          { key: "daily", label: "日常" },
+          { key: "outing", label: "外出" },
+          { key: "nsfw", label: "赤裸" },
+        ],
+        nsfw: [
+          { key: "blowjob", label: "口交" },
+          { key: "footjob", label: "足交" },
+          { key: "holding_pee", label: "憋尿" },
+          { key: "sex", label: "性交" },
+          { key: "anal", label: "肛交" },
+          { key: "orgasm", label: "高潮" },
+          { key: "masturbation", label: "自慰" },
+          { key: "secret_sex", label: "隐奸" },
+          { key: "training", label: "调教" },
+          { key: "exhibition", label: "露出" },
+          { key: "outdoor_selfie", label: "户外露出自拍" },
+          { key: "indoor_selfie", label: "室内露出自拍" },
+        ],
+      },
+      zhangqi_lite: {
+        label: "张琪组·基础",
+        sfw: [
+          { key: "uniform", label: "制服" },
+          { key: "daily", label: "日常" },
+          { key: "outing", label: "外出" },
+          { key: "nsfw", label: "赤裸" },
+        ],
+        nsfw: [],
+      },
       modern: {
         label: "现代",
         sfw: [
@@ -1209,7 +1243,18 @@ const GH = "https://raw.githubusercontent.com/";
       { id: "sophie", name: "苏菲", preset: "flame", sfwBase: R47, nsfwBase: R47, pregBase: R49, overrides: {} },
       { id: "eloy", name: "埃洛伊", preset: "flame", sfwBase: R47, nsfwBase: R47, pregBase: R49, overrides: {} },
       { id: "illya", name: "伊莉雅", preset: "flame", sfwBase: R47, nsfwBase: R47, pregBase: R48, overrides: {} },
-      { id: "jessica", name: "杰西卡", preset: "flame", sfwBase: R48, nsfwBase: R48, pregBase: R48, overrides: {} }
+      { id: "jessica", name: "杰西卡", preset: "flame", sfwBase: R48, nsfwBase: R48, pregBase: R48, overrides: {} },
+      { id: "zhang_qi", name: "张琪", preset: "zhangqi", sfwBase: ZQ, nsfwBase: ZQ, overrides: {} },
+      { id: "lin_xi", name: "林溪", preset: "zhangqi", sfwBase: ZQ, nsfwBase: ZQ, overrides: {} },
+      { id: "su_yumei", name: "苏玉梅", preset: "zhangqi", sfwBase: ZQ, nsfwBase: ZQ, overrides: {} },
+      { id: "zhou_xiaoyun", name: "周晓芸", preset: "zhangqi", sfwBase: ZQ, nsfwBase: ZQ, overrides: {} },
+      { id: "su_manzhu", name: "苏曼珠", preset: "zhangqi", sfwBase: ZQ, nsfwBase: ZQ, overrides: {} },
+      { id: "jiang_xiaoyou", name: "姜小柚", preset: "zhangqi", sfwBase: ZQ, nsfwBase: ZQ, overrides: {} },
+      { id: "qin_suo", name: "秦惢", preset: "zhangqi", sfwBase: ZQ, nsfwBase: ZQ, overrides: {} },
+      { id: "shen_nianbai", name: "沈念白", preset: "zhangqi", sfwBase: ZQ, nsfwBase: ZQ, overrides: {} },
+      { id: "shen_jue", name: "沈决", preset: "zhangqi", sfwBase: ZQ, nsfwBase: ZQ, overrides: {} },
+      { id: "guan_lili", name: "管栗栗", preset: "zhangqi_lite", sfwBase: ZQ, nsfwBase: ZQ, overrides: {} }
+
     ];
 
     const fallbackAvatars = {
@@ -1232,7 +1277,7 @@ const GH = "https://raw.githubusercontent.com/";
       liu_qiyin: "刘", bai_xiaoxue: "白", lin_wenxia: "林", xu_yuanji: "许",
       xu_yuan: "许", anlin: "安", shujing: "淑", lanxin: "兰",
       sunqi: "孙", zhu_yue: "朱", zhao_shiqing: "赵", zhu_juexiang: "祝",
-      pei_shuquan: "裴", zhi_yun: "智", nan_mengqiu: "南", wen_qingxu: "闻", tang_mi: "唐", lin_yue: "林", sophie: "苏", eloy: "埃", jessica: "杰", illya: "伊"
+      pei_shuquan: "裴", zhi_yun: "智", nan_mengqiu: "南", wen_qingxu: "闻", tang_mi: "唐", lin_yue: "林", sophie: "苏", eloy: "埃", jessica: "杰", illya: "伊",zhang_qi: "Z", lin_xi: "L", su_yumei: "S", zhou_xiaoyun: "Z", su_manzhu: "S", jiang_xiaoyou: "J", qin_suo: "Q", shen_nianbai: "S", shen_jue: "S", guan_lili: "G"
     };
 
     // --- 全局状态管理 ---
